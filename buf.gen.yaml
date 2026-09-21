@@ -1,0 +1,22 @@
+version: v2
+managed:
+  enabled: true
+  disable:
+    - file_option: go_package
+      module: buf.build/bufbuild/protovalidate
+    - file_option: go_package
+      module: buf.build/googleapis/googleapis
+  override:
+    - file_option: go_package
+      path: nominal/protos/sql/v1
+      value: github.com/nominal-io/nominal-api-protos-go/sql/v1;sqlv1
+    - file_option: go_package
+      path: nominal/protos/gen/v1
+      value: github.com/nominal-io/nominal-api-protos-go/gen/v1;genv1
+plugins:
+  - local: .bin/protoc-gen-go
+    out: .
+    opt: module=github.com/nominal-io/nominal-api-protos-go
+  - local: .bin/protoc-gen-go-grpc
+    out: .
+    opt: module=github.com/nominal-io/nominal-api-protos-go

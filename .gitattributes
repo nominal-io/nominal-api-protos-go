@@ -1,0 +1,2 @@
+*.pb.go linguist-generated=true
+proto/** linguist-vendored=true

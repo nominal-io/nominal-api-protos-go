@@ -1,0 +1,243 @@
+syntax = "proto3";
+
+package nominal.sql.v1;
+
+import "buf/validate/validate.proto";
+import "google/api/annotations.proto";
+import "nominal/protos/gen/v1/alias.proto";
+import "nominal/protos/gen/v1/error.proto";
+
+option java_multiple_files = true;
+option java_package = "io.nominal.sql.v1";
+
+enum SqlError {
+  SQL_ERROR_UNSPECIFIED = 0;
+  SQL_ERROR_INVALID_QUERY = 1 [(nominal.gen.v1.error) = {
+    code: "INVALID_ARGUMENT"
+    message: "SQL query is invalid"
+  }];
+  SQL_ERROR_DATASETS_NOT_FOUND = 2 [(nominal.gen.v1.error) = {
+    code: "NOT_FOUND"
+    message: "One or more requested datasets could not be found in the specified workspace"
+  }];
+  SQL_ERROR_EXECUTION_FAILED = 3 [(nominal.gen.v1.error) = {
+    code: "INTERNAL"
+    message: "An unexpected internal error occurred while executing the SQL query"
+  }];
+  SQL_ERROR_EXPORT_NOT_SUPPORTED_FOR_BACKEND = 4 [(nominal.gen.v1.error) = {
+    code: "INVALID_ARGUMENT"
+    message: "SQL export is not supported for this query backend"
+  }];
+  SQL_ERROR_EXPORT_NOT_CONFIGURED = 5 [(nominal.gen.v1.error) = {
+    code: "FAILED_PRECONDITION"
+    message: "SQL export is not configured for this deployment"
+  }];
+  SQL_ERROR_QUERY_TIMEOUT = 6 [(nominal.gen.v1.error) = {
+    code: "INVALID_ARGUMENT"
+    message: "The query timed out before it could complete"
+  }];
+  SQL_ERROR_RESOURCE_EXHAUSTED = 7 [(nominal.gen.v1.error) = {
+    code: "RESOURCE_EXHAUSTED"
+    message: "The query exceeded a resource limit"
+  }];
+  SQL_ERROR_DATASET_STORAGE_TYPE_NOT_SUPPORTED = 8 [(nominal.gen.v1.error) = {
+    code: "INVALID_ARGUMENT"
+    message: "Datasets with this storage type are not yet supported by SQL queries"
+  }];
+  SQL_ERROR_DATA_NOT_FOUND_FOR_TYPE = 9 [(nominal.gen.v1.error) = {
+    code: "NOT_FOUND"
+    message: "No data of the requested type exists for one or more of the requested datasets"
+  }];
+  SQL_ERROR_RESULT_SIZE_EXCEEDED = 10 [(nominal.gen.v1.error) = {
+    code: "INVALID_ARGUMENT"
+    message: "The query result exceeded the maximum result size"
+  }];
+  SQL_ERROR_QUERY_SCOPE_TOO_LARGE = 11 [(nominal.gen.v1.error) = {
+    code: "INTERNAL"
+    message: "The query spans more datasets than can be planned at once"
+  }];
+  SQL_ERROR_QUERY_CANCELLED = 12 [(nominal.gen.v1.error) = {
+    code: "CANCELLED"
+    message: "The query was cancelled"
+  }];
+  SQL_ERROR_MEMORY_LIMIT_EXCEEDED = 13 [(nominal.gen.v1.error) = {
+    code: "RESOURCE_EXHAUSTED"
+    message: "The query exceeded the memory limit"
+  }];
+}
+
+enum SqlServiceQueryResultFormat {
+  SQL_SERVICE_QUERY_RESULT_FORMAT_UNSPECIFIED = 0;
+  SQL_SERVICE_QUERY_RESULT_FORMAT_ARROW_STREAM = 1;
+  SQL_SERVICE_QUERY_RESULT_FORMAT_JSON_LINES = 2;
+  SQL_SERVICE_QUERY_RESULT_FORMAT_CSV = 3;
+}
+
+message SqlServiceQueryRequest {
+  string query = 1 [
+    (buf.validate.field).required = true,
+    (buf.validate.field).string.max_len = 100000
+  ];
+
+  // Optional cap on the number of rows returned. When unset, results are unbounded (subject to the
+  // server-side byte/time limits); ClickHouse and mixed queries stream, pure Postgres materializes.
+  optional int32 max_rows = 2 [
+    (buf.validate.field).int32.gte = 1,
+    (buf.validate.field).int32.lte = 5000
+  ];
+
+  string workspace_rid = 3 [
+    (buf.validate.field).required = true,
+    (nominal.gen.v1.alias) = {java_name: "io.nominal.api.rids.WorkspaceRid"}
+  ];
+
+  // Encoding for the streamed response payload. Defaults to Arrow IPC stream for backward compatibility.
+  SqlServiceQueryResultFormat result_format = 4 [(buf.validate.field).enum.defined_only = true];
+}
+
+message SqlServiceQueryResponse {
+  reserved 1;
+  reserved "arrow_payload";
+
+  // Server-generated id for this query execution, also used as the ClickHouse query_id.
+  string query_id = 2;
+
+  // Response bytes encoded according to SqlServiceQueryRequest.result_format. Defaults to an Arrow IPC stream when no
+  // result_format is specified.
+  bytes payload = 3;
+}
+
+message SqlServiceExportRequest {
+  string query = 1 [
+    (buf.validate.field).required = true,
+    (buf.validate.field).string.max_len = 100000
+  ];
+
+  string workspace_rid = 2 [
+    (buf.validate.field).required = true,
+    (nominal.gen.v1.alias) = {java_name: "io.nominal.api.rids.WorkspaceRid"}
+  ];
+}
+
+message SqlServiceExportResponse {
+  // Presigned URL for the exported CSV, written to object storage.
+  string presigned_url = 1;
+
+  // Server-generated id for this query execution, also used as the ClickHouse query_id.
+  string query_id = 2;
+}
+
+message GetSqlCatalogRequest {}
+
+enum SqlCatalogScalarType {
+  SQL_CATALOG_SCALAR_TYPE_UNSPECIFIED = 0;
+  SQL_CATALOG_SCALAR_TYPE_VARCHAR = 1;
+  SQL_CATALOG_SCALAR_TYPE_BOOLEAN = 2;
+  SQL_CATALOG_SCALAR_TYPE_INTEGER = 3;
+  SQL_CATALOG_SCALAR_TYPE_BIGINT = 4;
+  SQL_CATALOG_SCALAR_TYPE_DOUBLE = 5;
+  SQL_CATALOG_SCALAR_TYPE_TIMESTAMP = 6;
+  SQL_CATALOG_SCALAR_TYPE_ANY = 7;
+}
+
+message SqlCatalogMapType {
+  SqlCatalogDataType key = 1;
+  SqlCatalogDataType value = 2;
+}
+
+// Full logical type of a column, including collection element types.
+message SqlCatalogDataType {
+  oneof kind {
+    SqlCatalogScalarType scalar = 1;
+    SqlCatalogDataType array_element = 2;
+    SqlCatalogMapType map = 3;
+  }
+}
+
+message SqlCatalogColumn {
+  string name = 1;
+
+  // Top-level SQL type name, e.g. TIMESTAMP, DOUBLE, BIGINT, VARCHAR, MAP, or ARRAY. Collection
+  // element types are only carried by data_type.
+  string type = 2;
+
+  bool nullable = 3;
+
+  SqlCatalogDataType data_type = 4;
+}
+
+message SqlCatalogTable {
+  string name = 1;
+
+  repeated SqlCatalogColumn columns = 2;
+}
+
+enum SqlCatalogFunctionKind {
+  SQL_CATALOG_FUNCTION_KIND_UNSPECIFIED = 0;
+  SQL_CATALOG_FUNCTION_KIND_SCALAR = 1;
+  SQL_CATALOG_FUNCTION_KIND_AGGREGATE = 2;
+  // Requires an OVER clause.
+  SQL_CATALOG_FUNCTION_KIND_WINDOW = 3;
+  SQL_CATALOG_FUNCTION_KIND_TABLE = 4;
+}
+
+message SqlCatalogFunction {
+  // Uppercase function name, e.g. AVG, COUNT, DATE_BIN.
+  string name = 1;
+
+  SqlCatalogFunctionKind kind = 2;
+
+  // Whether calls may carry an OVER clause. Always true for WINDOW functions, which require one.
+  bool supports_over = 3;
+
+  // Minimum number of arguments.
+  int32 min_args = 4;
+
+  // Maximum number of arguments; unset when the function is variadic.
+  optional int32 max_args = 5;
+
+  // Best-effort operand type families (e.g. NUMERIC, DATETIME, CHARACTER, ANY), one per argument
+  // position up to max_args. Empty when the function's operand rules are not statically known.
+  repeated string argument_type_families = 6;
+
+  // Best-effort type family of the result (e.g. NUMERIC, TIMESTAMP, CHARACTER, BOOLEAN). Unset when
+  // the result type depends on the argument types in a way that is not statically known.
+  optional string return_type_family = 7;
+}
+
+// The queryable logical SQL surface.
+message SqlCatalog {
+  repeated SqlCatalogTable tables = 1;
+
+  repeated SqlCatalogFunction functions = 2;
+}
+
+message GetSqlCatalogResponse {
+  SqlCatalog sql_catalog = 1;
+}
+
+// Executes read-only SQL queries against Scout telemetry tables.
+service SqlService {
+  // Validate, authorize, lower, and execute a bounded SQL query.
+  rpc Query(SqlServiceQueryRequest) returns (stream SqlServiceQueryResponse) {
+    option (google.api.http) = {
+      post: "/sql/v1/query"
+      body: "*"
+      response_body: "payload"
+    };
+  }
+
+  // Validate, authorize, lower, and execute an unbounded SQL query, writing the full result to
+  // object storage as CSV and returning a presigned URL.
+  rpc Export(SqlServiceExportRequest) returns (SqlServiceExportResponse) {
+    option (google.api.http) = {
+      post: "/sql/v1/query/export"
+      body: "*"
+    };
+  }
+
+  // Get the queryable SQL surface: tables, columns, and allowed functions.
+  rpc GetSqlCatalog(GetSqlCatalogRequest) returns (GetSqlCatalogResponse) {
+    option (google.api.http) = {get: "/sql/v1/catalog"};
+  }
+}

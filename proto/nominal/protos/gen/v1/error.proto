@@ -1,0 +1,22 @@
+syntax = "proto3";
+
+package nominal.gen.v1;
+
+import "google/protobuf/descriptor.proto";
+
+option java_multiple_files = true;
+option java_package = "io.nominal.gen.v1";
+
+extend google.protobuf.EnumValueOptions {
+  Error error = 54054;
+}
+
+// Denotes an enum value that represents an error for which a google.rpc.Status will be generated.
+// The enum value will be used as the google.rpc.ErrorInfo reason and the package name
+// will be used as the domain.
+message Error {
+  // Corresponds to google.rpc.Code string value
+  string code = 1;
+  // A human readable message that is used for the google.rpc.Status message
+  string message = 2;
+}

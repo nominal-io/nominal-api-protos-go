@@ -1,0 +1,21 @@
+{
+  "repository": "https://github.com/nominal-io/scout",
+  "revision": "c9cb74854cedd239f821da9339134fc7e7a95525",
+  "files": [
+    {
+      "path": "proto/nominal/protos/sql/v1/sql.proto",
+      "source_path": "scout-service-api/src/main/proto/nominal/protos/sql/v1/sql.proto",
+      "sha256": "c5a27ff4f3e593a61734b0ab9d500b1ec87a3a6269456464fb9f5d207c5e8f66"
+    },
+    {
+      "path": "proto/nominal/protos/gen/v1/alias.proto",
+      "source_path": "protoc-gen/protoc-gen-java-protos/src/main/proto/nominal/protos/gen/v1/alias.proto",
+      "sha256": "7bc05b6b4ab1f3397752ecb0cba87f2349ac822c80c15888e96962459b9039f9"
+    },
+    {
+      "path": "proto/nominal/protos/gen/v1/error.proto",
+      "source_path": "protoc-gen/protoc-gen-java-protos/src/main/proto/nominal/protos/gen/v1/error.proto",
+      "sha256": "1be96d08cc0c2d100116a6805d88c268bcc2c884dabceff4172f6b1064fa5611"
+    }
+  ]
+}

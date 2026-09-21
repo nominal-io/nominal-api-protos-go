@@ -1,0 +1,23 @@
+syntax = "proto3";
+
+package nominal.gen.v1;
+
+import "google/protobuf/descriptor.proto";
+
+option java_multiple_files = true;
+option java_package = "io.nominal.gen.v1";
+
+extend google.protobuf.FieldOptions {
+  Alias alias = 54051;
+
+  // Reason this RID-shaped field intentionally cannot use an Alias.
+  string rid_alias_exemption_reason = 54053;
+}
+
+message Alias {
+  string java_name = 1;
+
+  string key_java_name = 2;
+
+  string value_java_name = 3;
+}
