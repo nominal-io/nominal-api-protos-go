@@ -1,0 +1,48 @@
+name: Lint PR
+on:
+  pull_request:
+    types: [opened, edited, reopened, synchronize]
+permissions:
+  contents: read
+jobs:
+  lint-pr-description:
+    name: Validate PR description
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd # v5.0.1
+      - name: Check that the PR description is non-empty and differs from the template
+        shell: bash
+        run: |
+          PR_DESCRIPTION=$(jq -r '.pull_request.body // ""' "$GITHUB_EVENT_PATH" | tr -d '\r' | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')
+          if [[ -z "${PR_DESCRIPTION:-}" ]]; then
+            echo "Please provide a description for your pull request"
+            exit 1
+          fi
+          PR_TEMPLATE=$(tr -d '\r' < .github/PULL_REQUEST_TEMPLATE.md | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')
+          if [[ "$PR_DESCRIPTION" == "$PR_TEMPLATE" ]]; then
+            echo "Please fill out the pull request template"
+            exit 1
+          fi
+
+  lint-pr-title:
+    name: Lint PR title
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd # v5.0.1
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        with:
+          node-version: 22
+      - name: Install commitlint
+        run: npm install -g @commitlint/cli@20 @commitlint/config-conventional@20
+      - name: Lint PR title
+        env:
+          # Store in an environment variable to guard against script injection
+          TITLE: ${{ github.event.pull_request.title }}
+        run: echo "$TITLE" | commitlint --config .github/commitlint.config.js
+      - name: Display helpful error message
+        if: failure()
+        env:
+          TITLE: ${{ github.event.pull_request.title }}
+        run: |
+          echo "Your PR title \"${TITLE}\" did not pass linting" >> "$GITHUB_STEP_SUMMARY"
+          echo "Please update it to follow conventional commit format: https://www.conventionalcommits.org/" >> "$GITHUB_STEP_SUMMARY"
