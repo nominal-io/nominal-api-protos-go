@@ -1,0 +1,30 @@
+name: Release
+on:
+  push:
+    branches: [main]
+    paths: [VERSION]
+  # Manual run for a VERSION that landed before this workflow existed.
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  tag:
+    name: Tag release
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd # v5.0.1
+      - name: Create the release for VERSION
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          VERSION=$(tr -d '[:space:]' < VERSION)
+          TAG="v${VERSION}"
+          if gh release view "$TAG" >/dev/null 2>&1; then
+            echo "$TAG is already released"
+            exit 0
+          fi
+          gh release create "$TAG" \
+            --target "$GITHUB_SHA" \
+            --title "$TAG" \
+            --notes "Nominal API protos and Go bindings from scout-service-api ${VERSION}. The same version of nominal-api-protos on PyPI and nominal-api-proto on crates.io covers the same API."
