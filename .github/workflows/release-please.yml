@@ -13,7 +13,7 @@ concurrency:
 jobs:
   release-please:
     name: Open the release PR, or tag and release once it is merged
-    runs-on: ubuntu-latest
+    runs-on: depot-ubuntu-24.04-small
     steps:
       # The app token has its own rate limit, and unlike GITHUB_TOKEN its release PRs trigger CI.
       - name: Get app token

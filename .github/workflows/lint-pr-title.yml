@@ -11,7 +11,7 @@ permissions:
 jobs:
   lint-pr-title:
     name: Lint PR title
-    runs-on: ubuntu-latest
+    runs-on: depot-ubuntu-24.04-small
     steps:
       - uses: actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd # v5.0.1
         with:
