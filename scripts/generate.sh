@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Regenerates the bindings from the protos.zip in scout's @nominal-io/proto-zip-npm-files package.
+# Regenerates the bindings from the protos.zip in @nominal-io/proto-zip-npm-files.
 set -euo pipefail
 
 zip="$(realpath "${1:?usage: generate.sh <protos.zip>}")"

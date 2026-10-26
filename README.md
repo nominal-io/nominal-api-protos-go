@@ -8,6 +8,7 @@ go get github.com/nominal-io/nominal-api-protos-go@latest
 
 ## Releases
 
-A weekly workflow regenerates the bindings from the latest protos.
+A weekly **Update API protos** workflow regenerates the bindings from the latest protos.
+`PROTO_SOURCE_VERSION` records the version of `@nominal-io/proto-zip-npm-files` used to generate these bindings.
 
 Apache-2.0; see [LICENSE](LICENSE) and [NOTICE](NOTICE).

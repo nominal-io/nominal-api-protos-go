@@ -17,5 +17,5 @@ tar -xzf "$scratch/$tarball" -C "$scratch"
 
 # Record the version only when the bindings changed, so an unchanged run opens no PR.
 if [[ -n "$(git -C "$root" status --porcelain -- nominal)" ]]; then
-  echo "$latest" > "$root/SCOUT_VERSION"
+  echo "$latest" > "$root/PROTO_SOURCE_VERSION"
 fi

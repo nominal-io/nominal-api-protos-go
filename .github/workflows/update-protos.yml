@@ -1,4 +1,4 @@
-name: Bump scout API
+name: Update API protos
 
 on:
   schedule:
@@ -10,12 +10,12 @@ permissions:
   contents: read
 
 concurrency:
-  group: bump-scout
+  group: update-protos
   cancel-in-progress: true
 
 jobs:
-  bump-scout:
-    name: Bump scout API
+  update-protos:
+    name: Update API protos
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd # v5.0.1
@@ -28,23 +28,23 @@ jobs:
         with:
           registry-url: https://npm.pkg.github.com
 
-      - name: Regenerate from the latest scout protos
+      - name: Regenerate from the latest API protos
         id: bump
         env:
-          # GITHUB_TOKEN cannot read scout's packages on GitHub Packages.
+          # GITHUB_TOKEN cannot read the upstream proto package on GitHub Packages.
           NODE_AUTH_TOKEN: ${{ secrets.NOMBOT_CLASSIC_PERSONAL_ACCESS_TOKEN }}
         run: |
-          echo "before=$(cat SCOUT_VERSION)" >> "$GITHUB_OUTPUT"
-          scripts/bump-scout.sh
-          echo "after=$(cat SCOUT_VERSION)" >> "$GITHUB_OUTPUT"
+          echo "before=$(cat PROTO_SOURCE_VERSION)" >> "$GITHUB_OUTPUT"
+          scripts/update-protos.sh
+          echo "after=$(cat PROTO_SOURCE_VERSION)" >> "$GITHUB_OUTPUT"
 
       - uses: peter-evans/create-pull-request@22a9089034f40e5a961c8808d113e2c98fb63676 # v7.0.11
         with:
           # PRs opened with GITHUB_TOKEN do not trigger CI.
           token: ${{ secrets.NOMBOT_CLASSIC_PERSONAL_ACCESS_TOKEN }}
-          commit-message: "feat(api): bump scout api to ${{ steps.bump.outputs.after }}"
-          title: "feat(api): bump scout api to ${{ steps.bump.outputs.after }}"
+          commit-message: "feat: update API protos to ${{ steps.bump.outputs.after }}"
+          title: "feat: update API protos to ${{ steps.bump.outputs.after }}"
           body: |
             Regenerates the Go bindings from `@nominal-io/proto-zip-npm-files` ${{ steps.bump.outputs.before }} -> ${{ steps.bump.outputs.after }}.
-          branch: nombot/bump-scout
+          branch: nombot/update-protos
           delete-branch: true
