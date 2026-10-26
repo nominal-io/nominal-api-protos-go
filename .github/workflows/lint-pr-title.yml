@@ -23,10 +23,3 @@ jobs:
           # Store in an environment variable to guard against script injection.
           TITLE: ${{ github.event.pull_request.title }}
         run: echo "$TITLE" | commitlint --config .github/commitlint.config.js
-      - name: Display helpful error message
-        if: failure()
-        env:
-          TITLE: ${{ github.event.pull_request.title }}
-        run: |
-          echo "Your PR title \"${TITLE}\" did not pass linting" >> "$GITHUB_STEP_SUMMARY"
-          echo "Please update it to follow conventional commit format: https://www.conventionalcommits.org/" >> "$GITHUB_STEP_SUMMARY"

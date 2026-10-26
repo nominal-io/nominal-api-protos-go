@@ -15,8 +15,7 @@ jobs:
     name: Open the release PR, or tag and release once it is merged
     runs-on: ubuntu-latest
     steps:
-      # A GitHub App installation token has its own rate limit instead of sharing the bot user's,
-      # and unlike GITHUB_TOKEN its release PR triggers CI and the PR-title lint.
+      # The app token has its own rate limit, and unlike GITHUB_TOKEN its release PRs trigger CI.
       - name: Get app token
         id: app-token
         uses: nominal-io/workflow-application-token-action@d8644a5aa546f763f73b94c762b092e088486db7 # v0.0.1

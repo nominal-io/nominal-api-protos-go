@@ -27,41 +27,24 @@ jobs:
       - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5.0.0
         with:
           registry-url: https://npm.pkg.github.com
-          scope: "@nominal-io"
 
       - name: Regenerate from the latest scout protos
         id: bump
         env:
-          # The scout API packages live under the scout repo on GitHub Packages, which the workflow
-          # token cannot read; the org bot token can, as in nominal-client-ts.
+          # GITHUB_TOKEN cannot read scout's packages on GitHub Packages.
           NODE_AUTH_TOKEN: ${{ secrets.NOMBOT_CLASSIC_PERSONAL_ACCESS_TOKEN }}
         run: |
           echo "before=$(cat SCOUT_VERSION)" >> "$GITHUB_OUTPUT"
           scripts/bump-scout.sh
           echo "after=$(cat SCOUT_VERSION)" >> "$GITHUB_OUTPUT"
 
-      - name: Build and test
-        run: |
-          go mod tidy
-          go build ./...
-          go vet ./...
-          go test -race ./...
-
       - uses: peter-evans/create-pull-request@22a9089034f40e5a961c8808d113e2c98fb63676 # v7.0.11
         with:
-          # The org bot token, not GITHUB_TOKEN, so CI and the PR-title lint run on the PR.
+          # PRs opened with GITHUB_TOKEN do not trigger CI.
           token: ${{ secrets.NOMBOT_CLASSIC_PERSONAL_ACCESS_TOKEN }}
           commit-message: "feat(api): bump scout api to ${{ steps.bump.outputs.after }}"
           title: "feat(api): bump scout api to ${{ steps.bump.outputs.after }}"
           body: |
             Regenerates the Go bindings from `@nominal-io/proto-zip-npm-files` ${{ steps.bump.outputs.before }} -> ${{ steps.bump.outputs.after }}.
-
-            ### Docs impact
-
-            - [x] **Is this a user-facing change?** Yes, the published API surface follows scout.
-
-            ### Testing plan
-
-            `go build`, `go vet`, and `go test -race` passed in the bump workflow; CI reruns them here.
           branch: nombot/bump-scout
           delete-branch: true
