@@ -1,0 +1,25 @@
+name: Lint PR title
+
+on:
+  pull_request:
+    types: [opened, edited, reopened, synchronize]
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  lint-pr-title:
+    name: Lint PR title
+    runs-on: depot-ubuntu-24.04-small
+    steps:
+      - uses: actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd # v5.0.1
+        with:
+          persist-credentials: false
+      - name: Install commitlint
+        run: npm install -g @commitlint/cli@20 @commitlint/config-conventional@20
+      - name: Lint PR title
+        env:
+          # Store in an environment variable to guard against script injection.
+          TITLE: ${{ github.event.pull_request.title }}
+        run: echo "$TITLE" | commitlint --config .github/commitlint.config.js

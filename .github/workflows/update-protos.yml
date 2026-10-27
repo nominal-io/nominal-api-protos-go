@@ -1,0 +1,50 @@
+name: Update API protos
+
+on:
+  schedule:
+    # Mondays at 13:00 UTC.
+    - cron: "0 13 * * 1"
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+
+concurrency:
+  group: update-protos
+  cancel-in-progress: true
+
+jobs:
+  update-protos:
+    name: Update API protos
+    runs-on: depot-ubuntu-24.04
+    steps:
+      - uses: actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd # v5.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16 # v6.5.0
+        with:
+          go-version-file: go.mod
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5.0.0
+        with:
+          registry-url: https://npm.pkg.github.com
+
+      - name: Regenerate from the latest API protos
+        id: bump
+        env:
+          # GITHUB_TOKEN cannot read the upstream proto package on GitHub Packages.
+          NODE_AUTH_TOKEN: ${{ secrets.NOMBOT_CLASSIC_PERSONAL_ACCESS_TOKEN }}
+        run: |
+          echo "before=$(cat PROTO_SOURCE_VERSION)" >> "$GITHUB_OUTPUT"
+          scripts/update-protos.sh
+          echo "after=$(cat PROTO_SOURCE_VERSION)" >> "$GITHUB_OUTPUT"
+
+      - uses: peter-evans/create-pull-request@22a9089034f40e5a961c8808d113e2c98fb63676 # v7.0.11
+        with:
+          # PRs opened with GITHUB_TOKEN do not trigger CI.
+          token: ${{ secrets.NOMBOT_CLASSIC_PERSONAL_ACCESS_TOKEN }}
+          commit-message: "feat: update API protos to ${{ steps.bump.outputs.after }}"
+          title: "feat: update API protos to ${{ steps.bump.outputs.after }}"
+          body: |
+            Regenerates the Go bindings from `@nominal-io/proto-zip-npm-files` ${{ steps.bump.outputs.before }} -> ${{ steps.bump.outputs.after }}.
+          branch: nombot/update-protos
+          delete-branch: true
