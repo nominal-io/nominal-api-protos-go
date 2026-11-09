@@ -8,6 +8,7 @@ package file_storev1
 
 import (
 	_ "buf.build/gen/go/bufbuild/protovalidate/protocolbuffers/go/buf/validate"
+	_ "github.com/nominal-io/nominal-api-protos-go/nominal/protos/authz/v1"
 	_ "github.com/nominal-io/nominal-api-protos-go/nominal/protos/gen/v1"
 	time "github.com/nominal-io/nominal-api-protos-go/nominal/protos/types/time"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
@@ -1065,6 +1066,9 @@ type FormatConfig struct {
 	//	*FormatConfig_Csv
 	//	*FormatConfig_Parquet
 	//	*FormatConfig_Dataflash
+	//	*FormatConfig_Containerized
+	//	*FormatConfig_McapVideo
+	//	*FormatConfig_Mcap
 	Format        isFormatConfig_Format `protobuf_oneof:"format"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -1134,6 +1138,33 @@ func (x *FormatConfig) GetDataflash() *DataflashIngestConfig {
 	return nil
 }
 
+func (x *FormatConfig) GetContainerized() *ContainerizedIngestConfig {
+	if x != nil {
+		if x, ok := x.Format.(*FormatConfig_Containerized); ok {
+			return x.Containerized
+		}
+	}
+	return nil
+}
+
+func (x *FormatConfig) GetMcapVideo() *McapVideoRegistrationConfig {
+	if x != nil {
+		if x, ok := x.Format.(*FormatConfig_McapVideo); ok {
+			return x.McapVideo
+		}
+	}
+	return nil
+}
+
+func (x *FormatConfig) GetMcap() *McapIngestConfig {
+	if x != nil {
+		if x, ok := x.Format.(*FormatConfig_Mcap); ok {
+			return x.Mcap
+		}
+	}
+	return nil
+}
+
 type isFormatConfig_Format interface {
 	isFormatConfig_Format()
 }
@@ -1150,11 +1181,133 @@ type FormatConfig_Dataflash struct {
 	Dataflash *DataflashIngestConfig `protobuf:"bytes,3,opt,name=dataflash,proto3,oneof"` // ingest .bin files
 }
 
+type FormatConfig_Containerized struct {
+	Containerized *ContainerizedIngestConfig `protobuf:"bytes,4,opt,name=containerized,proto3,oneof"` // ingest through a containerized extractor
+}
+
+type FormatConfig_McapVideo struct {
+	McapVideo *McapVideoRegistrationConfig `protobuf:"bytes,6,opt,name=mcap_video,json=mcapVideo,proto3,oneof"` // register MCAP video in place, without ingesting or copying bytes
+}
+
+type FormatConfig_Mcap struct {
+	Mcap *McapIngestConfig `protobuf:"bytes,5,opt,name=mcap,proto3,oneof"` // ingest .mcap files as telemetry
+}
+
 func (*FormatConfig_Csv) isFormatConfig_Format() {}
 
 func (*FormatConfig_Parquet) isFormatConfig_Format() {}
 
 func (*FormatConfig_Dataflash) isFormatConfig_Format() {}
+
+func (*FormatConfig_Containerized) isFormatConfig_Format() {}
+
+func (*FormatConfig_McapVideo) isFormatConfig_Format() {}
+
+func (*FormatConfig_Mcap) isFormatConfig_Format() {}
+
+// Registers a matched MCAP's video in the rule's target dataset by pointer; the bytes stay in the drive's bucket.
+// Empty means discovery mode: every foxglove.CompressedVideo topic becomes a channel. Explicit channels may be
+// added later. Only valid on an S3 virtual drive whose bucket is also an external bucket, with an existing dataset.
+type McapVideoRegistrationConfig struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *McapVideoRegistrationConfig) Reset() {
+	*x = McapVideoRegistrationConfig{}
+	mi := &file_nominal_protos_file_store_v1_ingest_rules_proto_msgTypes[16]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *McapVideoRegistrationConfig) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*McapVideoRegistrationConfig) ProtoMessage() {}
+
+func (x *McapVideoRegistrationConfig) ProtoReflect() protoreflect.Message {
+	mi := &file_nominal_protos_file_store_v1_ingest_rules_proto_msgTypes[16]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use McapVideoRegistrationConfig.ProtoReflect.Descriptor instead.
+func (*McapVideoRegistrationConfig) Descriptor() ([]byte, []int) {
+	return file_nominal_protos_file_store_v1_ingest_rules_proto_rawDescGZIP(), []int{16}
+}
+
+// Containerized-extractor ingest config: the extractor to run over a matched file, plus its parameter values.
+type ContainerizedIngestConfig struct {
+	state        protoimpl.MessageState `protogen:"open.v1"`
+	ExtractorRid string                 `protobuf:"bytes,1,opt,name=extractor_rid,json=extractorRid,proto3" json:"extractor_rid,omitempty"`
+	// Extractor parameter values, keyed by the container environment variable each binds to, fixed when the rule is
+	// written. At most 64.
+	Arguments map[string]string `protobuf:"bytes,2,rep,name=arguments,proto3" json:"arguments,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
+	// Timestamp metadata for the extractor's output. Omit to use the extractor's own; the ingest fails if neither
+	// is set.
+	Timestamp     *TimestampConfig `protobuf:"bytes,3,opt,name=timestamp,proto3,oneof" json:"timestamp,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ContainerizedIngestConfig) Reset() {
+	*x = ContainerizedIngestConfig{}
+	mi := &file_nominal_protos_file_store_v1_ingest_rules_proto_msgTypes[17]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ContainerizedIngestConfig) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ContainerizedIngestConfig) ProtoMessage() {}
+
+func (x *ContainerizedIngestConfig) ProtoReflect() protoreflect.Message {
+	mi := &file_nominal_protos_file_store_v1_ingest_rules_proto_msgTypes[17]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ContainerizedIngestConfig.ProtoReflect.Descriptor instead.
+func (*ContainerizedIngestConfig) Descriptor() ([]byte, []int) {
+	return file_nominal_protos_file_store_v1_ingest_rules_proto_rawDescGZIP(), []int{17}
+}
+
+func (x *ContainerizedIngestConfig) GetExtractorRid() string {
+	if x != nil {
+		return x.ExtractorRid
+	}
+	return ""
+}
+
+func (x *ContainerizedIngestConfig) GetArguments() map[string]string {
+	if x != nil {
+		return x.Arguments
+	}
+	return nil
+}
+
+func (x *ContainerizedIngestConfig) GetTimestamp() *TimestampConfig {
+	if x != nil {
+		return x.Timestamp
+	}
+	return nil
+}
 
 // CSV ingest config.
 type CsvIngestConfig struct {
@@ -1167,7 +1320,7 @@ type CsvIngestConfig struct {
 
 func (x *CsvIngestConfig) Reset() {
 	*x = CsvIngestConfig{}
-	mi := &file_nominal_protos_file_store_v1_ingest_rules_proto_msgTypes[16]
+	mi := &file_nominal_protos_file_store_v1_ingest_rules_proto_msgTypes[18]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1179,7 +1332,7 @@ func (x *CsvIngestConfig) String() string {
 func (*CsvIngestConfig) ProtoMessage() {}
 
 func (x *CsvIngestConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_file_store_v1_ingest_rules_proto_msgTypes[16]
+	mi := &file_nominal_protos_file_store_v1_ingest_rules_proto_msgTypes[18]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1192,7 +1345,7 @@ func (x *CsvIngestConfig) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CsvIngestConfig.ProtoReflect.Descriptor instead.
 func (*CsvIngestConfig) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_file_store_v1_ingest_rules_proto_rawDescGZIP(), []int{16}
+	return file_nominal_protos_file_store_v1_ingest_rules_proto_rawDescGZIP(), []int{18}
 }
 
 func (x *CsvIngestConfig) GetTimestamp() *TimestampConfig {
@@ -1220,7 +1373,7 @@ type ParquetIngestConfig struct {
 
 func (x *ParquetIngestConfig) Reset() {
 	*x = ParquetIngestConfig{}
-	mi := &file_nominal_protos_file_store_v1_ingest_rules_proto_msgTypes[17]
+	mi := &file_nominal_protos_file_store_v1_ingest_rules_proto_msgTypes[19]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1232,7 +1385,7 @@ func (x *ParquetIngestConfig) String() string {
 func (*ParquetIngestConfig) ProtoMessage() {}
 
 func (x *ParquetIngestConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_file_store_v1_ingest_rules_proto_msgTypes[17]
+	mi := &file_nominal_protos_file_store_v1_ingest_rules_proto_msgTypes[19]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1245,7 +1398,7 @@ func (x *ParquetIngestConfig) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ParquetIngestConfig.ProtoReflect.Descriptor instead.
 func (*ParquetIngestConfig) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_file_store_v1_ingest_rules_proto_rawDescGZIP(), []int{17}
+	return file_nominal_protos_file_store_v1_ingest_rules_proto_rawDescGZIP(), []int{19}
 }
 
 func (x *ParquetIngestConfig) GetTimestamp() *TimestampConfig {
@@ -1271,7 +1424,7 @@ type DataflashIngestConfig struct {
 
 func (x *DataflashIngestConfig) Reset() {
 	*x = DataflashIngestConfig{}
-	mi := &file_nominal_protos_file_store_v1_ingest_rules_proto_msgTypes[18]
+	mi := &file_nominal_protos_file_store_v1_ingest_rules_proto_msgTypes[20]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1283,7 +1436,7 @@ func (x *DataflashIngestConfig) String() string {
 func (*DataflashIngestConfig) ProtoMessage() {}
 
 func (x *DataflashIngestConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_file_store_v1_ingest_rules_proto_msgTypes[18]
+	mi := &file_nominal_protos_file_store_v1_ingest_rules_proto_msgTypes[20]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1296,7 +1449,199 @@ func (x *DataflashIngestConfig) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DataflashIngestConfig.ProtoReflect.Descriptor instead.
 func (*DataflashIngestConfig) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_file_store_v1_ingest_rules_proto_rawDescGZIP(), []int{18}
+	return file_nominal_protos_file_store_v1_ingest_rules_proto_rawDescGZIP(), []int{20}
+}
+
+// MCAP telemetry ingest config.
+type McapIngestConfig struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Channels to ingest by topic name. All channels when unset.
+	Channels *McapChannelSelection `protobuf:"bytes,1,opt,name=channels,proto3" json:"channels,omitempty"`
+	// Skip topics whose schemas cannot be decoded instead of failing the ingest.
+	IgnoreInvalidTopics bool `protobuf:"varint,2,opt,name=ignore_invalid_topics,json=ignoreInvalidTopics,proto3" json:"ignore_invalid_topics,omitempty"`
+	// Also registers the file's video channels for in-place playback in the rule's target dataset. Needs an S3
+	// virtual drive and MCAP playback enabled.
+	RegisterVideo bool `protobuf:"varint,4,opt,name=register_video,json=registerVideo,proto3" json:"register_video,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *McapIngestConfig) Reset() {
+	*x = McapIngestConfig{}
+	mi := &file_nominal_protos_file_store_v1_ingest_rules_proto_msgTypes[21]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *McapIngestConfig) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*McapIngestConfig) ProtoMessage() {}
+
+func (x *McapIngestConfig) ProtoReflect() protoreflect.Message {
+	mi := &file_nominal_protos_file_store_v1_ingest_rules_proto_msgTypes[21]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use McapIngestConfig.ProtoReflect.Descriptor instead.
+func (*McapIngestConfig) Descriptor() ([]byte, []int) {
+	return file_nominal_protos_file_store_v1_ingest_rules_proto_rawDescGZIP(), []int{21}
+}
+
+func (x *McapIngestConfig) GetChannels() *McapChannelSelection {
+	if x != nil {
+		return x.Channels
+	}
+	return nil
+}
+
+func (x *McapIngestConfig) GetIgnoreInvalidTopics() bool {
+	if x != nil {
+		return x.IgnoreInvalidTopics
+	}
+	return false
+}
+
+func (x *McapIngestConfig) GetRegisterVideo() bool {
+	if x != nil {
+		return x.RegisterVideo
+	}
+	return false
+}
+
+// Selects MCAP channels by topic name. All channels are ingested when neither list is set.
+type McapChannelSelection struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Types that are valid to be assigned to Selection:
+	//
+	//	*McapChannelSelection_IncludeTopics
+	//	*McapChannelSelection_ExcludeTopics
+	Selection     isMcapChannelSelection_Selection `protobuf_oneof:"selection"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *McapChannelSelection) Reset() {
+	*x = McapChannelSelection{}
+	mi := &file_nominal_protos_file_store_v1_ingest_rules_proto_msgTypes[22]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *McapChannelSelection) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*McapChannelSelection) ProtoMessage() {}
+
+func (x *McapChannelSelection) ProtoReflect() protoreflect.Message {
+	mi := &file_nominal_protos_file_store_v1_ingest_rules_proto_msgTypes[22]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use McapChannelSelection.ProtoReflect.Descriptor instead.
+func (*McapChannelSelection) Descriptor() ([]byte, []int) {
+	return file_nominal_protos_file_store_v1_ingest_rules_proto_rawDescGZIP(), []int{22}
+}
+
+func (x *McapChannelSelection) GetSelection() isMcapChannelSelection_Selection {
+	if x != nil {
+		return x.Selection
+	}
+	return nil
+}
+
+func (x *McapChannelSelection) GetIncludeTopics() *McapTopicNames {
+	if x != nil {
+		if x, ok := x.Selection.(*McapChannelSelection_IncludeTopics); ok {
+			return x.IncludeTopics
+		}
+	}
+	return nil
+}
+
+func (x *McapChannelSelection) GetExcludeTopics() *McapTopicNames {
+	if x != nil {
+		if x, ok := x.Selection.(*McapChannelSelection_ExcludeTopics); ok {
+			return x.ExcludeTopics
+		}
+	}
+	return nil
+}
+
+type isMcapChannelSelection_Selection interface {
+	isMcapChannelSelection_Selection()
+}
+
+type McapChannelSelection_IncludeTopics struct {
+	IncludeTopics *McapTopicNames `protobuf:"bytes,1,opt,name=include_topics,json=includeTopics,proto3,oneof"`
+}
+
+type McapChannelSelection_ExcludeTopics struct {
+	ExcludeTopics *McapTopicNames `protobuf:"bytes,2,opt,name=exclude_topics,json=excludeTopics,proto3,oneof"`
+}
+
+func (*McapChannelSelection_IncludeTopics) isMcapChannelSelection_Selection() {}
+
+func (*McapChannelSelection_ExcludeTopics) isMcapChannelSelection_Selection() {}
+
+type McapTopicNames struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Topics        []string               `protobuf:"bytes,1,rep,name=topics,proto3" json:"topics,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *McapTopicNames) Reset() {
+	*x = McapTopicNames{}
+	mi := &file_nominal_protos_file_store_v1_ingest_rules_proto_msgTypes[23]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *McapTopicNames) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*McapTopicNames) ProtoMessage() {}
+
+func (x *McapTopicNames) ProtoReflect() protoreflect.Message {
+	mi := &file_nominal_protos_file_store_v1_ingest_rules_proto_msgTypes[23]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use McapTopicNames.ProtoReflect.Descriptor instead.
+func (*McapTopicNames) Descriptor() ([]byte, []int) {
+	return file_nominal_protos_file_store_v1_ingest_rules_proto_rawDescGZIP(), []int{23}
+}
+
+func (x *McapTopicNames) GetTopics() []string {
+	if x != nil {
+		return x.Topics
+	}
+	return nil
 }
 
 // How a matched file's timestamp is resolved. Exactly one arm is set: today a rule names a single
@@ -1313,7 +1658,7 @@ type TimestampConfig struct {
 
 func (x *TimestampConfig) Reset() {
 	*x = TimestampConfig{}
-	mi := &file_nominal_protos_file_store_v1_ingest_rules_proto_msgTypes[19]
+	mi := &file_nominal_protos_file_store_v1_ingest_rules_proto_msgTypes[24]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1325,7 +1670,7 @@ func (x *TimestampConfig) String() string {
 func (*TimestampConfig) ProtoMessage() {}
 
 func (x *TimestampConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_file_store_v1_ingest_rules_proto_msgTypes[19]
+	mi := &file_nominal_protos_file_store_v1_ingest_rules_proto_msgTypes[24]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1338,7 +1683,7 @@ func (x *TimestampConfig) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use TimestampConfig.ProtoReflect.Descriptor instead.
 func (*TimestampConfig) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_file_store_v1_ingest_rules_proto_rawDescGZIP(), []int{19}
+	return file_nominal_protos_file_store_v1_ingest_rules_proto_rawDescGZIP(), []int{24}
 }
 
 func (x *TimestampConfig) GetKind() isTimestampConfig_Kind {
@@ -1381,7 +1726,7 @@ type TimestampCandidate struct {
 
 func (x *TimestampCandidate) Reset() {
 	*x = TimestampCandidate{}
-	mi := &file_nominal_protos_file_store_v1_ingest_rules_proto_msgTypes[20]
+	mi := &file_nominal_protos_file_store_v1_ingest_rules_proto_msgTypes[25]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1393,7 +1738,7 @@ func (x *TimestampCandidate) String() string {
 func (*TimestampCandidate) ProtoMessage() {}
 
 func (x *TimestampCandidate) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_file_store_v1_ingest_rules_proto_msgTypes[20]
+	mi := &file_nominal_protos_file_store_v1_ingest_rules_proto_msgTypes[25]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1406,7 +1751,7 @@ func (x *TimestampCandidate) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use TimestampCandidate.ProtoReflect.Descriptor instead.
 func (*TimestampCandidate) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_file_store_v1_ingest_rules_proto_rawDescGZIP(), []int{20}
+	return file_nominal_protos_file_store_v1_ingest_rules_proto_rawDescGZIP(), []int{25}
 }
 
 func (x *TimestampCandidate) GetColumn() string {
@@ -1440,7 +1785,7 @@ type PathPattern struct {
 
 func (x *PathPattern) Reset() {
 	*x = PathPattern{}
-	mi := &file_nominal_protos_file_store_v1_ingest_rules_proto_msgTypes[21]
+	mi := &file_nominal_protos_file_store_v1_ingest_rules_proto_msgTypes[26]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1452,7 +1797,7 @@ func (x *PathPattern) String() string {
 func (*PathPattern) ProtoMessage() {}
 
 func (x *PathPattern) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_file_store_v1_ingest_rules_proto_msgTypes[21]
+	mi := &file_nominal_protos_file_store_v1_ingest_rules_proto_msgTypes[26]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1465,7 +1810,7 @@ func (x *PathPattern) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use PathPattern.ProtoReflect.Descriptor instead.
 func (*PathPattern) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_file_store_v1_ingest_rules_proto_rawDescGZIP(), []int{21}
+	return file_nominal_protos_file_store_v1_ingest_rules_proto_rawDescGZIP(), []int{26}
 }
 
 func (x *PathPattern) GetFirst() *PatternSegment {
@@ -1493,7 +1838,7 @@ type JoinedSegment struct {
 
 func (x *JoinedSegment) Reset() {
 	*x = JoinedSegment{}
-	mi := &file_nominal_protos_file_store_v1_ingest_rules_proto_msgTypes[22]
+	mi := &file_nominal_protos_file_store_v1_ingest_rules_proto_msgTypes[27]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1505,7 +1850,7 @@ func (x *JoinedSegment) String() string {
 func (*JoinedSegment) ProtoMessage() {}
 
 func (x *JoinedSegment) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_file_store_v1_ingest_rules_proto_msgTypes[22]
+	mi := &file_nominal_protos_file_store_v1_ingest_rules_proto_msgTypes[27]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1518,7 +1863,7 @@ func (x *JoinedSegment) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use JoinedSegment.ProtoReflect.Descriptor instead.
 func (*JoinedSegment) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_file_store_v1_ingest_rules_proto_rawDescGZIP(), []int{22}
+	return file_nominal_protos_file_store_v1_ingest_rules_proto_rawDescGZIP(), []int{27}
 }
 
 func (x *JoinedSegment) GetDelimiter() SegmentDelimiter {
@@ -1549,7 +1894,7 @@ type PatternSegment struct {
 
 func (x *PatternSegment) Reset() {
 	*x = PatternSegment{}
-	mi := &file_nominal_protos_file_store_v1_ingest_rules_proto_msgTypes[23]
+	mi := &file_nominal_protos_file_store_v1_ingest_rules_proto_msgTypes[28]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1561,7 +1906,7 @@ func (x *PatternSegment) String() string {
 func (*PatternSegment) ProtoMessage() {}
 
 func (x *PatternSegment) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_file_store_v1_ingest_rules_proto_msgTypes[23]
+	mi := &file_nominal_protos_file_store_v1_ingest_rules_proto_msgTypes[28]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1574,7 +1919,7 @@ func (x *PatternSegment) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use PatternSegment.ProtoReflect.Descriptor instead.
 func (*PatternSegment) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_file_store_v1_ingest_rules_proto_rawDescGZIP(), []int{23}
+	return file_nominal_protos_file_store_v1_ingest_rules_proto_rawDescGZIP(), []int{28}
 }
 
 func (x *PatternSegment) GetKind() isPatternSegment_Kind {
@@ -1641,7 +1986,7 @@ type ShallowWildcard struct {
 
 func (x *ShallowWildcard) Reset() {
 	*x = ShallowWildcard{}
-	mi := &file_nominal_protos_file_store_v1_ingest_rules_proto_msgTypes[24]
+	mi := &file_nominal_protos_file_store_v1_ingest_rules_proto_msgTypes[29]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1653,7 +1998,7 @@ func (x *ShallowWildcard) String() string {
 func (*ShallowWildcard) ProtoMessage() {}
 
 func (x *ShallowWildcard) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_file_store_v1_ingest_rules_proto_msgTypes[24]
+	mi := &file_nominal_protos_file_store_v1_ingest_rules_proto_msgTypes[29]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1666,7 +2011,7 @@ func (x *ShallowWildcard) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ShallowWildcard.ProtoReflect.Descriptor instead.
 func (*ShallowWildcard) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_file_store_v1_ingest_rules_proto_rawDescGZIP(), []int{24}
+	return file_nominal_protos_file_store_v1_ingest_rules_proto_rawDescGZIP(), []int{29}
 }
 
 type DeepWildcard struct {
@@ -1677,7 +2022,7 @@ type DeepWildcard struct {
 
 func (x *DeepWildcard) Reset() {
 	*x = DeepWildcard{}
-	mi := &file_nominal_protos_file_store_v1_ingest_rules_proto_msgTypes[25]
+	mi := &file_nominal_protos_file_store_v1_ingest_rules_proto_msgTypes[30]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1689,7 +2034,7 @@ func (x *DeepWildcard) String() string {
 func (*DeepWildcard) ProtoMessage() {}
 
 func (x *DeepWildcard) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_file_store_v1_ingest_rules_proto_msgTypes[25]
+	mi := &file_nominal_protos_file_store_v1_ingest_rules_proto_msgTypes[30]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1702,7 +2047,7 @@ func (x *DeepWildcard) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DeepWildcard.ProtoReflect.Descriptor instead.
 func (*DeepWildcard) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_file_store_v1_ingest_rules_proto_rawDescGZIP(), []int{25}
+	return file_nominal_protos_file_store_v1_ingest_rules_proto_rawDescGZIP(), []int{30}
 }
 
 // Per trigger-case target. A case left unset does not trigger ingest for this rule. Today the only
@@ -1724,7 +2069,7 @@ type IngestTriggers struct {
 
 func (x *IngestTriggers) Reset() {
 	*x = IngestTriggers{}
-	mi := &file_nominal_protos_file_store_v1_ingest_rules_proto_msgTypes[26]
+	mi := &file_nominal_protos_file_store_v1_ingest_rules_proto_msgTypes[31]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1736,7 +2081,7 @@ func (x *IngestTriggers) String() string {
 func (*IngestTriggers) ProtoMessage() {}
 
 func (x *IngestTriggers) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_file_store_v1_ingest_rules_proto_msgTypes[26]
+	mi := &file_nominal_protos_file_store_v1_ingest_rules_proto_msgTypes[31]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1749,7 +2094,7 @@ func (x *IngestTriggers) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use IngestTriggers.ProtoReflect.Descriptor instead.
 func (*IngestTriggers) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_file_store_v1_ingest_rules_proto_rawDescGZIP(), []int{26}
+	return file_nominal_protos_file_store_v1_ingest_rules_proto_rawDescGZIP(), []int{31}
 }
 
 func (x *IngestTriggers) GetNewMatch() *IngestTarget {
@@ -1773,7 +2118,7 @@ type IngestTarget struct {
 
 func (x *IngestTarget) Reset() {
 	*x = IngestTarget{}
-	mi := &file_nominal_protos_file_store_v1_ingest_rules_proto_msgTypes[27]
+	mi := &file_nominal_protos_file_store_v1_ingest_rules_proto_msgTypes[32]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1785,7 +2130,7 @@ func (x *IngestTarget) String() string {
 func (*IngestTarget) ProtoMessage() {}
 
 func (x *IngestTarget) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_file_store_v1_ingest_rules_proto_msgTypes[27]
+	mi := &file_nominal_protos_file_store_v1_ingest_rules_proto_msgTypes[32]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1798,7 +2143,7 @@ func (x *IngestTarget) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use IngestTarget.ProtoReflect.Descriptor instead.
 func (*IngestTarget) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_file_store_v1_ingest_rules_proto_rawDescGZIP(), []int{27}
+	return file_nominal_protos_file_store_v1_ingest_rules_proto_rawDescGZIP(), []int{32}
 }
 
 func (x *IngestTarget) GetTarget() isIngestTarget_Target {
@@ -1851,7 +2196,7 @@ type NewDatasetTarget struct {
 
 func (x *NewDatasetTarget) Reset() {
 	*x = NewDatasetTarget{}
-	mi := &file_nominal_protos_file_store_v1_ingest_rules_proto_msgTypes[28]
+	mi := &file_nominal_protos_file_store_v1_ingest_rules_proto_msgTypes[33]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1863,7 +2208,7 @@ func (x *NewDatasetTarget) String() string {
 func (*NewDatasetTarget) ProtoMessage() {}
 
 func (x *NewDatasetTarget) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_file_store_v1_ingest_rules_proto_msgTypes[28]
+	mi := &file_nominal_protos_file_store_v1_ingest_rules_proto_msgTypes[33]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1876,7 +2221,7 @@ func (x *NewDatasetTarget) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use NewDatasetTarget.ProtoReflect.Descriptor instead.
 func (*NewDatasetTarget) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_file_store_v1_ingest_rules_proto_rawDescGZIP(), []int{28}
+	return file_nominal_protos_file_store_v1_ingest_rules_proto_rawDescGZIP(), []int{33}
 }
 
 type ExistingDatasetTarget struct {
@@ -1888,7 +2233,7 @@ type ExistingDatasetTarget struct {
 
 func (x *ExistingDatasetTarget) Reset() {
 	*x = ExistingDatasetTarget{}
-	mi := &file_nominal_protos_file_store_v1_ingest_rules_proto_msgTypes[29]
+	mi := &file_nominal_protos_file_store_v1_ingest_rules_proto_msgTypes[34]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1900,7 +2245,7 @@ func (x *ExistingDatasetTarget) String() string {
 func (*ExistingDatasetTarget) ProtoMessage() {}
 
 func (x *ExistingDatasetTarget) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_file_store_v1_ingest_rules_proto_msgTypes[29]
+	mi := &file_nominal_protos_file_store_v1_ingest_rules_proto_msgTypes[34]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1913,7 +2258,7 @@ func (x *ExistingDatasetTarget) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ExistingDatasetTarget.ProtoReflect.Descriptor instead.
 func (*ExistingDatasetTarget) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_file_store_v1_ingest_rules_proto_rawDescGZIP(), []int{29}
+	return file_nominal_protos_file_store_v1_ingest_rules_proto_rawDescGZIP(), []int{34}
 }
 
 func (x *ExistingDatasetTarget) GetDatasetRid() string {
@@ -1927,7 +2272,7 @@ var File_nominal_protos_file_store_v1_ingest_rules_proto protoreflect.FileDescri
 
 const file_nominal_protos_file_store_v1_ingest_rules_proto_rawDesc = "" +
 	"\n" +
-	"/nominal/protos/file_store/v1/ingest_rules.proto\x12\x15nominal.file_store.v1\x1a\x1bbuf/validate/validate.proto\x1a\x1cgoogle/api/annotations.proto\x1a-nominal/protos/file_store/v1/file_store.proto\x1a!nominal/protos/gen/v1/alias.proto\x1a!nominal/protos/gen/v1/error.proto\x1a1nominal/protos/types/time/timestamp_parsers.proto\"\xb5\x02\n" +
+	"/nominal/protos/file_store/v1/ingest_rules.proto\x12\x15nominal.file_store.v1\x1a\x1bbuf/validate/validate.proto\x1a\x1cgoogle/api/annotations.proto\x1a)nominal/protos/authz/v1/annotations.proto\x1a-nominal/protos/file_store/v1/file_store.proto\x1a!nominal/protos/gen/v1/alias.proto\x1a!nominal/protos/gen/v1/error.proto\x1a1nominal/protos/types/time/timestamp_parsers.proto\"\xb5\x02\n" +
 	"\x17CreateIngestRuleRequest\x12?\n" +
 	"\tdrive_rid\x18\x01 \x01(\tB\"\x9a\xb2\x1a\x1e\n" +
 	"\x1cio.nominal.api.rids.DriveRidR\bdriveRid\x12D\n" +
@@ -1992,12 +2337,27 @@ const file_nominal_protos_file_store_v1_ingest_rules_proto_rawDesc = "" +
 	"\amatcher\"\x90\x01\n" +
 	"\vPathMatcher\x12<\n" +
 	"\apattern\x18\x01 \x01(\v2\".nominal.file_store.v1.PathPatternR\apattern\x12C\n" +
-	"\x06format\x18\x02 \x01(\v2#.nominal.file_store.v1.FormatConfigB\x06\xbaH\x03\xc8\x01\x01R\x06format\"\xf1\x01\n" +
+	"\x06format\x18\x02 \x01(\v2#.nominal.file_store.v1.FormatConfigB\x06\xbaH\x03\xc8\x01\x01R\x06format\"\xdf\x03\n" +
 	"\fFormatConfig\x12:\n" +
 	"\x03csv\x18\x01 \x01(\v2&.nominal.file_store.v1.CsvIngestConfigH\x00R\x03csv\x12F\n" +
 	"\aparquet\x18\x02 \x01(\v2*.nominal.file_store.v1.ParquetIngestConfigH\x00R\aparquet\x12L\n" +
-	"\tdataflash\x18\x03 \x01(\v2,.nominal.file_store.v1.DataflashIngestConfigH\x00R\tdataflashB\x0f\n" +
-	"\x06format\x12\x05\xbaH\x02\b\x01\"\xa8\x01\n" +
+	"\tdataflash\x18\x03 \x01(\v2,.nominal.file_store.v1.DataflashIngestConfigH\x00R\tdataflash\x12X\n" +
+	"\rcontainerized\x18\x04 \x01(\v20.nominal.file_store.v1.ContainerizedIngestConfigH\x00R\rcontainerized\x12S\n" +
+	"\n" +
+	"mcap_video\x18\x06 \x01(\v22.nominal.file_store.v1.McapVideoRegistrationConfigH\x00R\tmcapVideo\x12=\n" +
+	"\x04mcap\x18\x05 \x01(\v2'.nominal.file_store.v1.McapIngestConfigH\x00R\x04mcapB\x0f\n" +
+	"\x06format\x12\x05\xbaH\x02\b\x01\"\x1d\n" +
+	"\x1bMcapVideoRegistrationConfig\"\xb7\x03\n" +
+	"\x19ContainerizedIngestConfig\x12Z\n" +
+	"\rextractor_rid\x18\x01 \x01(\tB5\x9a\xb2\x1a1\n" +
+	"/io.nominal.ingest.api.ContainerizedExtractorRidR\fextractorRid\x12\xa6\x01\n" +
+	"\targuments\x18\x02 \x03(\v2?.nominal.file_store.v1.ContainerizedIngestConfig.ArgumentsEntryBG\xbaH\x15\x9a\x01\x12\x10@\"\ar\x05\x10\x01\x18\xff\x01*\x05r\x03\x18\x80 \x9a\xb2\x1a+\x12)io.nominal.ingest.api.EnvironmentVariableR\targuments\x12I\n" +
+	"\ttimestamp\x18\x03 \x01(\v2&.nominal.file_store.v1.TimestampConfigH\x00R\ttimestamp\x88\x01\x01\x1a<\n" +
+	"\x0eArgumentsEntry\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
+	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01B\f\n" +
+	"\n" +
+	"_timestamp\"\xa8\x01\n" +
 	"\x0fCsvIngestConfig\x12L\n" +
 	"\ttimestamp\x18\x01 \x01(\v2&.nominal.file_store.v1.TimestampConfigB\x06\xbaH\x03\xc8\x01\x01R\ttimestamp\x124\n" +
 	"\x0echannel_prefix\x18\x02 \x01(\tB\b\xbaH\x05r\x03\x18\xff\x01H\x00R\rchannelPrefix\x88\x01\x01B\x11\n" +
@@ -2006,7 +2366,17 @@ const file_nominal_protos_file_store_v1_ingest_rules_proto_rawDesc = "" +
 	"\ttimestamp\x18\x01 \x01(\v2&.nominal.file_store.v1.TimestampConfigB\x06\xbaH\x03\xc8\x01\x01R\ttimestamp\x124\n" +
 	"\x0echannel_prefix\x18\x02 \x01(\tB\b\xbaH\x05r\x03\x18\xff\x01H\x00R\rchannelPrefix\x88\x01\x01B\x11\n" +
 	"\x0f_channel_prefix\"\x17\n" +
-	"\x15DataflashIngestConfig\"e\n" +
+	"\x15DataflashIngestConfig\"\xbc\x01\n" +
+	"\x10McapIngestConfig\x12G\n" +
+	"\bchannels\x18\x01 \x01(\v2+.nominal.file_store.v1.McapChannelSelectionR\bchannels\x122\n" +
+	"\x15ignore_invalid_topics\x18\x02 \x01(\bR\x13ignoreInvalidTopics\x12%\n" +
+	"\x0eregister_video\x18\x04 \x01(\bR\rregisterVideoJ\x04\b\x03\x10\x04\"\xc3\x01\n" +
+	"\x14McapChannelSelection\x12N\n" +
+	"\x0einclude_topics\x18\x01 \x01(\v2%.nominal.file_store.v1.McapTopicNamesH\x00R\rincludeTopics\x12N\n" +
+	"\x0eexclude_topics\x18\x02 \x01(\v2%.nominal.file_store.v1.McapTopicNamesH\x00R\rexcludeTopicsB\v\n" +
+	"\tselection\"8\n" +
+	"\x0eMcapTopicNames\x12&\n" +
+	"\x06topics\x18\x01 \x03(\tB\x0e\xbaH\v\x92\x01\b\b\x01\"\x04r\x02\x10\x01R\x06topics\"e\n" +
 	"\x0fTimestampConfig\x12C\n" +
 	"\x06single\x18\x01 \x01(\v2).nominal.file_store.v1.TimestampCandidateH\x00R\x06singleB\r\n" +
 	"\x04kind\x12\x05\xbaH\x02\b\x01\"{\n" +
@@ -2056,14 +2426,31 @@ const file_nominal_protos_file_store_v1_ingest_rules_proto_rawDesc = "" +
 	"\x10IngestRulesError\x12\"\n" +
 	"\x1eINGEST_RULES_ERROR_UNSPECIFIED\x10\x00\x12M\n" +
 	"!INGEST_RULES_ERROR_RULE_NOT_FOUND\x10\x01\x1a&\xb2\xb2\x1a\"\n" +
-	"\tNOT_FOUND\x12\x15Ingest rule not found2\xae\b\n" +
-	"\x1aInternalIngestRulesService\x12\xae\x01\n" +
-	"\x10CreateIngestRule\x12..nominal.file_store.v1.CreateIngestRuleRequest\x1a/.nominal.file_store.v1.CreateIngestRuleResponse\"9\x82\xd3\xe4\x93\x023:\x01*\"./file-store/v1/drives/{drive_rid}/ingest-rules\x12\xa8\x01\n" +
-	"\x0fListIngestRules\x12-.nominal.file_store.v1.ListIngestRulesRequest\x1a..nominal.file_store.v1.ListIngestRulesResponse\"6\x82\xd3\xe4\x93\x020\x12./file-store/v1/drives/{drive_rid}/ingest-rules\x12\x9a\x01\n" +
-	"\rGetIngestRule\x12+.nominal.file_store.v1.GetIngestRuleRequest\x1a,.nominal.file_store.v1.GetIngestRuleResponse\".\x82\xd3\xe4\x93\x02(\x12&/file-store/v1/ingest-rules/{rule_rid}\x12\xa6\x01\n" +
-	"\x10UpdateIngestRule\x12..nominal.file_store.v1.UpdateIngestRuleRequest\x1a/.nominal.file_store.v1.UpdateIngestRuleResponse\"1\x82\xd3\xe4\x93\x02+:\x01*\x1a&/file-store/v1/ingest-rules/{rule_rid}\x12\xb1\x01\n" +
-	"\x11ArchiveIngestRule\x12/.nominal.file_store.v1.ArchiveIngestRuleRequest\x1a0.nominal.file_store.v1.ArchiveIngestRuleResponse\"9\x82\xd3\xe4\x93\x023:\x01*\"./file-store/v1/ingest-rules/{rule_rid}/archive\x12\xb9\x01\n" +
-	"\x13UnarchiveIngestRule\x121.nominal.file_store.v1.UnarchiveIngestRuleRequest\x1a2.nominal.file_store.v1.UnarchiveIngestRuleResponse\";\x82\xd3\xe4\x93\x025:\x01*\"0/file-store/v1/ingest-rules/{rule_rid}/unarchiveB\xf6\x01\n" +
+	"\tNOT_FOUND\x12\x15Ingest rule not found2\xab\n" +
+	"\n" +
+	"\x1aInternalIngestRulesService\x12\xf9\x01\n" +
+	"\x10CreateIngestRule\x12..nominal.file_store.v1.CreateIngestRuleRequest\x1a/.nominal.file_store.v1.CreateIngestRuleResponse\"\x83\x01\xba\xb2\x1aF\n" +
+	"\"\n" +
+	"\x13drive:read_metadata\x12\v\n" +
+	"\tdrive_rid\n" +
+	" \n" +
+	"\x1cworkspace:edit_configuration\"\x00\x82\xd3\xe4\x93\x023:\x01*\"./file-store/v1/drives/{drive_rid}/ingest-rules\x12\xd0\x01\n" +
+	"\x0fListIngestRules\x12-.nominal.file_store.v1.ListIngestRulesRequest\x1a..nominal.file_store.v1.ListIngestRulesResponse\"^\xba\xb2\x1a$\n" +
+	"\"\n" +
+	"\x13drive:read_metadata\x12\v\n" +
+	"\tdrive_rid\x82\xd3\xe4\x93\x020\x12./file-store/v1/drives/{drive_rid}/ingest-rules\x12\xb2\x01\n" +
+	"\rGetIngestRule\x12+.nominal.file_store.v1.GetIngestRuleRequest\x1a,.nominal.file_store.v1.GetIngestRuleResponse\"F\xba\xb2\x1a\x14\n" +
+	"\x12\n" +
+	"\x0eworkspace:view\"\x00\x82\xd3\xe4\x93\x02(\x12&/file-store/v1/ingest-rules/{rule_rid}\x12\xcc\x01\n" +
+	"\x10UpdateIngestRule\x12..nominal.file_store.v1.UpdateIngestRuleRequest\x1a/.nominal.file_store.v1.UpdateIngestRuleResponse\"W\xba\xb2\x1a\"\n" +
+	" \n" +
+	"\x1cworkspace:edit_configuration\"\x00\x82\xd3\xe4\x93\x02+:\x01*\x1a&/file-store/v1/ingest-rules/{rule_rid}\x12\xd7\x01\n" +
+	"\x11ArchiveIngestRule\x12/.nominal.file_store.v1.ArchiveIngestRuleRequest\x1a0.nominal.file_store.v1.ArchiveIngestRuleResponse\"_\xba\xb2\x1a\"\n" +
+	" \n" +
+	"\x1cworkspace:edit_configuration\"\x00\x82\xd3\xe4\x93\x023:\x01*\"./file-store/v1/ingest-rules/{rule_rid}/archive\x12\xdf\x01\n" +
+	"\x13UnarchiveIngestRule\x121.nominal.file_store.v1.UnarchiveIngestRuleRequest\x1a2.nominal.file_store.v1.UnarchiveIngestRuleResponse\"a\xba\xb2\x1a\"\n" +
+	" \n" +
+	"\x1cworkspace:edit_configuration\"\x00\x82\xd3\xe4\x93\x025:\x01*\"0/file-store/v1/ingest-rules/{rule_rid}/unarchiveB\xf6\x01\n" +
 	"\x19com.nominal.file_store.v1B\x10IngestRulesProtoP\x01ZUgithub.com/nominal-io/nominal-api-protos-go/nominal/protos/file_store/v1;file_storev1\xa2\x02\x03NFX\xaa\x02\x14Nominal.FileStore.V1\xca\x02\x14Nominal\\FileStore\\V1\xe2\x02 Nominal\\FileStore\\V1\\GPBMetadata\xea\x02\x16Nominal::FileStore::V1b\x06proto3"
 
 var (
@@ -2079,7 +2466,7 @@ func file_nominal_protos_file_store_v1_ingest_rules_proto_rawDescGZIP() []byte {
 }
 
 var file_nominal_protos_file_store_v1_ingest_rules_proto_enumTypes = make([]protoimpl.EnumInfo, 4)
-var file_nominal_protos_file_store_v1_ingest_rules_proto_msgTypes = make([]protoimpl.MessageInfo, 30)
+var file_nominal_protos_file_store_v1_ingest_rules_proto_msgTypes = make([]protoimpl.MessageInfo, 36)
 var file_nominal_protos_file_store_v1_ingest_rules_proto_goTypes = []any{
 	(BackfillMode)(0),                   // 0: nominal.file_store.v1.BackfillMode
 	(IngestRuleState)(0),                // 1: nominal.file_store.v1.IngestRuleState
@@ -2101,78 +2488,92 @@ var file_nominal_protos_file_store_v1_ingest_rules_proto_goTypes = []any{
 	(*FileMatcher)(nil),                 // 17: nominal.file_store.v1.FileMatcher
 	(*PathMatcher)(nil),                 // 18: nominal.file_store.v1.PathMatcher
 	(*FormatConfig)(nil),                // 19: nominal.file_store.v1.FormatConfig
-	(*CsvIngestConfig)(nil),             // 20: nominal.file_store.v1.CsvIngestConfig
-	(*ParquetIngestConfig)(nil),         // 21: nominal.file_store.v1.ParquetIngestConfig
-	(*DataflashIngestConfig)(nil),       // 22: nominal.file_store.v1.DataflashIngestConfig
-	(*TimestampConfig)(nil),             // 23: nominal.file_store.v1.TimestampConfig
-	(*TimestampCandidate)(nil),          // 24: nominal.file_store.v1.TimestampCandidate
-	(*PathPattern)(nil),                 // 25: nominal.file_store.v1.PathPattern
-	(*JoinedSegment)(nil),               // 26: nominal.file_store.v1.JoinedSegment
-	(*PatternSegment)(nil),              // 27: nominal.file_store.v1.PatternSegment
-	(*ShallowWildcard)(nil),             // 28: nominal.file_store.v1.ShallowWildcard
-	(*DeepWildcard)(nil),                // 29: nominal.file_store.v1.DeepWildcard
-	(*IngestTriggers)(nil),              // 30: nominal.file_store.v1.IngestTriggers
-	(*IngestTarget)(nil),                // 31: nominal.file_store.v1.IngestTarget
-	(*NewDatasetTarget)(nil),            // 32: nominal.file_store.v1.NewDatasetTarget
-	(*ExistingDatasetTarget)(nil),       // 33: nominal.file_store.v1.ExistingDatasetTarget
-	(*Attribution)(nil),                 // 34: nominal.file_store.v1.Attribution
-	(*time.AbsoluteTimestamp)(nil),      // 35: nominal.types.time.AbsoluteTimestamp
+	(*McapVideoRegistrationConfig)(nil), // 20: nominal.file_store.v1.McapVideoRegistrationConfig
+	(*ContainerizedIngestConfig)(nil),   // 21: nominal.file_store.v1.ContainerizedIngestConfig
+	(*CsvIngestConfig)(nil),             // 22: nominal.file_store.v1.CsvIngestConfig
+	(*ParquetIngestConfig)(nil),         // 23: nominal.file_store.v1.ParquetIngestConfig
+	(*DataflashIngestConfig)(nil),       // 24: nominal.file_store.v1.DataflashIngestConfig
+	(*McapIngestConfig)(nil),            // 25: nominal.file_store.v1.McapIngestConfig
+	(*McapChannelSelection)(nil),        // 26: nominal.file_store.v1.McapChannelSelection
+	(*McapTopicNames)(nil),              // 27: nominal.file_store.v1.McapTopicNames
+	(*TimestampConfig)(nil),             // 28: nominal.file_store.v1.TimestampConfig
+	(*TimestampCandidate)(nil),          // 29: nominal.file_store.v1.TimestampCandidate
+	(*PathPattern)(nil),                 // 30: nominal.file_store.v1.PathPattern
+	(*JoinedSegment)(nil),               // 31: nominal.file_store.v1.JoinedSegment
+	(*PatternSegment)(nil),              // 32: nominal.file_store.v1.PatternSegment
+	(*ShallowWildcard)(nil),             // 33: nominal.file_store.v1.ShallowWildcard
+	(*DeepWildcard)(nil),                // 34: nominal.file_store.v1.DeepWildcard
+	(*IngestTriggers)(nil),              // 35: nominal.file_store.v1.IngestTriggers
+	(*IngestTarget)(nil),                // 36: nominal.file_store.v1.IngestTarget
+	(*NewDatasetTarget)(nil),            // 37: nominal.file_store.v1.NewDatasetTarget
+	(*ExistingDatasetTarget)(nil),       // 38: nominal.file_store.v1.ExistingDatasetTarget
+	nil,                                 // 39: nominal.file_store.v1.ContainerizedIngestConfig.ArgumentsEntry
+	(*Attribution)(nil),                 // 40: nominal.file_store.v1.Attribution
+	(*time.AbsoluteTimestamp)(nil),      // 41: nominal.types.time.AbsoluteTimestamp
 }
 var file_nominal_protos_file_store_v1_ingest_rules_proto_depIdxs = []int32{
 	17, // 0: nominal.file_store.v1.CreateIngestRuleRequest.matcher:type_name -> nominal.file_store.v1.FileMatcher
-	30, // 1: nominal.file_store.v1.CreateIngestRuleRequest.triggers:type_name -> nominal.file_store.v1.IngestTriggers
+	35, // 1: nominal.file_store.v1.CreateIngestRuleRequest.triggers:type_name -> nominal.file_store.v1.IngestTriggers
 	0,  // 2: nominal.file_store.v1.CreateIngestRuleRequest.backfill_mode:type_name -> nominal.file_store.v1.BackfillMode
 	16, // 3: nominal.file_store.v1.CreateIngestRuleResponse.rule:type_name -> nominal.file_store.v1.IngestRule
 	16, // 4: nominal.file_store.v1.ListIngestRulesResponse.rules:type_name -> nominal.file_store.v1.IngestRule
 	16, // 5: nominal.file_store.v1.GetIngestRuleResponse.rule:type_name -> nominal.file_store.v1.IngestRule
 	17, // 6: nominal.file_store.v1.UpdateIngestRuleRequest.matcher:type_name -> nominal.file_store.v1.FileMatcher
-	30, // 7: nominal.file_store.v1.UpdateIngestRuleRequest.triggers:type_name -> nominal.file_store.v1.IngestTriggers
+	35, // 7: nominal.file_store.v1.UpdateIngestRuleRequest.triggers:type_name -> nominal.file_store.v1.IngestTriggers
 	16, // 8: nominal.file_store.v1.UpdateIngestRuleResponse.rule:type_name -> nominal.file_store.v1.IngestRule
 	16, // 9: nominal.file_store.v1.ArchiveIngestRuleResponse.rule:type_name -> nominal.file_store.v1.IngestRule
 	0,  // 10: nominal.file_store.v1.UnarchiveIngestRuleRequest.backfill_mode:type_name -> nominal.file_store.v1.BackfillMode
 	16, // 11: nominal.file_store.v1.UnarchiveIngestRuleResponse.rule:type_name -> nominal.file_store.v1.IngestRule
 	17, // 12: nominal.file_store.v1.IngestRule.matcher:type_name -> nominal.file_store.v1.FileMatcher
-	30, // 13: nominal.file_store.v1.IngestRule.triggers:type_name -> nominal.file_store.v1.IngestTriggers
-	34, // 14: nominal.file_store.v1.IngestRule.created:type_name -> nominal.file_store.v1.Attribution
+	35, // 13: nominal.file_store.v1.IngestRule.triggers:type_name -> nominal.file_store.v1.IngestTriggers
+	40, // 14: nominal.file_store.v1.IngestRule.created:type_name -> nominal.file_store.v1.Attribution
 	1,  // 15: nominal.file_store.v1.IngestRule.state:type_name -> nominal.file_store.v1.IngestRuleState
-	34, // 16: nominal.file_store.v1.IngestRule.archived:type_name -> nominal.file_store.v1.Attribution
-	34, // 17: nominal.file_store.v1.IngestRule.updated:type_name -> nominal.file_store.v1.Attribution
+	40, // 16: nominal.file_store.v1.IngestRule.archived:type_name -> nominal.file_store.v1.Attribution
+	40, // 17: nominal.file_store.v1.IngestRule.updated:type_name -> nominal.file_store.v1.Attribution
 	18, // 18: nominal.file_store.v1.FileMatcher.path:type_name -> nominal.file_store.v1.PathMatcher
-	25, // 19: nominal.file_store.v1.PathMatcher.pattern:type_name -> nominal.file_store.v1.PathPattern
+	30, // 19: nominal.file_store.v1.PathMatcher.pattern:type_name -> nominal.file_store.v1.PathPattern
 	19, // 20: nominal.file_store.v1.PathMatcher.format:type_name -> nominal.file_store.v1.FormatConfig
-	20, // 21: nominal.file_store.v1.FormatConfig.csv:type_name -> nominal.file_store.v1.CsvIngestConfig
-	21, // 22: nominal.file_store.v1.FormatConfig.parquet:type_name -> nominal.file_store.v1.ParquetIngestConfig
-	22, // 23: nominal.file_store.v1.FormatConfig.dataflash:type_name -> nominal.file_store.v1.DataflashIngestConfig
-	23, // 24: nominal.file_store.v1.CsvIngestConfig.timestamp:type_name -> nominal.file_store.v1.TimestampConfig
-	23, // 25: nominal.file_store.v1.ParquetIngestConfig.timestamp:type_name -> nominal.file_store.v1.TimestampConfig
-	24, // 26: nominal.file_store.v1.TimestampConfig.single:type_name -> nominal.file_store.v1.TimestampCandidate
-	35, // 27: nominal.file_store.v1.TimestampCandidate.type:type_name -> nominal.types.time.AbsoluteTimestamp
-	27, // 28: nominal.file_store.v1.PathPattern.first:type_name -> nominal.file_store.v1.PatternSegment
-	26, // 29: nominal.file_store.v1.PathPattern.rest:type_name -> nominal.file_store.v1.JoinedSegment
-	2,  // 30: nominal.file_store.v1.JoinedSegment.delimiter:type_name -> nominal.file_store.v1.SegmentDelimiter
-	27, // 31: nominal.file_store.v1.JoinedSegment.segment:type_name -> nominal.file_store.v1.PatternSegment
-	28, // 32: nominal.file_store.v1.PatternSegment.shallow_wildcard:type_name -> nominal.file_store.v1.ShallowWildcard
-	29, // 33: nominal.file_store.v1.PatternSegment.deep_wildcard:type_name -> nominal.file_store.v1.DeepWildcard
-	31, // 34: nominal.file_store.v1.IngestTriggers.new_match:type_name -> nominal.file_store.v1.IngestTarget
-	32, // 35: nominal.file_store.v1.IngestTarget.new_dataset:type_name -> nominal.file_store.v1.NewDatasetTarget
-	33, // 36: nominal.file_store.v1.IngestTarget.existing_dataset:type_name -> nominal.file_store.v1.ExistingDatasetTarget
-	4,  // 37: nominal.file_store.v1.InternalIngestRulesService.CreateIngestRule:input_type -> nominal.file_store.v1.CreateIngestRuleRequest
-	6,  // 38: nominal.file_store.v1.InternalIngestRulesService.ListIngestRules:input_type -> nominal.file_store.v1.ListIngestRulesRequest
-	8,  // 39: nominal.file_store.v1.InternalIngestRulesService.GetIngestRule:input_type -> nominal.file_store.v1.GetIngestRuleRequest
-	10, // 40: nominal.file_store.v1.InternalIngestRulesService.UpdateIngestRule:input_type -> nominal.file_store.v1.UpdateIngestRuleRequest
-	12, // 41: nominal.file_store.v1.InternalIngestRulesService.ArchiveIngestRule:input_type -> nominal.file_store.v1.ArchiveIngestRuleRequest
-	14, // 42: nominal.file_store.v1.InternalIngestRulesService.UnarchiveIngestRule:input_type -> nominal.file_store.v1.UnarchiveIngestRuleRequest
-	5,  // 43: nominal.file_store.v1.InternalIngestRulesService.CreateIngestRule:output_type -> nominal.file_store.v1.CreateIngestRuleResponse
-	7,  // 44: nominal.file_store.v1.InternalIngestRulesService.ListIngestRules:output_type -> nominal.file_store.v1.ListIngestRulesResponse
-	9,  // 45: nominal.file_store.v1.InternalIngestRulesService.GetIngestRule:output_type -> nominal.file_store.v1.GetIngestRuleResponse
-	11, // 46: nominal.file_store.v1.InternalIngestRulesService.UpdateIngestRule:output_type -> nominal.file_store.v1.UpdateIngestRuleResponse
-	13, // 47: nominal.file_store.v1.InternalIngestRulesService.ArchiveIngestRule:output_type -> nominal.file_store.v1.ArchiveIngestRuleResponse
-	15, // 48: nominal.file_store.v1.InternalIngestRulesService.UnarchiveIngestRule:output_type -> nominal.file_store.v1.UnarchiveIngestRuleResponse
-	43, // [43:49] is the sub-list for method output_type
-	37, // [37:43] is the sub-list for method input_type
-	37, // [37:37] is the sub-list for extension type_name
-	37, // [37:37] is the sub-list for extension extendee
-	0,  // [0:37] is the sub-list for field type_name
+	22, // 21: nominal.file_store.v1.FormatConfig.csv:type_name -> nominal.file_store.v1.CsvIngestConfig
+	23, // 22: nominal.file_store.v1.FormatConfig.parquet:type_name -> nominal.file_store.v1.ParquetIngestConfig
+	24, // 23: nominal.file_store.v1.FormatConfig.dataflash:type_name -> nominal.file_store.v1.DataflashIngestConfig
+	21, // 24: nominal.file_store.v1.FormatConfig.containerized:type_name -> nominal.file_store.v1.ContainerizedIngestConfig
+	20, // 25: nominal.file_store.v1.FormatConfig.mcap_video:type_name -> nominal.file_store.v1.McapVideoRegistrationConfig
+	25, // 26: nominal.file_store.v1.FormatConfig.mcap:type_name -> nominal.file_store.v1.McapIngestConfig
+	39, // 27: nominal.file_store.v1.ContainerizedIngestConfig.arguments:type_name -> nominal.file_store.v1.ContainerizedIngestConfig.ArgumentsEntry
+	28, // 28: nominal.file_store.v1.ContainerizedIngestConfig.timestamp:type_name -> nominal.file_store.v1.TimestampConfig
+	28, // 29: nominal.file_store.v1.CsvIngestConfig.timestamp:type_name -> nominal.file_store.v1.TimestampConfig
+	28, // 30: nominal.file_store.v1.ParquetIngestConfig.timestamp:type_name -> nominal.file_store.v1.TimestampConfig
+	26, // 31: nominal.file_store.v1.McapIngestConfig.channels:type_name -> nominal.file_store.v1.McapChannelSelection
+	27, // 32: nominal.file_store.v1.McapChannelSelection.include_topics:type_name -> nominal.file_store.v1.McapTopicNames
+	27, // 33: nominal.file_store.v1.McapChannelSelection.exclude_topics:type_name -> nominal.file_store.v1.McapTopicNames
+	29, // 34: nominal.file_store.v1.TimestampConfig.single:type_name -> nominal.file_store.v1.TimestampCandidate
+	41, // 35: nominal.file_store.v1.TimestampCandidate.type:type_name -> nominal.types.time.AbsoluteTimestamp
+	32, // 36: nominal.file_store.v1.PathPattern.first:type_name -> nominal.file_store.v1.PatternSegment
+	31, // 37: nominal.file_store.v1.PathPattern.rest:type_name -> nominal.file_store.v1.JoinedSegment
+	2,  // 38: nominal.file_store.v1.JoinedSegment.delimiter:type_name -> nominal.file_store.v1.SegmentDelimiter
+	32, // 39: nominal.file_store.v1.JoinedSegment.segment:type_name -> nominal.file_store.v1.PatternSegment
+	33, // 40: nominal.file_store.v1.PatternSegment.shallow_wildcard:type_name -> nominal.file_store.v1.ShallowWildcard
+	34, // 41: nominal.file_store.v1.PatternSegment.deep_wildcard:type_name -> nominal.file_store.v1.DeepWildcard
+	36, // 42: nominal.file_store.v1.IngestTriggers.new_match:type_name -> nominal.file_store.v1.IngestTarget
+	37, // 43: nominal.file_store.v1.IngestTarget.new_dataset:type_name -> nominal.file_store.v1.NewDatasetTarget
+	38, // 44: nominal.file_store.v1.IngestTarget.existing_dataset:type_name -> nominal.file_store.v1.ExistingDatasetTarget
+	4,  // 45: nominal.file_store.v1.InternalIngestRulesService.CreateIngestRule:input_type -> nominal.file_store.v1.CreateIngestRuleRequest
+	6,  // 46: nominal.file_store.v1.InternalIngestRulesService.ListIngestRules:input_type -> nominal.file_store.v1.ListIngestRulesRequest
+	8,  // 47: nominal.file_store.v1.InternalIngestRulesService.GetIngestRule:input_type -> nominal.file_store.v1.GetIngestRuleRequest
+	10, // 48: nominal.file_store.v1.InternalIngestRulesService.UpdateIngestRule:input_type -> nominal.file_store.v1.UpdateIngestRuleRequest
+	12, // 49: nominal.file_store.v1.InternalIngestRulesService.ArchiveIngestRule:input_type -> nominal.file_store.v1.ArchiveIngestRuleRequest
+	14, // 50: nominal.file_store.v1.InternalIngestRulesService.UnarchiveIngestRule:input_type -> nominal.file_store.v1.UnarchiveIngestRuleRequest
+	5,  // 51: nominal.file_store.v1.InternalIngestRulesService.CreateIngestRule:output_type -> nominal.file_store.v1.CreateIngestRuleResponse
+	7,  // 52: nominal.file_store.v1.InternalIngestRulesService.ListIngestRules:output_type -> nominal.file_store.v1.ListIngestRulesResponse
+	9,  // 53: nominal.file_store.v1.InternalIngestRulesService.GetIngestRule:output_type -> nominal.file_store.v1.GetIngestRuleResponse
+	11, // 54: nominal.file_store.v1.InternalIngestRulesService.UpdateIngestRule:output_type -> nominal.file_store.v1.UpdateIngestRuleResponse
+	13, // 55: nominal.file_store.v1.InternalIngestRulesService.ArchiveIngestRule:output_type -> nominal.file_store.v1.ArchiveIngestRuleResponse
+	15, // 56: nominal.file_store.v1.InternalIngestRulesService.UnarchiveIngestRule:output_type -> nominal.file_store.v1.UnarchiveIngestRuleResponse
+	51, // [51:57] is the sub-list for method output_type
+	45, // [45:51] is the sub-list for method input_type
+	45, // [45:45] is the sub-list for extension type_name
+	45, // [45:45] is the sub-list for extension extendee
+	0,  // [0:45] is the sub-list for field type_name
 }
 
 func init() { file_nominal_protos_file_store_v1_ingest_rules_proto_init() }
@@ -2190,18 +2591,26 @@ func file_nominal_protos_file_store_v1_ingest_rules_proto_init() {
 		(*FormatConfig_Csv)(nil),
 		(*FormatConfig_Parquet)(nil),
 		(*FormatConfig_Dataflash)(nil),
+		(*FormatConfig_Containerized)(nil),
+		(*FormatConfig_McapVideo)(nil),
+		(*FormatConfig_Mcap)(nil),
 	}
-	file_nominal_protos_file_store_v1_ingest_rules_proto_msgTypes[16].OneofWrappers = []any{}
 	file_nominal_protos_file_store_v1_ingest_rules_proto_msgTypes[17].OneofWrappers = []any{}
-	file_nominal_protos_file_store_v1_ingest_rules_proto_msgTypes[19].OneofWrappers = []any{
+	file_nominal_protos_file_store_v1_ingest_rules_proto_msgTypes[18].OneofWrappers = []any{}
+	file_nominal_protos_file_store_v1_ingest_rules_proto_msgTypes[19].OneofWrappers = []any{}
+	file_nominal_protos_file_store_v1_ingest_rules_proto_msgTypes[22].OneofWrappers = []any{
+		(*McapChannelSelection_IncludeTopics)(nil),
+		(*McapChannelSelection_ExcludeTopics)(nil),
+	}
+	file_nominal_protos_file_store_v1_ingest_rules_proto_msgTypes[24].OneofWrappers = []any{
 		(*TimestampConfig_Single)(nil),
 	}
-	file_nominal_protos_file_store_v1_ingest_rules_proto_msgTypes[23].OneofWrappers = []any{
+	file_nominal_protos_file_store_v1_ingest_rules_proto_msgTypes[28].OneofWrappers = []any{
 		(*PatternSegment_ShallowWildcard)(nil),
 		(*PatternSegment_DeepWildcard)(nil),
 		(*PatternSegment_Literal)(nil),
 	}
-	file_nominal_protos_file_store_v1_ingest_rules_proto_msgTypes[27].OneofWrappers = []any{
+	file_nominal_protos_file_store_v1_ingest_rules_proto_msgTypes[32].OneofWrappers = []any{
 		(*IngestTarget_NewDataset)(nil),
 		(*IngestTarget_ExistingDataset)(nil),
 	}
@@ -2211,7 +2620,7 @@ func file_nominal_protos_file_store_v1_ingest_rules_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_nominal_protos_file_store_v1_ingest_rules_proto_rawDesc), len(file_nominal_protos_file_store_v1_ingest_rules_proto_rawDesc)),
 			NumEnums:      4,
-			NumMessages:   30,
+			NumMessages:   36,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

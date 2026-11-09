@@ -8,6 +8,7 @@ package icebergv1
 
 import (
 	_ "buf.build/gen/go/bufbuild/protovalidate/protocolbuffers/go/buf/validate"
+	_ "github.com/nominal-io/nominal-api-protos-go/nominal/protos/gen/v1"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
@@ -22,6 +23,79 @@ const (
 	// Verify that runtime/protoimpl is sufficiently up-to-date.
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
+
+type FileIngestSeriesType int32
+
+const (
+	FileIngestSeriesType_FILE_INGEST_SERIES_TYPE_UNSPECIFIED  FileIngestSeriesType = 0
+	FileIngestSeriesType_FILE_INGEST_SERIES_TYPE_DOUBLE       FileIngestSeriesType = 1
+	FileIngestSeriesType_FILE_INGEST_SERIES_TYPE_STRING       FileIngestSeriesType = 2
+	FileIngestSeriesType_FILE_INGEST_SERIES_TYPE_LOG          FileIngestSeriesType = 3
+	FileIngestSeriesType_FILE_INGEST_SERIES_TYPE_INT64        FileIngestSeriesType = 4
+	FileIngestSeriesType_FILE_INGEST_SERIES_TYPE_UINT64       FileIngestSeriesType = 5
+	FileIngestSeriesType_FILE_INGEST_SERIES_TYPE_DOUBLE_ARRAY FileIngestSeriesType = 6
+	FileIngestSeriesType_FILE_INGEST_SERIES_TYPE_STRING_ARRAY FileIngestSeriesType = 7
+	FileIngestSeriesType_FILE_INGEST_SERIES_TYPE_STRUCT       FileIngestSeriesType = 8
+	FileIngestSeriesType_FILE_INGEST_SERIES_TYPE_VIDEO        FileIngestSeriesType = 9
+	FileIngestSeriesType_FILE_INGEST_SERIES_TYPE_SPATIAL      FileIngestSeriesType = 10
+)
+
+// Enum value maps for FileIngestSeriesType.
+var (
+	FileIngestSeriesType_name = map[int32]string{
+		0:  "FILE_INGEST_SERIES_TYPE_UNSPECIFIED",
+		1:  "FILE_INGEST_SERIES_TYPE_DOUBLE",
+		2:  "FILE_INGEST_SERIES_TYPE_STRING",
+		3:  "FILE_INGEST_SERIES_TYPE_LOG",
+		4:  "FILE_INGEST_SERIES_TYPE_INT64",
+		5:  "FILE_INGEST_SERIES_TYPE_UINT64",
+		6:  "FILE_INGEST_SERIES_TYPE_DOUBLE_ARRAY",
+		7:  "FILE_INGEST_SERIES_TYPE_STRING_ARRAY",
+		8:  "FILE_INGEST_SERIES_TYPE_STRUCT",
+		9:  "FILE_INGEST_SERIES_TYPE_VIDEO",
+		10: "FILE_INGEST_SERIES_TYPE_SPATIAL",
+	}
+	FileIngestSeriesType_value = map[string]int32{
+		"FILE_INGEST_SERIES_TYPE_UNSPECIFIED":  0,
+		"FILE_INGEST_SERIES_TYPE_DOUBLE":       1,
+		"FILE_INGEST_SERIES_TYPE_STRING":       2,
+		"FILE_INGEST_SERIES_TYPE_LOG":          3,
+		"FILE_INGEST_SERIES_TYPE_INT64":        4,
+		"FILE_INGEST_SERIES_TYPE_UINT64":       5,
+		"FILE_INGEST_SERIES_TYPE_DOUBLE_ARRAY": 6,
+		"FILE_INGEST_SERIES_TYPE_STRING_ARRAY": 7,
+		"FILE_INGEST_SERIES_TYPE_STRUCT":       8,
+		"FILE_INGEST_SERIES_TYPE_VIDEO":        9,
+		"FILE_INGEST_SERIES_TYPE_SPATIAL":      10,
+	}
+)
+
+func (x FileIngestSeriesType) Enum() *FileIngestSeriesType {
+	p := new(FileIngestSeriesType)
+	*p = x
+	return p
+}
+
+func (x FileIngestSeriesType) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (FileIngestSeriesType) Descriptor() protoreflect.EnumDescriptor {
+	return file_nominal_protos_iceberg_v1_wal_proto_enumTypes[0].Descriptor()
+}
+
+func (FileIngestSeriesType) Type() protoreflect.EnumType {
+	return &file_nominal_protos_iceberg_v1_wal_proto_enumTypes[0]
+}
+
+func (x FileIngestSeriesType) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use FileIngestSeriesType.Descriptor instead.
+func (FileIngestSeriesType) EnumDescriptor() ([]byte, []int) {
+	return file_nominal_protos_iceberg_v1_wal_proto_rawDescGZIP(), []int{0}
+}
 
 // One Parquet file just uploaded to object storage by the streaming Iceberg
 // writer. The downstream committer reads these from a Kafka "WAL" topic,
@@ -84,9 +158,10 @@ type IcebergFileWrittenEvent struct {
 	// Types that are valid to be assigned to Metrics:
 	//
 	//	*IcebergFileWrittenEvent_MetricsV1
-	Metrics       isIcebergFileWrittenEvent_Metrics `protobuf_oneof:"metrics"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	Metrics         isIcebergFileWrittenEvent_Metrics `protobuf_oneof:"metrics"`
+	FileIngestBatch *FileIngestBatch                  `protobuf:"bytes,12,opt,name=file_ingest_batch,json=fileIngestBatch,proto3,oneof" json:"file_ingest_batch,omitempty"`
+	unknownFields   protoimpl.UnknownFields
+	sizeCache       protoimpl.SizeCache
 }
 
 func (x *IcebergFileWrittenEvent) Reset() {
@@ -198,6 +273,13 @@ func (x *IcebergFileWrittenEvent) GetMetricsV1() *IcebergFileMetricsV1 {
 	return nil
 }
 
+func (x *IcebergFileWrittenEvent) GetFileIngestBatch() *FileIngestBatch {
+	if x != nil {
+		return x.FileIngestBatch
+	}
+	return nil
+}
+
 type isIcebergFileWrittenEvent_Metrics interface {
 	isIcebergFileWrittenEvent_Metrics()
 }
@@ -207,6 +289,158 @@ type IcebergFileWrittenEvent_MetricsV1 struct {
 }
 
 func (*IcebergFileWrittenEvent_MetricsV1) isIcebergFileWrittenEvent_Metrics() {}
+
+type FileIngestBatch struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	IngestJobRid  string                 `protobuf:"bytes,1,opt,name=ingest_job_rid,json=ingestJobRid,proto3" json:"ingest_job_rid,omitempty"`
+	DatasetFileId string                 `protobuf:"bytes,2,opt,name=dataset_file_id,json=datasetFileId,proto3" json:"dataset_file_id,omitempty"`
+	BatchId       int32                  `protobuf:"varint,3,opt,name=batch_id,json=batchId,proto3" json:"batch_id,omitempty"`
+	PointCount    int64                  `protobuf:"varint,4,opt,name=point_count,json=pointCount,proto3" json:"point_count,omitempty"`
+	MinTimestamp  *timestamppb.Timestamp `protobuf:"bytes,5,opt,name=min_timestamp,json=minTimestamp,proto3" json:"min_timestamp,omitempty"`
+	MaxTimestamp  *timestamppb.Timestamp `protobuf:"bytes,6,opt,name=max_timestamp,json=maxTimestamp,proto3" json:"max_timestamp,omitempty"`
+	Series        []*FileIngestSeries    `protobuf:"bytes,7,rep,name=series,proto3" json:"series,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *FileIngestBatch) Reset() {
+	*x = FileIngestBatch{}
+	mi := &file_nominal_protos_iceberg_v1_wal_proto_msgTypes[1]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *FileIngestBatch) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*FileIngestBatch) ProtoMessage() {}
+
+func (x *FileIngestBatch) ProtoReflect() protoreflect.Message {
+	mi := &file_nominal_protos_iceberg_v1_wal_proto_msgTypes[1]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use FileIngestBatch.ProtoReflect.Descriptor instead.
+func (*FileIngestBatch) Descriptor() ([]byte, []int) {
+	return file_nominal_protos_iceberg_v1_wal_proto_rawDescGZIP(), []int{1}
+}
+
+func (x *FileIngestBatch) GetIngestJobRid() string {
+	if x != nil {
+		return x.IngestJobRid
+	}
+	return ""
+}
+
+func (x *FileIngestBatch) GetDatasetFileId() string {
+	if x != nil {
+		return x.DatasetFileId
+	}
+	return ""
+}
+
+func (x *FileIngestBatch) GetBatchId() int32 {
+	if x != nil {
+		return x.BatchId
+	}
+	return 0
+}
+
+func (x *FileIngestBatch) GetPointCount() int64 {
+	if x != nil {
+		return x.PointCount
+	}
+	return 0
+}
+
+func (x *FileIngestBatch) GetMinTimestamp() *timestamppb.Timestamp {
+	if x != nil {
+		return x.MinTimestamp
+	}
+	return nil
+}
+
+func (x *FileIngestBatch) GetMaxTimestamp() *timestamppb.Timestamp {
+	if x != nil {
+		return x.MaxTimestamp
+	}
+	return nil
+}
+
+func (x *FileIngestBatch) GetSeries() []*FileIngestSeries {
+	if x != nil {
+		return x.Series
+	}
+	return nil
+}
+
+type FileIngestSeries struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Channel       string                 `protobuf:"bytes,1,opt,name=channel,proto3" json:"channel,omitempty"`
+	Type          FileIngestSeriesType   `protobuf:"varint,2,opt,name=type,proto3,enum=nominal.iceberg.v1.FileIngestSeriesType" json:"type,omitempty"`
+	Unit          *string                `protobuf:"bytes,3,opt,name=unit,proto3,oneof" json:"unit,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *FileIngestSeries) Reset() {
+	*x = FileIngestSeries{}
+	mi := &file_nominal_protos_iceberg_v1_wal_proto_msgTypes[2]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *FileIngestSeries) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*FileIngestSeries) ProtoMessage() {}
+
+func (x *FileIngestSeries) ProtoReflect() protoreflect.Message {
+	mi := &file_nominal_protos_iceberg_v1_wal_proto_msgTypes[2]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use FileIngestSeries.ProtoReflect.Descriptor instead.
+func (*FileIngestSeries) Descriptor() ([]byte, []int) {
+	return file_nominal_protos_iceberg_v1_wal_proto_rawDescGZIP(), []int{2}
+}
+
+func (x *FileIngestSeries) GetChannel() string {
+	if x != nil {
+		return x.Channel
+	}
+	return ""
+}
+
+func (x *FileIngestSeries) GetType() FileIngestSeriesType {
+	if x != nil {
+		return x.Type
+	}
+	return FileIngestSeriesType_FILE_INGEST_SERIES_TYPE_UNSPECIFIED
+}
+
+func (x *FileIngestSeries) GetUnit() string {
+	if x != nil && x.Unit != nil {
+		return *x.Unit
+	}
+	return ""
+}
 
 // Iceberg file statistics as org.apache.iceberg.Metrics carried them at Iceberg 1.11, keyed
 // throughout by Iceberg field ID.
@@ -245,7 +479,7 @@ type IcebergFileMetricsV1 struct {
 
 func (x *IcebergFileMetricsV1) Reset() {
 	*x = IcebergFileMetricsV1{}
-	mi := &file_nominal_protos_iceberg_v1_wal_proto_msgTypes[1]
+	mi := &file_nominal_protos_iceberg_v1_wal_proto_msgTypes[3]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -257,7 +491,7 @@ func (x *IcebergFileMetricsV1) String() string {
 func (*IcebergFileMetricsV1) ProtoMessage() {}
 
 func (x *IcebergFileMetricsV1) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_iceberg_v1_wal_proto_msgTypes[1]
+	mi := &file_nominal_protos_iceberg_v1_wal_proto_msgTypes[3]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -270,7 +504,7 @@ func (x *IcebergFileMetricsV1) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use IcebergFileMetricsV1.ProtoReflect.Descriptor instead.
 func (*IcebergFileMetricsV1) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_iceberg_v1_wal_proto_rawDescGZIP(), []int{1}
+	return file_nominal_protos_iceberg_v1_wal_proto_rawDescGZIP(), []int{3}
 }
 
 func (x *IcebergFileMetricsV1) GetSchemaId() int32 {
@@ -333,7 +567,7 @@ var File_nominal_protos_iceberg_v1_wal_proto protoreflect.FileDescriptor
 
 const file_nominal_protos_iceberg_v1_wal_proto_rawDesc = "" +
 	"\n" +
-	"#nominal/protos/iceberg/v1/wal.proto\x12\x12nominal.iceberg.v1\x1a\x1bbuf/validate/validate.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a%nominal/protos/iceberg/v1/table.proto\"\xe1\x04\n" +
+	"#nominal/protos/iceberg/v1/wal.proto\x12\x12nominal.iceberg.v1\x1a\x1bbuf/validate/validate.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a!nominal/protos/gen/v1/alias.proto\x1a%nominal/protos/iceberg/v1/table.proto\"\xcd\x05\n" +
 	"\x17IcebergFileWrittenEvent\x12=\n" +
 	"\x05table\x18\x01 \x01(\v2\x1f.nominal.iceberg.v1.TableTargetB\x06\xbaH\x03\xc8\x01\x01R\x05table\x12'\n" +
 	"\x0fpartition_value\x18\x02 \x01(\x05R\x0epartitionValue\x12&\n" +
@@ -348,9 +582,29 @@ const file_nominal_protos_iceberg_v1_wal_proto_rawDesc = "" +
 	"\x0ffile_size_bytes\x18\t \x01(\x03B\a\xbaH\x04\"\x02 \x00H\x01R\rfileSizeBytes\x88\x01\x01\x12I\n" +
 	"\n" +
 	"metrics_v1\x18\n" +
-	" \x01(\v2(.nominal.iceberg.v1.IcebergFileMetricsV1H\x00R\tmetricsV1B\t\n" +
+	" \x01(\v2(.nominal.iceberg.v1.IcebergFileMetricsV1H\x00R\tmetricsV1\x12T\n" +
+	"\x11file_ingest_batch\x18\f \x01(\v2#.nominal.iceberg.v1.FileIngestBatchH\x02R\x0ffileIngestBatch\x88\x01\x01B\t\n" +
 	"\ametricsB\x12\n" +
-	"\x10_file_size_bytes\"\xc4\b\n" +
+	"\x10_file_size_bytesB\x14\n" +
+	"\x12_file_ingest_batch\"\xbc\x03\n" +
+	"\x0fFileIngestBatch\x12T\n" +
+	"\x0eingest_job_rid\x18\x01 \x01(\tB.\xbaH\x03\xc8\x01\x01\x9a\xb2\x1a$\n" +
+	"\"io.nominal.ingest.api.IngestJobRidR\fingestJobRid\x12W\n" +
+	"\x0fdataset_file_id\x18\x02 \x01(\tB/\xbaH\x03\xc8\x01\x01\x9a\xb2\x1a%\n" +
+	"#io.nominal.datasource.DatasetFileIdR\rdatasetFileId\x12\x19\n" +
+	"\bbatch_id\x18\x03 \x01(\x05R\abatchId\x12\x1f\n" +
+	"\vpoint_count\x18\x04 \x01(\x03R\n" +
+	"pointCount\x12?\n" +
+	"\rmin_timestamp\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampR\fminTimestamp\x12?\n" +
+	"\rmax_timestamp\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampR\fmaxTimestamp\x12<\n" +
+	"\x06series\x18\a \x03(\v2$.nominal.iceberg.v1.FileIngestSeriesR\x06series\"\xc5\x01\n" +
+	"\x10FileIngestSeries\x126\n" +
+	"\achannel\x18\x01 \x01(\tB\x1c\x9a\xb2\x1a\x18\n" +
+	"\x16io.nominal.api.ChannelR\achannel\x12<\n" +
+	"\x04type\x18\x02 \x01(\x0e2(.nominal.iceberg.v1.FileIngestSeriesTypeR\x04type\x122\n" +
+	"\x04unit\x18\x03 \x01(\tB\x19\x9a\xb2\x1a\x15\n" +
+	"\x13io.nominal.api.UnitH\x00R\x04unit\x88\x01\x01B\a\n" +
+	"\x05_unit\"\xc4\b\n" +
 	"\x14IcebergFileMetricsV1\x12 \n" +
 	"\tschema_id\x18\x01 \x01(\x05H\x00R\bschemaId\x88\x01\x01\x12*\n" +
 	"\frecord_count\x18\x02 \x01(\x03B\a\xbaH\x04\"\x02 \x00R\vrecordCount\x12\\\n" +
@@ -379,7 +633,20 @@ const file_nominal_protos_iceberg_v1_wal_proto_rawDesc = "" +
 	"\x03key\x18\x01 \x01(\x05R\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\fR\x05value:\x028\x01B\f\n" +
 	"\n" +
-	"_schema_idB\xdd\x01\n" +
+	"_schema_id*\xaf\x03\n" +
+	"\x14FileIngestSeriesType\x12'\n" +
+	"#FILE_INGEST_SERIES_TYPE_UNSPECIFIED\x10\x00\x12\"\n" +
+	"\x1eFILE_INGEST_SERIES_TYPE_DOUBLE\x10\x01\x12\"\n" +
+	"\x1eFILE_INGEST_SERIES_TYPE_STRING\x10\x02\x12\x1f\n" +
+	"\x1bFILE_INGEST_SERIES_TYPE_LOG\x10\x03\x12!\n" +
+	"\x1dFILE_INGEST_SERIES_TYPE_INT64\x10\x04\x12\"\n" +
+	"\x1eFILE_INGEST_SERIES_TYPE_UINT64\x10\x05\x12(\n" +
+	"$FILE_INGEST_SERIES_TYPE_DOUBLE_ARRAY\x10\x06\x12(\n" +
+	"$FILE_INGEST_SERIES_TYPE_STRING_ARRAY\x10\a\x12\"\n" +
+	"\x1eFILE_INGEST_SERIES_TYPE_STRUCT\x10\b\x12!\n" +
+	"\x1dFILE_INGEST_SERIES_TYPE_VIDEO\x10\t\x12#\n" +
+	"\x1fFILE_INGEST_SERIES_TYPE_SPATIAL\x10\n" +
+	"B\xdd\x01\n" +
 	"\x16com.nominal.iceberg.v1B\bWalProtoP\x01ZOgithub.com/nominal-io/nominal-api-protos-go/nominal/protos/iceberg/v1;icebergv1\xa2\x02\x03NIX\xaa\x02\x12Nominal.Iceberg.V1\xca\x02\x12Nominal\\Iceberg\\V1\xe2\x02\x1eNominal\\Iceberg\\V1\\GPBMetadata\xea\x02\x14Nominal::Iceberg::V1b\x06proto3"
 
 var (
@@ -394,35 +661,44 @@ func file_nominal_protos_iceberg_v1_wal_proto_rawDescGZIP() []byte {
 	return file_nominal_protos_iceberg_v1_wal_proto_rawDescData
 }
 
-var file_nominal_protos_iceberg_v1_wal_proto_msgTypes = make([]protoimpl.MessageInfo, 8)
+var file_nominal_protos_iceberg_v1_wal_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
+var file_nominal_protos_iceberg_v1_wal_proto_msgTypes = make([]protoimpl.MessageInfo, 10)
 var file_nominal_protos_iceberg_v1_wal_proto_goTypes = []any{
-	(*IcebergFileWrittenEvent)(nil), // 0: nominal.iceberg.v1.IcebergFileWrittenEvent
-	(*IcebergFileMetricsV1)(nil),    // 1: nominal.iceberg.v1.IcebergFileMetricsV1
-	nil,                             // 2: nominal.iceberg.v1.IcebergFileMetricsV1.ColumnSizesEntry
-	nil,                             // 3: nominal.iceberg.v1.IcebergFileMetricsV1.ValueCountsEntry
-	nil,                             // 4: nominal.iceberg.v1.IcebergFileMetricsV1.NullValueCountsEntry
-	nil,                             // 5: nominal.iceberg.v1.IcebergFileMetricsV1.NanValueCountsEntry
-	nil,                             // 6: nominal.iceberg.v1.IcebergFileMetricsV1.LowerBoundsEntry
-	nil,                             // 7: nominal.iceberg.v1.IcebergFileMetricsV1.UpperBoundsEntry
-	(*TableTarget)(nil),             // 8: nominal.iceberg.v1.TableTarget
-	(*timestamppb.Timestamp)(nil),   // 9: google.protobuf.Timestamp
+	(FileIngestSeriesType)(0),       // 0: nominal.iceberg.v1.FileIngestSeriesType
+	(*IcebergFileWrittenEvent)(nil), // 1: nominal.iceberg.v1.IcebergFileWrittenEvent
+	(*FileIngestBatch)(nil),         // 2: nominal.iceberg.v1.FileIngestBatch
+	(*FileIngestSeries)(nil),        // 3: nominal.iceberg.v1.FileIngestSeries
+	(*IcebergFileMetricsV1)(nil),    // 4: nominal.iceberg.v1.IcebergFileMetricsV1
+	nil,                             // 5: nominal.iceberg.v1.IcebergFileMetricsV1.ColumnSizesEntry
+	nil,                             // 6: nominal.iceberg.v1.IcebergFileMetricsV1.ValueCountsEntry
+	nil,                             // 7: nominal.iceberg.v1.IcebergFileMetricsV1.NullValueCountsEntry
+	nil,                             // 8: nominal.iceberg.v1.IcebergFileMetricsV1.NanValueCountsEntry
+	nil,                             // 9: nominal.iceberg.v1.IcebergFileMetricsV1.LowerBoundsEntry
+	nil,                             // 10: nominal.iceberg.v1.IcebergFileMetricsV1.UpperBoundsEntry
+	(*TableTarget)(nil),             // 11: nominal.iceberg.v1.TableTarget
+	(*timestamppb.Timestamp)(nil),   // 12: google.protobuf.Timestamp
 }
 var file_nominal_protos_iceberg_v1_wal_proto_depIdxs = []int32{
-	8,  // 0: nominal.iceberg.v1.IcebergFileWrittenEvent.table:type_name -> nominal.iceberg.v1.TableTarget
-	9,  // 1: nominal.iceberg.v1.IcebergFileWrittenEvent.ingested_at:type_name -> google.protobuf.Timestamp
-	9,  // 2: nominal.iceberg.v1.IcebergFileWrittenEvent.oldest_source_record_timestamp:type_name -> google.protobuf.Timestamp
-	1,  // 3: nominal.iceberg.v1.IcebergFileWrittenEvent.metrics_v1:type_name -> nominal.iceberg.v1.IcebergFileMetricsV1
-	2,  // 4: nominal.iceberg.v1.IcebergFileMetricsV1.column_sizes:type_name -> nominal.iceberg.v1.IcebergFileMetricsV1.ColumnSizesEntry
-	3,  // 5: nominal.iceberg.v1.IcebergFileMetricsV1.value_counts:type_name -> nominal.iceberg.v1.IcebergFileMetricsV1.ValueCountsEntry
-	4,  // 6: nominal.iceberg.v1.IcebergFileMetricsV1.null_value_counts:type_name -> nominal.iceberg.v1.IcebergFileMetricsV1.NullValueCountsEntry
-	5,  // 7: nominal.iceberg.v1.IcebergFileMetricsV1.nan_value_counts:type_name -> nominal.iceberg.v1.IcebergFileMetricsV1.NanValueCountsEntry
-	6,  // 8: nominal.iceberg.v1.IcebergFileMetricsV1.lower_bounds:type_name -> nominal.iceberg.v1.IcebergFileMetricsV1.LowerBoundsEntry
-	7,  // 9: nominal.iceberg.v1.IcebergFileMetricsV1.upper_bounds:type_name -> nominal.iceberg.v1.IcebergFileMetricsV1.UpperBoundsEntry
-	10, // [10:10] is the sub-list for method output_type
-	10, // [10:10] is the sub-list for method input_type
-	10, // [10:10] is the sub-list for extension type_name
-	10, // [10:10] is the sub-list for extension extendee
-	0,  // [0:10] is the sub-list for field type_name
+	11, // 0: nominal.iceberg.v1.IcebergFileWrittenEvent.table:type_name -> nominal.iceberg.v1.TableTarget
+	12, // 1: nominal.iceberg.v1.IcebergFileWrittenEvent.ingested_at:type_name -> google.protobuf.Timestamp
+	12, // 2: nominal.iceberg.v1.IcebergFileWrittenEvent.oldest_source_record_timestamp:type_name -> google.protobuf.Timestamp
+	4,  // 3: nominal.iceberg.v1.IcebergFileWrittenEvent.metrics_v1:type_name -> nominal.iceberg.v1.IcebergFileMetricsV1
+	2,  // 4: nominal.iceberg.v1.IcebergFileWrittenEvent.file_ingest_batch:type_name -> nominal.iceberg.v1.FileIngestBatch
+	12, // 5: nominal.iceberg.v1.FileIngestBatch.min_timestamp:type_name -> google.protobuf.Timestamp
+	12, // 6: nominal.iceberg.v1.FileIngestBatch.max_timestamp:type_name -> google.protobuf.Timestamp
+	3,  // 7: nominal.iceberg.v1.FileIngestBatch.series:type_name -> nominal.iceberg.v1.FileIngestSeries
+	0,  // 8: nominal.iceberg.v1.FileIngestSeries.type:type_name -> nominal.iceberg.v1.FileIngestSeriesType
+	5,  // 9: nominal.iceberg.v1.IcebergFileMetricsV1.column_sizes:type_name -> nominal.iceberg.v1.IcebergFileMetricsV1.ColumnSizesEntry
+	6,  // 10: nominal.iceberg.v1.IcebergFileMetricsV1.value_counts:type_name -> nominal.iceberg.v1.IcebergFileMetricsV1.ValueCountsEntry
+	7,  // 11: nominal.iceberg.v1.IcebergFileMetricsV1.null_value_counts:type_name -> nominal.iceberg.v1.IcebergFileMetricsV1.NullValueCountsEntry
+	8,  // 12: nominal.iceberg.v1.IcebergFileMetricsV1.nan_value_counts:type_name -> nominal.iceberg.v1.IcebergFileMetricsV1.NanValueCountsEntry
+	9,  // 13: nominal.iceberg.v1.IcebergFileMetricsV1.lower_bounds:type_name -> nominal.iceberg.v1.IcebergFileMetricsV1.LowerBoundsEntry
+	10, // 14: nominal.iceberg.v1.IcebergFileMetricsV1.upper_bounds:type_name -> nominal.iceberg.v1.IcebergFileMetricsV1.UpperBoundsEntry
+	15, // [15:15] is the sub-list for method output_type
+	15, // [15:15] is the sub-list for method input_type
+	15, // [15:15] is the sub-list for extension type_name
+	15, // [15:15] is the sub-list for extension extendee
+	0,  // [0:15] is the sub-list for field type_name
 }
 
 func init() { file_nominal_protos_iceberg_v1_wal_proto_init() }
@@ -434,19 +710,21 @@ func file_nominal_protos_iceberg_v1_wal_proto_init() {
 	file_nominal_protos_iceberg_v1_wal_proto_msgTypes[0].OneofWrappers = []any{
 		(*IcebergFileWrittenEvent_MetricsV1)(nil),
 	}
-	file_nominal_protos_iceberg_v1_wal_proto_msgTypes[1].OneofWrappers = []any{}
+	file_nominal_protos_iceberg_v1_wal_proto_msgTypes[2].OneofWrappers = []any{}
+	file_nominal_protos_iceberg_v1_wal_proto_msgTypes[3].OneofWrappers = []any{}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_nominal_protos_iceberg_v1_wal_proto_rawDesc), len(file_nominal_protos_iceberg_v1_wal_proto_rawDesc)),
-			NumEnums:      0,
-			NumMessages:   8,
+			NumEnums:      1,
+			NumMessages:   10,
 			NumExtensions: 0,
 			NumServices:   0,
 		},
 		GoTypes:           file_nominal_protos_iceberg_v1_wal_proto_goTypes,
 		DependencyIndexes: file_nominal_protos_iceberg_v1_wal_proto_depIdxs,
+		EnumInfos:         file_nominal_protos_iceberg_v1_wal_proto_enumTypes,
 		MessageInfos:      file_nominal_protos_iceberg_v1_wal_proto_msgTypes,
 	}.Build()
 	File_nominal_protos_iceberg_v1_wal_proto = out.File

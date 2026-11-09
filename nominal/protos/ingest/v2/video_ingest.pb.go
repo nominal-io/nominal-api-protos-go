@@ -24,13 +24,79 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
+// A bound on the output frame size, named by the height of a 16:9 frame. The matching widths are
+// 640, 1280, 1920, 2560 and 3840. Output keeps the source aspect ratio and fits inside the bound, so
+// a 16:9 source bounded to SD_480P comes out 640x360.
+type VideoResolutionPreset int32
+
+const (
+	VideoResolutionPreset_VIDEO_RESOLUTION_PRESET_UNSPECIFIED    VideoResolutionPreset = 0
+	VideoResolutionPreset_VIDEO_RESOLUTION_PRESET_SD_480P        VideoResolutionPreset = 1
+	VideoResolutionPreset_VIDEO_RESOLUTION_PRESET_HD_720P        VideoResolutionPreset = 2
+	VideoResolutionPreset_VIDEO_RESOLUTION_PRESET_FULL_HD_1080P  VideoResolutionPreset = 3
+	VideoResolutionPreset_VIDEO_RESOLUTION_PRESET_QUAD_HD_1440P  VideoResolutionPreset = 4
+	VideoResolutionPreset_VIDEO_RESOLUTION_PRESET_ULTRA_HD_2160P VideoResolutionPreset = 5
+)
+
+// Enum value maps for VideoResolutionPreset.
+var (
+	VideoResolutionPreset_name = map[int32]string{
+		0: "VIDEO_RESOLUTION_PRESET_UNSPECIFIED",
+		1: "VIDEO_RESOLUTION_PRESET_SD_480P",
+		2: "VIDEO_RESOLUTION_PRESET_HD_720P",
+		3: "VIDEO_RESOLUTION_PRESET_FULL_HD_1080P",
+		4: "VIDEO_RESOLUTION_PRESET_QUAD_HD_1440P",
+		5: "VIDEO_RESOLUTION_PRESET_ULTRA_HD_2160P",
+	}
+	VideoResolutionPreset_value = map[string]int32{
+		"VIDEO_RESOLUTION_PRESET_UNSPECIFIED":    0,
+		"VIDEO_RESOLUTION_PRESET_SD_480P":        1,
+		"VIDEO_RESOLUTION_PRESET_HD_720P":        2,
+		"VIDEO_RESOLUTION_PRESET_FULL_HD_1080P":  3,
+		"VIDEO_RESOLUTION_PRESET_QUAD_HD_1440P":  4,
+		"VIDEO_RESOLUTION_PRESET_ULTRA_HD_2160P": 5,
+	}
+)
+
+func (x VideoResolutionPreset) Enum() *VideoResolutionPreset {
+	p := new(VideoResolutionPreset)
+	*p = x
+	return p
+}
+
+func (x VideoResolutionPreset) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (VideoResolutionPreset) Descriptor() protoreflect.EnumDescriptor {
+	return file_nominal_protos_ingest_v2_video_ingest_proto_enumTypes[0].Descriptor()
+}
+
+func (VideoResolutionPreset) Type() protoreflect.EnumType {
+	return &file_nominal_protos_ingest_v2_video_ingest_proto_enumTypes[0]
+}
+
+func (x VideoResolutionPreset) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use VideoResolutionPreset.Descriptor instead.
+func (VideoResolutionPreset) EnumDescriptor() ([]byte, []int) {
+	return file_nominal_protos_ingest_v2_video_ingest_proto_rawDescGZIP(), []int{0}
+}
+
 // Dataset-file-backed video ingest work.
 type VideoIngestItem struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Source        *IngestSource          `protobuf:"bytes,1,opt,name=source,proto3" json:"source,omitempty"`
-	Ingest        *VideoIngestOptions    `protobuf:"bytes,2,opt,name=ingest,proto3" json:"ingest,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	state  protoimpl.MessageState `protogen:"open.v1"`
+	Source *IngestSource          `protobuf:"bytes,1,opt,name=source,proto3" json:"source,omitempty"`
+	Ingest *VideoIngestOptions    `protobuf:"bytes,2,opt,name=ingest,proto3" json:"ingest,omitempty"`
+	// Videos appended in order after `source`, ingested as one continuous recording on the channel.
+	// Each becomes its own dataset file. The first file starts at the no-manifest starting timestamp
+	// and each later file starts where the previous one ends. Requires a no_manifest timestamp
+	// manifest and sources other than File Store; at most 99, so 100 files in all.
+	AdditionalSources []*IngestSource `protobuf:"bytes,3,rep,name=additional_sources,json=additionalSources,proto3" json:"additional_sources,omitempty"`
+	unknownFields     protoimpl.UnknownFields
+	sizeCache         protoimpl.SizeCache
 }
 
 func (x *VideoIngestItem) Reset() {
@@ -77,13 +143,22 @@ func (x *VideoIngestItem) GetIngest() *VideoIngestOptions {
 	return nil
 }
 
+func (x *VideoIngestItem) GetAdditionalSources() []*IngestSource {
+	if x != nil {
+		return x.AdditionalSources
+	}
+	return nil
+}
+
 type VideoIngestOptions struct {
 	state             protoimpl.MessageState  `protogen:"open.v1"`
 	TimestampManifest *VideoTimestampManifest `protobuf:"bytes,1,opt,name=timestamp_manifest,json=timestampManifest,proto3" json:"timestamp_manifest,omitempty"`
 	Channel           string                  `protobuf:"bytes,2,opt,name=channel,proto3" json:"channel,omitempty"`
 	OverwriteSegments *bool                   `protobuf:"varint,3,opt,name=overwrite_segments,json=overwriteSegments,proto3,oneof" json:"overwrite_segments,omitempty"`
-	unknownFields     protoimpl.UnknownFields
-	sizeCache         protoimpl.SizeCache
+	// Overrides for how the video is re-encoded before segmentation.
+	NormalizationOptions *VideoNormalizationOptions `protobuf:"bytes,4,opt,name=normalization_options,json=normalizationOptions,proto3" json:"normalization_options,omitempty"`
+	unknownFields        protoimpl.UnknownFields
+	sizeCache            protoimpl.SizeCache
 }
 
 func (x *VideoIngestOptions) Reset() {
@@ -137,6 +212,70 @@ func (x *VideoIngestOptions) GetOverwriteSegments() bool {
 	return false
 }
 
+func (x *VideoIngestOptions) GetNormalizationOptions() *VideoNormalizationOptions {
+	if x != nil {
+		return x.NormalizationOptions
+	}
+	return nil
+}
+
+// Caller overrides for how a video is re-encoded before segmentation.
+type VideoNormalizationOptions struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// If true, audio and video are always re-encoded to H.264/AAC, and decode errors are concealed.
+	// Slower than the default.
+	ForceNormalization *bool `protobuf:"varint,1,opt,name=force_normalization,json=forceNormalization,proto3,oneof" json:"force_normalization,omitempty"`
+	// Bound on the output frame size. A source larger than the bound is re-encoded to fit inside it,
+	// preserving aspect ratio.
+	MaxResolution VideoResolutionPreset `protobuf:"varint,2,opt,name=max_resolution,json=maxResolution,proto3,enum=nominal.ingest.v2.VideoResolutionPreset" json:"max_resolution,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *VideoNormalizationOptions) Reset() {
+	*x = VideoNormalizationOptions{}
+	mi := &file_nominal_protos_ingest_v2_video_ingest_proto_msgTypes[2]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *VideoNormalizationOptions) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*VideoNormalizationOptions) ProtoMessage() {}
+
+func (x *VideoNormalizationOptions) ProtoReflect() protoreflect.Message {
+	mi := &file_nominal_protos_ingest_v2_video_ingest_proto_msgTypes[2]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use VideoNormalizationOptions.ProtoReflect.Descriptor instead.
+func (*VideoNormalizationOptions) Descriptor() ([]byte, []int) {
+	return file_nominal_protos_ingest_v2_video_ingest_proto_rawDescGZIP(), []int{2}
+}
+
+func (x *VideoNormalizationOptions) GetForceNormalization() bool {
+	if x != nil && x.ForceNormalization != nil {
+		return *x.ForceNormalization
+	}
+	return false
+}
+
+func (x *VideoNormalizationOptions) GetMaxResolution() VideoResolutionPreset {
+	if x != nil {
+		return x.MaxResolution
+	}
+	return VideoResolutionPreset_VIDEO_RESOLUTION_PRESET_UNSPECIFIED
+}
+
 type VideoTimestampManifest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Types that are valid to be assigned to Manifest:
@@ -151,7 +290,7 @@ type VideoTimestampManifest struct {
 
 func (x *VideoTimestampManifest) Reset() {
 	*x = VideoTimestampManifest{}
-	mi := &file_nominal_protos_ingest_v2_video_ingest_proto_msgTypes[2]
+	mi := &file_nominal_protos_ingest_v2_video_ingest_proto_msgTypes[3]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -163,7 +302,7 @@ func (x *VideoTimestampManifest) String() string {
 func (*VideoTimestampManifest) ProtoMessage() {}
 
 func (x *VideoTimestampManifest) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_ingest_v2_video_ingest_proto_msgTypes[2]
+	mi := &file_nominal_protos_ingest_v2_video_ingest_proto_msgTypes[3]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -176,7 +315,7 @@ func (x *VideoTimestampManifest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use VideoTimestampManifest.ProtoReflect.Descriptor instead.
 func (*VideoTimestampManifest) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_ingest_v2_video_ingest_proto_rawDescGZIP(), []int{2}
+	return file_nominal_protos_ingest_v2_video_ingest_proto_rawDescGZIP(), []int{3}
 }
 
 func (x *VideoTimestampManifest) GetManifest() isVideoTimestampManifest_Manifest {
@@ -245,7 +384,7 @@ type NoTimestampManifest struct {
 
 func (x *NoTimestampManifest) Reset() {
 	*x = NoTimestampManifest{}
-	mi := &file_nominal_protos_ingest_v2_video_ingest_proto_msgTypes[3]
+	mi := &file_nominal_protos_ingest_v2_video_ingest_proto_msgTypes[4]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -257,7 +396,7 @@ func (x *NoTimestampManifest) String() string {
 func (*NoTimestampManifest) ProtoMessage() {}
 
 func (x *NoTimestampManifest) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_ingest_v2_video_ingest_proto_msgTypes[3]
+	mi := &file_nominal_protos_ingest_v2_video_ingest_proto_msgTypes[4]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -270,7 +409,7 @@ func (x *NoTimestampManifest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use NoTimestampManifest.ProtoReflect.Descriptor instead.
 func (*NoTimestampManifest) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_ingest_v2_video_ingest_proto_rawDescGZIP(), []int{3}
+	return file_nominal_protos_ingest_v2_video_ingest_proto_rawDescGZIP(), []int{4}
 }
 
 func (x *NoTimestampManifest) GetStartingTimestamp() *timestamppb.Timestamp {
@@ -298,7 +437,7 @@ type TimestampManifestFiles struct {
 
 func (x *TimestampManifestFiles) Reset() {
 	*x = TimestampManifestFiles{}
-	mi := &file_nominal_protos_ingest_v2_video_ingest_proto_msgTypes[4]
+	mi := &file_nominal_protos_ingest_v2_video_ingest_proto_msgTypes[5]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -310,7 +449,7 @@ func (x *TimestampManifestFiles) String() string {
 func (*TimestampManifestFiles) ProtoMessage() {}
 
 func (x *TimestampManifestFiles) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_ingest_v2_video_ingest_proto_msgTypes[4]
+	mi := &file_nominal_protos_ingest_v2_video_ingest_proto_msgTypes[5]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -323,7 +462,7 @@ func (x *TimestampManifestFiles) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use TimestampManifestFiles.ProtoReflect.Descriptor instead.
 func (*TimestampManifestFiles) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_ingest_v2_video_ingest_proto_rawDescGZIP(), []int{4}
+	return file_nominal_protos_ingest_v2_video_ingest_proto_rawDescGZIP(), []int{5}
 }
 
 func (x *TimestampManifestFiles) GetSources() []*IngestSource {
@@ -344,7 +483,7 @@ type McapTimestampManifest struct {
 
 func (x *McapTimestampManifest) Reset() {
 	*x = McapTimestampManifest{}
-	mi := &file_nominal_protos_ingest_v2_video_ingest_proto_msgTypes[5]
+	mi := &file_nominal_protos_ingest_v2_video_ingest_proto_msgTypes[6]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -356,7 +495,7 @@ func (x *McapTimestampManifest) String() string {
 func (*McapTimestampManifest) ProtoMessage() {}
 
 func (x *McapTimestampManifest) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_ingest_v2_video_ingest_proto_msgTypes[5]
+	mi := &file_nominal_protos_ingest_v2_video_ingest_proto_msgTypes[6]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -369,7 +508,7 @@ func (x *McapTimestampManifest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use McapTimestampManifest.ProtoReflect.Descriptor instead.
 func (*McapTimestampManifest) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_ingest_v2_video_ingest_proto_rawDescGZIP(), []int{5}
+	return file_nominal_protos_ingest_v2_video_ingest_proto_rawDescGZIP(), []int{6}
 }
 
 func (x *McapTimestampManifest) GetChannelLocator() *McapChannelLocator {
@@ -394,7 +533,7 @@ type McapChannelLocator struct {
 
 func (x *McapChannelLocator) Reset() {
 	*x = McapChannelLocator{}
-	mi := &file_nominal_protos_ingest_v2_video_ingest_proto_msgTypes[6]
+	mi := &file_nominal_protos_ingest_v2_video_ingest_proto_msgTypes[7]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -406,7 +545,7 @@ func (x *McapChannelLocator) String() string {
 func (*McapChannelLocator) ProtoMessage() {}
 
 func (x *McapChannelLocator) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_ingest_v2_video_ingest_proto_msgTypes[6]
+	mi := &file_nominal_protos_ingest_v2_video_ingest_proto_msgTypes[7]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -419,7 +558,7 @@ func (x *McapChannelLocator) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use McapChannelLocator.ProtoReflect.Descriptor instead.
 func (*McapChannelLocator) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_ingest_v2_video_ingest_proto_rawDescGZIP(), []int{6}
+	return file_nominal_protos_ingest_v2_video_ingest_proto_rawDescGZIP(), []int{7}
 }
 
 func (x *McapChannelLocator) GetLocator() isMcapChannelLocator_Locator {
@@ -477,7 +616,7 @@ type ScaleParameter struct {
 
 func (x *ScaleParameter) Reset() {
 	*x = ScaleParameter{}
-	mi := &file_nominal_protos_ingest_v2_video_ingest_proto_msgTypes[7]
+	mi := &file_nominal_protos_ingest_v2_video_ingest_proto_msgTypes[8]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -489,7 +628,7 @@ func (x *ScaleParameter) String() string {
 func (*ScaleParameter) ProtoMessage() {}
 
 func (x *ScaleParameter) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_ingest_v2_video_ingest_proto_msgTypes[7]
+	mi := &file_nominal_protos_ingest_v2_video_ingest_proto_msgTypes[8]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -502,7 +641,7 @@ func (x *ScaleParameter) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ScaleParameter.ProtoReflect.Descriptor instead.
 func (*ScaleParameter) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_ingest_v2_video_ingest_proto_rawDescGZIP(), []int{7}
+	return file_nominal_protos_ingest_v2_video_ingest_proto_rawDescGZIP(), []int{8}
 }
 
 func (x *ScaleParameter) GetScaleParameter() isScaleParameter_ScaleParameter {
@@ -565,16 +704,22 @@ var File_nominal_protos_ingest_v2_video_ingest_proto protoreflect.FileDescriptor
 
 const file_nominal_protos_ingest_v2_video_ingest_proto_rawDesc = "" +
 	"\n" +
-	"+nominal/protos/ingest/v2/video_ingest.proto\x12\x11nominal.ingest.v2\x1a\x1bbuf/validate/validate.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a!nominal/protos/gen/v1/alias.proto\x1a%nominal/protos/ingest/v2/common.proto\"\x99\x01\n" +
+	"+nominal/protos/ingest/v2/video_ingest.proto\x12\x11nominal.ingest.v2\x1a\x1bbuf/validate/validate.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a!nominal/protos/gen/v1/alias.proto\x1a%nominal/protos/ingest/v2/common.proto\"\xf3\x01\n" +
 	"\x0fVideoIngestItem\x12?\n" +
 	"\x06source\x18\x01 \x01(\v2\x1f.nominal.ingest.v2.IngestSourceB\x06\xbaH\x03\xc8\x01\x01R\x06source\x12E\n" +
-	"\x06ingest\x18\x02 \x01(\v2%.nominal.ingest.v2.VideoIngestOptionsB\x06\xbaH\x03\xc8\x01\x01R\x06ingest\"\xff\x01\n" +
+	"\x06ingest\x18\x02 \x01(\v2%.nominal.ingest.v2.VideoIngestOptionsB\x06\xbaH\x03\xc8\x01\x01R\x06ingest\x12X\n" +
+	"\x12additional_sources\x18\x03 \x03(\v2\x1f.nominal.ingest.v2.IngestSourceB\b\xbaH\x05\x92\x01\x02\x10cR\x11additionalSources\"\xe2\x02\n" +
 	"\x12VideoIngestOptions\x12`\n" +
 	"\x12timestamp_manifest\x18\x01 \x01(\v2).nominal.ingest.v2.VideoTimestampManifestB\x06\xbaH\x03\xc8\x01\x01R\x11timestampManifest\x12<\n" +
 	"\achannel\x18\x02 \x01(\tB\"\xbaH\x03\xc8\x01\x01\x9a\xb2\x1a\x18\n" +
 	"\x16io.nominal.api.ChannelR\achannel\x122\n" +
-	"\x12overwrite_segments\x18\x03 \x01(\bH\x00R\x11overwriteSegments\x88\x01\x01B\x15\n" +
-	"\x13_overwrite_segments\"\x9d\x02\n" +
+	"\x12overwrite_segments\x18\x03 \x01(\bH\x00R\x11overwriteSegments\x88\x01\x01\x12a\n" +
+	"\x15normalization_options\x18\x04 \x01(\v2,.nominal.ingest.v2.VideoNormalizationOptionsR\x14normalizationOptionsB\x15\n" +
+	"\x13_overwrite_segments\"\xc4\x01\n" +
+	"\x19VideoNormalizationOptions\x124\n" +
+	"\x13force_normalization\x18\x01 \x01(\bH\x00R\x12forceNormalization\x88\x01\x01\x12Y\n" +
+	"\x0emax_resolution\x18\x02 \x01(\x0e2(.nominal.ingest.v2.VideoResolutionPresetB\b\xbaH\x05\x82\x01\x02\x10\x01R\rmaxResolutionB\x16\n" +
+	"\x14_force_normalization\"\x9d\x02\n" +
 	"\x16VideoTimestampManifest\x12I\n" +
 	"\vno_manifest\x18\x01 \x01(\v2&.nominal.ingest.v2.NoTimestampManifestH\x00R\n" +
 	"noManifest\x12e\n" +
@@ -599,7 +744,14 @@ const file_nominal_protos_ingest_v2_video_ingest_proto_rawDesc = "" +
 	"\x0ftrue_frame_rate\x18\x01 \x01(\x01H\x00R\rtrueFrameRate\x12G\n" +
 	"\x10ending_timestamp\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampH\x00R\x0fendingTimestamp\x12#\n" +
 	"\fscale_factor\x18\x03 \x01(\x01H\x00R\vscaleFactorB\x18\n" +
-	"\x0fscale_parameter\x12\x05\xbaH\x02\b\x01B\xde\x01\n" +
+	"\x0fscale_parameter\x12\x05\xbaH\x02\b\x01*\x8c\x02\n" +
+	"\x15VideoResolutionPreset\x12'\n" +
+	"#VIDEO_RESOLUTION_PRESET_UNSPECIFIED\x10\x00\x12#\n" +
+	"\x1fVIDEO_RESOLUTION_PRESET_SD_480P\x10\x01\x12#\n" +
+	"\x1fVIDEO_RESOLUTION_PRESET_HD_720P\x10\x02\x12)\n" +
+	"%VIDEO_RESOLUTION_PRESET_FULL_HD_1080P\x10\x03\x12)\n" +
+	"%VIDEO_RESOLUTION_PRESET_QUAD_HD_1440P\x10\x04\x12*\n" +
+	"&VIDEO_RESOLUTION_PRESET_ULTRA_HD_2160P\x10\x05B\xde\x01\n" +
 	"\x15com.nominal.ingest.v2B\x10VideoIngestProtoP\x01ZMgithub.com/nominal-io/nominal-api-protos-go/nominal/protos/ingest/v2;ingestv2\xa2\x02\x03NIX\xaa\x02\x11Nominal.Ingest.V2\xca\x02\x11Nominal\\Ingest\\V2\xe2\x02\x1dNominal\\Ingest\\V2\\GPBMetadata\xea\x02\x13Nominal::Ingest::V2b\x06proto3"
 
 var (
@@ -614,36 +766,42 @@ func file_nominal_protos_ingest_v2_video_ingest_proto_rawDescGZIP() []byte {
 	return file_nominal_protos_ingest_v2_video_ingest_proto_rawDescData
 }
 
-var file_nominal_protos_ingest_v2_video_ingest_proto_msgTypes = make([]protoimpl.MessageInfo, 8)
+var file_nominal_protos_ingest_v2_video_ingest_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
+var file_nominal_protos_ingest_v2_video_ingest_proto_msgTypes = make([]protoimpl.MessageInfo, 9)
 var file_nominal_protos_ingest_v2_video_ingest_proto_goTypes = []any{
-	(*VideoIngestItem)(nil),        // 0: nominal.ingest.v2.VideoIngestItem
-	(*VideoIngestOptions)(nil),     // 1: nominal.ingest.v2.VideoIngestOptions
-	(*VideoTimestampManifest)(nil), // 2: nominal.ingest.v2.VideoTimestampManifest
-	(*NoTimestampManifest)(nil),    // 3: nominal.ingest.v2.NoTimestampManifest
-	(*TimestampManifestFiles)(nil), // 4: nominal.ingest.v2.TimestampManifestFiles
-	(*McapTimestampManifest)(nil),  // 5: nominal.ingest.v2.McapTimestampManifest
-	(*McapChannelLocator)(nil),     // 6: nominal.ingest.v2.McapChannelLocator
-	(*ScaleParameter)(nil),         // 7: nominal.ingest.v2.ScaleParameter
-	(*IngestSource)(nil),           // 8: nominal.ingest.v2.IngestSource
-	(*timestamppb.Timestamp)(nil),  // 9: google.protobuf.Timestamp
+	(VideoResolutionPreset)(0),        // 0: nominal.ingest.v2.VideoResolutionPreset
+	(*VideoIngestItem)(nil),           // 1: nominal.ingest.v2.VideoIngestItem
+	(*VideoIngestOptions)(nil),        // 2: nominal.ingest.v2.VideoIngestOptions
+	(*VideoNormalizationOptions)(nil), // 3: nominal.ingest.v2.VideoNormalizationOptions
+	(*VideoTimestampManifest)(nil),    // 4: nominal.ingest.v2.VideoTimestampManifest
+	(*NoTimestampManifest)(nil),       // 5: nominal.ingest.v2.NoTimestampManifest
+	(*TimestampManifestFiles)(nil),    // 6: nominal.ingest.v2.TimestampManifestFiles
+	(*McapTimestampManifest)(nil),     // 7: nominal.ingest.v2.McapTimestampManifest
+	(*McapChannelLocator)(nil),        // 8: nominal.ingest.v2.McapChannelLocator
+	(*ScaleParameter)(nil),            // 9: nominal.ingest.v2.ScaleParameter
+	(*IngestSource)(nil),              // 10: nominal.ingest.v2.IngestSource
+	(*timestamppb.Timestamp)(nil),     // 11: google.protobuf.Timestamp
 }
 var file_nominal_protos_ingest_v2_video_ingest_proto_depIdxs = []int32{
-	8,  // 0: nominal.ingest.v2.VideoIngestItem.source:type_name -> nominal.ingest.v2.IngestSource
-	1,  // 1: nominal.ingest.v2.VideoIngestItem.ingest:type_name -> nominal.ingest.v2.VideoIngestOptions
-	2,  // 2: nominal.ingest.v2.VideoIngestOptions.timestamp_manifest:type_name -> nominal.ingest.v2.VideoTimestampManifest
-	3,  // 3: nominal.ingest.v2.VideoTimestampManifest.no_manifest:type_name -> nominal.ingest.v2.NoTimestampManifest
-	4,  // 4: nominal.ingest.v2.VideoTimestampManifest.timestamp_manifest_files:type_name -> nominal.ingest.v2.TimestampManifestFiles
-	5,  // 5: nominal.ingest.v2.VideoTimestampManifest.mcap:type_name -> nominal.ingest.v2.McapTimestampManifest
-	9,  // 6: nominal.ingest.v2.NoTimestampManifest.starting_timestamp:type_name -> google.protobuf.Timestamp
-	7,  // 7: nominal.ingest.v2.NoTimestampManifest.scale_parameter:type_name -> nominal.ingest.v2.ScaleParameter
-	8,  // 8: nominal.ingest.v2.TimestampManifestFiles.sources:type_name -> nominal.ingest.v2.IngestSource
-	6,  // 9: nominal.ingest.v2.McapTimestampManifest.channel_locator:type_name -> nominal.ingest.v2.McapChannelLocator
-	9,  // 10: nominal.ingest.v2.ScaleParameter.ending_timestamp:type_name -> google.protobuf.Timestamp
-	11, // [11:11] is the sub-list for method output_type
-	11, // [11:11] is the sub-list for method input_type
-	11, // [11:11] is the sub-list for extension type_name
-	11, // [11:11] is the sub-list for extension extendee
-	0,  // [0:11] is the sub-list for field type_name
+	10, // 0: nominal.ingest.v2.VideoIngestItem.source:type_name -> nominal.ingest.v2.IngestSource
+	2,  // 1: nominal.ingest.v2.VideoIngestItem.ingest:type_name -> nominal.ingest.v2.VideoIngestOptions
+	10, // 2: nominal.ingest.v2.VideoIngestItem.additional_sources:type_name -> nominal.ingest.v2.IngestSource
+	4,  // 3: nominal.ingest.v2.VideoIngestOptions.timestamp_manifest:type_name -> nominal.ingest.v2.VideoTimestampManifest
+	3,  // 4: nominal.ingest.v2.VideoIngestOptions.normalization_options:type_name -> nominal.ingest.v2.VideoNormalizationOptions
+	0,  // 5: nominal.ingest.v2.VideoNormalizationOptions.max_resolution:type_name -> nominal.ingest.v2.VideoResolutionPreset
+	5,  // 6: nominal.ingest.v2.VideoTimestampManifest.no_manifest:type_name -> nominal.ingest.v2.NoTimestampManifest
+	6,  // 7: nominal.ingest.v2.VideoTimestampManifest.timestamp_manifest_files:type_name -> nominal.ingest.v2.TimestampManifestFiles
+	7,  // 8: nominal.ingest.v2.VideoTimestampManifest.mcap:type_name -> nominal.ingest.v2.McapTimestampManifest
+	11, // 9: nominal.ingest.v2.NoTimestampManifest.starting_timestamp:type_name -> google.protobuf.Timestamp
+	9,  // 10: nominal.ingest.v2.NoTimestampManifest.scale_parameter:type_name -> nominal.ingest.v2.ScaleParameter
+	10, // 11: nominal.ingest.v2.TimestampManifestFiles.sources:type_name -> nominal.ingest.v2.IngestSource
+	8,  // 12: nominal.ingest.v2.McapTimestampManifest.channel_locator:type_name -> nominal.ingest.v2.McapChannelLocator
+	11, // 13: nominal.ingest.v2.ScaleParameter.ending_timestamp:type_name -> google.protobuf.Timestamp
+	14, // [14:14] is the sub-list for method output_type
+	14, // [14:14] is the sub-list for method input_type
+	14, // [14:14] is the sub-list for extension type_name
+	14, // [14:14] is the sub-list for extension extendee
+	0,  // [0:14] is the sub-list for field type_name
 }
 
 func init() { file_nominal_protos_ingest_v2_video_ingest_proto_init() }
@@ -653,17 +811,18 @@ func file_nominal_protos_ingest_v2_video_ingest_proto_init() {
 	}
 	file_nominal_protos_ingest_v2_common_proto_init()
 	file_nominal_protos_ingest_v2_video_ingest_proto_msgTypes[1].OneofWrappers = []any{}
-	file_nominal_protos_ingest_v2_video_ingest_proto_msgTypes[2].OneofWrappers = []any{
+	file_nominal_protos_ingest_v2_video_ingest_proto_msgTypes[2].OneofWrappers = []any{}
+	file_nominal_protos_ingest_v2_video_ingest_proto_msgTypes[3].OneofWrappers = []any{
 		(*VideoTimestampManifest_NoManifest)(nil),
 		(*VideoTimestampManifest_TimestampManifestFiles)(nil),
 		(*VideoTimestampManifest_Mcap)(nil),
 	}
-	file_nominal_protos_ingest_v2_video_ingest_proto_msgTypes[3].OneofWrappers = []any{}
-	file_nominal_protos_ingest_v2_video_ingest_proto_msgTypes[6].OneofWrappers = []any{
+	file_nominal_protos_ingest_v2_video_ingest_proto_msgTypes[4].OneofWrappers = []any{}
+	file_nominal_protos_ingest_v2_video_ingest_proto_msgTypes[7].OneofWrappers = []any{
 		(*McapChannelLocator_Topic)(nil),
 		(*McapChannelLocator_Id)(nil),
 	}
-	file_nominal_protos_ingest_v2_video_ingest_proto_msgTypes[7].OneofWrappers = []any{
+	file_nominal_protos_ingest_v2_video_ingest_proto_msgTypes[8].OneofWrappers = []any{
 		(*ScaleParameter_TrueFrameRate)(nil),
 		(*ScaleParameter_EndingTimestamp)(nil),
 		(*ScaleParameter_ScaleFactor)(nil),
@@ -673,13 +832,14 @@ func file_nominal_protos_ingest_v2_video_ingest_proto_init() {
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_nominal_protos_ingest_v2_video_ingest_proto_rawDesc), len(file_nominal_protos_ingest_v2_video_ingest_proto_rawDesc)),
-			NumEnums:      0,
-			NumMessages:   8,
+			NumEnums:      1,
+			NumMessages:   9,
 			NumExtensions: 0,
 			NumServices:   0,
 		},
 		GoTypes:           file_nominal_protos_ingest_v2_video_ingest_proto_goTypes,
 		DependencyIndexes: file_nominal_protos_ingest_v2_video_ingest_proto_depIdxs,
+		EnumInfos:         file_nominal_protos_ingest_v2_video_ingest_proto_enumTypes,
 		MessageInfos:      file_nominal_protos_ingest_v2_video_ingest_proto_msgTypes,
 	}.Build()
 	File_nominal_protos_ingest_v2_video_ingest_proto = out.File

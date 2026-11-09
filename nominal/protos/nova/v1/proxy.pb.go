@@ -8,6 +8,7 @@ package novav1
 
 import (
 	_ "buf.build/gen/go/bufbuild/protovalidate/protocolbuffers/go/buf/validate"
+	_ "github.com/nominal-io/nominal-api-protos-go/nominal/protos/authz/v1"
 	_ "github.com/nominal-io/nominal-api-protos-go/nominal/protos/gen/v1"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
@@ -307,7 +308,7 @@ var File_nominal_protos_nova_v1_proxy_proto protoreflect.FileDescriptor
 
 const file_nominal_protos_nova_v1_proxy_proto_rawDesc = "" +
 	"\n" +
-	"\"nominal/protos/nova/v1/proxy.proto\x12\x0fnominal.nova.v1\x1a\x1bbuf/validate/validate.proto\x1a\x1cgoogle/api/annotations.proto\x1a!nominal/protos/gen/v1/alias.proto\"P\n" +
+	"\"nominal/protos/nova/v1/proxy.proto\x12\x0fnominal.nova.v1\x1a\x1bbuf/validate/validate.proto\x1a\x1cgoogle/api/annotations.proto\x1a)nominal/protos/authz/v1/annotations.proto\x1a!nominal/protos/gen/v1/alias.proto\"P\n" +
 	"\vProxyHeader\x12!\n" +
 	"\x04name\x18\x01 \x01(\tB\r\xbaH\n" +
 	"\xc8\x01\x01r\x05\x10\x01\x18\x80\x02R\x04name\x12\x1e\n" +
@@ -338,9 +339,11 @@ const file_nominal_protos_nova_v1_proxy_proto_rawDesc = "" +
 	"\x16PROXY_HTTP_METHOD_POST\x10\x03\x12\x19\n" +
 	"\x15PROXY_HTTP_METHOD_PUT\x10\x04\x12\x1b\n" +
 	"\x17PROXY_HTTP_METHOD_PATCH\x10\x05\x12\x1c\n" +
-	"\x18PROXY_HTTP_METHOD_DELETE\x10\x062\xb1\x01\n" +
-	"\x10NovaProxyService\x12\x9c\x01\n" +
-	"\fCallApiProxy\x12$.nominal.nova.v1.CallApiProxyRequest\x1a%.nominal.nova.v1.CallApiProxyResponse\"?\x82\xd3\xe4\x93\x029:\x01*\"4/nova/v1/apps/{app_rid}/proxies/{api_proxy_rid}/callB\xca\x01\n" +
+	"\x18PROXY_HTTP_METHOD_DELETE\x10\x062\xc9\x01\n" +
+	"\x10NovaProxyService\x12\xb4\x01\n" +
+	"\fCallApiProxy\x12$.nominal.nova.v1.CallApiProxyRequest\x1a%.nominal.nova.v1.CallApiProxyResponse\"W\xba\xb2\x1a\x14\n" +
+	"\x12\n" +
+	"\x0eworkspace:view\"\x00\x82\xd3\xe4\x93\x029:\x01*\"4/nova/v1/apps/{app_rid}/proxies/{api_proxy_rid}/callB\xca\x01\n" +
 	"\x13com.nominal.nova.v1B\n" +
 	"ProxyProtoP\x01ZIgithub.com/nominal-io/nominal-api-protos-go/nominal/protos/nova/v1;novav1\xa2\x02\x03NNX\xaa\x02\x0fNominal.Nova.V1\xca\x02\x0fNominal\\Nova\\V1\xe2\x02\x1bNominal\\Nova\\V1\\GPBMetadata\xea\x02\x11Nominal::Nova::V1b\x06proto3"
 

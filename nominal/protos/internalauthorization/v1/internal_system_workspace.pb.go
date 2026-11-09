@@ -190,9 +190,9 @@ const file_nominal_protos_internalauthorization_v1_internal_system_workspace_pro
 	"\b_org_rid*\x97\x01\n" +
 	"\x1cInternalSystemWorkspaceError\x12w\n" +
 	"<INTERNAL_SYSTEM_WORKSPACE_ERROR_SYSTEM_WORKSPACE_UNAVAILABLE\x10\x00\x1a5\xb2\xb2\x1a1\n" +
-	"\x13FAILED_PRECONDITION\x12\x1aSystemWorkspaceUnavailable2\xbb\x01\n" +
-	"\x1eInternalSystemWorkspaceService\x12\x98\x01\n" +
-	"\x15GetSystemWorkspaceRid\x12>.nominal.internalauthorization.v1.GetSystemWorkspaceRidRequest\x1a?.nominal.internalauthorization.v1.GetSystemWorkspaceRidResponseB\xd3\x02\n" +
+	"\x13FAILED_PRECONDITION\x12\x1aSystemWorkspaceUnavailable2\xc0\x01\n" +
+	"\x1eInternalSystemWorkspaceService\x12\x9d\x01\n" +
+	"\x15GetSystemWorkspaceRid\x12>.nominal.internalauthorization.v1.GetSystemWorkspaceRidRequest\x1a?.nominal.internalauthorization.v1.GetSystemWorkspaceRidResponse\"\x03\x90\x02\x01B\xd3\x02\n" +
 	"$com.nominal.internalauthorization.v1B\x1cInternalSystemWorkspaceProtoP\x01Zkgithub.com/nominal-io/nominal-api-protos-go/nominal/protos/internalauthorization/v1;internalauthorizationv1\xa2\x02\x03NIX\xaa\x02 Nominal.Internalauthorization.V1\xca\x02 Nominal\\Internalauthorization\\V1\xe2\x02,Nominal\\Internalauthorization\\V1\\GPBMetadata\xea\x02\"Nominal::Internalauthorization::V1b\x06proto3"
 
 var (

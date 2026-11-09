@@ -31,7 +31,8 @@ const (
 // resource, and a test delivery may cause an external side effect. Their noun paths are therefore
 // separate collections under the proto-only HTTP namespace.
 type WebhookTemplatesServiceClient interface {
-	// Validates a webhook payload template against a sample context without delivering it.
+	// Validates a webhook payload template against a sample context without delivering it. Pure
+	// validation: reads nothing and names no workspace or integration, so no permission applies.
 	ValidateTemplate(ctx context.Context, in *ValidateTemplateRequest, opts ...grpc.CallOption) (*ValidateTemplateResponse, error)
 	// Delivers a rendered test payload to the configured webhook endpoint.
 	TestWebhook(ctx context.Context, in *TestWebhookRequest, opts ...grpc.CallOption) (*TestWebhookResponse, error)
@@ -73,7 +74,8 @@ func (c *webhookTemplatesServiceClient) TestWebhook(ctx context.Context, in *Tes
 // resource, and a test delivery may cause an external side effect. Their noun paths are therefore
 // separate collections under the proto-only HTTP namespace.
 type WebhookTemplatesServiceServer interface {
-	// Validates a webhook payload template against a sample context without delivering it.
+	// Validates a webhook payload template against a sample context without delivering it. Pure
+	// validation: reads nothing and names no workspace or integration, so no permission applies.
 	ValidateTemplate(context.Context, *ValidateTemplateRequest) (*ValidateTemplateResponse, error)
 	// Delivers a rendered test payload to the configured webhook endpoint.
 	TestWebhook(context.Context, *TestWebhookRequest) (*TestWebhookResponse, error)

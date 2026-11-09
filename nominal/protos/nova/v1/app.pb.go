@@ -8,10 +8,12 @@ package novav1
 
 import (
 	_ "buf.build/gen/go/bufbuild/protovalidate/protocolbuffers/go/buf/validate"
+	_ "github.com/nominal-io/nominal-api-protos-go/nominal/protos/authz/v1"
 	_ "github.com/nominal-io/nominal-api-protos-go/nominal/protos/gen/v1"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
+	fieldmaskpb "google.golang.org/protobuf/types/known/fieldmaskpb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
 	reflect "reflect"
 	sync "sync"
@@ -40,9 +42,23 @@ const (
 	NovaError_NOVA_ERROR_API_PROXY_NOT_FOUND        NovaError = 8
 	NovaError_NOVA_ERROR_API_PROXY_NAME_TAKEN       NovaError = 9
 	// An API proxy cannot be removed while an app can still reach it.
-	NovaError_NOVA_ERROR_API_PROXY_IN_USE NovaError = 10
-	NovaError_NOVA_ERROR_APP_PROXY_EXISTS NovaError = 11
-	NovaError_NOVA_ERROR_APP_ARCHIVED     NovaError = 12
+	NovaError_NOVA_ERROR_API_PROXY_IN_USE      NovaError = 10
+	NovaError_NOVA_ERROR_APP_PROXY_EXISTS      NovaError = 11
+	NovaError_NOVA_ERROR_APP_ARCHIVED          NovaError = 12
+	NovaError_NOVA_ERROR_APP_VERSION_NOT_FOUND NovaError = 13
+	NovaError_NOVA_ERROR_APP_VERSION_TAG_TAKEN NovaError = 14
+	// Deprecated: never returned; versions are immutable.
+	//
+	// Deprecated: Marked as deprecated in nominal/protos/nova/v1/app.proto.
+	NovaError_NOVA_ERROR_APP_VERSION_IMMUTABLE NovaError = 15
+	// Deprecated: never returned; setting the default version releases it.
+	//
+	// Deprecated: Marked as deprecated in nominal/protos/nova/v1/app.proto.
+	NovaError_NOVA_ERROR_APP_VERSION_NOT_RELEASED NovaError = 16
+	NovaError_NOVA_ERROR_APP_VERSION_NOT_ACTIVE   NovaError = 17
+	NovaError_NOVA_ERROR_APP_VERSION_ARCHIVED     NovaError = 18
+	NovaError_NOVA_ERROR_APP_VERSION_IS_DEFAULT   NovaError = 19
+	NovaError_NOVA_ERROR_APP_VERSION_NOT_ARCHIVED NovaError = 20
 )
 
 // Enum value maps for NovaError.
@@ -61,6 +77,14 @@ var (
 		10: "NOVA_ERROR_API_PROXY_IN_USE",
 		11: "NOVA_ERROR_APP_PROXY_EXISTS",
 		12: "NOVA_ERROR_APP_ARCHIVED",
+		13: "NOVA_ERROR_APP_VERSION_NOT_FOUND",
+		14: "NOVA_ERROR_APP_VERSION_TAG_TAKEN",
+		15: "NOVA_ERROR_APP_VERSION_IMMUTABLE",
+		16: "NOVA_ERROR_APP_VERSION_NOT_RELEASED",
+		17: "NOVA_ERROR_APP_VERSION_NOT_ACTIVE",
+		18: "NOVA_ERROR_APP_VERSION_ARCHIVED",
+		19: "NOVA_ERROR_APP_VERSION_IS_DEFAULT",
+		20: "NOVA_ERROR_APP_VERSION_NOT_ARCHIVED",
 	}
 	NovaError_value = map[string]int32{
 		"NOVA_ERROR_APP_NOT_FOUND":              0,
@@ -76,6 +100,14 @@ var (
 		"NOVA_ERROR_API_PROXY_IN_USE":           10,
 		"NOVA_ERROR_APP_PROXY_EXISTS":           11,
 		"NOVA_ERROR_APP_ARCHIVED":               12,
+		"NOVA_ERROR_APP_VERSION_NOT_FOUND":      13,
+		"NOVA_ERROR_APP_VERSION_TAG_TAKEN":      14,
+		"NOVA_ERROR_APP_VERSION_IMMUTABLE":      15,
+		"NOVA_ERROR_APP_VERSION_NOT_RELEASED":   16,
+		"NOVA_ERROR_APP_VERSION_NOT_ACTIVE":     17,
+		"NOVA_ERROR_APP_VERSION_ARCHIVED":       18,
+		"NOVA_ERROR_APP_VERSION_IS_DEFAULT":     19,
+		"NOVA_ERROR_APP_VERSION_NOT_ARCHIVED":   20,
 	}
 )
 
@@ -186,14 +218,28 @@ type App struct {
 	// Set in every response. In Update, absent leaves the archive state
 	// unchanged; true/false archives/unarchives. Must be unset or false on Create.
 	IsArchived *bool `protobuf:"varint,11,opt,name=is_archived,json=isArchived,proto3,oneof" json:"is_archived,omitempty"`
-	// Server-assigned bundle serving root: an absolute path with a trailing
-	// slash. Absent until the app has a published bundle.
+	// Server-assigned stable bundle serving root: an absolute path with a trailing
+	// slash. Selects default_version_rid when present, otherwise the legacy app
+	// bundle. Absent when neither exists.
+	// Deprecated: use default_version_rid instead.
+	//
+	// Deprecated: Marked as deprecated in nominal/protos/nova/v1/app.proto.
 	EmbedPath *string `protobuf:"bytes,12,opt,name=embed_path,json=embedPath,proto3,oneof" json:"embed_path,omitempty"`
-	// Server-assigned lowercase SHA-256 of the active archive bytes. This is the
-	// value covered by the bundle signature. Absent until a bundle is active.
+	// Server-assigned lowercase SHA-256 of the legacy app bundle's archive.
+	// Absent when default_version_rid is set; read that AppVersion's
+	// archive_sha256 for version-backed serving.
+	// Deprecated: use default_version_rid instead.
+	//
+	// Deprecated: Marked as deprecated in nominal/protos/nova/v1/app.proto.
 	ArchiveSha256 *string `protobuf:"bytes,13,opt,name=archive_sha256,json=archiveSha256,proto3,oneof" json:"archive_sha256,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	// The version this app serves when a request names no version. Ignored on
+	// Create. Set through UpdateApp with "default_version_rid" in update_mask; it
+	// must name an unarchived, released version of this app whose bundle is ACTIVE.
+	// Setting it changes only the app; release state and version timestamps are unchanged.
+	// Clearing the default is not supported.
+	DefaultVersionRid *string `protobuf:"bytes,14,opt,name=default_version_rid,json=defaultVersionRid,proto3,oneof" json:"default_version_rid,omitempty"`
+	unknownFields     protoimpl.UnknownFields
+	sizeCache         protoimpl.SizeCache
 }
 
 func (x *App) Reset() {
@@ -303,6 +349,7 @@ func (x *App) GetIsArchived() bool {
 	return false
 }
 
+// Deprecated: Marked as deprecated in nominal/protos/nova/v1/app.proto.
 func (x *App) GetEmbedPath() string {
 	if x != nil && x.EmbedPath != nil {
 		return *x.EmbedPath
@@ -310,9 +357,17 @@ func (x *App) GetEmbedPath() string {
 	return ""
 }
 
+// Deprecated: Marked as deprecated in nominal/protos/nova/v1/app.proto.
 func (x *App) GetArchiveSha256() string {
 	if x != nil && x.ArchiveSha256 != nil {
 		return *x.ArchiveSha256
+	}
+	return ""
+}
+
+func (x *App) GetDefaultVersionRid() string {
+	if x != nil && x.DefaultVersionRid != nil {
+		return *x.DefaultVersionRid
 	}
 	return ""
 }
@@ -428,7 +483,10 @@ func (x *SignedAppBundle) GetSignature() *BundleSignature {
 type CreateAppRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Server-assigned fields must be unset.
-	App           *App             `protobuf:"bytes,1,opt,name=app,proto3" json:"app,omitempty"`
+	App *App `protobuf:"bytes,1,opt,name=app,proto3" json:"app,omitempty"`
+	// Deprecated: create an app version with AppVersionService instead.
+	//
+	// Deprecated: Marked as deprecated in nominal/protos/nova/v1/app.proto.
 	SignedBundle  *SignedAppBundle `protobuf:"bytes,2,opt,name=signed_bundle,json=signedBundle,proto3,oneof" json:"signed_bundle,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -471,6 +529,7 @@ func (x *CreateAppRequest) GetApp() *App {
 	return nil
 }
 
+// Deprecated: Marked as deprecated in nominal/protos/nova/v1/app.proto.
 func (x *CreateAppRequest) GetSignedBundle() *SignedAppBundle {
 	if x != nil {
 		return x.SignedBundle
@@ -617,10 +676,23 @@ func (x *GetAppResponse) GetApp() *App {
 type UpdateAppRequest struct {
 	state  protoimpl.MessageState `protogen:"open.v1"`
 	AppRid string                 `protobuf:"bytes,1,opt,name=app_rid,json=appRid,proto3" json:"app_rid,omitempty"`
-	App    *App                   `protobuf:"bytes,2,opt,name=app,proto3" json:"app,omitempty"`
+	// Required. Validated by the server rather than by field rules, so a masked
+	// update carries only the fields it lists: every App rule applies when
+	// update_mask is absent, and only the listed fields' rules when present.
+	App *App `protobuf:"bytes,2,opt,name=app,proto3" json:"app,omitempty"`
 	// Absent keeps the active bundle; present publishes and atomically activates
-	// a replacement after verification and vendoring succeed.
-	SignedBundle  *SignedAppBundle `protobuf:"bytes,3,opt,name=signed_bundle,json=signedBundle,proto3,oneof" json:"signed_bundle,omitempty"`
+	// a replacement after verification and vendoring succeed. Rejected when
+	// update_mask is present.
+	// Deprecated: create an app version with AppVersionService instead.
+	//
+	// Deprecated: Marked as deprecated in nominal/protos/nova/v1/app.proto.
+	SignedBundle *SignedAppBundle `protobuf:"bytes,3,opt,name=signed_bundle,json=signedBundle,proto3,oneof" json:"signed_bundle,omitempty"`
+	// Absent overwrites every mutable field from app. Present updates only the
+	// listed top-level fields: title, description, labels, properties,
+	// is_archived, default_version_rid. A listed labels or properties field is
+	// replaced whole. Listed server-assigned fields are ignored; name is rejected
+	// when it differs from the current value, and any other path is rejected.
+	UpdateMask    *fieldmaskpb.FieldMask `protobuf:"bytes,4,opt,name=update_mask,json=updateMask,proto3,oneof" json:"update_mask,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -669,9 +741,17 @@ func (x *UpdateAppRequest) GetApp() *App {
 	return nil
 }
 
+// Deprecated: Marked as deprecated in nominal/protos/nova/v1/app.proto.
 func (x *UpdateAppRequest) GetSignedBundle() *SignedAppBundle {
 	if x != nil {
 		return x.SignedBundle
+	}
+	return nil
+}
+
+func (x *UpdateAppRequest) GetUpdateMask() *fieldmaskpb.FieldMask {
+	if x != nil {
+		return x.UpdateMask
 	}
 	return nil
 }
@@ -1130,10 +1210,10 @@ var File_nominal_protos_nova_v1_app_proto protoreflect.FileDescriptor
 
 const file_nominal_protos_nova_v1_app_proto_rawDesc = "" +
 	"\n" +
-	" nominal/protos/nova/v1/app.proto\x12\x0fnominal.nova.v1\x1a\x1bbuf/validate/validate.proto\x1a\x1cgoogle/api/annotations.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a!nominal/protos/gen/v1/alias.proto\x1a!nominal/protos/gen/v1/error.proto\"\x97\b\n" +
-	"\x03App\x12B\n" +
-	"\x03rid\x18\x01 \x01(\tB0\xbaH\x05r\x03\x18\x80\x04\x9a\xb2\x1a$\n" +
-	"\"com.palantir.ri.ResourceIdentifierR\x03rid\x12S\n" +
+	" nominal/protos/nova/v1/app.proto\x12\x0fnominal.nova.v1\x1a\x1bbuf/validate/validate.proto\x1a\x1cgoogle/api/annotations.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a)nominal/protos/authz/v1/annotations.proto\x1a!nominal/protos/gen/v1/alias.proto\x1a!nominal/protos/gen/v1/error.proto\"\x9b\t\n" +
+	"\x03App\x12>\n" +
+	"\x03rid\x18\x01 \x01(\tB,\xbaH\x05r\x03\x18\x80\x04\x9a\xb2\x1a \n" +
+	"\x1eio.nominal.api.rids.NovaAppRidR\x03rid\x12S\n" +
 	"\rworkspace_rid\x18\x02 \x01(\tB.\xbaH\x05r\x03\x18\x80\x04\x9a\xb2\x1a\"\n" +
 	" io.nominal.api.rids.WorkspaceRidR\fworkspaceRid\x12/\n" +
 	"\x04name\x18\x03 \x01(\tB\x1b\xbaH\x18\xc8\x01\x01r\x13\x10\x01\x18?2\r^[a-z0-9_-]+$R\x04name\x12/\n" +
@@ -1156,16 +1236,19 @@ const file_nominal_protos_nova_v1_app_proto_rawDesc = "" +
 	"updated_at\x18\n" +
 	" \x01(\v2\x1a.google.protobuf.TimestampR\tupdatedAt\x12$\n" +
 	"\vis_archived\x18\v \x01(\bH\x00R\n" +
-	"isArchived\x88\x01\x01\x12u\n" +
+	"isArchived\x88\x01\x01\x12w\n" +
 	"\n" +
-	"embed_path\x18\f \x01(\tBQ\xbaHNrL\x18+2H^$|^/nova/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/$H\x01R\tembedPath\x88\x01\x01\x12F\n" +
-	"\x0earchive_sha256\x18\r \x01(\tB\x1a\xbaH\x17r\x15\x18@2\x11^$|^[0-9a-f]{64}$H\x02R\rarchiveSha256\x88\x01\x01\x1a=\n" +
+	"embed_path\x18\f \x01(\tBS\xbaHNrL\x18+2H^$|^/nova/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/$\x18\x01H\x01R\tembedPath\x88\x01\x01\x12H\n" +
+	"\x0earchive_sha256\x18\r \x01(\tB\x1c\xbaH\x17r\x15\x18@2\x11^$|^[0-9a-f]{64}$\x18\x01H\x02R\rarchiveSha256\x88\x01\x01\x12j\n" +
+	"\x13default_version_rid\x18\x0e \x01(\tB5\xbaH\ar\x05\x10\x01\x18\x80\x04\x9a\xb2\x1a'\n" +
+	"%io.nominal.api.rids.NovaAppVersionRidH\x03R\x11defaultVersionRid\x88\x01\x01\x1a=\n" +
 	"\x0fPropertiesEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01B\x0e\n" +
 	"\f_is_archivedB\r\n" +
 	"\v_embed_pathB\x11\n" +
-	"\x0f_archive_sha256\"g\n" +
+	"\x0f_archive_sha256B\x16\n" +
+	"\x14_default_version_rid\"g\n" +
 	"\x0fBundleSignature\x12-\n" +
 	"\x06key_id\x18\x01 \x01(\tB\x16\xbaH\x13r\x11\x10\x01\x18\xff\x012\n" +
 	"^[^\\x00]+$R\x05keyId\x12%\n" +
@@ -1173,33 +1256,36 @@ const file_nominal_protos_nova_v1_app_proto_rawDesc = "" +
 	"\x0fSignedAppBundle\x12B\n" +
 	"\x11upload_object_key\x18\x01 \x01(\tB\x16\xbaH\x13r\x11\x10\x01\x18\x80\b2\n" +
 	"^[^\\x00]+$R\x0fuploadObjectKey\x12F\n" +
-	"\tsignature\x18\x02 \x01(\v2 .nominal.nova.v1.BundleSignatureB\x06\xbaH\x03\xc8\x01\x01R\tsignature\"\xa1\x02\n" +
+	"\tsignature\x18\x02 \x01(\v2 .nominal.nova.v1.BundleSignatureB\x06\xbaH\x03\xc8\x01\x01R\tsignature\"\xa5\x02\n" +
 	"\x10CreateAppRequest\x12.\n" +
-	"\x03app\x18\x01 \x01(\v2\x14.nominal.nova.v1.AppB\x06\xbaH\x03\xc8\x01\x01R\x03app\x12J\n" +
-	"\rsigned_bundle\x18\x02 \x01(\v2 .nominal.nova.v1.SignedAppBundleH\x00R\fsignedBundle\x88\x01\x01:\x7f\xbaH|\x1az\n" +
+	"\x03app\x18\x01 \x01(\v2\x14.nominal.nova.v1.AppB\x06\xbaH\x03\xc8\x01\x01R\x03app\x12N\n" +
+	"\rsigned_bundle\x18\x02 \x01(\v2 .nominal.nova.v1.SignedAppBundleB\x02\x18\x01H\x00R\fsignedBundle\x88\x01\x01:\x7f\xbaH|\x1az\n" +
 	")create_app_request.workspace_rid_required\x12\x1dapp.workspace_rid must be set\x1a.!has(this.app) || this.app.workspace_rid != ''B\x10\n" +
 	"\x0e_signed_bundle\";\n" +
 	"\x11CreateAppResponse\x12&\n" +
-	"\x03app\x18\x01 \x01(\v2\x14.nominal.nova.v1.AppR\x03app\"_\n" +
-	"\rGetAppRequest\x12N\n" +
-	"\aapp_rid\x18\x01 \x01(\tB5\xbaH\n" +
-	"\xc8\x01\x01r\x05\x10\x01\x18\x80\x04\x9a\xb2\x1a$\n" +
-	"\"com.palantir.ri.ResourceIdentifierR\x06appRid\"8\n" +
+	"\x03app\x18\x01 \x01(\v2\x14.nominal.nova.v1.AppR\x03app\"[\n" +
+	"\rGetAppRequest\x12J\n" +
+	"\aapp_rid\x18\x01 \x01(\tB1\xbaH\n" +
+	"\xc8\x01\x01r\x05\x10\x01\x18\x80\x04\x9a\xb2\x1a \n" +
+	"\x1eio.nominal.api.rids.NovaAppRidR\x06appRid\"8\n" +
 	"\x0eGetAppResponse\x12&\n" +
-	"\x03app\x18\x01 \x01(\v2\x14.nominal.nova.v1.AppR\x03app\"\xf0\x01\n" +
-	"\x10UpdateAppRequest\x12N\n" +
-	"\aapp_rid\x18\x01 \x01(\tB5\xbaH\n" +
-	"\xc8\x01\x01r\x05\x10\x01\x18\x80\x04\x9a\xb2\x1a$\n" +
-	"\"com.palantir.ri.ResourceIdentifierR\x06appRid\x12.\n" +
-	"\x03app\x18\x02 \x01(\v2\x14.nominal.nova.v1.AppB\x06\xbaH\x03\xc8\x01\x01R\x03app\x12J\n" +
-	"\rsigned_bundle\x18\x03 \x01(\v2 .nominal.nova.v1.SignedAppBundleH\x00R\fsignedBundle\x88\x01\x01B\x10\n" +
-	"\x0e_signed_bundle\";\n" +
+	"\x03app\x18\x01 \x01(\v2\x14.nominal.nova.v1.AppR\x03app\"\xc2\x02\n" +
+	"\x10UpdateAppRequest\x12J\n" +
+	"\aapp_rid\x18\x01 \x01(\tB1\xbaH\n" +
+	"\xc8\x01\x01r\x05\x10\x01\x18\x80\x04\x9a\xb2\x1a \n" +
+	"\x1eio.nominal.api.rids.NovaAppRidR\x06appRid\x12.\n" +
+	"\x03app\x18\x02 \x01(\v2\x14.nominal.nova.v1.AppB\x06\xbaH\x03\xd8\x01\x03R\x03app\x12N\n" +
+	"\rsigned_bundle\x18\x03 \x01(\v2 .nominal.nova.v1.SignedAppBundleB\x02\x18\x01H\x00R\fsignedBundle\x88\x01\x01\x12@\n" +
+	"\vupdate_mask\x18\x04 \x01(\v2\x1a.google.protobuf.FieldMaskH\x01R\n" +
+	"updateMask\x88\x01\x01B\x10\n" +
+	"\x0e_signed_bundleB\x0e\n" +
+	"\f_update_mask\";\n" +
 	"\x11UpdateAppResponse\x12&\n" +
-	"\x03app\x18\x01 \x01(\v2\x14.nominal.nova.v1.AppR\x03app\"b\n" +
-	"\x10DeleteAppRequest\x12N\n" +
-	"\aapp_rid\x18\x01 \x01(\tB5\xbaH\n" +
-	"\xc8\x01\x01r\x05\x10\x01\x18\x80\x04\x9a\xb2\x1a$\n" +
-	"\"com.palantir.ri.ResourceIdentifierR\x06appRid\"\x13\n" +
+	"\x03app\x18\x01 \x01(\v2\x14.nominal.nova.v1.AppR\x03app\"^\n" +
+	"\x10DeleteAppRequest\x12J\n" +
+	"\aapp_rid\x18\x01 \x01(\tB1\xbaH\n" +
+	"\xc8\x01\x01r\x05\x10\x01\x18\x80\x04\x9a\xb2\x1a \n" +
+	"\x1eio.nominal.api.rids.NovaAppRidR\x06appRid\"\x13\n" +
 	"\x11DeleteAppResponse\"\xd0\x02\n" +
 	"\x0fAppSearchFilter\x12@\n" +
 	"\rname_contains\x18\x01 \x01(\tB\x16\xbaH\x13r\x11\x10\x01\x18\xff\x012\n" +
@@ -1249,7 +1335,7 @@ const file_nominal_protos_nova_v1_app_proto_rawDesc = "" +
 	"\x06labels\x18\x01 \x03(\tR\x06labels\x12G\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tB\x1a\x9a\xb2\x1a\x16\n" +
 	"\x14io.nominal.api.TokenH\x00R\rnextPageToken\x88\x01\x01B\x12\n" +
-	"\x10_next_page_token*\xd6\a\n" +
+	"\x10_next_page_token*\x83\r\n" +
 	"\tNovaError\x12:\n" +
 	"\x18NOVA_ERROR_APP_NOT_FOUND\x10\x00\x1a\x1c\xb2\xb2\x1a\x18\n" +
 	"\tNOT_FOUND\x12\vAppNotFound\x12A\n" +
@@ -1277,20 +1363,48 @@ const file_nominal_protos_nova_v1_app_proto_rawDesc = "" +
 	"\x1bNOVA_ERROR_APP_PROXY_EXISTS\x10\v\x1a$\xb2\xb2\x1a \n" +
 	"\x0eALREADY_EXISTS\x12\x0eAppProxyExists\x12C\n" +
 	"\x17NOVA_ERROR_APP_ARCHIVED\x10\f\x1a&\xb2\xb2\x1a\"\n" +
-	"\x13FAILED_PRECONDITION\x12\vAppArchived*\xad\x01\n" +
+	"\x13FAILED_PRECONDITION\x12\vAppArchived\x12I\n" +
+	" NOVA_ERROR_APP_VERSION_NOT_FOUND\x10\r\x1a#\xb2\xb2\x1a\x1f\n" +
+	"\tNOT_FOUND\x12\x12AppVersionNotFound\x12N\n" +
+	" NOVA_ERROR_APP_VERSION_TAG_TAKEN\x10\x0e\x1a(\xb2\xb2\x1a$\n" +
+	"\x0eALREADY_EXISTS\x12\x12AppVersionTagTaken\x12V\n" +
+	" NOVA_ERROR_APP_VERSION_IMMUTABLE\x10\x0f\x1a0\xb2\xb2\x1a*\n" +
+	"\x13FAILED_PRECONDITION\x12\x13AppVersionImmutable\b\x01\x12[\n" +
+	"#NOVA_ERROR_APP_VERSION_NOT_RELEASED\x10\x10\x1a2\xb2\xb2\x1a,\n" +
+	"\x13FAILED_PRECONDITION\x12\x15AppVersionNotReleased\b\x01\x12U\n" +
+	"!NOVA_ERROR_APP_VERSION_NOT_ACTIVE\x10\x11\x1a.\xb2\xb2\x1a*\n" +
+	"\x13FAILED_PRECONDITION\x12\x13AppVersionNotActive\x12R\n" +
+	"\x1fNOVA_ERROR_APP_VERSION_ARCHIVED\x10\x12\x1a-\xb2\xb2\x1a)\n" +
+	"\x13FAILED_PRECONDITION\x12\x12AppVersionArchived\x12U\n" +
+	"!NOVA_ERROR_APP_VERSION_IS_DEFAULT\x10\x13\x1a.\xb2\xb2\x1a*\n" +
+	"\x13FAILED_PRECONDITION\x12\x13AppVersionIsDefault\x12Y\n" +
+	"#NOVA_ERROR_APP_VERSION_NOT_ARCHIVED\x10\x14\x1a0\xb2\xb2\x1a,\n" +
+	"\x13FAILED_PRECONDITION\x12\x15AppVersionNotArchived*\xad\x01\n" +
 	"\x13SearchAppsSortField\x12&\n" +
 	"\"SEARCH_APPS_SORT_FIELD_UNSPECIFIED\x10\x00\x12 \n" +
 	"\x1cSEARCH_APPS_SORT_FIELD_TITLE\x10\x01\x12%\n" +
 	"!SEARCH_APPS_SORT_FIELD_CREATED_AT\x10\x02\x12%\n" +
-	"!SEARCH_APPS_SORT_FIELD_UPDATED_AT\x10\x032\xdb\x05\n" +
-	"\vNovaService\x12l\n" +
-	"\tCreateApp\x12!.nominal.nova.v1.CreateAppRequest\x1a\".nominal.nova.v1.CreateAppResponse\"\x18\x82\xd3\xe4\x93\x02\x12:\x01*\"\r/nova/v1/apps\x12j\n" +
-	"\x06GetApp\x12\x1e.nominal.nova.v1.GetAppRequest\x1a\x1f.nominal.nova.v1.GetAppResponse\"\x1f\x82\xd3\xe4\x93\x02\x19\x12\x17/nova/v1/apps/{app_rid}\x12v\n" +
-	"\tUpdateApp\x12!.nominal.nova.v1.UpdateAppRequest\x1a\".nominal.nova.v1.UpdateAppResponse\"\"\x82\xd3\xe4\x93\x02\x1c:\x01*\x1a\x17/nova/v1/apps/{app_rid}\x12s\n" +
-	"\tDeleteApp\x12!.nominal.nova.v1.DeleteAppRequest\x1a\".nominal.nova.v1.DeleteAppResponse\"\x1f\x82\xd3\xe4\x93\x02\x19*\x17/nova/v1/apps/{app_rid}\x12v\n" +
+	"!SEARCH_APPS_SORT_FIELD_UPDATED_AT\x10\x032\x8e\a\n" +
+	"\vNovaService\x12\x8e\x01\n" +
+	"\tCreateApp\x12!.nominal.nova.v1.CreateAppRequest\x1a\".nominal.nova.v1.CreateAppResponse\":\xba\xb2\x1a\x1e\n" +
+	"\x1c\n" +
+	"\x18workspace:edit_nova_apps\"\x00\x82\xd3\xe4\x93\x02\x12:\x01*\"\r/nova/v1/apps\x12\x82\x01\n" +
+	"\x06GetApp\x12\x1e.nominal.nova.v1.GetAppRequest\x1a\x1f.nominal.nova.v1.GetAppResponse\"7\xba\xb2\x1a\x14\n" +
+	"\x12\n" +
+	"\x0eworkspace:view\"\x00\x82\xd3\xe4\x93\x02\x19\x12\x17/nova/v1/apps/{app_rid}\x12\x98\x01\n" +
+	"\tUpdateApp\x12!.nominal.nova.v1.UpdateAppRequest\x1a\".nominal.nova.v1.UpdateAppResponse\"D\xba\xb2\x1a\x1e\n" +
+	"\x1c\n" +
+	"\x18workspace:edit_nova_apps\"\x00\x82\xd3\xe4\x93\x02\x1c:\x01*\x1a\x17/nova/v1/apps/{app_rid}\x12\x95\x01\n" +
+	"\tDeleteApp\x12!.nominal.nova.v1.DeleteAppRequest\x1a\".nominal.nova.v1.DeleteAppResponse\"A\xba\xb2\x1a\x1e\n" +
+	"\x1c\n" +
+	"\x18workspace:edit_nova_apps\"\x00\x82\xd3\xe4\x93\x02\x19*\x17/nova/v1/apps/{app_rid}\x12\x8e\x01\n" +
 	"\n" +
-	"SearchApps\x12\".nominal.nova.v1.SearchAppsRequest\x1a#.nominal.nova.v1.SearchAppsResponse\"\x1f\x82\xd3\xe4\x93\x02\x19:\x01*\"\x14/nova/v1/apps/search\x12\x8c\x01\n" +
-	"\x0fSearchAppLabels\x12'.nominal.nova.v1.SearchAppLabelsRequest\x1a(.nominal.nova.v1.SearchAppLabelsResponse\"&\x82\xd3\xe4\x93\x02 :\x01*\"\x1b/nova/v1/apps/search-labelsB\xc8\x01\n" +
+	"SearchApps\x12\".nominal.nova.v1.SearchAppsRequest\x1a#.nominal.nova.v1.SearchAppsResponse\"7\xba\xb2\x1a\x14\n" +
+	"\x12\n" +
+	"\x0eworkspace:view\"\x00\x82\xd3\xe4\x93\x02\x19:\x01*\"\x14/nova/v1/apps/search\x12\xa4\x01\n" +
+	"\x0fSearchAppLabels\x12'.nominal.nova.v1.SearchAppLabelsRequest\x1a(.nominal.nova.v1.SearchAppLabelsResponse\">\xba\xb2\x1a\x14\n" +
+	"\x12\n" +
+	"\x0eworkspace:view\"\x00\x82\xd3\xe4\x93\x02 :\x01*\"\x1b/nova/v1/apps/search-labelsB\xc8\x01\n" +
 	"\x13com.nominal.nova.v1B\bAppProtoP\x01ZIgithub.com/nominal-io/nominal-api-protos-go/nominal/protos/nova/v1;novav1\xa2\x02\x03NNX\xaa\x02\x0fNominal.Nova.V1\xca\x02\x0fNominal\\Nova\\V1\xe2\x02\x1bNominal\\Nova\\V1\\GPBMetadata\xea\x02\x11Nominal::Nova::V1b\x06proto3"
 
 var (
@@ -1328,6 +1442,7 @@ var file_nominal_protos_nova_v1_app_proto_goTypes = []any{
 	(*SearchAppLabelsResponse)(nil), // 17: nominal.nova.v1.SearchAppLabelsResponse
 	nil,                             // 18: nominal.nova.v1.App.PropertiesEntry
 	(*timestamppb.Timestamp)(nil),   // 19: google.protobuf.Timestamp
+	(*fieldmaskpb.FieldMask)(nil),   // 20: google.protobuf.FieldMask
 }
 var file_nominal_protos_nova_v1_app_proto_depIdxs = []int32{
 	18, // 0: nominal.nova.v1.App.properties:type_name -> nominal.nova.v1.App.PropertiesEntry
@@ -1340,27 +1455,28 @@ var file_nominal_protos_nova_v1_app_proto_depIdxs = []int32{
 	2,  // 7: nominal.nova.v1.GetAppResponse.app:type_name -> nominal.nova.v1.App
 	2,  // 8: nominal.nova.v1.UpdateAppRequest.app:type_name -> nominal.nova.v1.App
 	4,  // 9: nominal.nova.v1.UpdateAppRequest.signed_bundle:type_name -> nominal.nova.v1.SignedAppBundle
-	2,  // 10: nominal.nova.v1.UpdateAppResponse.app:type_name -> nominal.nova.v1.App
-	13, // 11: nominal.nova.v1.SearchAppsRequest.filter:type_name -> nominal.nova.v1.AppSearchFilter
-	1,  // 12: nominal.nova.v1.SearchAppsRequest.sort_field:type_name -> nominal.nova.v1.SearchAppsSortField
-	2,  // 13: nominal.nova.v1.SearchAppsResponse.apps:type_name -> nominal.nova.v1.App
-	5,  // 14: nominal.nova.v1.NovaService.CreateApp:input_type -> nominal.nova.v1.CreateAppRequest
-	7,  // 15: nominal.nova.v1.NovaService.GetApp:input_type -> nominal.nova.v1.GetAppRequest
-	9,  // 16: nominal.nova.v1.NovaService.UpdateApp:input_type -> nominal.nova.v1.UpdateAppRequest
-	11, // 17: nominal.nova.v1.NovaService.DeleteApp:input_type -> nominal.nova.v1.DeleteAppRequest
-	14, // 18: nominal.nova.v1.NovaService.SearchApps:input_type -> nominal.nova.v1.SearchAppsRequest
-	16, // 19: nominal.nova.v1.NovaService.SearchAppLabels:input_type -> nominal.nova.v1.SearchAppLabelsRequest
-	6,  // 20: nominal.nova.v1.NovaService.CreateApp:output_type -> nominal.nova.v1.CreateAppResponse
-	8,  // 21: nominal.nova.v1.NovaService.GetApp:output_type -> nominal.nova.v1.GetAppResponse
-	10, // 22: nominal.nova.v1.NovaService.UpdateApp:output_type -> nominal.nova.v1.UpdateAppResponse
-	12, // 23: nominal.nova.v1.NovaService.DeleteApp:output_type -> nominal.nova.v1.DeleteAppResponse
-	15, // 24: nominal.nova.v1.NovaService.SearchApps:output_type -> nominal.nova.v1.SearchAppsResponse
-	17, // 25: nominal.nova.v1.NovaService.SearchAppLabels:output_type -> nominal.nova.v1.SearchAppLabelsResponse
-	20, // [20:26] is the sub-list for method output_type
-	14, // [14:20] is the sub-list for method input_type
-	14, // [14:14] is the sub-list for extension type_name
-	14, // [14:14] is the sub-list for extension extendee
-	0,  // [0:14] is the sub-list for field type_name
+	20, // 10: nominal.nova.v1.UpdateAppRequest.update_mask:type_name -> google.protobuf.FieldMask
+	2,  // 11: nominal.nova.v1.UpdateAppResponse.app:type_name -> nominal.nova.v1.App
+	13, // 12: nominal.nova.v1.SearchAppsRequest.filter:type_name -> nominal.nova.v1.AppSearchFilter
+	1,  // 13: nominal.nova.v1.SearchAppsRequest.sort_field:type_name -> nominal.nova.v1.SearchAppsSortField
+	2,  // 14: nominal.nova.v1.SearchAppsResponse.apps:type_name -> nominal.nova.v1.App
+	5,  // 15: nominal.nova.v1.NovaService.CreateApp:input_type -> nominal.nova.v1.CreateAppRequest
+	7,  // 16: nominal.nova.v1.NovaService.GetApp:input_type -> nominal.nova.v1.GetAppRequest
+	9,  // 17: nominal.nova.v1.NovaService.UpdateApp:input_type -> nominal.nova.v1.UpdateAppRequest
+	11, // 18: nominal.nova.v1.NovaService.DeleteApp:input_type -> nominal.nova.v1.DeleteAppRequest
+	14, // 19: nominal.nova.v1.NovaService.SearchApps:input_type -> nominal.nova.v1.SearchAppsRequest
+	16, // 20: nominal.nova.v1.NovaService.SearchAppLabels:input_type -> nominal.nova.v1.SearchAppLabelsRequest
+	6,  // 21: nominal.nova.v1.NovaService.CreateApp:output_type -> nominal.nova.v1.CreateAppResponse
+	8,  // 22: nominal.nova.v1.NovaService.GetApp:output_type -> nominal.nova.v1.GetAppResponse
+	10, // 23: nominal.nova.v1.NovaService.UpdateApp:output_type -> nominal.nova.v1.UpdateAppResponse
+	12, // 24: nominal.nova.v1.NovaService.DeleteApp:output_type -> nominal.nova.v1.DeleteAppResponse
+	15, // 25: nominal.nova.v1.NovaService.SearchApps:output_type -> nominal.nova.v1.SearchAppsResponse
+	17, // 26: nominal.nova.v1.NovaService.SearchAppLabels:output_type -> nominal.nova.v1.SearchAppLabelsResponse
+	21, // [21:27] is the sub-list for method output_type
+	15, // [15:21] is the sub-list for method input_type
+	15, // [15:15] is the sub-list for extension type_name
+	15, // [15:15] is the sub-list for extension extendee
+	0,  // [0:15] is the sub-list for field type_name
 }
 
 func init() { file_nominal_protos_nova_v1_app_proto_init() }

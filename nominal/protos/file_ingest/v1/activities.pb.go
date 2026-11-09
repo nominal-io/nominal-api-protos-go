@@ -7,6 +7,7 @@
 package file_ingestv1
 
 import (
+	_ "buf.build/gen/go/bufbuild/protovalidate/protocolbuffers/go/buf/validate"
 	v2 "github.com/nominal-io/nominal-api-protos-go/nominal/protos/direct_channel_writer_common/v2"
 	_ "github.com/nominal-io/nominal-api-protos-go/nominal/protos/gen/v1"
 	object_storage "github.com/nominal-io/nominal-api-protos-go/nominal/protos/types/object_storage"
@@ -232,8 +233,10 @@ func (x *Parsing) GetBounds() *time.Range {
 }
 
 type Ingesting struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Bounds        *time.Range            `protobuf:"bytes,1,opt,name=bounds,proto3" json:"bounds,omitempty"`
+	state  protoimpl.MessageState `protogen:"open.v1"`
+	Bounds *time.Range            `protobuf:"bytes,1,opt,name=bounds,proto3" json:"bounds,omitempty"`
+	// Optional fraction between 0 and 1 indicating ingestion progress.
+	Progress      *float64 `protobuf:"fixed64,2,opt,name=progress,proto3,oneof" json:"progress,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -273,6 +276,13 @@ func (x *Ingesting) GetBounds() *time.Range {
 		return x.Bounds
 	}
 	return nil
+}
+
+func (x *Ingesting) GetProgress() float64 {
+	if x != nil && x.Progress != nil {
+		return *x.Progress
+	}
+	return 0
 }
 
 type Error struct {
@@ -705,12 +715,21 @@ func (x *WriteFileBatchesToKafkaRequest) GetStagedBatchesManifest() *object_stor
 type StagedBatch struct {
 	state   protoimpl.MessageState `protogen:"open.v1"`
 	BatchId int32                  `protobuf:"varint,1,opt,name=batch_id,json=batchId,proto3" json:"batch_id,omitempty"`
-	Handle  *object_storage.Handle `protobuf:"bytes,2,opt,name=handle,proto3" json:"handle,omitempty"`
-	Format  v2.BatchFormat         `protobuf:"varint,3,opt,name=format,proto3,enum=nominal.direct_channel_writer.v2.BatchFormat" json:"format,omitempty"`
+	// Deprecated: Marked as deprecated in nominal/protos/file_ingest/v1/activities.proto.
+	Handle *object_storage.Handle `protobuf:"bytes,2,opt,name=handle,proto3" json:"handle,omitempty"`
+	// Deprecated: Marked as deprecated in nominal/protos/file_ingest/v1/activities.proto.
+	Format v2.BatchFormat `protobuf:"varint,3,opt,name=format,proto3,enum=nominal.direct_channel_writer.v2.BatchFormat" json:"format,omitempty"`
 	// Carried so the Kafka publish can forward it without re-reading the staged object.
-	Summary       *v2.BatchSummary `protobuf:"bytes,4,opt,name=summary,proto3" json:"summary,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	Summary *v2.BatchSummary `protobuf:"bytes,4,opt,name=summary,proto3" json:"summary,omitempty"`
+	// Types that are valid to be assigned to Batch:
+	//
+	//	*StagedBatch_StagedBatchObject
+	//	*StagedBatch_IcebergParquetFile
+	Batch isStagedBatch_Batch `protobuf_oneof:"batch"`
+	// The (channel, type, unit) series first seen in this shredder batch of the file; empty when none are new.
+	SeriesMetadata []*v2.BatchSeriesMetadata `protobuf:"bytes,7,rep,name=series_metadata,json=seriesMetadata,proto3" json:"series_metadata,omitempty"`
+	unknownFields  protoimpl.UnknownFields
+	sizeCache      protoimpl.SizeCache
 }
 
 func (x *StagedBatch) Reset() {
@@ -750,6 +769,7 @@ func (x *StagedBatch) GetBatchId() int32 {
 	return 0
 }
 
+// Deprecated: Marked as deprecated in nominal/protos/file_ingest/v1/activities.proto.
 func (x *StagedBatch) GetHandle() *object_storage.Handle {
 	if x != nil {
 		return x.Handle
@@ -757,6 +777,7 @@ func (x *StagedBatch) GetHandle() *object_storage.Handle {
 	return nil
 }
 
+// Deprecated: Marked as deprecated in nominal/protos/file_ingest/v1/activities.proto.
 func (x *StagedBatch) GetFormat() v2.BatchFormat {
 	if x != nil {
 		return x.Format
@@ -770,6 +791,54 @@ func (x *StagedBatch) GetSummary() *v2.BatchSummary {
 	}
 	return nil
 }
+
+func (x *StagedBatch) GetBatch() isStagedBatch_Batch {
+	if x != nil {
+		return x.Batch
+	}
+	return nil
+}
+
+func (x *StagedBatch) GetStagedBatchObject() *v2.StagedBatchObject {
+	if x != nil {
+		if x, ok := x.Batch.(*StagedBatch_StagedBatchObject); ok {
+			return x.StagedBatchObject
+		}
+	}
+	return nil
+}
+
+func (x *StagedBatch) GetIcebergParquetFile() *v2.IcebergParquetFile {
+	if x != nil {
+		if x, ok := x.Batch.(*StagedBatch_IcebergParquetFile); ok {
+			return x.IcebergParquetFile
+		}
+	}
+	return nil
+}
+
+func (x *StagedBatch) GetSeriesMetadata() []*v2.BatchSeriesMetadata {
+	if x != nil {
+		return x.SeriesMetadata
+	}
+	return nil
+}
+
+type isStagedBatch_Batch interface {
+	isStagedBatch_Batch()
+}
+
+type StagedBatch_StagedBatchObject struct {
+	StagedBatchObject *v2.StagedBatchObject `protobuf:"bytes,5,opt,name=staged_batch_object,json=stagedBatchObject,proto3,oneof"`
+}
+
+type StagedBatch_IcebergParquetFile struct {
+	IcebergParquetFile *v2.IcebergParquetFile `protobuf:"bytes,6,opt,name=iceberg_parquet_file,json=icebergParquetFile,proto3,oneof"`
+}
+
+func (*StagedBatch_StagedBatchObject) isStagedBatch_Batch() {}
+
+func (*StagedBatch_IcebergParquetFile) isStagedBatch_Batch() {}
 
 type WriteFileBatchesToKafkaResponse struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
@@ -811,7 +880,7 @@ var File_nominal_protos_file_ingest_v1_activities_proto protoreflect.FileDescrip
 
 const file_nominal_protos_file_ingest_v1_activities_proto_rawDesc = "" +
 	"\n" +
-	".nominal/protos/file_ingest/v1/activities.proto\x12\x16nominal.file_ingest.v1\x1aQnominal/protos/direct_channel_writer_common/v2/direct_channel_writer_common.proto\x1a2nominal/protos/file_ingest/v1/ingest_request.proto\x1a!nominal/protos/gen/v1/alias.proto\x1a0nominal/protos/types/object_storage/handle.proto\x1a$nominal/protos/types/time/time.proto\"\xce\x03\n" +
+	".nominal/protos/file_ingest/v1/activities.proto\x12\x16nominal.file_ingest.v1\x1a\x1bbuf/validate/validate.proto\x1aQnominal/protos/direct_channel_writer_common/v2/direct_channel_writer_common.proto\x1a2nominal/protos/file_ingest/v1/ingest_request.proto\x1a!nominal/protos/gen/v1/alias.proto\x1a0nominal/protos/types/object_storage/handle.proto\x1a$nominal/protos/types/time/time.proto\"\xce\x03\n" +
 	"!SetDatasetFileIngestStatusRequest\x12Q\n" +
 	"\x0fdataset_file_id\x18\x01 \x01(\tB)\x9a\xb2\x1a%\n" +
 	"#io.nominal.datasource.DatasetFileIdR\rdatasetFileId\x12E\n" +
@@ -826,9 +895,11 @@ const file_nominal_protos_file_ingest_v1_activities_proto_rawDesc = "" +
 	"\x06status\"$\n" +
 	"\"SetDatasetFileIngestStatusResponse\"<\n" +
 	"\aParsing\x121\n" +
-	"\x06bounds\x18\x01 \x01(\v2\x19.nominal.types.time.RangeR\x06bounds\">\n" +
+	"\x06bounds\x18\x01 \x01(\v2\x19.nominal.types.time.RangeR\x06bounds\"\x85\x01\n" +
 	"\tIngesting\x121\n" +
-	"\x06bounds\x18\x01 \x01(\v2\x19.nominal.types.time.RangeR\x06bounds\"\xa2\x01\n" +
+	"\x06bounds\x18\x01 \x01(\v2\x19.nominal.types.time.RangeR\x06bounds\x128\n" +
+	"\bprogress\x18\x02 \x01(\x01B\x17\xbaH\x14\x12\x12\x19\x00\x00\x00\x00\x00\x00\xf0?)\x00\x00\x00\x00\x00\x00\x00\x00H\x00R\bprogress\x88\x01\x01B\v\n" +
+	"\t_progress\"\xa2\x01\n" +
 	"\x05Error\x12\x1d\n" +
 	"\n" +
 	"error_type\x18\x01 \x01(\tR\terrorType\x12\x18\n" +
@@ -882,12 +953,16 @@ const file_nominal_protos_file_ingest_v1_activities_proto_rawDesc = "" +
 	"\vdataset_rid\x18\x06 \x01(\tB$\x9a\xb2\x1a \n" +
 	"\x1eio.nominal.api.rids.DatasetRidR\n" +
 	"datasetRid\x12\\\n" +
-	"\x17staged_batches_manifest\x18\a \x01(\v2$.nominal.types.object_storage.HandleR\x15stagedBatchesManifestJ\x04\b\x01\x10\x02R\x0estaged_batches\"\xf7\x01\n" +
+	"\x17staged_batches_manifest\x18\a \x01(\v2$.nominal.types.object_storage.HandleR\x15stagedBatchesManifestJ\x04\b\x01\x10\x02R\x0estaged_batches\"\xb9\x04\n" +
 	"\vStagedBatch\x12\x19\n" +
-	"\bbatch_id\x18\x01 \x01(\x05R\abatchId\x12<\n" +
-	"\x06handle\x18\x02 \x01(\v2$.nominal.types.object_storage.HandleR\x06handle\x12E\n" +
-	"\x06format\x18\x03 \x01(\x0e2-.nominal.direct_channel_writer.v2.BatchFormatR\x06format\x12H\n" +
-	"\asummary\x18\x04 \x01(\v2..nominal.direct_channel_writer.v2.BatchSummaryR\asummary\"!\n" +
+	"\bbatch_id\x18\x01 \x01(\x05R\abatchId\x12@\n" +
+	"\x06handle\x18\x02 \x01(\v2$.nominal.types.object_storage.HandleB\x02\x18\x01R\x06handle\x12I\n" +
+	"\x06format\x18\x03 \x01(\x0e2-.nominal.direct_channel_writer.v2.BatchFormatB\x02\x18\x01R\x06format\x12H\n" +
+	"\asummary\x18\x04 \x01(\v2..nominal.direct_channel_writer.v2.BatchSummaryR\asummary\x12e\n" +
+	"\x13staged_batch_object\x18\x05 \x01(\v23.nominal.direct_channel_writer.v2.StagedBatchObjectH\x00R\x11stagedBatchObject\x12h\n" +
+	"\x14iceberg_parquet_file\x18\x06 \x01(\v24.nominal.direct_channel_writer.v2.IcebergParquetFileH\x00R\x12icebergParquetFile\x12^\n" +
+	"\x0fseries_metadata\x18\a \x03(\v25.nominal.direct_channel_writer.v2.BatchSeriesMetadataR\x0eseriesMetadataB\a\n" +
+	"\x05batch\"!\n" +
 	"\x1fWriteFileBatchesToKafkaResponseB\xfc\x01\n" +
 	"\x1acom.nominal.file_ingest.v1B\x0fActivitiesProtoP\x01ZWgithub.com/nominal-io/nominal-api-protos-go/nominal/protos/file_ingest/v1;file_ingestv1\xa2\x02\x03NFX\xaa\x02\x15Nominal.FileIngest.V1\xca\x02\x15Nominal\\FileIngest\\V1\xe2\x02!Nominal\\FileIngest\\V1\\GPBMetadata\xea\x02\x17Nominal::FileIngest::V1b\x06proto3"
 
@@ -924,6 +999,9 @@ var file_nominal_protos_file_ingest_v1_activities_proto_goTypes = []any{
 	(*DataFileIngest)(nil),                  // 16: nominal.file_ingest.v1.DataFileIngest
 	(v2.BatchFormat)(0),                     // 17: nominal.direct_channel_writer.v2.BatchFormat
 	(*v2.BatchSummary)(nil),                 // 18: nominal.direct_channel_writer.v2.BatchSummary
+	(*v2.StagedBatchObject)(nil),            // 19: nominal.direct_channel_writer.v2.StagedBatchObject
+	(*v2.IcebergParquetFile)(nil),           // 20: nominal.direct_channel_writer.v2.IcebergParquetFile
+	(*v2.BatchSeriesMetadata)(nil),          // 21: nominal.direct_channel_writer.v2.BatchSeriesMetadata
 }
 var file_nominal_protos_file_ingest_v1_activities_proto_depIdxs = []int32{
 	2,  // 0: nominal.file_ingest.v1.SetDatasetFileIngestStatusRequest.parsing:type_name -> nominal.file_ingest.v1.Parsing
@@ -943,11 +1021,14 @@ var file_nominal_protos_file_ingest_v1_activities_proto_depIdxs = []int32{
 	13, // 14: nominal.file_ingest.v1.StagedBatch.handle:type_name -> nominal.types.object_storage.Handle
 	17, // 15: nominal.file_ingest.v1.StagedBatch.format:type_name -> nominal.direct_channel_writer.v2.BatchFormat
 	18, // 16: nominal.file_ingest.v1.StagedBatch.summary:type_name -> nominal.direct_channel_writer.v2.BatchSummary
-	17, // [17:17] is the sub-list for method output_type
-	17, // [17:17] is the sub-list for method input_type
-	17, // [17:17] is the sub-list for extension type_name
-	17, // [17:17] is the sub-list for extension extendee
-	0,  // [0:17] is the sub-list for field type_name
+	19, // 17: nominal.file_ingest.v1.StagedBatch.staged_batch_object:type_name -> nominal.direct_channel_writer.v2.StagedBatchObject
+	20, // 18: nominal.file_ingest.v1.StagedBatch.iceberg_parquet_file:type_name -> nominal.direct_channel_writer.v2.IcebergParquetFile
+	21, // 19: nominal.file_ingest.v1.StagedBatch.series_metadata:type_name -> nominal.direct_channel_writer.v2.BatchSeriesMetadata
+	20, // [20:20] is the sub-list for method output_type
+	20, // [20:20] is the sub-list for method input_type
+	20, // [20:20] is the sub-list for extension type_name
+	20, // [20:20] is the sub-list for extension extendee
+	0,  // [0:20] is the sub-list for field type_name
 }
 
 func init() { file_nominal_protos_file_ingest_v1_activities_proto_init() }
@@ -961,9 +1042,14 @@ func file_nominal_protos_file_ingest_v1_activities_proto_init() {
 		(*SetDatasetFileIngestStatusRequest_Ingesting)(nil),
 		(*SetDatasetFileIngestStatusRequest_Error)(nil),
 	}
+	file_nominal_protos_file_ingest_v1_activities_proto_msgTypes[3].OneofWrappers = []any{}
 	file_nominal_protos_file_ingest_v1_activities_proto_msgTypes[5].OneofWrappers = []any{
 		(*ParseFileRequest_LogIngest)(nil),
 		(*ParseFileRequest_DataIngest)(nil),
+	}
+	file_nominal_protos_file_ingest_v1_activities_proto_msgTypes[9].OneofWrappers = []any{
+		(*StagedBatch_StagedBatchObject)(nil),
+		(*StagedBatch_IcebergParquetFile)(nil),
 	}
 	type x struct{}
 	out := protoimpl.TypeBuilder{

@@ -94,6 +94,8 @@ const (
 	// A put referenced an uploaded object that is absent from File Store storage or not available to the
 	// workspace.
 	FileChangeError_FILE_CHANGE_ERROR_UPLOADED_OBJECT_NOT_FOUND FileChangeError = 5
+	// A directory move would re-path more files than the request's directory moves may move in total.
+	FileChangeError_FILE_CHANGE_ERROR_DIRECTORY_MOVE_LIMIT_EXCEEDED FileChangeError = 6
 )
 
 // Enum value maps for FileChangeError.
@@ -105,14 +107,16 @@ var (
 		3: "FILE_CHANGE_ERROR_REVISION_PRECONDITION_FAILED",
 		4: "FILE_CHANGE_ERROR_READ_ONLY_DRIVE",
 		5: "FILE_CHANGE_ERROR_UPLOADED_OBJECT_NOT_FOUND",
+		6: "FILE_CHANGE_ERROR_DIRECTORY_MOVE_LIMIT_EXCEEDED",
 	}
 	FileChangeError_value = map[string]int32{
-		"FILE_CHANGE_ERROR_UNSPECIFIED":                  0,
-		"FILE_CHANGE_ERROR_PATH_ALREADY_EXISTS":          1,
-		"FILE_CHANGE_ERROR_INVALID_LOGICAL_PATH":         2,
-		"FILE_CHANGE_ERROR_REVISION_PRECONDITION_FAILED": 3,
-		"FILE_CHANGE_ERROR_READ_ONLY_DRIVE":              4,
-		"FILE_CHANGE_ERROR_UPLOADED_OBJECT_NOT_FOUND":    5,
+		"FILE_CHANGE_ERROR_UNSPECIFIED":                   0,
+		"FILE_CHANGE_ERROR_PATH_ALREADY_EXISTS":           1,
+		"FILE_CHANGE_ERROR_INVALID_LOGICAL_PATH":          2,
+		"FILE_CHANGE_ERROR_REVISION_PRECONDITION_FAILED":  3,
+		"FILE_CHANGE_ERROR_READ_ONLY_DRIVE":               4,
+		"FILE_CHANGE_ERROR_UPLOADED_OBJECT_NOT_FOUND":     5,
+		"FILE_CHANGE_ERROR_DIRECTORY_MOVE_LIMIT_EXCEEDED": 6,
 	}
 )
 
@@ -533,6 +537,61 @@ func (x *RestoreFile) GetDestination() *Destination {
 	return nil
 }
 
+// Moves a directory and everything in it. The destination must not already exist.
+type MoveDirectory struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// The directory to move. Rejected if it does not exist or is too large to move at once.
+	From *LogicalPath `protobuf:"bytes,1,opt,name=from,proto3" json:"from,omitempty"`
+	// Must not contain, or sit inside, `from`.
+	To            *LogicalPath `protobuf:"bytes,2,opt,name=to,proto3" json:"to,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *MoveDirectory) Reset() {
+	*x = MoveDirectory{}
+	mi := &file_nominal_protos_file_store_v1_files_proto_msgTypes[7]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *MoveDirectory) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*MoveDirectory) ProtoMessage() {}
+
+func (x *MoveDirectory) ProtoReflect() protoreflect.Message {
+	mi := &file_nominal_protos_file_store_v1_files_proto_msgTypes[7]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use MoveDirectory.ProtoReflect.Descriptor instead.
+func (*MoveDirectory) Descriptor() ([]byte, []int) {
+	return file_nominal_protos_file_store_v1_files_proto_rawDescGZIP(), []int{7}
+}
+
+func (x *MoveDirectory) GetFrom() *LogicalPath {
+	if x != nil {
+		return x.From
+	}
+	return nil
+}
+
+func (x *MoveDirectory) GetTo() *LogicalPath {
+	if x != nil {
+		return x.To
+	}
+	return nil
+}
+
 type FileChange struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Types that are valid to be assigned to Change:
@@ -541,6 +600,7 @@ type FileChange struct {
 	//	*FileChange_Move
 	//	*FileChange_Remove
 	//	*FileChange_Restore
+	//	*FileChange_MoveDirectory
 	Change        isFileChange_Change `protobuf_oneof:"change"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -548,7 +608,7 @@ type FileChange struct {
 
 func (x *FileChange) Reset() {
 	*x = FileChange{}
-	mi := &file_nominal_protos_file_store_v1_files_proto_msgTypes[7]
+	mi := &file_nominal_protos_file_store_v1_files_proto_msgTypes[8]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -560,7 +620,7 @@ func (x *FileChange) String() string {
 func (*FileChange) ProtoMessage() {}
 
 func (x *FileChange) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_file_store_v1_files_proto_msgTypes[7]
+	mi := &file_nominal_protos_file_store_v1_files_proto_msgTypes[8]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -573,7 +633,7 @@ func (x *FileChange) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use FileChange.ProtoReflect.Descriptor instead.
 func (*FileChange) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_file_store_v1_files_proto_rawDescGZIP(), []int{7}
+	return file_nominal_protos_file_store_v1_files_proto_rawDescGZIP(), []int{8}
 }
 
 func (x *FileChange) GetChange() isFileChange_Change {
@@ -619,6 +679,15 @@ func (x *FileChange) GetRestore() *RestoreFile {
 	return nil
 }
 
+func (x *FileChange) GetMoveDirectory() *MoveDirectory {
+	if x != nil {
+		if x, ok := x.Change.(*FileChange_MoveDirectory); ok {
+			return x.MoveDirectory
+		}
+	}
+	return nil
+}
+
 type isFileChange_Change interface {
 	isFileChange_Change()
 }
@@ -639,6 +708,10 @@ type FileChange_Restore struct {
 	Restore *RestoreFile `protobuf:"bytes,4,opt,name=restore,proto3,oneof"`
 }
 
+type FileChange_MoveDirectory struct {
+	MoveDirectory *MoveDirectory `protobuf:"bytes,5,opt,name=move_directory,json=moveDirectory,proto3,oneof"`
+}
+
 func (*FileChange_Put) isFileChange_Change() {}
 
 func (*FileChange_Move) isFileChange_Change() {}
@@ -646,6 +719,8 @@ func (*FileChange_Move) isFileChange_Change() {}
 func (*FileChange_Remove) isFileChange_Change() {}
 
 func (*FileChange_Restore) isFileChange_Change() {}
+
+func (*FileChange_MoveDirectory) isFileChange_Change() {}
 
 type GetFileRequest struct {
 	state          protoimpl.MessageState `protogen:"open.v1"`
@@ -658,7 +733,7 @@ type GetFileRequest struct {
 
 func (x *GetFileRequest) Reset() {
 	*x = GetFileRequest{}
-	mi := &file_nominal_protos_file_store_v1_files_proto_msgTypes[8]
+	mi := &file_nominal_protos_file_store_v1_files_proto_msgTypes[9]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -670,7 +745,7 @@ func (x *GetFileRequest) String() string {
 func (*GetFileRequest) ProtoMessage() {}
 
 func (x *GetFileRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_file_store_v1_files_proto_msgTypes[8]
+	mi := &file_nominal_protos_file_store_v1_files_proto_msgTypes[9]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -683,7 +758,7 @@ func (x *GetFileRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetFileRequest.ProtoReflect.Descriptor instead.
 func (*GetFileRequest) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_file_store_v1_files_proto_rawDescGZIP(), []int{8}
+	return file_nominal_protos_file_store_v1_files_proto_rawDescGZIP(), []int{9}
 }
 
 func (x *GetFileRequest) GetDriveRid() string {
@@ -716,7 +791,7 @@ type GetFileByIdentityRequest struct {
 
 func (x *GetFileByIdentityRequest) Reset() {
 	*x = GetFileByIdentityRequest{}
-	mi := &file_nominal_protos_file_store_v1_files_proto_msgTypes[9]
+	mi := &file_nominal_protos_file_store_v1_files_proto_msgTypes[10]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -728,7 +803,7 @@ func (x *GetFileByIdentityRequest) String() string {
 func (*GetFileByIdentityRequest) ProtoMessage() {}
 
 func (x *GetFileByIdentityRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_file_store_v1_files_proto_msgTypes[9]
+	mi := &file_nominal_protos_file_store_v1_files_proto_msgTypes[10]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -741,7 +816,7 @@ func (x *GetFileByIdentityRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetFileByIdentityRequest.ProtoReflect.Descriptor instead.
 func (*GetFileByIdentityRequest) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_file_store_v1_files_proto_rawDescGZIP(), []int{9}
+	return file_nominal_protos_file_store_v1_files_proto_rawDescGZIP(), []int{10}
 }
 
 func (x *GetFileByIdentityRequest) GetIdentity() *LogicalFileIdentity {
@@ -761,7 +836,7 @@ type GetFileResponse struct {
 
 func (x *GetFileResponse) Reset() {
 	*x = GetFileResponse{}
-	mi := &file_nominal_protos_file_store_v1_files_proto_msgTypes[10]
+	mi := &file_nominal_protos_file_store_v1_files_proto_msgTypes[11]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -773,7 +848,7 @@ func (x *GetFileResponse) String() string {
 func (*GetFileResponse) ProtoMessage() {}
 
 func (x *GetFileResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_file_store_v1_files_proto_msgTypes[10]
+	mi := &file_nominal_protos_file_store_v1_files_proto_msgTypes[11]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -786,7 +861,7 @@ func (x *GetFileResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetFileResponse.ProtoReflect.Descriptor instead.
 func (*GetFileResponse) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_file_store_v1_files_proto_rawDescGZIP(), []int{10}
+	return file_nominal_protos_file_store_v1_files_proto_rawDescGZIP(), []int{11}
 }
 
 func (x *GetFileResponse) GetFile() *LogicalFile {
@@ -813,7 +888,7 @@ type GetFileByIdentityResponse struct {
 
 func (x *GetFileByIdentityResponse) Reset() {
 	*x = GetFileByIdentityResponse{}
-	mi := &file_nominal_protos_file_store_v1_files_proto_msgTypes[11]
+	mi := &file_nominal_protos_file_store_v1_files_proto_msgTypes[12]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -825,7 +900,7 @@ func (x *GetFileByIdentityResponse) String() string {
 func (*GetFileByIdentityResponse) ProtoMessage() {}
 
 func (x *GetFileByIdentityResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_file_store_v1_files_proto_msgTypes[11]
+	mi := &file_nominal_protos_file_store_v1_files_proto_msgTypes[12]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -838,7 +913,7 @@ func (x *GetFileByIdentityResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetFileByIdentityResponse.ProtoReflect.Descriptor instead.
 func (*GetFileByIdentityResponse) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_file_store_v1_files_proto_rawDescGZIP(), []int{11}
+	return file_nominal_protos_file_store_v1_files_proto_rawDescGZIP(), []int{12}
 }
 
 func (x *GetFileByIdentityResponse) GetFile() *LogicalFile {
@@ -866,7 +941,7 @@ type ResolveFileRevisionRequest struct {
 
 func (x *ResolveFileRevisionRequest) Reset() {
 	*x = ResolveFileRevisionRequest{}
-	mi := &file_nominal_protos_file_store_v1_files_proto_msgTypes[12]
+	mi := &file_nominal_protos_file_store_v1_files_proto_msgTypes[13]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -878,7 +953,7 @@ func (x *ResolveFileRevisionRequest) String() string {
 func (*ResolveFileRevisionRequest) ProtoMessage() {}
 
 func (x *ResolveFileRevisionRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_file_store_v1_files_proto_msgTypes[12]
+	mi := &file_nominal_protos_file_store_v1_files_proto_msgTypes[13]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -891,7 +966,7 @@ func (x *ResolveFileRevisionRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ResolveFileRevisionRequest.ProtoReflect.Descriptor instead.
 func (*ResolveFileRevisionRequest) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_file_store_v1_files_proto_rawDescGZIP(), []int{12}
+	return file_nominal_protos_file_store_v1_files_proto_rawDescGZIP(), []int{13}
 }
 
 func (x *ResolveFileRevisionRequest) GetSourceRef() *FileRevisionRef {
@@ -904,13 +979,15 @@ func (x *ResolveFileRevisionRequest) GetSourceRef() *FileRevisionRef {
 type ResolveFileRevisionResponse struct {
 	state           protoimpl.MessageState `protogen:"open.v1"`
 	FileRevisionRid string                 `protobuf:"bytes,1,opt,name=file_revision_rid,json=fileRevisionRid,proto3" json:"file_revision_rid,omitempty"`
+	DriveRid        string                 `protobuf:"bytes,2,opt,name=drive_rid,json=driveRid,proto3" json:"drive_rid,omitempty"`
+	FileRevision    *FileRevision          `protobuf:"bytes,3,opt,name=file_revision,json=fileRevision,proto3" json:"file_revision,omitempty"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
 
 func (x *ResolveFileRevisionResponse) Reset() {
 	*x = ResolveFileRevisionResponse{}
-	mi := &file_nominal_protos_file_store_v1_files_proto_msgTypes[13]
+	mi := &file_nominal_protos_file_store_v1_files_proto_msgTypes[14]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -922,7 +999,7 @@ func (x *ResolveFileRevisionResponse) String() string {
 func (*ResolveFileRevisionResponse) ProtoMessage() {}
 
 func (x *ResolveFileRevisionResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_file_store_v1_files_proto_msgTypes[13]
+	mi := &file_nominal_protos_file_store_v1_files_proto_msgTypes[14]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -935,7 +1012,7 @@ func (x *ResolveFileRevisionResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ResolveFileRevisionResponse.ProtoReflect.Descriptor instead.
 func (*ResolveFileRevisionResponse) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_file_store_v1_files_proto_rawDescGZIP(), []int{13}
+	return file_nominal_protos_file_store_v1_files_proto_rawDescGZIP(), []int{14}
 }
 
 func (x *ResolveFileRevisionResponse) GetFileRevisionRid() string {
@@ -943,6 +1020,20 @@ func (x *ResolveFileRevisionResponse) GetFileRevisionRid() string {
 		return x.FileRevisionRid
 	}
 	return ""
+}
+
+func (x *ResolveFileRevisionResponse) GetDriveRid() string {
+	if x != nil {
+		return x.DriveRid
+	}
+	return ""
+}
+
+func (x *ResolveFileRevisionResponse) GetFileRevision() *FileRevision {
+	if x != nil {
+		return x.FileRevision
+	}
+	return nil
 }
 
 type ListFilesRequest struct {
@@ -954,13 +1045,18 @@ type ListFilesRequest struct {
 	IncludeRemoved bool         `protobuf:"varint,3,opt,name=include_removed,json=includeRemoved,proto3" json:"include_removed,omitempty"`
 	PageSize       *int32       `protobuf:"varint,4,opt,name=page_size,json=pageSize,proto3,oneof" json:"page_size,omitempty"`
 	PageToken      *string      `protobuf:"bytes,5,opt,name=page_token,json=pageToken,proto3,oneof" json:"page_token,omitempty"`
-	unknownFields  protoimpl.UnknownFields
-	sizeCache      protoimpl.SizeCache
+	// Returns every active file at any depth under parent_path, ordered by path, with no directory
+	// entries, so one paged call enumerates or counts a whole folder tree. A page token from a
+	// recursive listing is only valid with recursive set, and the reverse. Managed drives only:
+	// virtual drives return UNIMPLEMENTED. Cannot be combined with include_removed.
+	Recursive     bool `protobuf:"varint,6,opt,name=recursive,proto3" json:"recursive,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
 }
 
 func (x *ListFilesRequest) Reset() {
 	*x = ListFilesRequest{}
-	mi := &file_nominal_protos_file_store_v1_files_proto_msgTypes[14]
+	mi := &file_nominal_protos_file_store_v1_files_proto_msgTypes[15]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -972,7 +1068,7 @@ func (x *ListFilesRequest) String() string {
 func (*ListFilesRequest) ProtoMessage() {}
 
 func (x *ListFilesRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_file_store_v1_files_proto_msgTypes[14]
+	mi := &file_nominal_protos_file_store_v1_files_proto_msgTypes[15]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -985,7 +1081,7 @@ func (x *ListFilesRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListFilesRequest.ProtoReflect.Descriptor instead.
 func (*ListFilesRequest) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_file_store_v1_files_proto_rawDescGZIP(), []int{14}
+	return file_nominal_protos_file_store_v1_files_proto_rawDescGZIP(), []int{15}
 }
 
 func (x *ListFilesRequest) GetDriveRid() string {
@@ -1023,6 +1119,13 @@ func (x *ListFilesRequest) GetPageToken() string {
 	return ""
 }
 
+func (x *ListFilesRequest) GetRecursive() bool {
+	if x != nil {
+		return x.Recursive
+	}
+	return false
+}
+
 type ListFilesResponse struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Entries       []*FileEntry           `protobuf:"bytes,1,rep,name=entries,proto3" json:"entries,omitempty"`
@@ -1033,7 +1136,7 @@ type ListFilesResponse struct {
 
 func (x *ListFilesResponse) Reset() {
 	*x = ListFilesResponse{}
-	mi := &file_nominal_protos_file_store_v1_files_proto_msgTypes[15]
+	mi := &file_nominal_protos_file_store_v1_files_proto_msgTypes[16]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1045,7 +1148,7 @@ func (x *ListFilesResponse) String() string {
 func (*ListFilesResponse) ProtoMessage() {}
 
 func (x *ListFilesResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_file_store_v1_files_proto_msgTypes[15]
+	mi := &file_nominal_protos_file_store_v1_files_proto_msgTypes[16]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1058,7 +1161,7 @@ func (x *ListFilesResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListFilesResponse.ProtoReflect.Descriptor instead.
 func (*ListFilesResponse) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_file_store_v1_files_proto_rawDescGZIP(), []int{15}
+	return file_nominal_protos_file_store_v1_files_proto_rawDescGZIP(), []int{16}
 }
 
 func (x *ListFilesResponse) GetEntries() []*FileEntry {
@@ -1079,7 +1182,8 @@ type ApplyFileChangesRequest struct {
 	state    protoimpl.MessageState `protogen:"open.v1"`
 	DriveRid string                 `protobuf:"bytes,1,opt,name=drive_rid,json=driveRid,proto3" json:"drive_rid,omitempty"`
 	// At most 1,000 changes per request. Changes are processed in order. Successful earlier changes are visible
-	// to later changes in the same batch. Failed changes do not stop later changes.
+	// to later changes in the same batch. Failed changes do not stop later changes. The MoveDirectory changes in one
+	// request may re-path at most 100,000 files in total.
 	Changes       []*FileChange `protobuf:"bytes,2,rep,name=changes,proto3" json:"changes,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -1087,7 +1191,7 @@ type ApplyFileChangesRequest struct {
 
 func (x *ApplyFileChangesRequest) Reset() {
 	*x = ApplyFileChangesRequest{}
-	mi := &file_nominal_protos_file_store_v1_files_proto_msgTypes[16]
+	mi := &file_nominal_protos_file_store_v1_files_proto_msgTypes[17]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1099,7 +1203,7 @@ func (x *ApplyFileChangesRequest) String() string {
 func (*ApplyFileChangesRequest) ProtoMessage() {}
 
 func (x *ApplyFileChangesRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_file_store_v1_files_proto_msgTypes[16]
+	mi := &file_nominal_protos_file_store_v1_files_proto_msgTypes[17]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1112,7 +1216,7 @@ func (x *ApplyFileChangesRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ApplyFileChangesRequest.ProtoReflect.Descriptor instead.
 func (*ApplyFileChangesRequest) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_file_store_v1_files_proto_rawDescGZIP(), []int{16}
+	return file_nominal_protos_file_store_v1_files_proto_rawDescGZIP(), []int{17}
 }
 
 func (x *ApplyFileChangesRequest) GetDriveRid() string {
@@ -1139,7 +1243,7 @@ type ApplyFileChangesResponse struct {
 
 func (x *ApplyFileChangesResponse) Reset() {
 	*x = ApplyFileChangesResponse{}
-	mi := &file_nominal_protos_file_store_v1_files_proto_msgTypes[17]
+	mi := &file_nominal_protos_file_store_v1_files_proto_msgTypes[18]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1151,7 +1255,7 @@ func (x *ApplyFileChangesResponse) String() string {
 func (*ApplyFileChangesResponse) ProtoMessage() {}
 
 func (x *ApplyFileChangesResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_file_store_v1_files_proto_msgTypes[17]
+	mi := &file_nominal_protos_file_store_v1_files_proto_msgTypes[18]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1164,7 +1268,7 @@ func (x *ApplyFileChangesResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ApplyFileChangesResponse.ProtoReflect.Descriptor instead.
 func (*ApplyFileChangesResponse) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_file_store_v1_files_proto_rawDescGZIP(), []int{17}
+	return file_nominal_protos_file_store_v1_files_proto_rawDescGZIP(), []int{18}
 }
 
 func (x *ApplyFileChangesResponse) GetResults() []*FileChangeResult {
@@ -1184,7 +1288,7 @@ type FileChangeSuccess struct {
 
 func (x *FileChangeSuccess) Reset() {
 	*x = FileChangeSuccess{}
-	mi := &file_nominal_protos_file_store_v1_files_proto_msgTypes[18]
+	mi := &file_nominal_protos_file_store_v1_files_proto_msgTypes[19]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1196,7 +1300,7 @@ func (x *FileChangeSuccess) String() string {
 func (*FileChangeSuccess) ProtoMessage() {}
 
 func (x *FileChangeSuccess) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_file_store_v1_files_proto_msgTypes[18]
+	mi := &file_nominal_protos_file_store_v1_files_proto_msgTypes[19]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1209,7 +1313,7 @@ func (x *FileChangeSuccess) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use FileChangeSuccess.ProtoReflect.Descriptor instead.
 func (*FileChangeSuccess) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_file_store_v1_files_proto_rawDescGZIP(), []int{18}
+	return file_nominal_protos_file_store_v1_files_proto_rawDescGZIP(), []int{19}
 }
 
 func (x *FileChangeSuccess) GetFile() *LogicalFile {
@@ -1226,6 +1330,43 @@ func (x *FileChangeSuccess) GetFileRevision() *ManagedFileRevision {
 	return nil
 }
 
+// Empty. A directory move reports no per-file detail.
+type MoveDirectorySuccess struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *MoveDirectorySuccess) Reset() {
+	*x = MoveDirectorySuccess{}
+	mi := &file_nominal_protos_file_store_v1_files_proto_msgTypes[20]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *MoveDirectorySuccess) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*MoveDirectorySuccess) ProtoMessage() {}
+
+func (x *MoveDirectorySuccess) ProtoReflect() protoreflect.Message {
+	mi := &file_nominal_protos_file_store_v1_files_proto_msgTypes[20]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use MoveDirectorySuccess.ProtoReflect.Descriptor instead.
+func (*MoveDirectorySuccess) Descriptor() ([]byte, []int) {
+	return file_nominal_protos_file_store_v1_files_proto_rawDescGZIP(), []int{20}
+}
+
 type FileChangeFailure struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Types that are valid to be assigned to Error:
@@ -1240,7 +1381,7 @@ type FileChangeFailure struct {
 
 func (x *FileChangeFailure) Reset() {
 	*x = FileChangeFailure{}
-	mi := &file_nominal_protos_file_store_v1_files_proto_msgTypes[19]
+	mi := &file_nominal_protos_file_store_v1_files_proto_msgTypes[21]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1252,7 +1393,7 @@ func (x *FileChangeFailure) String() string {
 func (*FileChangeFailure) ProtoMessage() {}
 
 func (x *FileChangeFailure) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_file_store_v1_files_proto_msgTypes[19]
+	mi := &file_nominal_protos_file_store_v1_files_proto_msgTypes[21]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1265,7 +1406,7 @@ func (x *FileChangeFailure) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use FileChangeFailure.ProtoReflect.Descriptor instead.
 func (*FileChangeFailure) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_file_store_v1_files_proto_rawDescGZIP(), []int{19}
+	return file_nominal_protos_file_store_v1_files_proto_rawDescGZIP(), []int{21}
 }
 
 func (x *FileChangeFailure) GetError() isFileChangeFailure_Error {
@@ -1322,6 +1463,7 @@ type FileChangeResult struct {
 	//
 	//	*FileChangeResult_Success
 	//	*FileChangeResult_Failure
+	//	*FileChangeResult_DirectoryMoved
 	Result        isFileChangeResult_Result `protobuf_oneof:"result"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -1329,7 +1471,7 @@ type FileChangeResult struct {
 
 func (x *FileChangeResult) Reset() {
 	*x = FileChangeResult{}
-	mi := &file_nominal_protos_file_store_v1_files_proto_msgTypes[20]
+	mi := &file_nominal_protos_file_store_v1_files_proto_msgTypes[22]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1341,7 +1483,7 @@ func (x *FileChangeResult) String() string {
 func (*FileChangeResult) ProtoMessage() {}
 
 func (x *FileChangeResult) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_file_store_v1_files_proto_msgTypes[20]
+	mi := &file_nominal_protos_file_store_v1_files_proto_msgTypes[22]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1354,7 +1496,7 @@ func (x *FileChangeResult) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use FileChangeResult.ProtoReflect.Descriptor instead.
 func (*FileChangeResult) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_file_store_v1_files_proto_rawDescGZIP(), []int{20}
+	return file_nominal_protos_file_store_v1_files_proto_rawDescGZIP(), []int{22}
 }
 
 func (x *FileChangeResult) GetResult() isFileChangeResult_Result {
@@ -1382,6 +1524,15 @@ func (x *FileChangeResult) GetFailure() *FileChangeFailure {
 	return nil
 }
 
+func (x *FileChangeResult) GetDirectoryMoved() *MoveDirectorySuccess {
+	if x != nil {
+		if x, ok := x.Result.(*FileChangeResult_DirectoryMoved); ok {
+			return x.DirectoryMoved
+		}
+	}
+	return nil
+}
+
 type isFileChangeResult_Result interface {
 	isFileChangeResult_Result()
 }
@@ -1394,9 +1545,15 @@ type FileChangeResult_Failure struct {
 	Failure *FileChangeFailure `protobuf:"bytes,2,opt,name=failure,proto3,oneof"`
 }
 
+type FileChangeResult_DirectoryMoved struct {
+	DirectoryMoved *MoveDirectorySuccess `protobuf:"bytes,3,opt,name=directory_moved,json=directoryMoved,proto3,oneof"`
+}
+
 func (*FileChangeResult_Success) isFileChangeResult_Result() {}
 
 func (*FileChangeResult_Failure) isFileChangeResult_Result() {}
+
+func (*FileChangeResult_DirectoryMoved) isFileChangeResult_Result() {}
 
 type ListFileRevisionsRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
@@ -1410,7 +1567,7 @@ type ListFileRevisionsRequest struct {
 
 func (x *ListFileRevisionsRequest) Reset() {
 	*x = ListFileRevisionsRequest{}
-	mi := &file_nominal_protos_file_store_v1_files_proto_msgTypes[21]
+	mi := &file_nominal_protos_file_store_v1_files_proto_msgTypes[23]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1422,7 +1579,7 @@ func (x *ListFileRevisionsRequest) String() string {
 func (*ListFileRevisionsRequest) ProtoMessage() {}
 
 func (x *ListFileRevisionsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_file_store_v1_files_proto_msgTypes[21]
+	mi := &file_nominal_protos_file_store_v1_files_proto_msgTypes[23]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1435,7 +1592,7 @@ func (x *ListFileRevisionsRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListFileRevisionsRequest.ProtoReflect.Descriptor instead.
 func (*ListFileRevisionsRequest) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_file_store_v1_files_proto_rawDescGZIP(), []int{21}
+	return file_nominal_protos_file_store_v1_files_proto_rawDescGZIP(), []int{23}
 }
 
 func (x *ListFileRevisionsRequest) GetDriveRid() string {
@@ -1476,7 +1633,7 @@ type ListFileRevisionsResponse struct {
 
 func (x *ListFileRevisionsResponse) Reset() {
 	*x = ListFileRevisionsResponse{}
-	mi := &file_nominal_protos_file_store_v1_files_proto_msgTypes[22]
+	mi := &file_nominal_protos_file_store_v1_files_proto_msgTypes[24]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1488,7 +1645,7 @@ func (x *ListFileRevisionsResponse) String() string {
 func (*ListFileRevisionsResponse) ProtoMessage() {}
 
 func (x *ListFileRevisionsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_file_store_v1_files_proto_msgTypes[22]
+	mi := &file_nominal_protos_file_store_v1_files_proto_msgTypes[24]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1501,7 +1658,7 @@ func (x *ListFileRevisionsResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListFileRevisionsResponse.ProtoReflect.Descriptor instead.
 func (*ListFileRevisionsResponse) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_file_store_v1_files_proto_rawDescGZIP(), []int{22}
+	return file_nominal_protos_file_store_v1_files_proto_rawDescGZIP(), []int{24}
 }
 
 func (x *ListFileRevisionsResponse) GetFileRevisions() []*ManagedFileRevision {
@@ -1527,7 +1684,7 @@ type PurgeFileRequest struct {
 
 func (x *PurgeFileRequest) Reset() {
 	*x = PurgeFileRequest{}
-	mi := &file_nominal_protos_file_store_v1_files_proto_msgTypes[23]
+	mi := &file_nominal_protos_file_store_v1_files_proto_msgTypes[25]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1539,7 +1696,7 @@ func (x *PurgeFileRequest) String() string {
 func (*PurgeFileRequest) ProtoMessage() {}
 
 func (x *PurgeFileRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_file_store_v1_files_proto_msgTypes[23]
+	mi := &file_nominal_protos_file_store_v1_files_proto_msgTypes[25]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1552,7 +1709,7 @@ func (x *PurgeFileRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use PurgeFileRequest.ProtoReflect.Descriptor instead.
 func (*PurgeFileRequest) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_file_store_v1_files_proto_rawDescGZIP(), []int{23}
+	return file_nominal_protos_file_store_v1_files_proto_rawDescGZIP(), []int{25}
 }
 
 func (x *PurgeFileRequest) GetFileRevisionRid() string {
@@ -1570,7 +1727,7 @@ type PurgeFileResponse struct {
 
 func (x *PurgeFileResponse) Reset() {
 	*x = PurgeFileResponse{}
-	mi := &file_nominal_protos_file_store_v1_files_proto_msgTypes[24]
+	mi := &file_nominal_protos_file_store_v1_files_proto_msgTypes[26]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1582,7 +1739,7 @@ func (x *PurgeFileResponse) String() string {
 func (*PurgeFileResponse) ProtoMessage() {}
 
 func (x *PurgeFileResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_file_store_v1_files_proto_msgTypes[24]
+	mi := &file_nominal_protos_file_store_v1_files_proto_msgTypes[26]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1595,7 +1752,7 @@ func (x *PurgeFileResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use PurgeFileResponse.ProtoReflect.Descriptor instead.
 func (*PurgeFileResponse) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_file_store_v1_files_proto_rawDescGZIP(), []int{24}
+	return file_nominal_protos_file_store_v1_files_proto_rawDescGZIP(), []int{26}
 }
 
 type GetDownloadUrlRequest struct {
@@ -1607,7 +1764,7 @@ type GetDownloadUrlRequest struct {
 
 func (x *GetDownloadUrlRequest) Reset() {
 	*x = GetDownloadUrlRequest{}
-	mi := &file_nominal_protos_file_store_v1_files_proto_msgTypes[25]
+	mi := &file_nominal_protos_file_store_v1_files_proto_msgTypes[27]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1619,7 +1776,7 @@ func (x *GetDownloadUrlRequest) String() string {
 func (*GetDownloadUrlRequest) ProtoMessage() {}
 
 func (x *GetDownloadUrlRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_file_store_v1_files_proto_msgTypes[25]
+	mi := &file_nominal_protos_file_store_v1_files_proto_msgTypes[27]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1632,7 +1789,7 @@ func (x *GetDownloadUrlRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetDownloadUrlRequest.ProtoReflect.Descriptor instead.
 func (*GetDownloadUrlRequest) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_file_store_v1_files_proto_rawDescGZIP(), []int{25}
+	return file_nominal_protos_file_store_v1_files_proto_rawDescGZIP(), []int{27}
 }
 
 func (x *GetDownloadUrlRequest) GetFileRevisionRid() string {
@@ -1654,7 +1811,7 @@ type GetDownloadUrlResponse struct {
 
 func (x *GetDownloadUrlResponse) Reset() {
 	*x = GetDownloadUrlResponse{}
-	mi := &file_nominal_protos_file_store_v1_files_proto_msgTypes[26]
+	mi := &file_nominal_protos_file_store_v1_files_proto_msgTypes[28]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1666,7 +1823,7 @@ func (x *GetDownloadUrlResponse) String() string {
 func (*GetDownloadUrlResponse) ProtoMessage() {}
 
 func (x *GetDownloadUrlResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_file_store_v1_files_proto_msgTypes[26]
+	mi := &file_nominal_protos_file_store_v1_files_proto_msgTypes[28]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1679,7 +1836,7 @@ func (x *GetDownloadUrlResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetDownloadUrlResponse.ProtoReflect.Descriptor instead.
 func (*GetDownloadUrlResponse) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_file_store_v1_files_proto_rawDescGZIP(), []int{26}
+	return file_nominal_protos_file_store_v1_files_proto_rawDescGZIP(), []int{28}
 }
 
 func (x *GetDownloadUrlResponse) GetUrl() string {
@@ -1721,13 +1878,17 @@ const file_nominal_protos_file_store_v1_files_proto_rawDesc = "" +
 	"\vRestoreFile\x12`\n" +
 	"\x14restore_revision_rid\x18\x01 \x01(\tB.\x9a\xb2\x1a*\n" +
 	"(io.nominal.api.rids.DriveFileRevisionRidR\x12restoreRevisionRid\x12D\n" +
-	"\vdestination\x18\x02 \x01(\v2\".nominal.file_store.v1.DestinationR\vdestination\"\x85\x02\n" +
+	"\vdestination\x18\x02 \x01(\v2\".nominal.file_store.v1.DestinationR\vdestination\"{\n" +
+	"\rMoveDirectory\x126\n" +
+	"\x04from\x18\x01 \x01(\v2\".nominal.file_store.v1.LogicalPathR\x04from\x122\n" +
+	"\x02to\x18\x02 \x01(\v2\".nominal.file_store.v1.LogicalPathR\x02to\"\xd4\x02\n" +
 	"\n" +
 	"FileChange\x122\n" +
 	"\x03put\x18\x01 \x01(\v2\x1e.nominal.file_store.v1.PutFileH\x00R\x03put\x125\n" +
 	"\x04move\x18\x02 \x01(\v2\x1f.nominal.file_store.v1.MoveFileH\x00R\x04move\x12;\n" +
 	"\x06remove\x18\x03 \x01(\v2!.nominal.file_store.v1.RemoveFileH\x00R\x06remove\x12>\n" +
-	"\arestore\x18\x04 \x01(\v2\".nominal.file_store.v1.RestoreFileH\x00R\arestoreB\x0f\n" +
+	"\arestore\x18\x04 \x01(\v2\".nominal.file_store.v1.RestoreFileH\x00R\arestore\x12M\n" +
+	"\x0emove_directory\x18\x05 \x01(\v2$.nominal.file_store.v1.MoveDirectoryH\x00R\rmoveDirectoryB\x0f\n" +
 	"\x06change\x12\x05\xbaH\x02\b\x01\"\xb2\x01\n" +
 	"\x0eGetFileRequest\x12?\n" +
 	"\tdrive_rid\x18\x01 \x01(\tB\"\x9a\xb2\x1a\x1e\n" +
@@ -1746,10 +1907,13 @@ const file_nominal_protos_file_store_v1_files_proto_rawDesc = "" +
 	"\x1cio.nominal.api.rids.DriveRidR\bdriveRid\"c\n" +
 	"\x1aResolveFileRevisionRequest\x12E\n" +
 	"\n" +
-	"source_ref\x18\x02 \x01(\v2&.nominal.file_store.v1.FileRevisionRefR\tsourceRef\"y\n" +
+	"source_ref\x18\x02 \x01(\v2&.nominal.file_store.v1.FileRevisionRefR\tsourceRef\"\x84\x02\n" +
 	"\x1bResolveFileRevisionResponse\x12Z\n" +
 	"\x11file_revision_rid\x18\x01 \x01(\tB.\x9a\xb2\x1a*\n" +
-	"(io.nominal.api.rids.DriveFileRevisionRidR\x0ffileRevisionRid\"\xc0\x02\n" +
+	"(io.nominal.api.rids.DriveFileRevisionRidR\x0ffileRevisionRid\x12?\n" +
+	"\tdrive_rid\x18\x02 \x01(\tB\"\x9a\xb2\x1a\x1e\n" +
+	"\x1cio.nominal.api.rids.DriveRidR\bdriveRid\x12H\n" +
+	"\rfile_revision\x18\x03 \x01(\v2#.nominal.file_store.v1.FileRevisionR\ffileRevision\"\xde\x02\n" +
 	"\x10ListFilesRequest\x12?\n" +
 	"\tdrive_rid\x18\x01 \x01(\tB\"\x9a\xb2\x1a\x1e\n" +
 	"\x1cio.nominal.api.rids.DriveRidR\bdriveRid\x12C\n" +
@@ -1759,7 +1923,8 @@ const file_nominal_protos_file_store_v1_files_proto_rawDesc = "" +
 	"\tpage_size\x18\x04 \x01(\x05H\x00R\bpageSize\x88\x01\x01\x12>\n" +
 	"\n" +
 	"page_token\x18\x05 \x01(\tB\x1a\x9a\xb2\x1a\x16\n" +
-	"\x14io.nominal.api.TokenH\x01R\tpageToken\x88\x01\x01B\f\n" +
+	"\x14io.nominal.api.TokenH\x01R\tpageToken\x88\x01\x01\x12\x1c\n" +
+	"\trecursive\x18\x06 \x01(\bR\trecursiveB\f\n" +
 	"\n" +
 	"_page_sizeB\r\n" +
 	"\v_page_token\"\xac\x01\n" +
@@ -1776,15 +1941,17 @@ const file_nominal_protos_file_store_v1_files_proto_rawDesc = "" +
 	"\aresults\x18\x01 \x03(\v2'.nominal.file_store.v1.FileChangeResultR\aresults\"\x9c\x01\n" +
 	"\x11FileChangeSuccess\x126\n" +
 	"\x04file\x18\x01 \x01(\v2\".nominal.file_store.v1.LogicalFileR\x04file\x12O\n" +
-	"\rfile_revision\x18\x02 \x01(\v2*.nominal.file_store.v1.ManagedFileRevisionR\ffileRevision\"\xd2\x01\n" +
+	"\rfile_revision\x18\x02 \x01(\v2*.nominal.file_store.v1.ManagedFileRevisionR\ffileRevision\"\x16\n" +
+	"\x14MoveDirectorySuccess\"\xd2\x01\n" +
 	"\x11FileChangeFailure\x12E\n" +
 	"\x06common\x18\x03 \x01(\x0e2+.nominal.file_store.v1.FileStoreCommonErrorH\x00R\x06common\x12@\n" +
 	"\x06change\x18\x04 \x01(\x0e2&.nominal.file_store.v1.FileChangeErrorH\x00R\x06change\x12\x18\n" +
 	"\amessage\x18\x02 \x01(\tR\amessageB\x0e\n" +
-	"\x05error\x12\x05\xbaH\x02\b\x01J\x04\b\x01\x10\x02R\x04code\"\xa8\x01\n" +
+	"\x05error\x12\x05\xbaH\x02\b\x01J\x04\b\x01\x10\x02R\x04code\"\x80\x02\n" +
 	"\x10FileChangeResult\x12D\n" +
 	"\asuccess\x18\x01 \x01(\v2(.nominal.file_store.v1.FileChangeSuccessH\x00R\asuccess\x12D\n" +
-	"\afailure\x18\x02 \x01(\v2(.nominal.file_store.v1.FileChangeFailureH\x00R\afailureB\b\n" +
+	"\afailure\x18\x02 \x01(\v2(.nominal.file_store.v1.FileChangeFailureH\x00R\afailure\x12V\n" +
+	"\x0fdirectory_moved\x18\x03 \x01(\v2+.nominal.file_store.v1.MoveDirectorySuccessH\x00R\x0edirectoryMovedB\b\n" +
 	"\x06result\"\x9d\x02\n" +
 	"\x18ListFileRevisionsRequest\x12?\n" +
 	"\tdrive_rid\x18\x01 \x01(\tB\"\x9a\xb2\x1a\x1e\n" +
@@ -1817,7 +1984,7 @@ const file_nominal_protos_file_store_v1_files_proto_rawDesc = "" +
 	"#REVISION_READ_ERROR_BYTES_RECLAIMED\x10\x01\x1a8\xb2\xb2\x1a4\n" +
 	"\tNOT_FOUND\x12'File revision bytes have been reclaimed\x12l\n" +
 	"*REVISION_READ_ERROR_MATERIALIZATION_FAILED\x10\x02\x1a<\xb2\xb2\x1a8\n" +
-	"\vUNAVAILABLE\x12)Failed to materialize file revision bytes*\x89\x04\n" +
+	"\vUNAVAILABLE\x12)Failed to materialize file revision bytes*\x80\x05\n" +
 	"\x0fFileChangeError\x12!\n" +
 	"\x1dFILE_CHANGE_ERROR_UNSPECIFIED\x10\x00\x12T\n" +
 	"%FILE_CHANGE_ERROR_PATH_ALREADY_EXISTS\x10\x01\x1a)\xb2\xb2\x1a%\n" +
@@ -1829,7 +1996,9 @@ const file_nominal_protos_file_store_v1_files_proto_rawDesc = "" +
 	"!FILE_CHANGE_ERROR_READ_ONLY_DRIVE\x10\x04\x1a-\xb2\xb2\x1a)\n" +
 	"\x13FAILED_PRECONDITION\x12\x12Drive is read-only\x12[\n" +
 	"+FILE_CHANGE_ERROR_UPLOADED_OBJECT_NOT_FOUND\x10\x05\x1a*\xb2\xb2\x1a&\n" +
-	"\tNOT_FOUND\x12\x19Uploaded object not found2\x92\n" +
+	"\tNOT_FOUND\x12\x19Uploaded object not found\x12u\n" +
+	"/FILE_CHANGE_ERROR_DIRECTORY_MOVE_LIMIT_EXCEEDED\x10\x06\x1a@\xb2\xb2\x1a<\n" +
+	"\x13FAILED_PRECONDITION\x12%Too many files to move in one request2\x92\n" +
 	"\n" +
 	"\fFilesService\x12}\n" +
 	"\aGetFile\x12%.nominal.file_store.v1.GetFileRequest\x1a&.nominal.file_store.v1.GetFileResponse\"#\x82\xd3\xe4\x93\x02\x1d:\x01*\"\x18/file-store/v1/files/get\x12\xa7\x01\n" +
@@ -1856,7 +2025,7 @@ func file_nominal_protos_file_store_v1_files_proto_rawDescGZIP() []byte {
 }
 
 var file_nominal_protos_file_store_v1_files_proto_enumTypes = make([]protoimpl.EnumInfo, 2)
-var file_nominal_protos_file_store_v1_files_proto_msgTypes = make([]protoimpl.MessageInfo, 27)
+var file_nominal_protos_file_store_v1_files_proto_msgTypes = make([]protoimpl.MessageInfo, 29)
 var file_nominal_protos_file_store_v1_files_proto_goTypes = []any{
 	(RevisionReadError)(0),              // 0: nominal.file_store.v1.RevisionReadError
 	(FileChangeError)(0),                // 1: nominal.file_store.v1.FileChangeError
@@ -1867,82 +2036,90 @@ var file_nominal_protos_file_store_v1_files_proto_goTypes = []any{
 	(*MoveFile)(nil),                    // 6: nominal.file_store.v1.MoveFile
 	(*RemoveFile)(nil),                  // 7: nominal.file_store.v1.RemoveFile
 	(*RestoreFile)(nil),                 // 8: nominal.file_store.v1.RestoreFile
-	(*FileChange)(nil),                  // 9: nominal.file_store.v1.FileChange
-	(*GetFileRequest)(nil),              // 10: nominal.file_store.v1.GetFileRequest
-	(*GetFileByIdentityRequest)(nil),    // 11: nominal.file_store.v1.GetFileByIdentityRequest
-	(*GetFileResponse)(nil),             // 12: nominal.file_store.v1.GetFileResponse
-	(*GetFileByIdentityResponse)(nil),   // 13: nominal.file_store.v1.GetFileByIdentityResponse
-	(*ResolveFileRevisionRequest)(nil),  // 14: nominal.file_store.v1.ResolveFileRevisionRequest
-	(*ResolveFileRevisionResponse)(nil), // 15: nominal.file_store.v1.ResolveFileRevisionResponse
-	(*ListFilesRequest)(nil),            // 16: nominal.file_store.v1.ListFilesRequest
-	(*ListFilesResponse)(nil),           // 17: nominal.file_store.v1.ListFilesResponse
-	(*ApplyFileChangesRequest)(nil),     // 18: nominal.file_store.v1.ApplyFileChangesRequest
-	(*ApplyFileChangesResponse)(nil),    // 19: nominal.file_store.v1.ApplyFileChangesResponse
-	(*FileChangeSuccess)(nil),           // 20: nominal.file_store.v1.FileChangeSuccess
-	(*FileChangeFailure)(nil),           // 21: nominal.file_store.v1.FileChangeFailure
-	(*FileChangeResult)(nil),            // 22: nominal.file_store.v1.FileChangeResult
-	(*ListFileRevisionsRequest)(nil),    // 23: nominal.file_store.v1.ListFileRevisionsRequest
-	(*ListFileRevisionsResponse)(nil),   // 24: nominal.file_store.v1.ListFileRevisionsResponse
-	(*PurgeFileRequest)(nil),            // 25: nominal.file_store.v1.PurgeFileRequest
-	(*PurgeFileResponse)(nil),           // 26: nominal.file_store.v1.PurgeFileResponse
-	(*GetDownloadUrlRequest)(nil),       // 27: nominal.file_store.v1.GetDownloadUrlRequest
-	(*GetDownloadUrlResponse)(nil),      // 28: nominal.file_store.v1.GetDownloadUrlResponse
-	(*LogicalPath)(nil),                 // 29: nominal.file_store.v1.LogicalPath
-	(*LogicalFileIdentity)(nil),         // 30: nominal.file_store.v1.LogicalFileIdentity
-	(*LogicalFile)(nil),                 // 31: nominal.file_store.v1.LogicalFile
-	(*FileRevisionRef)(nil),             // 32: nominal.file_store.v1.FileRevisionRef
-	(*FileEntry)(nil),                   // 33: nominal.file_store.v1.FileEntry
-	(*ManagedFileRevision)(nil),         // 34: nominal.file_store.v1.ManagedFileRevision
-	(FileStoreCommonError)(0),           // 35: nominal.file_store.v1.FileStoreCommonError
+	(*MoveDirectory)(nil),               // 9: nominal.file_store.v1.MoveDirectory
+	(*FileChange)(nil),                  // 10: nominal.file_store.v1.FileChange
+	(*GetFileRequest)(nil),              // 11: nominal.file_store.v1.GetFileRequest
+	(*GetFileByIdentityRequest)(nil),    // 12: nominal.file_store.v1.GetFileByIdentityRequest
+	(*GetFileResponse)(nil),             // 13: nominal.file_store.v1.GetFileResponse
+	(*GetFileByIdentityResponse)(nil),   // 14: nominal.file_store.v1.GetFileByIdentityResponse
+	(*ResolveFileRevisionRequest)(nil),  // 15: nominal.file_store.v1.ResolveFileRevisionRequest
+	(*ResolveFileRevisionResponse)(nil), // 16: nominal.file_store.v1.ResolveFileRevisionResponse
+	(*ListFilesRequest)(nil),            // 17: nominal.file_store.v1.ListFilesRequest
+	(*ListFilesResponse)(nil),           // 18: nominal.file_store.v1.ListFilesResponse
+	(*ApplyFileChangesRequest)(nil),     // 19: nominal.file_store.v1.ApplyFileChangesRequest
+	(*ApplyFileChangesResponse)(nil),    // 20: nominal.file_store.v1.ApplyFileChangesResponse
+	(*FileChangeSuccess)(nil),           // 21: nominal.file_store.v1.FileChangeSuccess
+	(*MoveDirectorySuccess)(nil),        // 22: nominal.file_store.v1.MoveDirectorySuccess
+	(*FileChangeFailure)(nil),           // 23: nominal.file_store.v1.FileChangeFailure
+	(*FileChangeResult)(nil),            // 24: nominal.file_store.v1.FileChangeResult
+	(*ListFileRevisionsRequest)(nil),    // 25: nominal.file_store.v1.ListFileRevisionsRequest
+	(*ListFileRevisionsResponse)(nil),   // 26: nominal.file_store.v1.ListFileRevisionsResponse
+	(*PurgeFileRequest)(nil),            // 27: nominal.file_store.v1.PurgeFileRequest
+	(*PurgeFileResponse)(nil),           // 28: nominal.file_store.v1.PurgeFileResponse
+	(*GetDownloadUrlRequest)(nil),       // 29: nominal.file_store.v1.GetDownloadUrlRequest
+	(*GetDownloadUrlResponse)(nil),      // 30: nominal.file_store.v1.GetDownloadUrlResponse
+	(*LogicalPath)(nil),                 // 31: nominal.file_store.v1.LogicalPath
+	(*LogicalFileIdentity)(nil),         // 32: nominal.file_store.v1.LogicalFileIdentity
+	(*LogicalFile)(nil),                 // 33: nominal.file_store.v1.LogicalFile
+	(*FileRevisionRef)(nil),             // 34: nominal.file_store.v1.FileRevisionRef
+	(*FileRevision)(nil),                // 35: nominal.file_store.v1.FileRevision
+	(*FileEntry)(nil),                   // 36: nominal.file_store.v1.FileEntry
+	(*ManagedFileRevision)(nil),         // 37: nominal.file_store.v1.ManagedFileRevision
+	(FileStoreCommonError)(0),           // 38: nominal.file_store.v1.FileStoreCommonError
 }
 var file_nominal_protos_file_store_v1_files_proto_depIdxs = []int32{
-	29, // 0: nominal.file_store.v1.PathTarget.path:type_name -> nominal.file_store.v1.LogicalPath
+	31, // 0: nominal.file_store.v1.PathTarget.path:type_name -> nominal.file_store.v1.LogicalPath
 	3,  // 1: nominal.file_store.v1.Destination.path:type_name -> nominal.file_store.v1.PathTarget
 	2,  // 2: nominal.file_store.v1.PutFile.object:type_name -> nominal.file_store.v1.UploadedObjectRef
 	4,  // 3: nominal.file_store.v1.PutFile.destination:type_name -> nominal.file_store.v1.Destination
 	4,  // 4: nominal.file_store.v1.MoveFile.destination:type_name -> nominal.file_store.v1.Destination
 	4,  // 5: nominal.file_store.v1.RestoreFile.destination:type_name -> nominal.file_store.v1.Destination
-	5,  // 6: nominal.file_store.v1.FileChange.put:type_name -> nominal.file_store.v1.PutFile
-	6,  // 7: nominal.file_store.v1.FileChange.move:type_name -> nominal.file_store.v1.MoveFile
-	7,  // 8: nominal.file_store.v1.FileChange.remove:type_name -> nominal.file_store.v1.RemoveFile
-	8,  // 9: nominal.file_store.v1.FileChange.restore:type_name -> nominal.file_store.v1.RestoreFile
-	29, // 10: nominal.file_store.v1.GetFileRequest.path:type_name -> nominal.file_store.v1.LogicalPath
-	30, // 11: nominal.file_store.v1.GetFileByIdentityRequest.identity:type_name -> nominal.file_store.v1.LogicalFileIdentity
-	31, // 12: nominal.file_store.v1.GetFileResponse.file:type_name -> nominal.file_store.v1.LogicalFile
-	31, // 13: nominal.file_store.v1.GetFileByIdentityResponse.file:type_name -> nominal.file_store.v1.LogicalFile
-	32, // 14: nominal.file_store.v1.ResolveFileRevisionRequest.source_ref:type_name -> nominal.file_store.v1.FileRevisionRef
-	29, // 15: nominal.file_store.v1.ListFilesRequest.parent_path:type_name -> nominal.file_store.v1.LogicalPath
-	33, // 16: nominal.file_store.v1.ListFilesResponse.entries:type_name -> nominal.file_store.v1.FileEntry
-	9,  // 17: nominal.file_store.v1.ApplyFileChangesRequest.changes:type_name -> nominal.file_store.v1.FileChange
-	22, // 18: nominal.file_store.v1.ApplyFileChangesResponse.results:type_name -> nominal.file_store.v1.FileChangeResult
-	31, // 19: nominal.file_store.v1.FileChangeSuccess.file:type_name -> nominal.file_store.v1.LogicalFile
-	34, // 20: nominal.file_store.v1.FileChangeSuccess.file_revision:type_name -> nominal.file_store.v1.ManagedFileRevision
-	35, // 21: nominal.file_store.v1.FileChangeFailure.common:type_name -> nominal.file_store.v1.FileStoreCommonError
-	1,  // 22: nominal.file_store.v1.FileChangeFailure.change:type_name -> nominal.file_store.v1.FileChangeError
-	20, // 23: nominal.file_store.v1.FileChangeResult.success:type_name -> nominal.file_store.v1.FileChangeSuccess
-	21, // 24: nominal.file_store.v1.FileChangeResult.failure:type_name -> nominal.file_store.v1.FileChangeFailure
-	34, // 25: nominal.file_store.v1.ListFileRevisionsResponse.file_revisions:type_name -> nominal.file_store.v1.ManagedFileRevision
-	10, // 26: nominal.file_store.v1.FilesService.GetFile:input_type -> nominal.file_store.v1.GetFileRequest
-	11, // 27: nominal.file_store.v1.FilesService.GetFileByIdentity:input_type -> nominal.file_store.v1.GetFileByIdentityRequest
-	14, // 28: nominal.file_store.v1.FilesService.ResolveFileRevision:input_type -> nominal.file_store.v1.ResolveFileRevisionRequest
-	16, // 29: nominal.file_store.v1.FilesService.ListFiles:input_type -> nominal.file_store.v1.ListFilesRequest
-	18, // 30: nominal.file_store.v1.FilesService.ApplyFileChanges:input_type -> nominal.file_store.v1.ApplyFileChangesRequest
-	23, // 31: nominal.file_store.v1.FilesService.ListFileRevisions:input_type -> nominal.file_store.v1.ListFileRevisionsRequest
-	25, // 32: nominal.file_store.v1.FilesService.PurgeFile:input_type -> nominal.file_store.v1.PurgeFileRequest
-	27, // 33: nominal.file_store.v1.FilesService.GetDownloadUrl:input_type -> nominal.file_store.v1.GetDownloadUrlRequest
-	12, // 34: nominal.file_store.v1.FilesService.GetFile:output_type -> nominal.file_store.v1.GetFileResponse
-	13, // 35: nominal.file_store.v1.FilesService.GetFileByIdentity:output_type -> nominal.file_store.v1.GetFileByIdentityResponse
-	15, // 36: nominal.file_store.v1.FilesService.ResolveFileRevision:output_type -> nominal.file_store.v1.ResolveFileRevisionResponse
-	17, // 37: nominal.file_store.v1.FilesService.ListFiles:output_type -> nominal.file_store.v1.ListFilesResponse
-	19, // 38: nominal.file_store.v1.FilesService.ApplyFileChanges:output_type -> nominal.file_store.v1.ApplyFileChangesResponse
-	24, // 39: nominal.file_store.v1.FilesService.ListFileRevisions:output_type -> nominal.file_store.v1.ListFileRevisionsResponse
-	26, // 40: nominal.file_store.v1.FilesService.PurgeFile:output_type -> nominal.file_store.v1.PurgeFileResponse
-	28, // 41: nominal.file_store.v1.FilesService.GetDownloadUrl:output_type -> nominal.file_store.v1.GetDownloadUrlResponse
-	34, // [34:42] is the sub-list for method output_type
-	26, // [26:34] is the sub-list for method input_type
-	26, // [26:26] is the sub-list for extension type_name
-	26, // [26:26] is the sub-list for extension extendee
-	0,  // [0:26] is the sub-list for field type_name
+	31, // 6: nominal.file_store.v1.MoveDirectory.from:type_name -> nominal.file_store.v1.LogicalPath
+	31, // 7: nominal.file_store.v1.MoveDirectory.to:type_name -> nominal.file_store.v1.LogicalPath
+	5,  // 8: nominal.file_store.v1.FileChange.put:type_name -> nominal.file_store.v1.PutFile
+	6,  // 9: nominal.file_store.v1.FileChange.move:type_name -> nominal.file_store.v1.MoveFile
+	7,  // 10: nominal.file_store.v1.FileChange.remove:type_name -> nominal.file_store.v1.RemoveFile
+	8,  // 11: nominal.file_store.v1.FileChange.restore:type_name -> nominal.file_store.v1.RestoreFile
+	9,  // 12: nominal.file_store.v1.FileChange.move_directory:type_name -> nominal.file_store.v1.MoveDirectory
+	31, // 13: nominal.file_store.v1.GetFileRequest.path:type_name -> nominal.file_store.v1.LogicalPath
+	32, // 14: nominal.file_store.v1.GetFileByIdentityRequest.identity:type_name -> nominal.file_store.v1.LogicalFileIdentity
+	33, // 15: nominal.file_store.v1.GetFileResponse.file:type_name -> nominal.file_store.v1.LogicalFile
+	33, // 16: nominal.file_store.v1.GetFileByIdentityResponse.file:type_name -> nominal.file_store.v1.LogicalFile
+	34, // 17: nominal.file_store.v1.ResolveFileRevisionRequest.source_ref:type_name -> nominal.file_store.v1.FileRevisionRef
+	35, // 18: nominal.file_store.v1.ResolveFileRevisionResponse.file_revision:type_name -> nominal.file_store.v1.FileRevision
+	31, // 19: nominal.file_store.v1.ListFilesRequest.parent_path:type_name -> nominal.file_store.v1.LogicalPath
+	36, // 20: nominal.file_store.v1.ListFilesResponse.entries:type_name -> nominal.file_store.v1.FileEntry
+	10, // 21: nominal.file_store.v1.ApplyFileChangesRequest.changes:type_name -> nominal.file_store.v1.FileChange
+	24, // 22: nominal.file_store.v1.ApplyFileChangesResponse.results:type_name -> nominal.file_store.v1.FileChangeResult
+	33, // 23: nominal.file_store.v1.FileChangeSuccess.file:type_name -> nominal.file_store.v1.LogicalFile
+	37, // 24: nominal.file_store.v1.FileChangeSuccess.file_revision:type_name -> nominal.file_store.v1.ManagedFileRevision
+	38, // 25: nominal.file_store.v1.FileChangeFailure.common:type_name -> nominal.file_store.v1.FileStoreCommonError
+	1,  // 26: nominal.file_store.v1.FileChangeFailure.change:type_name -> nominal.file_store.v1.FileChangeError
+	21, // 27: nominal.file_store.v1.FileChangeResult.success:type_name -> nominal.file_store.v1.FileChangeSuccess
+	23, // 28: nominal.file_store.v1.FileChangeResult.failure:type_name -> nominal.file_store.v1.FileChangeFailure
+	22, // 29: nominal.file_store.v1.FileChangeResult.directory_moved:type_name -> nominal.file_store.v1.MoveDirectorySuccess
+	37, // 30: nominal.file_store.v1.ListFileRevisionsResponse.file_revisions:type_name -> nominal.file_store.v1.ManagedFileRevision
+	11, // 31: nominal.file_store.v1.FilesService.GetFile:input_type -> nominal.file_store.v1.GetFileRequest
+	12, // 32: nominal.file_store.v1.FilesService.GetFileByIdentity:input_type -> nominal.file_store.v1.GetFileByIdentityRequest
+	15, // 33: nominal.file_store.v1.FilesService.ResolveFileRevision:input_type -> nominal.file_store.v1.ResolveFileRevisionRequest
+	17, // 34: nominal.file_store.v1.FilesService.ListFiles:input_type -> nominal.file_store.v1.ListFilesRequest
+	19, // 35: nominal.file_store.v1.FilesService.ApplyFileChanges:input_type -> nominal.file_store.v1.ApplyFileChangesRequest
+	25, // 36: nominal.file_store.v1.FilesService.ListFileRevisions:input_type -> nominal.file_store.v1.ListFileRevisionsRequest
+	27, // 37: nominal.file_store.v1.FilesService.PurgeFile:input_type -> nominal.file_store.v1.PurgeFileRequest
+	29, // 38: nominal.file_store.v1.FilesService.GetDownloadUrl:input_type -> nominal.file_store.v1.GetDownloadUrlRequest
+	13, // 39: nominal.file_store.v1.FilesService.GetFile:output_type -> nominal.file_store.v1.GetFileResponse
+	14, // 40: nominal.file_store.v1.FilesService.GetFileByIdentity:output_type -> nominal.file_store.v1.GetFileByIdentityResponse
+	16, // 41: nominal.file_store.v1.FilesService.ResolveFileRevision:output_type -> nominal.file_store.v1.ResolveFileRevisionResponse
+	18, // 42: nominal.file_store.v1.FilesService.ListFiles:output_type -> nominal.file_store.v1.ListFilesResponse
+	20, // 43: nominal.file_store.v1.FilesService.ApplyFileChanges:output_type -> nominal.file_store.v1.ApplyFileChangesResponse
+	26, // 44: nominal.file_store.v1.FilesService.ListFileRevisions:output_type -> nominal.file_store.v1.ListFileRevisionsResponse
+	28, // 45: nominal.file_store.v1.FilesService.PurgeFile:output_type -> nominal.file_store.v1.PurgeFileResponse
+	30, // 46: nominal.file_store.v1.FilesService.GetDownloadUrl:output_type -> nominal.file_store.v1.GetDownloadUrlResponse
+	39, // [39:47] is the sub-list for method output_type
+	31, // [31:39] is the sub-list for method input_type
+	31, // [31:31] is the sub-list for extension type_name
+	31, // [31:31] is the sub-list for extension extendee
+	0,  // [0:31] is the sub-list for field type_name
 }
 
 func init() { file_nominal_protos_file_store_v1_files_proto_init() }
@@ -1955,31 +2132,33 @@ func file_nominal_protos_file_store_v1_files_proto_init() {
 		(*Destination_Path)(nil),
 		(*Destination_FileRevisionRid)(nil),
 	}
-	file_nominal_protos_file_store_v1_files_proto_msgTypes[7].OneofWrappers = []any{
+	file_nominal_protos_file_store_v1_files_proto_msgTypes[8].OneofWrappers = []any{
 		(*FileChange_Put)(nil),
 		(*FileChange_Move)(nil),
 		(*FileChange_Remove)(nil),
 		(*FileChange_Restore)(nil),
+		(*FileChange_MoveDirectory)(nil),
 	}
-	file_nominal_protos_file_store_v1_files_proto_msgTypes[14].OneofWrappers = []any{}
 	file_nominal_protos_file_store_v1_files_proto_msgTypes[15].OneofWrappers = []any{}
-	file_nominal_protos_file_store_v1_files_proto_msgTypes[19].OneofWrappers = []any{
+	file_nominal_protos_file_store_v1_files_proto_msgTypes[16].OneofWrappers = []any{}
+	file_nominal_protos_file_store_v1_files_proto_msgTypes[21].OneofWrappers = []any{
 		(*FileChangeFailure_Common)(nil),
 		(*FileChangeFailure_Change)(nil),
 	}
-	file_nominal_protos_file_store_v1_files_proto_msgTypes[20].OneofWrappers = []any{
+	file_nominal_protos_file_store_v1_files_proto_msgTypes[22].OneofWrappers = []any{
 		(*FileChangeResult_Success)(nil),
 		(*FileChangeResult_Failure)(nil),
+		(*FileChangeResult_DirectoryMoved)(nil),
 	}
-	file_nominal_protos_file_store_v1_files_proto_msgTypes[21].OneofWrappers = []any{}
-	file_nominal_protos_file_store_v1_files_proto_msgTypes[22].OneofWrappers = []any{}
+	file_nominal_protos_file_store_v1_files_proto_msgTypes[23].OneofWrappers = []any{}
+	file_nominal_protos_file_store_v1_files_proto_msgTypes[24].OneofWrappers = []any{}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_nominal_protos_file_store_v1_files_proto_rawDesc), len(file_nominal_protos_file_store_v1_files_proto_rawDesc)),
 			NumEnums:      2,
-			NumMessages:   27,
+			NumMessages:   29,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

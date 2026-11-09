@@ -43,7 +43,8 @@ type ConnectAppsServiceClient interface {
 	UpdateConnectAppMetadata(ctx context.Context, in *UpdateConnectAppMetadataRequest, opts ...grpc.CallOption) (*UpdateConnectAppMetadataResponse, error)
 	// Commit a bundle to the main branch
 	Commit(ctx context.Context, in *CommitRequest, opts ...grpc.CallOption) (*CommitResponse, error)
-	// Searches for Connect Apps, returning paged results
+	// Searches for Connect Apps, returning paged results. Workspaces the caller lacks
+	// workspace:view on are filtered out rather than failing the call.
 	SearchConnectApps(ctx context.Context, in *SearchConnectAppsRequest, opts ...grpc.CallOption) (*SearchConnectAppsResponse, error)
 	// Archive Connect Apps
 	ArchiveConnectApps(ctx context.Context, in *ArchiveConnectAppsRequest, opts ...grpc.CallOption) (*ArchiveConnectAppsResponse, error)
@@ -155,7 +156,8 @@ type ConnectAppsServiceServer interface {
 	UpdateConnectAppMetadata(context.Context, *UpdateConnectAppMetadataRequest) (*UpdateConnectAppMetadataResponse, error)
 	// Commit a bundle to the main branch
 	Commit(context.Context, *CommitRequest) (*CommitResponse, error)
-	// Searches for Connect Apps, returning paged results
+	// Searches for Connect Apps, returning paged results. Workspaces the caller lacks
+	// workspace:view on are filtered out rather than failing the call.
 	SearchConnectApps(context.Context, *SearchConnectAppsRequest) (*SearchConnectAppsResponse, error)
 	// Archive Connect Apps
 	ArchiveConnectApps(context.Context, *ArchiveConnectAppsRequest) (*ArchiveConnectAppsResponse, error)

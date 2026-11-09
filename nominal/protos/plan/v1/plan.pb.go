@@ -11,6 +11,7 @@ package planv1
 import (
 	_ "buf.build/gen/go/bufbuild/protovalidate/protocolbuffers/go/buf/validate"
 	v2 "github.com/nominal-io/nominal-api-protos-go/nominal/protos/asset/v2"
+	_ "github.com/nominal-io/nominal-api-protos-go/nominal/protos/authz/v1"
 	_ "github.com/nominal-io/nominal-api-protos-go/nominal/protos/gen/v1"
 	types "github.com/nominal-io/nominal-api-protos-go/nominal/protos/types"
 	v1 "github.com/nominal-io/nominal-api-protos-go/nominal/protos/versioning/v1"
@@ -100,6 +101,9 @@ const (
 	PlanViolationSeverity_PLAN_VIOLATION_SEVERITY_ERROR PlanViolationSeverity = 1
 	// Savable but suspect. Never blocks a write.
 	PlanViolationSeverity_PLAN_VIOLATION_SEVERITY_WARNING PlanViolationSeverity = 2
+	// Routine note about how the plan was read. Needs no author action and never blocks a write. Older clients
+	// may report an unknown enum value and should treat it conservatively.
+	PlanViolationSeverity_PLAN_VIOLATION_SEVERITY_INFO PlanViolationSeverity = 3
 )
 
 // Enum value maps for PlanViolationSeverity.
@@ -108,11 +112,13 @@ var (
 		0: "PLAN_VIOLATION_SEVERITY_UNSPECIFIED",
 		1: "PLAN_VIOLATION_SEVERITY_ERROR",
 		2: "PLAN_VIOLATION_SEVERITY_WARNING",
+		3: "PLAN_VIOLATION_SEVERITY_INFO",
 	}
 	PlanViolationSeverity_value = map[string]int32{
 		"PLAN_VIOLATION_SEVERITY_UNSPECIFIED": 0,
 		"PLAN_VIOLATION_SEVERITY_ERROR":       1,
 		"PLAN_VIOLATION_SEVERITY_WARNING":     2,
+		"PLAN_VIOLATION_SEVERITY_INFO":        3,
 	}
 )
 
@@ -148,14 +154,16 @@ func (PlanViolationSeverity) EnumDescriptor() ([]byte, []int) {
 type PlanElementKind int32
 
 const (
-	PlanElementKind_PLAN_ELEMENT_KIND_UNSPECIFIED PlanElementKind = 0
-	PlanElementKind_PLAN_ELEMENT_KIND_PLAN        PlanElementKind = 1
-	PlanElementKind_PLAN_ELEMENT_KIND_OBJECTIVE   PlanElementKind = 2
-	PlanElementKind_PLAN_ELEMENT_KIND_ACTIVITY    PlanElementKind = 3
-	PlanElementKind_PLAN_ELEMENT_KIND_SEGMENT     PlanElementKind = 4
-	PlanElementKind_PLAN_ELEMENT_KIND_MILESTONE   PlanElementKind = 5
-	PlanElementKind_PLAN_ELEMENT_KIND_ASSET_GROUP PlanElementKind = 6
-	PlanElementKind_PLAN_ELEMENT_KIND_CONSTRAINT  PlanElementKind = 7
+	PlanElementKind_PLAN_ELEMENT_KIND_UNSPECIFIED     PlanElementKind = 0
+	PlanElementKind_PLAN_ELEMENT_KIND_PLAN            PlanElementKind = 1
+	PlanElementKind_PLAN_ELEMENT_KIND_OBJECTIVE       PlanElementKind = 2
+	PlanElementKind_PLAN_ELEMENT_KIND_ACTIVITY        PlanElementKind = 3
+	PlanElementKind_PLAN_ELEMENT_KIND_SEGMENT         PlanElementKind = 4
+	PlanElementKind_PLAN_ELEMENT_KIND_MILESTONE       PlanElementKind = 5
+	PlanElementKind_PLAN_ELEMENT_KIND_ASSET_GROUP     PlanElementKind = 6
+	PlanElementKind_PLAN_ELEMENT_KIND_CONSTRAINT      PlanElementKind = 7
+	PlanElementKind_PLAN_ELEMENT_KIND_RESOURCE        PlanElementKind = 8
+	PlanElementKind_PLAN_ELEMENT_KIND_OBJECTIVE_GROUP PlanElementKind = 9
 )
 
 // Enum value maps for PlanElementKind.
@@ -169,16 +177,20 @@ var (
 		5: "PLAN_ELEMENT_KIND_MILESTONE",
 		6: "PLAN_ELEMENT_KIND_ASSET_GROUP",
 		7: "PLAN_ELEMENT_KIND_CONSTRAINT",
+		8: "PLAN_ELEMENT_KIND_RESOURCE",
+		9: "PLAN_ELEMENT_KIND_OBJECTIVE_GROUP",
 	}
 	PlanElementKind_value = map[string]int32{
-		"PLAN_ELEMENT_KIND_UNSPECIFIED": 0,
-		"PLAN_ELEMENT_KIND_PLAN":        1,
-		"PLAN_ELEMENT_KIND_OBJECTIVE":   2,
-		"PLAN_ELEMENT_KIND_ACTIVITY":    3,
-		"PLAN_ELEMENT_KIND_SEGMENT":     4,
-		"PLAN_ELEMENT_KIND_MILESTONE":   5,
-		"PLAN_ELEMENT_KIND_ASSET_GROUP": 6,
-		"PLAN_ELEMENT_KIND_CONSTRAINT":  7,
+		"PLAN_ELEMENT_KIND_UNSPECIFIED":     0,
+		"PLAN_ELEMENT_KIND_PLAN":            1,
+		"PLAN_ELEMENT_KIND_OBJECTIVE":       2,
+		"PLAN_ELEMENT_KIND_ACTIVITY":        3,
+		"PLAN_ELEMENT_KIND_SEGMENT":         4,
+		"PLAN_ELEMENT_KIND_MILESTONE":       5,
+		"PLAN_ELEMENT_KIND_ASSET_GROUP":     6,
+		"PLAN_ELEMENT_KIND_CONSTRAINT":      7,
+		"PLAN_ELEMENT_KIND_RESOURCE":        8,
+		"PLAN_ELEMENT_KIND_OBJECTIVE_GROUP": 9,
 	}
 )
 
@@ -260,6 +272,67 @@ func (x PlanError) Number() protoreflect.EnumNumber {
 // Deprecated: Use PlanError.Descriptor instead.
 func (PlanError) EnumDescriptor() ([]byte, []int) {
 	return file_nominal_protos_plan_v1_plan_proto_rawDescGZIP(), []int{3}
+}
+
+type PlanViolationDetails_Comparison_Operator int32
+
+const (
+	PlanViolationDetails_Comparison_OPERATOR_UNSPECIFIED           PlanViolationDetails_Comparison_Operator = 0
+	PlanViolationDetails_Comparison_OPERATOR_LESS_THAN             PlanViolationDetails_Comparison_Operator = 1
+	PlanViolationDetails_Comparison_OPERATOR_LESS_THAN_OR_EQUAL    PlanViolationDetails_Comparison_Operator = 2
+	PlanViolationDetails_Comparison_OPERATOR_GREATER_THAN          PlanViolationDetails_Comparison_Operator = 3
+	PlanViolationDetails_Comparison_OPERATOR_GREATER_THAN_OR_EQUAL PlanViolationDetails_Comparison_Operator = 4
+	PlanViolationDetails_Comparison_OPERATOR_EQUAL                 PlanViolationDetails_Comparison_Operator = 5
+	PlanViolationDetails_Comparison_OPERATOR_NOT_EQUAL             PlanViolationDetails_Comparison_Operator = 6
+)
+
+// Enum value maps for PlanViolationDetails_Comparison_Operator.
+var (
+	PlanViolationDetails_Comparison_Operator_name = map[int32]string{
+		0: "OPERATOR_UNSPECIFIED",
+		1: "OPERATOR_LESS_THAN",
+		2: "OPERATOR_LESS_THAN_OR_EQUAL",
+		3: "OPERATOR_GREATER_THAN",
+		4: "OPERATOR_GREATER_THAN_OR_EQUAL",
+		5: "OPERATOR_EQUAL",
+		6: "OPERATOR_NOT_EQUAL",
+	}
+	PlanViolationDetails_Comparison_Operator_value = map[string]int32{
+		"OPERATOR_UNSPECIFIED":           0,
+		"OPERATOR_LESS_THAN":             1,
+		"OPERATOR_LESS_THAN_OR_EQUAL":    2,
+		"OPERATOR_GREATER_THAN":          3,
+		"OPERATOR_GREATER_THAN_OR_EQUAL": 4,
+		"OPERATOR_EQUAL":                 5,
+		"OPERATOR_NOT_EQUAL":             6,
+	}
+)
+
+func (x PlanViolationDetails_Comparison_Operator) Enum() *PlanViolationDetails_Comparison_Operator {
+	p := new(PlanViolationDetails_Comparison_Operator)
+	*p = x
+	return p
+}
+
+func (x PlanViolationDetails_Comparison_Operator) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (PlanViolationDetails_Comparison_Operator) Descriptor() protoreflect.EnumDescriptor {
+	return file_nominal_protos_plan_v1_plan_proto_enumTypes[4].Descriptor()
+}
+
+func (PlanViolationDetails_Comparison_Operator) Type() protoreflect.EnumType {
+	return &file_nominal_protos_plan_v1_plan_proto_enumTypes[4]
+}
+
+func (x PlanViolationDetails_Comparison_Operator) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use PlanViolationDetails_Comparison_Operator.Descriptor instead.
+func (PlanViolationDetails_Comparison_Operator) EnumDescriptor() ([]byte, []int) {
+	return file_nominal_protos_plan_v1_plan_proto_rawDescGZIP(), []int{86, 0, 0}
 }
 
 type Plan struct {
@@ -435,7 +508,7 @@ type PlanMetadata struct {
 	CreatedBy   string                 `protobuf:"bytes,7,opt,name=created_by,json=createdBy,proto3" json:"created_by,omitempty"`
 	CreatedAt   *timestamppb.Timestamp `protobuf:"bytes,8,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
 	UpdatedAt   *timestamppb.Timestamp `protobuf:"bytes,9,opt,name=updated_at,json=updatedAt,proto3" json:"updated_at,omitempty"`
-	// The time of the last permanent commit to the main branch.
+	// The time of the last commit to the main branch, permanent or working-state (autosave).
 	EditedAt *timestamppb.Timestamp `protobuf:"bytes,10,opt,name=edited_at,json=editedAt,proto3" json:"edited_at,omitempty"`
 	// The workspace the plan belongs to. Required on create and immutable thereafter —
 	// `UpdatePlanMetadata` cannot move a plan between workspaces.
@@ -870,14 +943,25 @@ type PlanContentV1 struct {
 	Timezone *string `protobuf:"bytes,9,opt,name=timezone,proto3,oneof" json:"timezone,omitempty"`
 	// The assets available to the plan as a whole. Each group in `asset_groups` is read as its intersection with
 	// this pool unless it sets `is_exempt_from_base_pool`; inline candidate lists on resources and every activity's
-	// `finalized_asset_rids` are expected to come from it, and `ValidatePlan` reports what does not as a warning,
+	// `asset_assignments` are expected to come from it, and `ValidatePlan` reports what does not as a warning,
 	// never a rejection. An `AssetGroup` rather than a bare source list so the pool has a name and an id: the id
 	// shares the asset-group namespace, so a resource may draw from the whole pool through
 	// `CandidateAssetGroup.asset_group_id`. Its own `is_exempt_from_base_pool` has no meaning and is ignored.
 	// Field-unset means the plan has no base pool and nothing is bounded.
 	BaseAssetPool *AssetGroup `protobuf:"bytes,10,opt,name=base_asset_pool,json=baseAssetPool,proto3" json:"base_asset_pool,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	// Objective groups are flat, named collections of objectives; see `ObjectiveGroup` for what they do not mean.
+	ObjectiveGroups []*ObjectiveGroup `protobuf:"bytes,11,rep,name=objective_groups,json=objectiveGroups,proto3" json:"objective_groups,omitempty"`
+	// Whether asset properties supply scheduling limits not set by constraints. Unset retains property inheritance
+	// for older documents. False makes constraints the only source of capacity, turnaround and daily usage limits;
+	// their defaults are exclusive use, no turnaround and no daily ceiling. It does not change asset eligibility.
+	// Importing asset limits on a plan write snapshots the inherited values into constraints and sets this false.
+	// Later writes omitting this field keep the parent's false only when expected_latest_commit is supplied.
+	// Without that precondition, the content is stored unchanged and inherits asset properties, including when
+	// restoring content saved before conversion. An explicit true or false wins regardless of that precondition,
+	// unless import_asset_limits is requested, which has its own precondition requirements.
+	InheritAssetLimits *bool `protobuf:"varint,12,opt,name=inherit_asset_limits,json=inheritAssetLimits,proto3,oneof" json:"inherit_asset_limits,omitempty"`
+	unknownFields      protoimpl.UnknownFields
+	sizeCache          protoimpl.SizeCache
 }
 
 func (x *PlanContentV1) Reset() {
@@ -978,6 +1062,20 @@ func (x *PlanContentV1) GetBaseAssetPool() *AssetGroup {
 		return x.BaseAssetPool
 	}
 	return nil
+}
+
+func (x *PlanContentV1) GetObjectiveGroups() []*ObjectiveGroup {
+	if x != nil {
+		return x.ObjectiveGroups
+	}
+	return nil
+}
+
+func (x *PlanContentV1) GetInheritAssetLimits() bool {
+	if x != nil && x.InheritAssetLimits != nil {
+		return *x.InheritAssetLimits
+	}
+	return false
 }
 
 type Milestone struct {
@@ -1225,12 +1323,25 @@ type SingleActivity struct {
 	SegmentId    *string                `protobuf:"bytes,3,opt,name=segment_id,json=segmentId,proto3,oneof" json:"segment_id,omitempty"`
 	ObjectiveIds []string               `protobuf:"bytes,4,rep,name=objective_ids,json=objectiveIds,proto3" json:"objective_ids,omitempty"`
 	Status       *ActivityStatus        `protobuf:"bytes,5,opt,name=status,proto3" json:"status,omitempty"`
-	// Assets assigned to carry out this activity, by hand or by a solver. Where they may be drawn from is
-	// stated by the served objectives' resources; an activity serving no objective is unconstrained. A
-	// locked solver input holds these alongside `start` and `end`.
-	FinalizedAssetRids []string `protobuf:"bytes,6,rep,name=finalized_asset_rids,json=finalizedAssetRids,proto3" json:"finalized_asset_rids,omitempty"`
-	unknownFields      protoimpl.UnknownFields
-	sizeCache          protoimpl.SizeCache
+	// Assets assigned to carry out this activity, by hand or by a solver, each recording the objective demands
+	// it fills, if any. Where an asset may be drawn from is stated by those demands' candidate pools, or by the
+	// served objectives' pools when it names no demand; an activity serving no objective is unconstrained. One
+	// entry per asset: an asset filling two demands names both rather than appearing twice. The solver keeps
+	// these whether or not the activity is pinned: `pin` fixes where it sits, an assignment fixes who carries it
+	// out.
+	AssetAssignments []*AssetAssignment `protobuf:"bytes,7,rep,name=asset_assignments,json=assetAssignments,proto3" json:"asset_assignments,omitempty"`
+	// Whether the solver may move this activity. Pinned with a window the solver can hold — `segment_id`, `start`
+	// and `end`, the end at least a whole minute after the start, inside a segment the plan has whose start is before
+	// its end; or, on a plan with no such segment, `start` and `end` alone inside one calendar window of the plan's
+	// range — it is held exactly there and comes back as a placement with `pinned = true`. Pinned otherwise, it is
+	// reported (`solver.activity.pin-incomplete`, and `ValidatePlan` warns `pin.incomplete` naming the cause) and
+	// scheduled as if unpinned.
+	// Independent of `status`: a `finalized` activity moves unless it is pinned, and a `created` one holds when it
+	// is. Field-unset means not pinned: there is no unpinned arm, so clearing the field is how an activity is
+	// unpinned, and every document written before this field reads that way.
+	Pin           *ActivityPin `protobuf:"bytes,8,opt,name=pin,proto3" json:"pin,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
 }
 
 func (x *SingleActivity) Reset() {
@@ -1298,9 +1409,78 @@ func (x *SingleActivity) GetStatus() *ActivityStatus {
 	return nil
 }
 
-func (x *SingleActivity) GetFinalizedAssetRids() []string {
+func (x *SingleActivity) GetAssetAssignments() []*AssetAssignment {
 	if x != nil {
-		return x.FinalizedAssetRids
+		return x.AssetAssignments
+	}
+	return nil
+}
+
+func (x *SingleActivity) GetPin() *ActivityPin {
+	if x != nil {
+		return x.Pin
+	}
+	return nil
+}
+
+// One asset assigned to an activity and, when it was chosen to meet objectives' demands, which ones.
+type AssetAssignment struct {
+	state    protoimpl.MessageState `protogen:"open.v1"`
+	AssetRid string                 `protobuf:"bytes,1,opt,name=asset_rid,json=assetRid,proto3" json:"asset_rid,omitempty"`
+	// `Resource.id` of each demand this asset fills, resolved across every objective in the plan rather than
+	// only those the activity serves. An asset that fills several demands is expected to be a candidate for every
+	// one of them. A resource written before `Resource.id` existed carries no id and cannot be named here.
+	//
+	// Empty for a direct assignment: the asset works on the activity without filling any demand. Direct
+	// assignments are a first-class way to schedule by hand, without first modelling objectives and their
+	// resources, and are never a violation in themselves. They fill no demand even when the activity serves an
+	// objective, so an activity meant to satisfy a `Resource` must name it here; clients show a direct
+	// assignment apart from the objective's requirements.
+	ResourceIds   []string `protobuf:"bytes,2,rep,name=resource_ids,json=resourceIds,proto3" json:"resource_ids,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *AssetAssignment) Reset() {
+	*x = AssetAssignment{}
+	mi := &file_nominal_protos_plan_v1_plan_proto_msgTypes[13]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *AssetAssignment) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*AssetAssignment) ProtoMessage() {}
+
+func (x *AssetAssignment) ProtoReflect() protoreflect.Message {
+	mi := &file_nominal_protos_plan_v1_plan_proto_msgTypes[13]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use AssetAssignment.ProtoReflect.Descriptor instead.
+func (*AssetAssignment) Descriptor() ([]byte, []int) {
+	return file_nominal_protos_plan_v1_plan_proto_rawDescGZIP(), []int{13}
+}
+
+func (x *AssetAssignment) GetAssetRid() string {
+	if x != nil {
+		return x.AssetRid
+	}
+	return ""
+}
+
+func (x *AssetAssignment) GetResourceIds() []string {
+	if x != nil {
+		return x.ResourceIds
 	}
 	return nil
 }
@@ -1321,7 +1501,7 @@ type ActivityStatus struct {
 
 func (x *ActivityStatus) Reset() {
 	*x = ActivityStatus{}
-	mi := &file_nominal_protos_plan_v1_plan_proto_msgTypes[13]
+	mi := &file_nominal_protos_plan_v1_plan_proto_msgTypes[14]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1333,7 +1513,7 @@ func (x *ActivityStatus) String() string {
 func (*ActivityStatus) ProtoMessage() {}
 
 func (x *ActivityStatus) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_plan_v1_plan_proto_msgTypes[13]
+	mi := &file_nominal_protos_plan_v1_plan_proto_msgTypes[14]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1346,7 +1526,7 @@ func (x *ActivityStatus) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ActivityStatus.ProtoReflect.Descriptor instead.
 func (*ActivityStatus) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_plan_v1_plan_proto_rawDescGZIP(), []int{13}
+	return file_nominal_protos_plan_v1_plan_proto_rawDescGZIP(), []int{14}
 }
 
 func (x *ActivityStatus) GetActivityStatus() isActivityStatus_ActivityStatus {
@@ -1443,7 +1623,7 @@ type CreatedActivity struct {
 
 func (x *CreatedActivity) Reset() {
 	*x = CreatedActivity{}
-	mi := &file_nominal_protos_plan_v1_plan_proto_msgTypes[14]
+	mi := &file_nominal_protos_plan_v1_plan_proto_msgTypes[15]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1455,7 +1635,7 @@ func (x *CreatedActivity) String() string {
 func (*CreatedActivity) ProtoMessage() {}
 
 func (x *CreatedActivity) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_plan_v1_plan_proto_msgTypes[14]
+	mi := &file_nominal_protos_plan_v1_plan_proto_msgTypes[15]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1468,7 +1648,7 @@ func (x *CreatedActivity) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CreatedActivity.ProtoReflect.Descriptor instead.
 func (*CreatedActivity) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_plan_v1_plan_proto_rawDescGZIP(), []int{14}
+	return file_nominal_protos_plan_v1_plan_proto_rawDescGZIP(), []int{15}
 }
 
 type FinalizedActivity struct {
@@ -1479,7 +1659,7 @@ type FinalizedActivity struct {
 
 func (x *FinalizedActivity) Reset() {
 	*x = FinalizedActivity{}
-	mi := &file_nominal_protos_plan_v1_plan_proto_msgTypes[15]
+	mi := &file_nominal_protos_plan_v1_plan_proto_msgTypes[16]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1491,7 +1671,7 @@ func (x *FinalizedActivity) String() string {
 func (*FinalizedActivity) ProtoMessage() {}
 
 func (x *FinalizedActivity) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_plan_v1_plan_proto_msgTypes[15]
+	mi := &file_nominal_protos_plan_v1_plan_proto_msgTypes[16]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1504,7 +1684,7 @@ func (x *FinalizedActivity) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use FinalizedActivity.ProtoReflect.Descriptor instead.
 func (*FinalizedActivity) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_plan_v1_plan_proto_rawDescGZIP(), []int{15}
+	return file_nominal_protos_plan_v1_plan_proto_rawDescGZIP(), []int{16}
 }
 
 type InProgressActivity struct {
@@ -1515,7 +1695,7 @@ type InProgressActivity struct {
 
 func (x *InProgressActivity) Reset() {
 	*x = InProgressActivity{}
-	mi := &file_nominal_protos_plan_v1_plan_proto_msgTypes[16]
+	mi := &file_nominal_protos_plan_v1_plan_proto_msgTypes[17]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1527,7 +1707,7 @@ func (x *InProgressActivity) String() string {
 func (*InProgressActivity) ProtoMessage() {}
 
 func (x *InProgressActivity) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_plan_v1_plan_proto_msgTypes[16]
+	mi := &file_nominal_protos_plan_v1_plan_proto_msgTypes[17]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1540,7 +1720,7 @@ func (x *InProgressActivity) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use InProgressActivity.ProtoReflect.Descriptor instead.
 func (*InProgressActivity) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_plan_v1_plan_proto_rawDescGZIP(), []int{16}
+	return file_nominal_protos_plan_v1_plan_proto_rawDescGZIP(), []int{17}
 }
 
 type CompletedActivity struct {
@@ -1552,7 +1732,7 @@ type CompletedActivity struct {
 
 func (x *CompletedActivity) Reset() {
 	*x = CompletedActivity{}
-	mi := &file_nominal_protos_plan_v1_plan_proto_msgTypes[17]
+	mi := &file_nominal_protos_plan_v1_plan_proto_msgTypes[18]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1564,7 +1744,7 @@ func (x *CompletedActivity) String() string {
 func (*CompletedActivity) ProtoMessage() {}
 
 func (x *CompletedActivity) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_plan_v1_plan_proto_msgTypes[17]
+	mi := &file_nominal_protos_plan_v1_plan_proto_msgTypes[18]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1577,7 +1757,7 @@ func (x *CompletedActivity) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CompletedActivity.ProtoReflect.Descriptor instead.
 func (*CompletedActivity) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_plan_v1_plan_proto_rawDescGZIP(), []int{17}
+	return file_nominal_protos_plan_v1_plan_proto_rawDescGZIP(), []int{18}
 }
 
 func (x *CompletedActivity) GetNotes() string {
@@ -1597,7 +1777,7 @@ type CancelledActivity struct {
 
 func (x *CancelledActivity) Reset() {
 	*x = CancelledActivity{}
-	mi := &file_nominal_protos_plan_v1_plan_proto_msgTypes[18]
+	mi := &file_nominal_protos_plan_v1_plan_proto_msgTypes[19]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1609,7 +1789,7 @@ func (x *CancelledActivity) String() string {
 func (*CancelledActivity) ProtoMessage() {}
 
 func (x *CancelledActivity) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_plan_v1_plan_proto_msgTypes[18]
+	mi := &file_nominal_protos_plan_v1_plan_proto_msgTypes[19]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1622,7 +1802,7 @@ func (x *CancelledActivity) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CancelledActivity.ProtoReflect.Descriptor instead.
 func (*CancelledActivity) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_plan_v1_plan_proto_rawDescGZIP(), []int{18}
+	return file_nominal_protos_plan_v1_plan_proto_rawDescGZIP(), []int{19}
 }
 
 func (x *CancelledActivity) GetReason() string {
@@ -1637,6 +1817,111 @@ func (x *CancelledActivity) GetNotes() string {
 		return *x.Notes
 	}
 	return ""
+}
+
+// A union holding one arm today rather than a bool, so the pin can grow past two states and an arm can carry a
+// payload — who pinned it, why — without a wire break, the way `ActivityStatus` does. Not pinned is the field
+// unset, which is how every optional union in this file expresses absence.
+type ActivityPin struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Types that are valid to be assigned to ActivityPin:
+	//
+	//	*ActivityPin_Pinned
+	ActivityPin   isActivityPin_ActivityPin `protobuf_oneof:"activity_pin"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ActivityPin) Reset() {
+	*x = ActivityPin{}
+	mi := &file_nominal_protos_plan_v1_plan_proto_msgTypes[20]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ActivityPin) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ActivityPin) ProtoMessage() {}
+
+func (x *ActivityPin) ProtoReflect() protoreflect.Message {
+	mi := &file_nominal_protos_plan_v1_plan_proto_msgTypes[20]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ActivityPin.ProtoReflect.Descriptor instead.
+func (*ActivityPin) Descriptor() ([]byte, []int) {
+	return file_nominal_protos_plan_v1_plan_proto_rawDescGZIP(), []int{20}
+}
+
+func (x *ActivityPin) GetActivityPin() isActivityPin_ActivityPin {
+	if x != nil {
+		return x.ActivityPin
+	}
+	return nil
+}
+
+func (x *ActivityPin) GetPinned() *PinnedActivity {
+	if x != nil {
+		if x, ok := x.ActivityPin.(*ActivityPin_Pinned); ok {
+			return x.Pinned
+		}
+	}
+	return nil
+}
+
+type isActivityPin_ActivityPin interface {
+	isActivityPin_ActivityPin()
+}
+
+type ActivityPin_Pinned struct {
+	Pinned *PinnedActivity `protobuf:"bytes,1,opt,name=pinned,proto3,oneof"`
+}
+
+func (*ActivityPin_Pinned) isActivityPin_ActivityPin() {}
+
+type PinnedActivity struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *PinnedActivity) Reset() {
+	*x = PinnedActivity{}
+	mi := &file_nominal_protos_plan_v1_plan_proto_msgTypes[21]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *PinnedActivity) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*PinnedActivity) ProtoMessage() {}
+
+func (x *PinnedActivity) ProtoReflect() protoreflect.Message {
+	mi := &file_nominal_protos_plan_v1_plan_proto_msgTypes[21]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use PinnedActivity.ProtoReflect.Descriptor instead.
+func (*PinnedActivity) Descriptor() ([]byte, []int) {
+	return file_nominal_protos_plan_v1_plan_proto_rawDescGZIP(), []int{21}
 }
 
 type Objective struct {
@@ -1666,7 +1951,7 @@ type Objective struct {
 
 func (x *Objective) Reset() {
 	*x = Objective{}
-	mi := &file_nominal_protos_plan_v1_plan_proto_msgTypes[19]
+	mi := &file_nominal_protos_plan_v1_plan_proto_msgTypes[22]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1678,7 +1963,7 @@ func (x *Objective) String() string {
 func (*Objective) ProtoMessage() {}
 
 func (x *Objective) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_plan_v1_plan_proto_msgTypes[19]
+	mi := &file_nominal_protos_plan_v1_plan_proto_msgTypes[22]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1691,7 +1976,7 @@ func (x *Objective) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Objective.ProtoReflect.Descriptor instead.
 func (*Objective) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_plan_v1_plan_proto_rawDescGZIP(), []int{19}
+	return file_nominal_protos_plan_v1_plan_proto_rawDescGZIP(), []int{22}
 }
 
 func (x *Objective) GetId() string {
@@ -1808,7 +2093,7 @@ type ObjectiveStatus struct {
 
 func (x *ObjectiveStatus) Reset() {
 	*x = ObjectiveStatus{}
-	mi := &file_nominal_protos_plan_v1_plan_proto_msgTypes[20]
+	mi := &file_nominal_protos_plan_v1_plan_proto_msgTypes[23]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1820,7 +2105,7 @@ func (x *ObjectiveStatus) String() string {
 func (*ObjectiveStatus) ProtoMessage() {}
 
 func (x *ObjectiveStatus) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_plan_v1_plan_proto_msgTypes[20]
+	mi := &file_nominal_protos_plan_v1_plan_proto_msgTypes[23]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1833,7 +2118,7 @@ func (x *ObjectiveStatus) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ObjectiveStatus.ProtoReflect.Descriptor instead.
 func (*ObjectiveStatus) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_plan_v1_plan_proto_rawDescGZIP(), []int{20}
+	return file_nominal_protos_plan_v1_plan_proto_rawDescGZIP(), []int{23}
 }
 
 func (x *ObjectiveStatus) GetObjectiveStatus() isObjectiveStatus_ObjectiveStatus {
@@ -1930,7 +2215,7 @@ type DraftObjective struct {
 
 func (x *DraftObjective) Reset() {
 	*x = DraftObjective{}
-	mi := &file_nominal_protos_plan_v1_plan_proto_msgTypes[21]
+	mi := &file_nominal_protos_plan_v1_plan_proto_msgTypes[24]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1942,7 +2227,7 @@ func (x *DraftObjective) String() string {
 func (*DraftObjective) ProtoMessage() {}
 
 func (x *DraftObjective) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_plan_v1_plan_proto_msgTypes[21]
+	mi := &file_nominal_protos_plan_v1_plan_proto_msgTypes[24]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1955,7 +2240,7 @@ func (x *DraftObjective) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DraftObjective.ProtoReflect.Descriptor instead.
 func (*DraftObjective) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_plan_v1_plan_proto_rawDescGZIP(), []int{21}
+	return file_nominal_protos_plan_v1_plan_proto_rawDescGZIP(), []int{24}
 }
 
 type ProposedObjective struct {
@@ -1966,7 +2251,7 @@ type ProposedObjective struct {
 
 func (x *ProposedObjective) Reset() {
 	*x = ProposedObjective{}
-	mi := &file_nominal_protos_plan_v1_plan_proto_msgTypes[22]
+	mi := &file_nominal_protos_plan_v1_plan_proto_msgTypes[25]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1978,7 +2263,7 @@ func (x *ProposedObjective) String() string {
 func (*ProposedObjective) ProtoMessage() {}
 
 func (x *ProposedObjective) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_plan_v1_plan_proto_msgTypes[22]
+	mi := &file_nominal_protos_plan_v1_plan_proto_msgTypes[25]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1991,7 +2276,7 @@ func (x *ProposedObjective) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ProposedObjective.ProtoReflect.Descriptor instead.
 func (*ProposedObjective) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_plan_v1_plan_proto_rawDescGZIP(), []int{22}
+	return file_nominal_protos_plan_v1_plan_proto_rawDescGZIP(), []int{25}
 }
 
 type FinalizedObjective struct {
@@ -2002,7 +2287,7 @@ type FinalizedObjective struct {
 
 func (x *FinalizedObjective) Reset() {
 	*x = FinalizedObjective{}
-	mi := &file_nominal_protos_plan_v1_plan_proto_msgTypes[23]
+	mi := &file_nominal_protos_plan_v1_plan_proto_msgTypes[26]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2014,7 +2299,7 @@ func (x *FinalizedObjective) String() string {
 func (*FinalizedObjective) ProtoMessage() {}
 
 func (x *FinalizedObjective) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_plan_v1_plan_proto_msgTypes[23]
+	mi := &file_nominal_protos_plan_v1_plan_proto_msgTypes[26]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2027,7 +2312,7 @@ func (x *FinalizedObjective) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use FinalizedObjective.ProtoReflect.Descriptor instead.
 func (*FinalizedObjective) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_plan_v1_plan_proto_rawDescGZIP(), []int{23}
+	return file_nominal_protos_plan_v1_plan_proto_rawDescGZIP(), []int{26}
 }
 
 type CompletedObjective struct {
@@ -2040,7 +2325,7 @@ type CompletedObjective struct {
 
 func (x *CompletedObjective) Reset() {
 	*x = CompletedObjective{}
-	mi := &file_nominal_protos_plan_v1_plan_proto_msgTypes[24]
+	mi := &file_nominal_protos_plan_v1_plan_proto_msgTypes[27]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2052,7 +2337,7 @@ func (x *CompletedObjective) String() string {
 func (*CompletedObjective) ProtoMessage() {}
 
 func (x *CompletedObjective) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_plan_v1_plan_proto_msgTypes[24]
+	mi := &file_nominal_protos_plan_v1_plan_proto_msgTypes[27]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2065,7 +2350,7 @@ func (x *CompletedObjective) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CompletedObjective.ProtoReflect.Descriptor instead.
 func (*CompletedObjective) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_plan_v1_plan_proto_rawDescGZIP(), []int{24}
+	return file_nominal_protos_plan_v1_plan_proto_rawDescGZIP(), []int{27}
 }
 
 func (x *CompletedObjective) GetDisposition() *ObjectiveDisposition {
@@ -2084,7 +2369,7 @@ type RejectedObjective struct {
 
 func (x *RejectedObjective) Reset() {
 	*x = RejectedObjective{}
-	mi := &file_nominal_protos_plan_v1_plan_proto_msgTypes[25]
+	mi := &file_nominal_protos_plan_v1_plan_proto_msgTypes[28]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2096,7 +2381,7 @@ func (x *RejectedObjective) String() string {
 func (*RejectedObjective) ProtoMessage() {}
 
 func (x *RejectedObjective) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_plan_v1_plan_proto_msgTypes[25]
+	mi := &file_nominal_protos_plan_v1_plan_proto_msgTypes[28]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2109,7 +2394,7 @@ func (x *RejectedObjective) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use RejectedObjective.ProtoReflect.Descriptor instead.
 func (*RejectedObjective) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_plan_v1_plan_proto_rawDescGZIP(), []int{25}
+	return file_nominal_protos_plan_v1_plan_proto_rawDescGZIP(), []int{28}
 }
 
 func (x *RejectedObjective) GetReason() string {
@@ -2132,7 +2417,7 @@ type ObjectiveDisposition struct {
 
 func (x *ObjectiveDisposition) Reset() {
 	*x = ObjectiveDisposition{}
-	mi := &file_nominal_protos_plan_v1_plan_proto_msgTypes[26]
+	mi := &file_nominal_protos_plan_v1_plan_proto_msgTypes[29]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2144,7 +2429,7 @@ func (x *ObjectiveDisposition) String() string {
 func (*ObjectiveDisposition) ProtoMessage() {}
 
 func (x *ObjectiveDisposition) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_plan_v1_plan_proto_msgTypes[26]
+	mi := &file_nominal_protos_plan_v1_plan_proto_msgTypes[29]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2157,7 +2442,7 @@ func (x *ObjectiveDisposition) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ObjectiveDisposition.ProtoReflect.Descriptor instead.
 func (*ObjectiveDisposition) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_plan_v1_plan_proto_rawDescGZIP(), []int{26}
+	return file_nominal_protos_plan_v1_plan_proto_rawDescGZIP(), []int{29}
 }
 
 func (x *ObjectiveDisposition) GetObjectiveDisposition() isObjectiveDisposition_ObjectiveDisposition {
@@ -2210,7 +2495,7 @@ type SuccessfulObjective struct {
 
 func (x *SuccessfulObjective) Reset() {
 	*x = SuccessfulObjective{}
-	mi := &file_nominal_protos_plan_v1_plan_proto_msgTypes[27]
+	mi := &file_nominal_protos_plan_v1_plan_proto_msgTypes[30]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2222,7 +2507,7 @@ func (x *SuccessfulObjective) String() string {
 func (*SuccessfulObjective) ProtoMessage() {}
 
 func (x *SuccessfulObjective) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_plan_v1_plan_proto_msgTypes[27]
+	mi := &file_nominal_protos_plan_v1_plan_proto_msgTypes[30]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2235,7 +2520,7 @@ func (x *SuccessfulObjective) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SuccessfulObjective.ProtoReflect.Descriptor instead.
 func (*SuccessfulObjective) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_plan_v1_plan_proto_rawDescGZIP(), []int{27}
+	return file_nominal_protos_plan_v1_plan_proto_rawDescGZIP(), []int{30}
 }
 
 func (x *SuccessfulObjective) GetNotes() string {
@@ -2255,7 +2540,7 @@ type FailedObjective struct {
 
 func (x *FailedObjective) Reset() {
 	*x = FailedObjective{}
-	mi := &file_nominal_protos_plan_v1_plan_proto_msgTypes[28]
+	mi := &file_nominal_protos_plan_v1_plan_proto_msgTypes[31]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2267,7 +2552,7 @@ func (x *FailedObjective) String() string {
 func (*FailedObjective) ProtoMessage() {}
 
 func (x *FailedObjective) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_plan_v1_plan_proto_msgTypes[28]
+	mi := &file_nominal_protos_plan_v1_plan_proto_msgTypes[31]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2280,7 +2565,7 @@ func (x *FailedObjective) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use FailedObjective.ProtoReflect.Descriptor instead.
 func (*FailedObjective) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_plan_v1_plan_proto_rawDescGZIP(), []int{28}
+	return file_nominal_protos_plan_v1_plan_proto_rawDescGZIP(), []int{31}
 }
 
 func (x *FailedObjective) GetReason() string {
@@ -2309,7 +2594,7 @@ type ObjectiveDetails struct {
 
 func (x *ObjectiveDetails) Reset() {
 	*x = ObjectiveDetails{}
-	mi := &file_nominal_protos_plan_v1_plan_proto_msgTypes[29]
+	mi := &file_nominal_protos_plan_v1_plan_proto_msgTypes[32]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2321,7 +2606,7 @@ func (x *ObjectiveDetails) String() string {
 func (*ObjectiveDetails) ProtoMessage() {}
 
 func (x *ObjectiveDetails) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_plan_v1_plan_proto_msgTypes[29]
+	mi := &file_nominal_protos_plan_v1_plan_proto_msgTypes[32]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2334,7 +2619,7 @@ func (x *ObjectiveDetails) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ObjectiveDetails.ProtoReflect.Descriptor instead.
 func (*ObjectiveDetails) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_plan_v1_plan_proto_rawDescGZIP(), []int{29}
+	return file_nominal_protos_plan_v1_plan_proto_rawDescGZIP(), []int{32}
 }
 
 func (x *ObjectiveDetails) GetObjectiveDetails() isObjectiveDetails_ObjectiveDetails {
@@ -2378,7 +2663,7 @@ type SimpleObjective struct {
 
 func (x *SimpleObjective) Reset() {
 	*x = SimpleObjective{}
-	mi := &file_nominal_protos_plan_v1_plan_proto_msgTypes[30]
+	mi := &file_nominal_protos_plan_v1_plan_proto_msgTypes[33]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2390,7 +2675,7 @@ func (x *SimpleObjective) String() string {
 func (*SimpleObjective) ProtoMessage() {}
 
 func (x *SimpleObjective) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_plan_v1_plan_proto_msgTypes[30]
+	mi := &file_nominal_protos_plan_v1_plan_proto_msgTypes[33]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2403,7 +2688,7 @@ func (x *SimpleObjective) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SimpleObjective.ProtoReflect.Descriptor instead.
 func (*SimpleObjective) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_plan_v1_plan_proto_rawDescGZIP(), []int{30}
+	return file_nominal_protos_plan_v1_plan_proto_rawDescGZIP(), []int{33}
 }
 
 func (x *SimpleObjective) GetResources() []*Resource {
@@ -2427,19 +2712,25 @@ func (x *SimpleObjective) GetProcedureRids() []string {
 	return nil
 }
 
-// One asset demand of an objective: how many assets, drawn from which candidate pool. Which assets ended up
-// meeting it is recorded on the activity that carries the objective out — see
-// `SingleActivity.finalized_asset_rids`.
+// One asset demand of an objective: how many assets, drawn from which candidate pool. Every activity serving
+// the objective is expected to fill it with its own assignments, and clients show each unit of `count` as a
+// slot on each of those activities. Which assets ended up meeting it is recorded on the activity — see
+// `SingleActivity.asset_assignments`, whose entries name this demand through `AssetAssignment.resource_ids`.
+//
+// Only Nominal assets fill a demand. A need no asset stands for, such as a consumable or a facility task, is
+// not a `Resource`; record it on the objective's `description` or `properties` instead.
 type Resource struct {
 	state       protoimpl.MessageState `protogen:"open.v1"`
 	Name        string                 `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	Description *string                `protobuf:"bytes,2,opt,name=description,proto3,oneof" json:"description,omitempty"`
-	// The number of resources to fulfill the objective from the candidate asset group.
+	// How many assets each activity serving the objective assigns against this demand. Unset is read as one.
 	Count *int32 `protobuf:"varint,3,opt,name=count,proto3,oneof" json:"count,omitempty"`
-	// Field-unset means the resource has no candidate pool yet.
+	// Field-unset means the resource has no candidate pool yet: any asset may fill it, bounded only by
+	// `PlanContentV1.base_asset_pool`.
 	CandidateAssets *CandidateAssetGroup `protobuf:"bytes,4,opt,name=candidate_assets,json=candidateAssets,proto3" json:"candidate_assets,omitempty"`
-	// Plan-local id, unique across every objective's resources so a constraint can name it alone. Not yet
-	// enforced as present: documents written before this field carry none. New writers must set it.
+	// Plan-local id, unique across every objective's resources so a constraint or an activity's asset
+	// assignment can name it alone. Not yet enforced as present: documents written before this field carry
+	// none. New writers must set it.
 	Id string `protobuf:"bytes,6,opt,name=id,proto3" json:"id,omitempty"`
 	// Plan-local metadata, as on `Objective`.
 	Labels        []string          `protobuf:"bytes,7,rep,name=labels,proto3" json:"labels,omitempty"`
@@ -2450,7 +2741,7 @@ type Resource struct {
 
 func (x *Resource) Reset() {
 	*x = Resource{}
-	mi := &file_nominal_protos_plan_v1_plan_proto_msgTypes[31]
+	mi := &file_nominal_protos_plan_v1_plan_proto_msgTypes[34]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2462,7 +2753,7 @@ func (x *Resource) String() string {
 func (*Resource) ProtoMessage() {}
 
 func (x *Resource) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_plan_v1_plan_proto_msgTypes[31]
+	mi := &file_nominal_protos_plan_v1_plan_proto_msgTypes[34]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2475,7 +2766,7 @@ func (x *Resource) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Resource.ProtoReflect.Descriptor instead.
 func (*Resource) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_plan_v1_plan_proto_rawDescGZIP(), []int{31}
+	return file_nominal_protos_plan_v1_plan_proto_rawDescGZIP(), []int{34}
 }
 
 func (x *Resource) GetName() string {
@@ -2541,7 +2832,7 @@ type CandidateAssetGroup struct {
 
 func (x *CandidateAssetGroup) Reset() {
 	*x = CandidateAssetGroup{}
-	mi := &file_nominal_protos_plan_v1_plan_proto_msgTypes[32]
+	mi := &file_nominal_protos_plan_v1_plan_proto_msgTypes[35]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2553,7 +2844,7 @@ func (x *CandidateAssetGroup) String() string {
 func (*CandidateAssetGroup) ProtoMessage() {}
 
 func (x *CandidateAssetGroup) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_plan_v1_plan_proto_msgTypes[32]
+	mi := &file_nominal_protos_plan_v1_plan_proto_msgTypes[35]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2566,7 +2857,7 @@ func (x *CandidateAssetGroup) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CandidateAssetGroup.ProtoReflect.Descriptor instead.
 func (*CandidateAssetGroup) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_plan_v1_plan_proto_rawDescGZIP(), []int{32}
+	return file_nominal_protos_plan_v1_plan_proto_rawDescGZIP(), []int{35}
 }
 
 func (x *CandidateAssetGroup) GetCandidateAssetGroup() isCandidateAssetGroup_CandidateAssetGroup {
@@ -2621,7 +2912,7 @@ type AssetSourceList struct {
 
 func (x *AssetSourceList) Reset() {
 	*x = AssetSourceList{}
-	mi := &file_nominal_protos_plan_v1_plan_proto_msgTypes[33]
+	mi := &file_nominal_protos_plan_v1_plan_proto_msgTypes[36]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2633,7 +2924,7 @@ func (x *AssetSourceList) String() string {
 func (*AssetSourceList) ProtoMessage() {}
 
 func (x *AssetSourceList) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_plan_v1_plan_proto_msgTypes[33]
+	mi := &file_nominal_protos_plan_v1_plan_proto_msgTypes[36]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2646,7 +2937,7 @@ func (x *AssetSourceList) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use AssetSourceList.ProtoReflect.Descriptor instead.
 func (*AssetSourceList) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_plan_v1_plan_proto_rawDescGZIP(), []int{33}
+	return file_nominal_protos_plan_v1_plan_proto_rawDescGZIP(), []int{36}
 }
 
 func (x *AssetSourceList) GetSources() []*AssetSource {
@@ -2673,7 +2964,7 @@ type AssetGroup struct {
 
 func (x *AssetGroup) Reset() {
 	*x = AssetGroup{}
-	mi := &file_nominal_protos_plan_v1_plan_proto_msgTypes[34]
+	mi := &file_nominal_protos_plan_v1_plan_proto_msgTypes[37]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2685,7 +2976,7 @@ func (x *AssetGroup) String() string {
 func (*AssetGroup) ProtoMessage() {}
 
 func (x *AssetGroup) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_plan_v1_plan_proto_msgTypes[34]
+	mi := &file_nominal_protos_plan_v1_plan_proto_msgTypes[37]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2698,7 +2989,7 @@ func (x *AssetGroup) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use AssetGroup.ProtoReflect.Descriptor instead.
 func (*AssetGroup) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_plan_v1_plan_proto_rawDescGZIP(), []int{34}
+	return file_nominal_protos_plan_v1_plan_proto_rawDescGZIP(), []int{37}
 }
 
 func (x *AssetGroup) GetId() string {
@@ -2736,6 +3027,10 @@ func (x *AssetGroup) GetIsExemptFromBasePool() bool {
 	return false
 }
 
+// One entry in a pool: the base pool, an asset group, or a resource's inline candidate list. Sources resolve within
+// the workspace that owns the plan, whoever reads them: a search matches only assets in that workspace, and an
+// `asset_rid` naming an asset elsewhere contributes nothing. Every reader resolves them this way, so a pool has the
+// same members in the plan's editor, in `ListPlanAssetGroupSummaries`, and for any service that resolves it.
 type AssetSource struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Types that are valid to be assigned to AssetSource:
@@ -2749,7 +3044,7 @@ type AssetSource struct {
 
 func (x *AssetSource) Reset() {
 	*x = AssetSource{}
-	mi := &file_nominal_protos_plan_v1_plan_proto_msgTypes[35]
+	mi := &file_nominal_protos_plan_v1_plan_proto_msgTypes[38]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2761,7 +3056,7 @@ func (x *AssetSource) String() string {
 func (*AssetSource) ProtoMessage() {}
 
 func (x *AssetSource) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_plan_v1_plan_proto_msgTypes[35]
+	mi := &file_nominal_protos_plan_v1_plan_proto_msgTypes[38]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2774,7 +3069,7 @@ func (x *AssetSource) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use AssetSource.ProtoReflect.Descriptor instead.
 func (*AssetSource) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_plan_v1_plan_proto_rawDescGZIP(), []int{35}
+	return file_nominal_protos_plan_v1_plan_proto_rawDescGZIP(), []int{38}
 }
 
 func (x *AssetSource) GetAssetSource() isAssetSource_AssetSource {
@@ -2818,6 +3113,148 @@ func (*AssetSource_AssetSearch) isAssetSource_AssetSource() {}
 
 func (*AssetSource_AssetRid) isAssetSource_AssetSource() {}
 
+// A flat, named collection of objectives: a way to refer to several at once, and nothing more. Its members are the
+// objectives its sources name; order carries no meaning, a group may be empty, and an objective may belong to several
+// groups. The solver does not read groups: a group imposes no order on its members, is not a node in the precedence
+// graph, and never stands for its members where a constraint names subjects — a rule over the members names each
+// objective. Flat only: a group cannot contain a group.
+type ObjectiveGroup struct {
+	state       protoimpl.MessageState `protogen:"open.v1"`
+	Id          string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
+	Name        string                 `protobuf:"bytes,2,opt,name=name,proto3" json:"name,omitempty"`
+	Description *string                `protobuf:"bytes,3,opt,name=description,proto3,oneof" json:"description,omitempty"`
+	// An objective named by more than one source counts once.
+	Sources       []*ObjectiveSource `protobuf:"bytes,4,rep,name=sources,proto3" json:"sources,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ObjectiveGroup) Reset() {
+	*x = ObjectiveGroup{}
+	mi := &file_nominal_protos_plan_v1_plan_proto_msgTypes[39]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ObjectiveGroup) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ObjectiveGroup) ProtoMessage() {}
+
+func (x *ObjectiveGroup) ProtoReflect() protoreflect.Message {
+	mi := &file_nominal_protos_plan_v1_plan_proto_msgTypes[39]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ObjectiveGroup.ProtoReflect.Descriptor instead.
+func (*ObjectiveGroup) Descriptor() ([]byte, []int) {
+	return file_nominal_protos_plan_v1_plan_proto_rawDescGZIP(), []int{39}
+}
+
+func (x *ObjectiveGroup) GetId() string {
+	if x != nil {
+		return x.Id
+	}
+	return ""
+}
+
+func (x *ObjectiveGroup) GetName() string {
+	if x != nil {
+		return x.Name
+	}
+	return ""
+}
+
+func (x *ObjectiveGroup) GetDescription() string {
+	if x != nil && x.Description != nil {
+		return *x.Description
+	}
+	return ""
+}
+
+func (x *ObjectiveGroup) GetSources() []*ObjectiveSource {
+	if x != nil {
+		return x.Sources
+	}
+	return nil
+}
+
+// One entry in an objective group's membership. A oneof so that another way of selecting objectives can be added
+// later without a second membership list beside this one.
+type ObjectiveSource struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Types that are valid to be assigned to ObjectiveSource:
+	//
+	//	*ObjectiveSource_ObjectiveId
+	ObjectiveSource isObjectiveSource_ObjectiveSource `protobuf_oneof:"objective_source"`
+	unknownFields   protoimpl.UnknownFields
+	sizeCache       protoimpl.SizeCache
+}
+
+func (x *ObjectiveSource) Reset() {
+	*x = ObjectiveSource{}
+	mi := &file_nominal_protos_plan_v1_plan_proto_msgTypes[40]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ObjectiveSource) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ObjectiveSource) ProtoMessage() {}
+
+func (x *ObjectiveSource) ProtoReflect() protoreflect.Message {
+	mi := &file_nominal_protos_plan_v1_plan_proto_msgTypes[40]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ObjectiveSource.ProtoReflect.Descriptor instead.
+func (*ObjectiveSource) Descriptor() ([]byte, []int) {
+	return file_nominal_protos_plan_v1_plan_proto_rawDescGZIP(), []int{40}
+}
+
+func (x *ObjectiveSource) GetObjectiveSource() isObjectiveSource_ObjectiveSource {
+	if x != nil {
+		return x.ObjectiveSource
+	}
+	return nil
+}
+
+func (x *ObjectiveSource) GetObjectiveId() string {
+	if x != nil {
+		if x, ok := x.ObjectiveSource.(*ObjectiveSource_ObjectiveId); ok {
+			return x.ObjectiveId
+		}
+	}
+	return ""
+}
+
+type isObjectiveSource_ObjectiveSource interface {
+	isObjectiveSource_ObjectiveSource()
+}
+
+type ObjectiveSource_ObjectiveId struct {
+	ObjectiveId string `protobuf:"bytes,1,opt,name=objective_id,json=objectiveId,proto3,oneof"`
+}
+
+func (*ObjectiveSource_ObjectiveId) isObjectiveSource_ObjectiveSource() {}
+
 // A period of time containing activities. Finalized segments indicate that planning has completed and is ready to be
 // executed.
 type Segment struct {
@@ -2836,7 +3273,7 @@ type Segment struct {
 
 func (x *Segment) Reset() {
 	*x = Segment{}
-	mi := &file_nominal_protos_plan_v1_plan_proto_msgTypes[36]
+	mi := &file_nominal_protos_plan_v1_plan_proto_msgTypes[41]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2848,7 +3285,7 @@ func (x *Segment) String() string {
 func (*Segment) ProtoMessage() {}
 
 func (x *Segment) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_plan_v1_plan_proto_msgTypes[36]
+	mi := &file_nominal_protos_plan_v1_plan_proto_msgTypes[41]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2861,7 +3298,7 @@ func (x *Segment) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Segment.ProtoReflect.Descriptor instead.
 func (*Segment) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_plan_v1_plan_proto_rawDescGZIP(), []int{36}
+	return file_nominal_protos_plan_v1_plan_proto_rawDescGZIP(), []int{41}
 }
 
 func (x *Segment) GetId() string {
@@ -2926,7 +3363,7 @@ type SegmentStatus struct {
 
 func (x *SegmentStatus) Reset() {
 	*x = SegmentStatus{}
-	mi := &file_nominal_protos_plan_v1_plan_proto_msgTypes[37]
+	mi := &file_nominal_protos_plan_v1_plan_proto_msgTypes[42]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2938,7 +3375,7 @@ func (x *SegmentStatus) String() string {
 func (*SegmentStatus) ProtoMessage() {}
 
 func (x *SegmentStatus) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_plan_v1_plan_proto_msgTypes[37]
+	mi := &file_nominal_protos_plan_v1_plan_proto_msgTypes[42]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2951,7 +3388,7 @@ func (x *SegmentStatus) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SegmentStatus.ProtoReflect.Descriptor instead.
 func (*SegmentStatus) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_plan_v1_plan_proto_rawDescGZIP(), []int{37}
+	return file_nominal_protos_plan_v1_plan_proto_rawDescGZIP(), []int{42}
 }
 
 func (x *SegmentStatus) GetSegmentStatus() isSegmentStatus_SegmentStatus {
@@ -3003,7 +3440,7 @@ type DraftSegment struct {
 
 func (x *DraftSegment) Reset() {
 	*x = DraftSegment{}
-	mi := &file_nominal_protos_plan_v1_plan_proto_msgTypes[38]
+	mi := &file_nominal_protos_plan_v1_plan_proto_msgTypes[43]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3015,7 +3452,7 @@ func (x *DraftSegment) String() string {
 func (*DraftSegment) ProtoMessage() {}
 
 func (x *DraftSegment) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_plan_v1_plan_proto_msgTypes[38]
+	mi := &file_nominal_protos_plan_v1_plan_proto_msgTypes[43]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3028,7 +3465,7 @@ func (x *DraftSegment) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DraftSegment.ProtoReflect.Descriptor instead.
 func (*DraftSegment) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_plan_v1_plan_proto_rawDescGZIP(), []int{38}
+	return file_nominal_protos_plan_v1_plan_proto_rawDescGZIP(), []int{43}
 }
 
 type FinalizedSegment struct {
@@ -3039,7 +3476,7 @@ type FinalizedSegment struct {
 
 func (x *FinalizedSegment) Reset() {
 	*x = FinalizedSegment{}
-	mi := &file_nominal_protos_plan_v1_plan_proto_msgTypes[39]
+	mi := &file_nominal_protos_plan_v1_plan_proto_msgTypes[44]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3051,7 +3488,7 @@ func (x *FinalizedSegment) String() string {
 func (*FinalizedSegment) ProtoMessage() {}
 
 func (x *FinalizedSegment) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_plan_v1_plan_proto_msgTypes[39]
+	mi := &file_nominal_protos_plan_v1_plan_proto_msgTypes[44]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3064,7 +3501,7 @@ func (x *FinalizedSegment) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use FinalizedSegment.ProtoReflect.Descriptor instead.
 func (*FinalizedSegment) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_plan_v1_plan_proto_rawDescGZIP(), []int{39}
+	return file_nominal_protos_plan_v1_plan_proto_rawDescGZIP(), []int{44}
 }
 
 // Inlined from common.Link (io.nominal.scout.run.api.Link).
@@ -3078,7 +3515,7 @@ type Link struct {
 
 func (x *Link) Reset() {
 	*x = Link{}
-	mi := &file_nominal_protos_plan_v1_plan_proto_msgTypes[40]
+	mi := &file_nominal_protos_plan_v1_plan_proto_msgTypes[45]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3090,7 +3527,7 @@ func (x *Link) String() string {
 func (*Link) ProtoMessage() {}
 
 func (x *Link) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_plan_v1_plan_proto_msgTypes[40]
+	mi := &file_nominal_protos_plan_v1_plan_proto_msgTypes[45]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3103,7 +3540,7 @@ func (x *Link) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Link.ProtoReflect.Descriptor instead.
 func (*Link) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_plan_v1_plan_proto_rawDescGZIP(), []int{40}
+	return file_nominal_protos_plan_v1_plan_proto_rawDescGZIP(), []int{45}
 }
 
 func (x *Link) GetTitle() string {
@@ -3131,7 +3568,7 @@ type MinuteDuration struct {
 
 func (x *MinuteDuration) Reset() {
 	*x = MinuteDuration{}
-	mi := &file_nominal_protos_plan_v1_plan_proto_msgTypes[41]
+	mi := &file_nominal_protos_plan_v1_plan_proto_msgTypes[46]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3143,7 +3580,7 @@ func (x *MinuteDuration) String() string {
 func (*MinuteDuration) ProtoMessage() {}
 
 func (x *MinuteDuration) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_plan_v1_plan_proto_msgTypes[41]
+	mi := &file_nominal_protos_plan_v1_plan_proto_msgTypes[46]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3156,7 +3593,7 @@ func (x *MinuteDuration) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use MinuteDuration.ProtoReflect.Descriptor instead.
 func (*MinuteDuration) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_plan_v1_plan_proto_rawDescGZIP(), []int{41}
+	return file_nominal_protos_plan_v1_plan_proto_rawDescGZIP(), []int{46}
 }
 
 func (x *MinuteDuration) GetValue() *types.Duration {
@@ -3179,7 +3616,7 @@ type Constraint struct {
 
 func (x *Constraint) Reset() {
 	*x = Constraint{}
-	mi := &file_nominal_protos_plan_v1_plan_proto_msgTypes[42]
+	mi := &file_nominal_protos_plan_v1_plan_proto_msgTypes[47]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3191,7 +3628,7 @@ func (x *Constraint) String() string {
 func (*Constraint) ProtoMessage() {}
 
 func (x *Constraint) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_plan_v1_plan_proto_msgTypes[42]
+	mi := &file_nominal_protos_plan_v1_plan_proto_msgTypes[47]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3204,7 +3641,7 @@ func (x *Constraint) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Constraint.ProtoReflect.Descriptor instead.
 func (*Constraint) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_plan_v1_plan_proto_rawDescGZIP(), []int{42}
+	return file_nominal_protos_plan_v1_plan_proto_rawDescGZIP(), []int{47}
 }
 
 func (x *Constraint) GetId() string {
@@ -3246,6 +3683,7 @@ type ConstraintSubject struct {
 	//	*ConstraintSubject_AssetRid
 	//	*ConstraintSubject_PlanWide
 	//	*ConstraintSubject_SegmentId
+	//	*ConstraintSubject_ObjectiveGroupId
 	Subject       isConstraintSubject_Subject `protobuf_oneof:"subject"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -3253,7 +3691,7 @@ type ConstraintSubject struct {
 
 func (x *ConstraintSubject) Reset() {
 	*x = ConstraintSubject{}
-	mi := &file_nominal_protos_plan_v1_plan_proto_msgTypes[43]
+	mi := &file_nominal_protos_plan_v1_plan_proto_msgTypes[48]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3265,7 +3703,7 @@ func (x *ConstraintSubject) String() string {
 func (*ConstraintSubject) ProtoMessage() {}
 
 func (x *ConstraintSubject) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_plan_v1_plan_proto_msgTypes[43]
+	mi := &file_nominal_protos_plan_v1_plan_proto_msgTypes[48]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3278,7 +3716,7 @@ func (x *ConstraintSubject) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ConstraintSubject.ProtoReflect.Descriptor instead.
 func (*ConstraintSubject) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_plan_v1_plan_proto_rawDescGZIP(), []int{43}
+	return file_nominal_protos_plan_v1_plan_proto_rawDescGZIP(), []int{48}
 }
 
 func (x *ConstraintSubject) GetSubject() isConstraintSubject_Subject {
@@ -3351,6 +3789,15 @@ func (x *ConstraintSubject) GetSegmentId() string {
 	return ""
 }
 
+func (x *ConstraintSubject) GetObjectiveGroupId() string {
+	if x != nil {
+		if x, ok := x.Subject.(*ConstraintSubject_ObjectiveGroupId); ok {
+			return x.ObjectiveGroupId
+		}
+	}
+	return ""
+}
+
 type isConstraintSubject_Subject interface {
 	isConstraintSubject_Subject()
 }
@@ -3388,6 +3835,13 @@ type ConstraintSubject_SegmentId struct {
 	SegmentId string `protobuf:"bytes,7,opt,name=segment_id,json=segmentId,proto3,oneof"`
 }
 
+type ConstraintSubject_ObjectiveGroupId struct {
+	// An objective group. Accepted so a client can author it, but no kind resolves it yet: the solver reports
+	// `solver.constraint.unsupported` and the subject contributes nothing. It is not shorthand for the group's
+	// objectives, and it is not an ordering among them.
+	ObjectiveGroupId string `protobuf:"bytes,8,opt,name=objective_group_id,json=objectiveGroupId,proto3,oneof"`
+}
+
 func (*ConstraintSubject_ActivityId) isConstraintSubject_Subject() {}
 
 func (*ConstraintSubject_ObjectiveId) isConstraintSubject_Subject() {}
@@ -3402,6 +3856,8 @@ func (*ConstraintSubject_PlanWide) isConstraintSubject_Subject() {}
 
 func (*ConstraintSubject_SegmentId) isConstraintSubject_Subject() {}
 
+func (*ConstraintSubject_ObjectiveGroupId) isConstraintSubject_Subject() {}
+
 type PlanWide struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	unknownFields protoimpl.UnknownFields
@@ -3410,7 +3866,7 @@ type PlanWide struct {
 
 func (x *PlanWide) Reset() {
 	*x = PlanWide{}
-	mi := &file_nominal_protos_plan_v1_plan_proto_msgTypes[44]
+	mi := &file_nominal_protos_plan_v1_plan_proto_msgTypes[49]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3422,7 +3878,7 @@ func (x *PlanWide) String() string {
 func (*PlanWide) ProtoMessage() {}
 
 func (x *PlanWide) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_plan_v1_plan_proto_msgTypes[44]
+	mi := &file_nominal_protos_plan_v1_plan_proto_msgTypes[49]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3435,7 +3891,7 @@ func (x *PlanWide) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use PlanWide.ProtoReflect.Descriptor instead.
 func (*PlanWide) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_plan_v1_plan_proto_rawDescGZIP(), []int{44}
+	return file_nominal_protos_plan_v1_plan_proto_rawDescGZIP(), []int{49}
 }
 
 type ConstraintKind struct {
@@ -3455,7 +3911,7 @@ type ConstraintKind struct {
 
 func (x *ConstraintKind) Reset() {
 	*x = ConstraintKind{}
-	mi := &file_nominal_protos_plan_v1_plan_proto_msgTypes[45]
+	mi := &file_nominal_protos_plan_v1_plan_proto_msgTypes[50]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3467,7 +3923,7 @@ func (x *ConstraintKind) String() string {
 func (*ConstraintKind) ProtoMessage() {}
 
 func (x *ConstraintKind) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_plan_v1_plan_proto_msgTypes[45]
+	mi := &file_nominal_protos_plan_v1_plan_proto_msgTypes[50]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3480,7 +3936,7 @@ func (x *ConstraintKind) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ConstraintKind.ProtoReflect.Descriptor instead.
 func (*ConstraintKind) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_plan_v1_plan_proto_rawDescGZIP(), []int{45}
+	return file_nominal_protos_plan_v1_plan_proto_rawDescGZIP(), []int{50}
 }
 
 func (x *ConstraintKind) GetKind() isConstraintKind_Kind {
@@ -3598,7 +4054,7 @@ type AllowedWindowsConstraint struct {
 
 func (x *AllowedWindowsConstraint) Reset() {
 	*x = AllowedWindowsConstraint{}
-	mi := &file_nominal_protos_plan_v1_plan_proto_msgTypes[46]
+	mi := &file_nominal_protos_plan_v1_plan_proto_msgTypes[51]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3610,7 +4066,7 @@ func (x *AllowedWindowsConstraint) String() string {
 func (*AllowedWindowsConstraint) ProtoMessage() {}
 
 func (x *AllowedWindowsConstraint) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_plan_v1_plan_proto_msgTypes[46]
+	mi := &file_nominal_protos_plan_v1_plan_proto_msgTypes[51]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3623,7 +4079,7 @@ func (x *AllowedWindowsConstraint) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use AllowedWindowsConstraint.ProtoReflect.Descriptor instead.
 func (*AllowedWindowsConstraint) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_plan_v1_plan_proto_rawDescGZIP(), []int{46}
+	return file_nominal_protos_plan_v1_plan_proto_rawDescGZIP(), []int{51}
 }
 
 func (x *AllowedWindowsConstraint) GetAllowedWindowsConstraint() isAllowedWindowsConstraint_AllowedWindowsConstraint {
@@ -3663,7 +4119,7 @@ type ExplicitWindows struct {
 
 func (x *ExplicitWindows) Reset() {
 	*x = ExplicitWindows{}
-	mi := &file_nominal_protos_plan_v1_plan_proto_msgTypes[47]
+	mi := &file_nominal_protos_plan_v1_plan_proto_msgTypes[52]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3675,7 +4131,7 @@ func (x *ExplicitWindows) String() string {
 func (*ExplicitWindows) ProtoMessage() {}
 
 func (x *ExplicitWindows) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_plan_v1_plan_proto_msgTypes[47]
+	mi := &file_nominal_protos_plan_v1_plan_proto_msgTypes[52]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3688,7 +4144,7 @@ func (x *ExplicitWindows) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ExplicitWindows.ProtoReflect.Descriptor instead.
 func (*ExplicitWindows) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_plan_v1_plan_proto_rawDescGZIP(), []int{47}
+	return file_nominal_protos_plan_v1_plan_proto_rawDescGZIP(), []int{52}
 }
 
 func (x *ExplicitWindows) GetSegmentIds() []string {
@@ -3716,7 +4172,7 @@ type TimeRange struct {
 
 func (x *TimeRange) Reset() {
 	*x = TimeRange{}
-	mi := &file_nominal_protos_plan_v1_plan_proto_msgTypes[48]
+	mi := &file_nominal_protos_plan_v1_plan_proto_msgTypes[53]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3728,7 +4184,7 @@ func (x *TimeRange) String() string {
 func (*TimeRange) ProtoMessage() {}
 
 func (x *TimeRange) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_plan_v1_plan_proto_msgTypes[48]
+	mi := &file_nominal_protos_plan_v1_plan_proto_msgTypes[53]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3741,7 +4197,7 @@ func (x *TimeRange) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use TimeRange.ProtoReflect.Descriptor instead.
 func (*TimeRange) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_plan_v1_plan_proto_rawDescGZIP(), []int{48}
+	return file_nominal_protos_plan_v1_plan_proto_rawDescGZIP(), []int{53}
 }
 
 func (x *TimeRange) GetStart() *timestamppb.Timestamp {
@@ -3773,7 +4229,7 @@ type CapacityConstraint struct {
 
 func (x *CapacityConstraint) Reset() {
 	*x = CapacityConstraint{}
-	mi := &file_nominal_protos_plan_v1_plan_proto_msgTypes[49]
+	mi := &file_nominal_protos_plan_v1_plan_proto_msgTypes[54]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3785,7 +4241,7 @@ func (x *CapacityConstraint) String() string {
 func (*CapacityConstraint) ProtoMessage() {}
 
 func (x *CapacityConstraint) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_plan_v1_plan_proto_msgTypes[49]
+	mi := &file_nominal_protos_plan_v1_plan_proto_msgTypes[54]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3798,7 +4254,7 @@ func (x *CapacityConstraint) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CapacityConstraint.ProtoReflect.Descriptor instead.
 func (*CapacityConstraint) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_plan_v1_plan_proto_rawDescGZIP(), []int{49}
+	return file_nominal_protos_plan_v1_plan_proto_rawDescGZIP(), []int{54}
 }
 
 func (x *CapacityConstraint) GetCapacityConstraint() isCapacityConstraint_CapacityConstraint {
@@ -3827,7 +4283,9 @@ type CapacityConstraint_Uniform struct {
 
 func (*CapacityConstraint_Uniform) isCapacityConstraint_CapacityConstraint() {}
 
-// Every activity takes one slot, so 1 makes the subject exclusive. Per-activity demand would be a second arm.
+// Every use of a member takes one slot: an activity using one asset takes one, and an activity drawing two assets
+// from a pooled group takes two of that group's slots. So 1 on an asset makes it exclusive, and N on a group caps
+// how many of its members are in use at once. Per-activity demand would be a second arm.
 type UniformCapacity struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Capacity      int32                  `protobuf:"varint,1,opt,name=capacity,proto3" json:"capacity,omitempty"`
@@ -3837,7 +4295,7 @@ type UniformCapacity struct {
 
 func (x *UniformCapacity) Reset() {
 	*x = UniformCapacity{}
-	mi := &file_nominal_protos_plan_v1_plan_proto_msgTypes[50]
+	mi := &file_nominal_protos_plan_v1_plan_proto_msgTypes[55]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3849,7 +4307,7 @@ func (x *UniformCapacity) String() string {
 func (*UniformCapacity) ProtoMessage() {}
 
 func (x *UniformCapacity) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_plan_v1_plan_proto_msgTypes[50]
+	mi := &file_nominal_protos_plan_v1_plan_proto_msgTypes[55]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3862,7 +4320,7 @@ func (x *UniformCapacity) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UniformCapacity.ProtoReflect.Descriptor instead.
 func (*UniformCapacity) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_plan_v1_plan_proto_rawDescGZIP(), []int{50}
+	return file_nominal_protos_plan_v1_plan_proto_rawDescGZIP(), []int{55}
 }
 
 func (x *UniformCapacity) GetCapacity() int32 {
@@ -3874,7 +4332,8 @@ func (x *UniformCapacity) GetCapacity() int32 {
 
 // Minimum turnaround between consecutive activities sharing a subject.
 // Subjects: assets, asset groups, resources. An asset group fans out to its members, so the gap is required
-// per asset rather than across the group.
+// per asset rather than across the group. On an asset whose capacity is above 1, each use holds one of its slots
+// for the gap after it ends, and the other slots stay free.
 type BufferConstraint struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Types that are valid to be assigned to BufferConstraint:
@@ -3887,7 +4346,7 @@ type BufferConstraint struct {
 
 func (x *BufferConstraint) Reset() {
 	*x = BufferConstraint{}
-	mi := &file_nominal_protos_plan_v1_plan_proto_msgTypes[51]
+	mi := &file_nominal_protos_plan_v1_plan_proto_msgTypes[56]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3899,7 +4358,7 @@ func (x *BufferConstraint) String() string {
 func (*BufferConstraint) ProtoMessage() {}
 
 func (x *BufferConstraint) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_plan_v1_plan_proto_msgTypes[51]
+	mi := &file_nominal_protos_plan_v1_plan_proto_msgTypes[56]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3912,7 +4371,7 @@ func (x *BufferConstraint) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use BufferConstraint.ProtoReflect.Descriptor instead.
 func (*BufferConstraint) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_plan_v1_plan_proto_rawDescGZIP(), []int{51}
+	return file_nominal_protos_plan_v1_plan_proto_rawDescGZIP(), []int{56}
 }
 
 func (x *BufferConstraint) GetBufferConstraint() isBufferConstraint_BufferConstraint {
@@ -3951,7 +4410,7 @@ type FixedBuffer struct {
 
 func (x *FixedBuffer) Reset() {
 	*x = FixedBuffer{}
-	mi := &file_nominal_protos_plan_v1_plan_proto_msgTypes[52]
+	mi := &file_nominal_protos_plan_v1_plan_proto_msgTypes[57]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3963,7 +4422,7 @@ func (x *FixedBuffer) String() string {
 func (*FixedBuffer) ProtoMessage() {}
 
 func (x *FixedBuffer) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_plan_v1_plan_proto_msgTypes[52]
+	mi := &file_nominal_protos_plan_v1_plan_proto_msgTypes[57]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3976,7 +4435,7 @@ func (x *FixedBuffer) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use FixedBuffer.ProtoReflect.Descriptor instead.
 func (*FixedBuffer) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_plan_v1_plan_proto_rawDescGZIP(), []int{52}
+	return file_nominal_protos_plan_v1_plan_proto_rawDescGZIP(), []int{57}
 }
 
 func (x *FixedBuffer) GetMinGap() *MinuteDuration {
@@ -4000,7 +4459,7 @@ type UsageCeilingConstraint struct {
 
 func (x *UsageCeilingConstraint) Reset() {
 	*x = UsageCeilingConstraint{}
-	mi := &file_nominal_protos_plan_v1_plan_proto_msgTypes[53]
+	mi := &file_nominal_protos_plan_v1_plan_proto_msgTypes[58]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4012,7 +4471,7 @@ func (x *UsageCeilingConstraint) String() string {
 func (*UsageCeilingConstraint) ProtoMessage() {}
 
 func (x *UsageCeilingConstraint) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_plan_v1_plan_proto_msgTypes[53]
+	mi := &file_nominal_protos_plan_v1_plan_proto_msgTypes[58]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4025,7 +4484,7 @@ func (x *UsageCeilingConstraint) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UsageCeilingConstraint.ProtoReflect.Descriptor instead.
 func (*UsageCeilingConstraint) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_plan_v1_plan_proto_rawDescGZIP(), []int{53}
+	return file_nominal_protos_plan_v1_plan_proto_rawDescGZIP(), []int{58}
 }
 
 func (x *UsageCeilingConstraint) GetUsageCeilingConstraint() isUsageCeilingConstraint_UsageCeilingConstraint {
@@ -4066,7 +4525,7 @@ type DailyUsageCeiling struct {
 
 func (x *DailyUsageCeiling) Reset() {
 	*x = DailyUsageCeiling{}
-	mi := &file_nominal_protos_plan_v1_plan_proto_msgTypes[54]
+	mi := &file_nominal_protos_plan_v1_plan_proto_msgTypes[59]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4078,7 +4537,7 @@ func (x *DailyUsageCeiling) String() string {
 func (*DailyUsageCeiling) ProtoMessage() {}
 
 func (x *DailyUsageCeiling) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_plan_v1_plan_proto_msgTypes[54]
+	mi := &file_nominal_protos_plan_v1_plan_proto_msgTypes[59]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4091,7 +4550,7 @@ func (x *DailyUsageCeiling) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DailyUsageCeiling.ProtoReflect.Descriptor instead.
 func (*DailyUsageCeiling) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_plan_v1_plan_proto_rawDescGZIP(), []int{54}
+	return file_nominal_protos_plan_v1_plan_proto_rawDescGZIP(), []int{59}
 }
 
 func (x *DailyUsageCeiling) GetMaxDuration() *MinuteDuration {
@@ -4123,7 +4582,7 @@ type PrecedenceConstraint struct {
 
 func (x *PrecedenceConstraint) Reset() {
 	*x = PrecedenceConstraint{}
-	mi := &file_nominal_protos_plan_v1_plan_proto_msgTypes[55]
+	mi := &file_nominal_protos_plan_v1_plan_proto_msgTypes[60]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4135,7 +4594,7 @@ func (x *PrecedenceConstraint) String() string {
 func (*PrecedenceConstraint) ProtoMessage() {}
 
 func (x *PrecedenceConstraint) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_plan_v1_plan_proto_msgTypes[55]
+	mi := &file_nominal_protos_plan_v1_plan_proto_msgTypes[60]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4148,7 +4607,7 @@ func (x *PrecedenceConstraint) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use PrecedenceConstraint.ProtoReflect.Descriptor instead.
 func (*PrecedenceConstraint) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_plan_v1_plan_proto_rawDescGZIP(), []int{55}
+	return file_nominal_protos_plan_v1_plan_proto_rawDescGZIP(), []int{60}
 }
 
 func (x *PrecedenceConstraint) GetPrecedenceConstraint() isPrecedenceConstraint_PrecedenceConstraint {
@@ -4194,7 +4653,7 @@ type MutualExclusionConstraint struct {
 
 func (x *MutualExclusionConstraint) Reset() {
 	*x = MutualExclusionConstraint{}
-	mi := &file_nominal_protos_plan_v1_plan_proto_msgTypes[56]
+	mi := &file_nominal_protos_plan_v1_plan_proto_msgTypes[61]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4206,7 +4665,7 @@ func (x *MutualExclusionConstraint) String() string {
 func (*MutualExclusionConstraint) ProtoMessage() {}
 
 func (x *MutualExclusionConstraint) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_plan_v1_plan_proto_msgTypes[56]
+	mi := &file_nominal_protos_plan_v1_plan_proto_msgTypes[61]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4219,7 +4678,7 @@ func (x *MutualExclusionConstraint) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use MutualExclusionConstraint.ProtoReflect.Descriptor instead.
 func (*MutualExclusionConstraint) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_plan_v1_plan_proto_rawDescGZIP(), []int{56}
+	return file_nominal_protos_plan_v1_plan_proto_rawDescGZIP(), []int{61}
 }
 
 func (x *MutualExclusionConstraint) GetMutualExclusionConstraint() isMutualExclusionConstraint_MutualExclusionConstraint {
@@ -4257,7 +4716,7 @@ type NoOverlap struct {
 
 func (x *NoOverlap) Reset() {
 	*x = NoOverlap{}
-	mi := &file_nominal_protos_plan_v1_plan_proto_msgTypes[57]
+	mi := &file_nominal_protos_plan_v1_plan_proto_msgTypes[62]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4269,7 +4728,7 @@ func (x *NoOverlap) String() string {
 func (*NoOverlap) ProtoMessage() {}
 
 func (x *NoOverlap) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_plan_v1_plan_proto_msgTypes[57]
+	mi := &file_nominal_protos_plan_v1_plan_proto_msgTypes[62]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4282,7 +4741,7 @@ func (x *NoOverlap) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use NoOverlap.ProtoReflect.Descriptor instead.
 func (*NoOverlap) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_plan_v1_plan_proto_rawDescGZIP(), []int{57}
+	return file_nominal_protos_plan_v1_plan_proto_rawDescGZIP(), []int{62}
 }
 
 type CreatePlanRequest struct {
@@ -4292,14 +4751,21 @@ type CreatePlanRequest struct {
 	// true when unset, and `metadata.status` defaults to `open`.
 	Plan *Plan `protobuf:"bytes,1,opt,name=plan,proto3" json:"plan,omitempty"`
 	// Commit message for the initial commit.
-	Message       string `protobuf:"bytes,2,opt,name=message,proto3" json:"message,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	Message string `protobuf:"bytes,2,opt,name=message,proto3" json:"message,omitempty"`
+	// Snapshot inherited scheduling limits for the currently resolved assets into ordinary plan constraints and
+	// disable property inheritance. Existing constraints retain precedence. The write fails without creating a plan
+	// if the assets cannot all be read or the resulting content exceeds its bounds. Search pools remain dynamic;
+	// assets joining later use plan constraints and defaults, not their scheduling properties.
+	// The returned Plan.content is authoritative: clients must adopt it before their next content write.
+	// A zero-minute property-backed daily ceiling cannot be expressed by the constraint model and refuses import.
+	ImportAssetLimits bool `protobuf:"varint,3,opt,name=import_asset_limits,json=importAssetLimits,proto3" json:"import_asset_limits,omitempty"`
+	unknownFields     protoimpl.UnknownFields
+	sizeCache         protoimpl.SizeCache
 }
 
 func (x *CreatePlanRequest) Reset() {
 	*x = CreatePlanRequest{}
-	mi := &file_nominal_protos_plan_v1_plan_proto_msgTypes[58]
+	mi := &file_nominal_protos_plan_v1_plan_proto_msgTypes[63]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4311,7 +4777,7 @@ func (x *CreatePlanRequest) String() string {
 func (*CreatePlanRequest) ProtoMessage() {}
 
 func (x *CreatePlanRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_plan_v1_plan_proto_msgTypes[58]
+	mi := &file_nominal_protos_plan_v1_plan_proto_msgTypes[63]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4324,7 +4790,7 @@ func (x *CreatePlanRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CreatePlanRequest.ProtoReflect.Descriptor instead.
 func (*CreatePlanRequest) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_plan_v1_plan_proto_rawDescGZIP(), []int{58}
+	return file_nominal_protos_plan_v1_plan_proto_rawDescGZIP(), []int{63}
 }
 
 func (x *CreatePlanRequest) GetPlan() *Plan {
@@ -4341,16 +4807,30 @@ func (x *CreatePlanRequest) GetMessage() string {
 	return ""
 }
 
+func (x *CreatePlanRequest) GetImportAssetLimits() bool {
+	if x != nil {
+		return x.ImportAssetLimits
+	}
+	return false
+}
+
 type CreatePlanResponse struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Plan          *Plan                  `protobuf:"bytes,1,opt,name=plan,proto3" json:"plan,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	state protoimpl.MessageState `protogen:"open.v1"`
+	Plan  *Plan                  `protobuf:"bytes,1,opt,name=plan,proto3" json:"plan,omitempty"`
+	// WARNING findings on the content just written, as `ValidatePlan` would report them for that content with no
+	// `workspace_rid`: findings that need asset metadata, such as inherited capacity or turnaround, are not checked.
+	// Content with `inherit_asset_limits` false needs none for an asset's own capacity and turnaround, so those are.
+	// A write never carries an ERROR finding: content with one is rejected instead.
+	Warnings []*PlanViolation `protobuf:"bytes,2,rep,name=warnings,proto3" json:"warnings,omitempty"`
+	// As `ValidatePlanResponse.is_truncated`, for `warnings`.
+	IsWarningsTruncated bool `protobuf:"varint,3,opt,name=is_warnings_truncated,json=isWarningsTruncated,proto3" json:"is_warnings_truncated,omitempty"`
+	unknownFields       protoimpl.UnknownFields
+	sizeCache           protoimpl.SizeCache
 }
 
 func (x *CreatePlanResponse) Reset() {
 	*x = CreatePlanResponse{}
-	mi := &file_nominal_protos_plan_v1_plan_proto_msgTypes[59]
+	mi := &file_nominal_protos_plan_v1_plan_proto_msgTypes[64]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4362,7 +4842,7 @@ func (x *CreatePlanResponse) String() string {
 func (*CreatePlanResponse) ProtoMessage() {}
 
 func (x *CreatePlanResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_plan_v1_plan_proto_msgTypes[59]
+	mi := &file_nominal_protos_plan_v1_plan_proto_msgTypes[64]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4375,7 +4855,7 @@ func (x *CreatePlanResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CreatePlanResponse.ProtoReflect.Descriptor instead.
 func (*CreatePlanResponse) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_plan_v1_plan_proto_rawDescGZIP(), []int{59}
+	return file_nominal_protos_plan_v1_plan_proto_rawDescGZIP(), []int{64}
 }
 
 func (x *CreatePlanResponse) GetPlan() *Plan {
@@ -4383,6 +4863,20 @@ func (x *CreatePlanResponse) GetPlan() *Plan {
 		return x.Plan
 	}
 	return nil
+}
+
+func (x *CreatePlanResponse) GetWarnings() []*PlanViolation {
+	if x != nil {
+		return x.Warnings
+	}
+	return nil
+}
+
+func (x *CreatePlanResponse) GetIsWarningsTruncated() bool {
+	if x != nil {
+		return x.IsWarningsTruncated
+	}
+	return false
 }
 
 type GetPlanRequest struct {
@@ -4396,7 +4890,7 @@ type GetPlanRequest struct {
 
 func (x *GetPlanRequest) Reset() {
 	*x = GetPlanRequest{}
-	mi := &file_nominal_protos_plan_v1_plan_proto_msgTypes[60]
+	mi := &file_nominal_protos_plan_v1_plan_proto_msgTypes[65]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4408,7 +4902,7 @@ func (x *GetPlanRequest) String() string {
 func (*GetPlanRequest) ProtoMessage() {}
 
 func (x *GetPlanRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_plan_v1_plan_proto_msgTypes[60]
+	mi := &file_nominal_protos_plan_v1_plan_proto_msgTypes[65]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4421,7 +4915,7 @@ func (x *GetPlanRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetPlanRequest.ProtoReflect.Descriptor instead.
 func (*GetPlanRequest) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_plan_v1_plan_proto_rawDescGZIP(), []int{60}
+	return file_nominal_protos_plan_v1_plan_proto_rawDescGZIP(), []int{65}
 }
 
 func (x *GetPlanRequest) GetPlanRid() string {
@@ -4447,7 +4941,7 @@ type GetPlanResponse struct {
 
 func (x *GetPlanResponse) Reset() {
 	*x = GetPlanResponse{}
-	mi := &file_nominal_protos_plan_v1_plan_proto_msgTypes[61]
+	mi := &file_nominal_protos_plan_v1_plan_proto_msgTypes[66]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4459,7 +4953,7 @@ func (x *GetPlanResponse) String() string {
 func (*GetPlanResponse) ProtoMessage() {}
 
 func (x *GetPlanResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_plan_v1_plan_proto_msgTypes[61]
+	mi := &file_nominal_protos_plan_v1_plan_proto_msgTypes[66]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4472,7 +4966,7 @@ func (x *GetPlanResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetPlanResponse.ProtoReflect.Descriptor instead.
 func (*GetPlanResponse) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_plan_v1_plan_proto_rawDescGZIP(), []int{61}
+	return file_nominal_protos_plan_v1_plan_proto_rawDescGZIP(), []int{66}
 }
 
 func (x *GetPlanResponse) GetPlan() *Plan {
@@ -4492,7 +4986,7 @@ type BatchGetPlansRequest struct {
 
 func (x *BatchGetPlansRequest) Reset() {
 	*x = BatchGetPlansRequest{}
-	mi := &file_nominal_protos_plan_v1_plan_proto_msgTypes[62]
+	mi := &file_nominal_protos_plan_v1_plan_proto_msgTypes[67]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4504,7 +4998,7 @@ func (x *BatchGetPlansRequest) String() string {
 func (*BatchGetPlansRequest) ProtoMessage() {}
 
 func (x *BatchGetPlansRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_plan_v1_plan_proto_msgTypes[62]
+	mi := &file_nominal_protos_plan_v1_plan_proto_msgTypes[67]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4517,7 +5011,7 @@ func (x *BatchGetPlansRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use BatchGetPlansRequest.ProtoReflect.Descriptor instead.
 func (*BatchGetPlansRequest) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_plan_v1_plan_proto_rawDescGZIP(), []int{62}
+	return file_nominal_protos_plan_v1_plan_proto_rawDescGZIP(), []int{67}
 }
 
 func (x *BatchGetPlansRequest) GetPlanRids() []string {
@@ -4537,7 +5031,7 @@ type BatchGetPlansResponse struct {
 
 func (x *BatchGetPlansResponse) Reset() {
 	*x = BatchGetPlansResponse{}
-	mi := &file_nominal_protos_plan_v1_plan_proto_msgTypes[63]
+	mi := &file_nominal_protos_plan_v1_plan_proto_msgTypes[68]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4549,7 +5043,7 @@ func (x *BatchGetPlansResponse) String() string {
 func (*BatchGetPlansResponse) ProtoMessage() {}
 
 func (x *BatchGetPlansResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_plan_v1_plan_proto_msgTypes[63]
+	mi := &file_nominal_protos_plan_v1_plan_proto_msgTypes[68]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4562,10 +5056,99 @@ func (x *BatchGetPlansResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use BatchGetPlansResponse.ProtoReflect.Descriptor instead.
 func (*BatchGetPlansResponse) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_plan_v1_plan_proto_rawDescGZIP(), []int{63}
+	return file_nominal_protos_plan_v1_plan_proto_rawDescGZIP(), []int{68}
 }
 
 func (x *BatchGetPlansResponse) GetPlans() []*Plan {
+	if x != nil {
+		return x.Plans
+	}
+	return nil
+}
+
+type BatchGetPlanSummariesRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	PlanRids      []string               `protobuf:"bytes,1,rep,name=plan_rids,json=planRids,proto3" json:"plan_rids,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *BatchGetPlanSummariesRequest) Reset() {
+	*x = BatchGetPlanSummariesRequest{}
+	mi := &file_nominal_protos_plan_v1_plan_proto_msgTypes[69]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *BatchGetPlanSummariesRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*BatchGetPlanSummariesRequest) ProtoMessage() {}
+
+func (x *BatchGetPlanSummariesRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_nominal_protos_plan_v1_plan_proto_msgTypes[69]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use BatchGetPlanSummariesRequest.ProtoReflect.Descriptor instead.
+func (*BatchGetPlanSummariesRequest) Descriptor() ([]byte, []int) {
+	return file_nominal_protos_plan_v1_plan_proto_rawDescGZIP(), []int{69}
+}
+
+func (x *BatchGetPlanSummariesRequest) GetPlanRids() []string {
+	if x != nil {
+		return x.PlanRids
+	}
+	return nil
+}
+
+type BatchGetPlanSummariesResponse struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Plans the caller is permitted to see, archived ones included. RIDs that do not exist are omitted.
+	Plans         []*PlanSummary `protobuf:"bytes,1,rep,name=plans,proto3" json:"plans,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *BatchGetPlanSummariesResponse) Reset() {
+	*x = BatchGetPlanSummariesResponse{}
+	mi := &file_nominal_protos_plan_v1_plan_proto_msgTypes[70]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *BatchGetPlanSummariesResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*BatchGetPlanSummariesResponse) ProtoMessage() {}
+
+func (x *BatchGetPlanSummariesResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_nominal_protos_plan_v1_plan_proto_msgTypes[70]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use BatchGetPlanSummariesResponse.ProtoReflect.Descriptor instead.
+func (*BatchGetPlanSummariesResponse) Descriptor() ([]byte, []int) {
+	return file_nominal_protos_plan_v1_plan_proto_rawDescGZIP(), []int{70}
+}
+
+func (x *BatchGetPlanSummariesResponse) GetPlans() []*PlanSummary {
 	if x != nil {
 		return x.Plans
 	}
@@ -4581,19 +5164,24 @@ type CreatePlanCommitRequest struct {
 	Branch *string `protobuf:"bytes,3,opt,name=branch,proto3,oneof" json:"branch,omitempty"`
 	// Required unless `is_working_state` is set.
 	Message string `protobuf:"bytes,4,opt,name=message,proto3" json:"message,omitempty"`
-	// A working-state commit is non-permanent and may later be compacted away. Working-state commits
-	// do not advance `metadata.edited_at`.
+	// A working-state commit is non-permanent and may later be compacted away. Like a permanent
+	// commit to main, it advances `metadata.edited_at`.
 	IsWorkingState bool `protobuf:"varint,5,opt,name=is_working_state,json=isWorkingState,proto3" json:"is_working_state,omitempty"`
 	// Compare-and-swap precondition: if present, the commit is rejected with PlanCommitConflict unless
 	// the branch's latest commit matches.
 	ExpectedLatestCommit *string `protobuf:"bytes,6,opt,name=expected_latest_commit,json=expectedLatestCommit,proto3,oneof" json:"expected_latest_commit,omitempty"`
-	unknownFields        protoimpl.UnknownFields
-	sizeCache            protoimpl.SizeCache
+	// As CreatePlanRequest.import_asset_limits. Requires a permanent commit and expected_latest_commit, so the
+	// transition is explicit, versioned and rejected if the branch changes while assets are being read.
+	// If content omits inherit_asset_limits, the expected commit's policy applies: an already non-inheriting
+	// parent makes this a no-op rather than importing live properties again.
+	ImportAssetLimits bool `protobuf:"varint,7,opt,name=import_asset_limits,json=importAssetLimits,proto3" json:"import_asset_limits,omitempty"`
+	unknownFields     protoimpl.UnknownFields
+	sizeCache         protoimpl.SizeCache
 }
 
 func (x *CreatePlanCommitRequest) Reset() {
 	*x = CreatePlanCommitRequest{}
-	mi := &file_nominal_protos_plan_v1_plan_proto_msgTypes[64]
+	mi := &file_nominal_protos_plan_v1_plan_proto_msgTypes[71]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4605,7 +5193,7 @@ func (x *CreatePlanCommitRequest) String() string {
 func (*CreatePlanCommitRequest) ProtoMessage() {}
 
 func (x *CreatePlanCommitRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_plan_v1_plan_proto_msgTypes[64]
+	mi := &file_nominal_protos_plan_v1_plan_proto_msgTypes[71]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4618,7 +5206,7 @@ func (x *CreatePlanCommitRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CreatePlanCommitRequest.ProtoReflect.Descriptor instead.
 func (*CreatePlanCommitRequest) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_plan_v1_plan_proto_rawDescGZIP(), []int{64}
+	return file_nominal_protos_plan_v1_plan_proto_rawDescGZIP(), []int{71}
 }
 
 func (x *CreatePlanCommitRequest) GetPlanRid() string {
@@ -4663,16 +5251,28 @@ func (x *CreatePlanCommitRequest) GetExpectedLatestCommit() string {
 	return ""
 }
 
+func (x *CreatePlanCommitRequest) GetImportAssetLimits() bool {
+	if x != nil {
+		return x.ImportAssetLimits
+	}
+	return false
+}
+
 type CreatePlanCommitResponse struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Plan          *Plan                  `protobuf:"bytes,1,opt,name=plan,proto3" json:"plan,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	state protoimpl.MessageState `protogen:"open.v1"`
+	Plan  *Plan                  `protobuf:"bytes,1,opt,name=plan,proto3" json:"plan,omitempty"`
+	// As `CreatePlanResponse.warnings`, for the committed content. Working-state commits skip warning evaluation
+	// and return the default empty list with `is_warnings_truncated` false.
+	Warnings []*PlanViolation `protobuf:"bytes,2,rep,name=warnings,proto3" json:"warnings,omitempty"`
+	// As `ValidatePlanResponse.is_truncated`, for `warnings`.
+	IsWarningsTruncated bool `protobuf:"varint,3,opt,name=is_warnings_truncated,json=isWarningsTruncated,proto3" json:"is_warnings_truncated,omitempty"`
+	unknownFields       protoimpl.UnknownFields
+	sizeCache           protoimpl.SizeCache
 }
 
 func (x *CreatePlanCommitResponse) Reset() {
 	*x = CreatePlanCommitResponse{}
-	mi := &file_nominal_protos_plan_v1_plan_proto_msgTypes[65]
+	mi := &file_nominal_protos_plan_v1_plan_proto_msgTypes[72]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4684,7 +5284,7 @@ func (x *CreatePlanCommitResponse) String() string {
 func (*CreatePlanCommitResponse) ProtoMessage() {}
 
 func (x *CreatePlanCommitResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_plan_v1_plan_proto_msgTypes[65]
+	mi := &file_nominal_protos_plan_v1_plan_proto_msgTypes[72]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4697,7 +5297,7 @@ func (x *CreatePlanCommitResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CreatePlanCommitResponse.ProtoReflect.Descriptor instead.
 func (*CreatePlanCommitResponse) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_plan_v1_plan_proto_rawDescGZIP(), []int{65}
+	return file_nominal_protos_plan_v1_plan_proto_rawDescGZIP(), []int{72}
 }
 
 func (x *CreatePlanCommitResponse) GetPlan() *Plan {
@@ -4705,6 +5305,20 @@ func (x *CreatePlanCommitResponse) GetPlan() *Plan {
 		return x.Plan
 	}
 	return nil
+}
+
+func (x *CreatePlanCommitResponse) GetWarnings() []*PlanViolation {
+	if x != nil {
+		return x.Warnings
+	}
+	return nil
+}
+
+func (x *CreatePlanCommitResponse) GetIsWarningsTruncated() bool {
+	if x != nil {
+		return x.IsWarningsTruncated
+	}
+	return false
 }
 
 // Patch semantics: only fields present are changed. proto3 cannot express "absent" for a repeated or
@@ -4729,7 +5343,7 @@ type UpdatePlanMetadataRequest struct {
 
 func (x *UpdatePlanMetadataRequest) Reset() {
 	*x = UpdatePlanMetadataRequest{}
-	mi := &file_nominal_protos_plan_v1_plan_proto_msgTypes[66]
+	mi := &file_nominal_protos_plan_v1_plan_proto_msgTypes[73]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4741,7 +5355,7 @@ func (x *UpdatePlanMetadataRequest) String() string {
 func (*UpdatePlanMetadataRequest) ProtoMessage() {}
 
 func (x *UpdatePlanMetadataRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_plan_v1_plan_proto_msgTypes[66]
+	mi := &file_nominal_protos_plan_v1_plan_proto_msgTypes[73]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4754,7 +5368,7 @@ func (x *UpdatePlanMetadataRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UpdatePlanMetadataRequest.ProtoReflect.Descriptor instead.
 func (*UpdatePlanMetadataRequest) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_plan_v1_plan_proto_rawDescGZIP(), []int{66}
+	return file_nominal_protos_plan_v1_plan_proto_rawDescGZIP(), []int{73}
 }
 
 func (x *UpdatePlanMetadataRequest) GetPlanRid() string {
@@ -4822,7 +5436,7 @@ type UpdatePlanMetadataResponse struct {
 
 func (x *UpdatePlanMetadataResponse) Reset() {
 	*x = UpdatePlanMetadataResponse{}
-	mi := &file_nominal_protos_plan_v1_plan_proto_msgTypes[67]
+	mi := &file_nominal_protos_plan_v1_plan_proto_msgTypes[74]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4834,7 +5448,7 @@ func (x *UpdatePlanMetadataResponse) String() string {
 func (*UpdatePlanMetadataResponse) ProtoMessage() {}
 
 func (x *UpdatePlanMetadataResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_plan_v1_plan_proto_msgTypes[67]
+	mi := &file_nominal_protos_plan_v1_plan_proto_msgTypes[74]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4847,7 +5461,7 @@ func (x *UpdatePlanMetadataResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UpdatePlanMetadataResponse.ProtoReflect.Descriptor instead.
 func (*UpdatePlanMetadataResponse) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_plan_v1_plan_proto_rawDescGZIP(), []int{67}
+	return file_nominal_protos_plan_v1_plan_proto_rawDescGZIP(), []int{74}
 }
 
 func (x *UpdatePlanMetadataResponse) GetMetadata() *PlanMetadata {
@@ -4885,7 +5499,7 @@ type SearchPlansQuery struct {
 
 func (x *SearchPlansQuery) Reset() {
 	*x = SearchPlansQuery{}
-	mi := &file_nominal_protos_plan_v1_plan_proto_msgTypes[68]
+	mi := &file_nominal_protos_plan_v1_plan_proto_msgTypes[75]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4897,7 +5511,7 @@ func (x *SearchPlansQuery) String() string {
 func (*SearchPlansQuery) ProtoMessage() {}
 
 func (x *SearchPlansQuery) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_plan_v1_plan_proto_msgTypes[68]
+	mi := &file_nominal_protos_plan_v1_plan_proto_msgTypes[75]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4910,7 +5524,7 @@ func (x *SearchPlansQuery) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SearchPlansQuery.ProtoReflect.Descriptor instead.
 func (*SearchPlansQuery) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_plan_v1_plan_proto_rawDescGZIP(), []int{68}
+	return file_nominal_protos_plan_v1_plan_proto_rawDescGZIP(), []int{75}
 }
 
 func (x *SearchPlansQuery) GetQuery() isSearchPlansQuery_Query {
@@ -5169,7 +5783,7 @@ type PlanDateRangeFilter struct {
 
 func (x *PlanDateRangeFilter) Reset() {
 	*x = PlanDateRangeFilter{}
-	mi := &file_nominal_protos_plan_v1_plan_proto_msgTypes[69]
+	mi := &file_nominal_protos_plan_v1_plan_proto_msgTypes[76]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5181,7 +5795,7 @@ func (x *PlanDateRangeFilter) String() string {
 func (*PlanDateRangeFilter) ProtoMessage() {}
 
 func (x *PlanDateRangeFilter) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_plan_v1_plan_proto_msgTypes[69]
+	mi := &file_nominal_protos_plan_v1_plan_proto_msgTypes[76]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5194,7 +5808,7 @@ func (x *PlanDateRangeFilter) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use PlanDateRangeFilter.ProtoReflect.Descriptor instead.
 func (*PlanDateRangeFilter) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_plan_v1_plan_proto_rawDescGZIP(), []int{69}
+	return file_nominal_protos_plan_v1_plan_proto_rawDescGZIP(), []int{76}
 }
 
 func (x *PlanDateRangeFilter) GetStart() *timestamppb.Timestamp {
@@ -5221,7 +5835,7 @@ type SearchPlansQueryList struct {
 
 func (x *SearchPlansQueryList) Reset() {
 	*x = SearchPlansQueryList{}
-	mi := &file_nominal_protos_plan_v1_plan_proto_msgTypes[70]
+	mi := &file_nominal_protos_plan_v1_plan_proto_msgTypes[77]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5233,7 +5847,7 @@ func (x *SearchPlansQueryList) String() string {
 func (*SearchPlansQueryList) ProtoMessage() {}
 
 func (x *SearchPlansQueryList) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_plan_v1_plan_proto_msgTypes[70]
+	mi := &file_nominal_protos_plan_v1_plan_proto_msgTypes[77]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5246,7 +5860,7 @@ func (x *SearchPlansQueryList) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SearchPlansQueryList.ProtoReflect.Descriptor instead.
 func (*SearchPlansQueryList) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_plan_v1_plan_proto_rawDescGZIP(), []int{70}
+	return file_nominal_protos_plan_v1_plan_proto_rawDescGZIP(), []int{77}
 }
 
 func (x *SearchPlansQueryList) GetQueries() []*SearchPlansQuery {
@@ -5265,7 +5879,7 @@ type UserRidList struct {
 
 func (x *UserRidList) Reset() {
 	*x = UserRidList{}
-	mi := &file_nominal_protos_plan_v1_plan_proto_msgTypes[71]
+	mi := &file_nominal_protos_plan_v1_plan_proto_msgTypes[78]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5277,7 +5891,7 @@ func (x *UserRidList) String() string {
 func (*UserRidList) ProtoMessage() {}
 
 func (x *UserRidList) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_plan_v1_plan_proto_msgTypes[71]
+	mi := &file_nominal_protos_plan_v1_plan_proto_msgTypes[78]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5290,7 +5904,7 @@ func (x *UserRidList) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UserRidList.ProtoReflect.Descriptor instead.
 func (*UserRidList) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_plan_v1_plan_proto_rawDescGZIP(), []int{71}
+	return file_nominal_protos_plan_v1_plan_proto_rawDescGZIP(), []int{78}
 }
 
 func (x *UserRidList) GetUserRids() []string {
@@ -5310,7 +5924,7 @@ type PlanSortOptions struct {
 
 func (x *PlanSortOptions) Reset() {
 	*x = PlanSortOptions{}
-	mi := &file_nominal_protos_plan_v1_plan_proto_msgTypes[72]
+	mi := &file_nominal_protos_plan_v1_plan_proto_msgTypes[79]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5322,7 +5936,7 @@ func (x *PlanSortOptions) String() string {
 func (*PlanSortOptions) ProtoMessage() {}
 
 func (x *PlanSortOptions) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_plan_v1_plan_proto_msgTypes[72]
+	mi := &file_nominal_protos_plan_v1_plan_proto_msgTypes[79]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5335,7 +5949,7 @@ func (x *PlanSortOptions) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use PlanSortOptions.ProtoReflect.Descriptor instead.
 func (*PlanSortOptions) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_plan_v1_plan_proto_rawDescGZIP(), []int{72}
+	return file_nominal_protos_plan_v1_plan_proto_rawDescGZIP(), []int{79}
 }
 
 func (x *PlanSortOptions) GetField() PlanSortField {
@@ -5366,7 +5980,7 @@ type SearchPlansRequest struct {
 
 func (x *SearchPlansRequest) Reset() {
 	*x = SearchPlansRequest{}
-	mi := &file_nominal_protos_plan_v1_plan_proto_msgTypes[73]
+	mi := &file_nominal_protos_plan_v1_plan_proto_msgTypes[80]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5378,7 +5992,7 @@ func (x *SearchPlansRequest) String() string {
 func (*SearchPlansRequest) ProtoMessage() {}
 
 func (x *SearchPlansRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_plan_v1_plan_proto_msgTypes[73]
+	mi := &file_nominal_protos_plan_v1_plan_proto_msgTypes[80]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5391,7 +6005,7 @@ func (x *SearchPlansRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SearchPlansRequest.ProtoReflect.Descriptor instead.
 func (*SearchPlansRequest) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_plan_v1_plan_proto_rawDescGZIP(), []int{73}
+	return file_nominal_protos_plan_v1_plan_proto_rawDescGZIP(), []int{80}
 }
 
 func (x *SearchPlansRequest) GetQuery() *SearchPlansQuery {
@@ -5432,7 +6046,7 @@ type SearchPlansResponse struct {
 
 func (x *SearchPlansResponse) Reset() {
 	*x = SearchPlansResponse{}
-	mi := &file_nominal_protos_plan_v1_plan_proto_msgTypes[74]
+	mi := &file_nominal_protos_plan_v1_plan_proto_msgTypes[81]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5444,7 +6058,7 @@ func (x *SearchPlansResponse) String() string {
 func (*SearchPlansResponse) ProtoMessage() {}
 
 func (x *SearchPlansResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_plan_v1_plan_proto_msgTypes[74]
+	mi := &file_nominal_protos_plan_v1_plan_proto_msgTypes[81]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5457,7 +6071,7 @@ func (x *SearchPlansResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SearchPlansResponse.ProtoReflect.Descriptor instead.
 func (*SearchPlansResponse) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_plan_v1_plan_proto_rawDescGZIP(), []int{74}
+	return file_nominal_protos_plan_v1_plan_proto_rawDescGZIP(), []int{81}
 }
 
 func (x *SearchPlansResponse) GetResults() []*PlanSummary {
@@ -5480,14 +6094,23 @@ type ValidatePlanRequest struct {
 	//
 	//	*ValidatePlanRequest_Plan
 	//	*ValidatePlanRequest_Content
-	Source        isValidatePlanRequest_Source `protobuf_oneof:"source"`
+	Source isValidatePlanRequest_Source `protobuf_oneof:"source"`
+	// Only with `content`, typically the workspace of the plan being edited: the scheduled assets are read there,
+	// as a stored plan's are in its own workspace, so their `capacity` and `turnaround_minutes` properties count.
+	// The caller must be able to view the workspace. Unset, only the document is judged and no asset property is
+	// read. With `inherit_asset_limits` false that settles an asset's own capacity and turnaround from constraints
+	// and their defaults; a searching pool's members stay unknown, so a limit reaching assets through one is left
+	// unchecked and `is_truncated` set. Otherwise an asset is read as exclusive unless its own `capacity`
+	// constraint says otherwise, and its turnaround is checked only where constraints set both. Rejected with
+	// `plan`, which always uses the plan's workspace.
+	WorkspaceRid  *string `protobuf:"bytes,3,opt,name=workspace_rid,json=workspaceRid,proto3,oneof" json:"workspace_rid,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
 func (x *ValidatePlanRequest) Reset() {
 	*x = ValidatePlanRequest{}
-	mi := &file_nominal_protos_plan_v1_plan_proto_msgTypes[75]
+	mi := &file_nominal_protos_plan_v1_plan_proto_msgTypes[82]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5499,7 +6122,7 @@ func (x *ValidatePlanRequest) String() string {
 func (*ValidatePlanRequest) ProtoMessage() {}
 
 func (x *ValidatePlanRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_plan_v1_plan_proto_msgTypes[75]
+	mi := &file_nominal_protos_plan_v1_plan_proto_msgTypes[82]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5512,7 +6135,7 @@ func (x *ValidatePlanRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ValidatePlanRequest.ProtoReflect.Descriptor instead.
 func (*ValidatePlanRequest) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_plan_v1_plan_proto_rawDescGZIP(), []int{75}
+	return file_nominal_protos_plan_v1_plan_proto_rawDescGZIP(), []int{82}
 }
 
 func (x *ValidatePlanRequest) GetSource() isValidatePlanRequest_Source {
@@ -5540,6 +6163,13 @@ func (x *ValidatePlanRequest) GetContent() *PlanContent {
 	return nil
 }
 
+func (x *ValidatePlanRequest) GetWorkspaceRid() string {
+	if x != nil && x.WorkspaceRid != nil {
+		return *x.WorkspaceRid
+	}
+	return ""
+}
+
 type isValidatePlanRequest_Source interface {
 	isValidatePlanRequest_Source()
 }
@@ -5551,7 +6181,8 @@ type ValidatePlanRequest_Plan struct {
 }
 
 type ValidatePlanRequest_Content struct {
-	// Validate content the caller has not committed. Nothing is read and nothing is written.
+	// Validate content the caller has not committed. Nothing is written, and nothing is read unless
+	// `workspace_rid` is set.
 	//
 	// Transport validation is deliberately switched off here. protovalidate recurses into nested
 	// messages, so without the cut a document that breaks a field rule would be rejected before
@@ -5576,7 +6207,7 @@ type StoredPlanRevision struct {
 
 func (x *StoredPlanRevision) Reset() {
 	*x = StoredPlanRevision{}
-	mi := &file_nominal_protos_plan_v1_plan_proto_msgTypes[76]
+	mi := &file_nominal_protos_plan_v1_plan_proto_msgTypes[83]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5588,7 +6219,7 @@ func (x *StoredPlanRevision) String() string {
 func (*StoredPlanRevision) ProtoMessage() {}
 
 func (x *StoredPlanRevision) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_plan_v1_plan_proto_msgTypes[76]
+	mi := &file_nominal_protos_plan_v1_plan_proto_msgTypes[83]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5601,7 +6232,7 @@ func (x *StoredPlanRevision) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use StoredPlanRevision.ProtoReflect.Descriptor instead.
 func (*StoredPlanRevision) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_plan_v1_plan_proto_rawDescGZIP(), []int{76}
+	return file_nominal_protos_plan_v1_plan_proto_rawDescGZIP(), []int{83}
 }
 
 func (x *StoredPlanRevision) GetPlanRid() string {
@@ -5621,7 +6252,9 @@ func (x *StoredPlanRevision) GetAt() *v1.BranchOrCommit {
 // SENSITIVE: violations quote author-chosen ids and names. Never log this message.
 type ValidatePlanResponse struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
-	// Empty means every rule that ran found nothing.
+	// Empty means every rule that ran found nothing. It does not mean the schedule is feasible: of the
+	// `constraints`, only the conflicts and overruns listed under `PlanViolation.code` are checked, and whether
+	// each activity fills its objectives' resource `count`s is not.
 	Violations []*PlanViolation `protobuf:"bytes,1,rep,name=violations,proto3" json:"violations,omitempty"`
 	// True when a rule stopped against its work budget, or the cap above was reached. The findings
 	// present are real either way; what this rules out is reading an empty tail as "nothing else
@@ -5636,7 +6269,7 @@ type ValidatePlanResponse struct {
 
 func (x *ValidatePlanResponse) Reset() {
 	*x = ValidatePlanResponse{}
-	mi := &file_nominal_protos_plan_v1_plan_proto_msgTypes[77]
+	mi := &file_nominal_protos_plan_v1_plan_proto_msgTypes[84]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5648,7 +6281,7 @@ func (x *ValidatePlanResponse) String() string {
 func (*ValidatePlanResponse) ProtoMessage() {}
 
 func (x *ValidatePlanResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_plan_v1_plan_proto_msgTypes[77]
+	mi := &file_nominal_protos_plan_v1_plan_proto_msgTypes[84]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5661,7 +6294,7 @@ func (x *ValidatePlanResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ValidatePlanResponse.ProtoReflect.Descriptor instead.
 func (*ValidatePlanResponse) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_plan_v1_plan_proto_rawDescGZIP(), []int{77}
+	return file_nominal_protos_plan_v1_plan_proto_rawDescGZIP(), []int{84}
 }
 
 func (x *ValidatePlanResponse) GetViolations() []*PlanViolation {
@@ -5695,13 +6328,26 @@ type PlanViolation struct {
 	//
 	// Emitted today, non-exhaustively:
 	//
-	//	id.duplicate                 an id repeats within its own collection
-	//	reference.dead               an id reference resolves to nothing
+	//	id.duplicate                 an id repeats within its own namespace — resource ids share one plan-wide, and so do constraint ids within `constraints`
+	//	reference.dead               an id reference resolves to nothing, including a constraint's subjects and window segments
 	//	date.start-after-end         a range whose start is after its end
 	//	date.invalid                 a timestamp outside protobuf's representable range
-	//	asset.not-in-candidate-set   an activity's finalized asset that none of its objectives' pools offer
-	//	asset.not-in-base-pool       an asset a group lists or an activity finalizes that the base pool does not offer
-	//	asset.double-booked          two overlapping activities using one asset
+	//	timezone.invalid             a plan timezone that is not an IANA region id; offsets such as "+05:00" are rejected
+	//	constraint.precedence-cycle  precedence constraints that wait on each other in a loop (warning)
+	//	constraint.usage-ceiling-exceeded  scheduled use of a subject exceeds its per-calendar-day cap (warning)
+	//	constraint.windows-disjoint  allowed windows on one subject that share no instant (warning)
+	//	constraint.window-shorter-than-duration  a subject whose longest allowed window is shorter than its planned duration (warning)
+	//	constraint.finalized-outside-window  a finalized activity outside an allowed window that names it (warning)
+	//	asset.not-in-candidate-set   an assigned asset a named resource's pool does not offer, or that none of the activity's objectives' pools offer
+	//	asset.resource-not-served    an assignment filling a demand of an objective the activity does not serve
+	//	asset.assigned-twice         one asset listed by two of an activity's assignments
+	//	asset.not-in-base-pool       an asset a group lists or an activity is assigned that the base pool does not offer
+	//	asset.double-booked          two overlapping activities using one asset of capacity 1
+	//	asset.turnaround-violated    an asset used again sooner after an activity ends than its turnaround allows: on one of capacity 1, any reuse; on a larger one, while every slot is still running or turning around (warning)
+	//	asset.over-capacity          more overlapping activities on an asset than its capacity (warning)
+	//	asset.unresolved             a scheduled asset the workspace read could not find or show, so its limits went unchecked (warning)
+	//	constraint.capacity-exceeded more concurrent uses of a group's, a resource's or the plan's assets than a pooled `capacity` constraint allows (warning)
+	//	pin.incomplete               an activity pinned where the solver cannot hold it (see `SingleActivity.pin`), so it is scheduled as if unpinned; the message names the cause
 	//	shape.<protovalidate rule>   a field rule breach, e.g. "shape.string.max_len"
 	Code string `protobuf:"bytes,2,opt,name=code,proto3" json:"code,omitempty"`
 	// Human-readable, suitable for showing the author directly.
@@ -5710,14 +6356,17 @@ type PlanViolation struct {
 	// names each end, so two activities double-booking an asset name both activities. A finding that shows up in
 	// more places than the cap allows keeps the first 16 — the finding is still complete, only the list
 	// of positions is abridged.
-	Subjects      []*PlanViolationSubject `protobuf:"bytes,4,rep,name=subjects,proto3" json:"subjects,omitempty"`
+	Subjects []*PlanViolationSubject `protobuf:"bytes,4,rep,name=subjects,proto3" json:"subjects,omitempty"`
+	// Optional structured context for this finding. `message` remains the complete explanation and fallback for
+	// readers that do not recognize the detail kind or comparison operator. Most findings need no details.
+	Details       *PlanViolationDetails `protobuf:"bytes,6,opt,name=details,proto3" json:"details,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
 func (x *PlanViolation) Reset() {
 	*x = PlanViolation{}
-	mi := &file_nominal_protos_plan_v1_plan_proto_msgTypes[78]
+	mi := &file_nominal_protos_plan_v1_plan_proto_msgTypes[85]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5729,7 +6378,7 @@ func (x *PlanViolation) String() string {
 func (*PlanViolation) ProtoMessage() {}
 
 func (x *PlanViolation) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_plan_v1_plan_proto_msgTypes[78]
+	mi := &file_nominal_protos_plan_v1_plan_proto_msgTypes[85]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5742,7 +6391,7 @@ func (x *PlanViolation) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use PlanViolation.ProtoReflect.Descriptor instead.
 func (*PlanViolation) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_plan_v1_plan_proto_rawDescGZIP(), []int{78}
+	return file_nominal_protos_plan_v1_plan_proto_rawDescGZIP(), []int{85}
 }
 
 func (x *PlanViolation) GetSeverity() PlanViolationSeverity {
@@ -5773,6 +6422,79 @@ func (x *PlanViolation) GetSubjects() []*PlanViolationSubject {
 	return nil
 }
 
+func (x *PlanViolation) GetDetails() *PlanViolationDetails {
+	if x != nil {
+		return x.Details
+	}
+	return nil
+}
+
+type PlanViolationDetails struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Types that are valid to be assigned to Kind:
+	//
+	//	*PlanViolationDetails_Comparison_
+	Kind          isPlanViolationDetails_Kind `protobuf_oneof:"kind"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *PlanViolationDetails) Reset() {
+	*x = PlanViolationDetails{}
+	mi := &file_nominal_protos_plan_v1_plan_proto_msgTypes[86]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *PlanViolationDetails) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*PlanViolationDetails) ProtoMessage() {}
+
+func (x *PlanViolationDetails) ProtoReflect() protoreflect.Message {
+	mi := &file_nominal_protos_plan_v1_plan_proto_msgTypes[86]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use PlanViolationDetails.ProtoReflect.Descriptor instead.
+func (*PlanViolationDetails) Descriptor() ([]byte, []int) {
+	return file_nominal_protos_plan_v1_plan_proto_rawDescGZIP(), []int{86}
+}
+
+func (x *PlanViolationDetails) GetKind() isPlanViolationDetails_Kind {
+	if x != nil {
+		return x.Kind
+	}
+	return nil
+}
+
+func (x *PlanViolationDetails) GetComparison() *PlanViolationDetails_Comparison {
+	if x != nil {
+		if x, ok := x.Kind.(*PlanViolationDetails_Comparison_); ok {
+			return x.Comparison
+		}
+	}
+	return nil
+}
+
+type isPlanViolationDetails_Kind interface {
+	isPlanViolationDetails_Kind()
+}
+
+type PlanViolationDetails_Comparison_ struct {
+	Comparison *PlanViolationDetails_Comparison `protobuf:"bytes,1,opt,name=comparison,proto3,oneof"`
+}
+
+func (*PlanViolationDetails_Comparison_) isPlanViolationDetails_Kind() {}
+
 type PlanViolationSubject struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	Kind  PlanElementKind        `protobuf:"varint,1,opt,name=kind,proto3,enum=nominal.plan.v1.PlanElementKind" json:"kind,omitempty"`
@@ -5789,7 +6511,7 @@ type PlanViolationSubject struct {
 
 func (x *PlanViolationSubject) Reset() {
 	*x = PlanViolationSubject{}
-	mi := &file_nominal_protos_plan_v1_plan_proto_msgTypes[79]
+	mi := &file_nominal_protos_plan_v1_plan_proto_msgTypes[87]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5801,7 +6523,7 @@ func (x *PlanViolationSubject) String() string {
 func (*PlanViolationSubject) ProtoMessage() {}
 
 func (x *PlanViolationSubject) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_plan_v1_plan_proto_msgTypes[79]
+	mi := &file_nominal_protos_plan_v1_plan_proto_msgTypes[87]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5814,7 +6536,7 @@ func (x *PlanViolationSubject) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use PlanViolationSubject.ProtoReflect.Descriptor instead.
 func (*PlanViolationSubject) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_plan_v1_plan_proto_rawDescGZIP(), []int{79}
+	return file_nominal_protos_plan_v1_plan_proto_rawDescGZIP(), []int{87}
 }
 
 func (x *PlanViolationSubject) GetKind() PlanElementKind {
@@ -5838,11 +6560,264 @@ func (x *PlanViolationSubject) GetPath() string {
 	return ""
 }
 
+type ListPlanAssetGroupSummariesRequest struct {
+	state   protoimpl.MessageState `protogen:"open.v1"`
+	PlanRid string                 `protobuf:"bytes,1,opt,name=plan_rid,json=planRid,proto3" json:"plan_rid,omitempty"`
+	// Which revision's groups to resolve. If unset, the latest commit on the "main" branch — the same
+	// default as `GetPlan`.
+	At *v1.BranchOrCommit `protobuf:"bytes,2,opt,name=at,proto3" json:"at,omitempty"`
+	// When set, only groups whose effective membership includes this asset are returned, still with
+	// their full counts. Must be an asset RID of this instance; anything else is INVALID_ARGUMENT. The
+	// asset is neither authorized nor looked up: a RID naming no asset in the plan's workspace matches no group.
+	ContainingAssetRid *string `protobuf:"bytes,3,opt,name=containing_asset_rid,json=containingAssetRid,proto3,oneof" json:"containing_asset_rid,omitempty"`
+	unknownFields      protoimpl.UnknownFields
+	sizeCache          protoimpl.SizeCache
+}
+
+func (x *ListPlanAssetGroupSummariesRequest) Reset() {
+	*x = ListPlanAssetGroupSummariesRequest{}
+	mi := &file_nominal_protos_plan_v1_plan_proto_msgTypes[88]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ListPlanAssetGroupSummariesRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ListPlanAssetGroupSummariesRequest) ProtoMessage() {}
+
+func (x *ListPlanAssetGroupSummariesRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_nominal_protos_plan_v1_plan_proto_msgTypes[88]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ListPlanAssetGroupSummariesRequest.ProtoReflect.Descriptor instead.
+func (*ListPlanAssetGroupSummariesRequest) Descriptor() ([]byte, []int) {
+	return file_nominal_protos_plan_v1_plan_proto_rawDescGZIP(), []int{88}
+}
+
+func (x *ListPlanAssetGroupSummariesRequest) GetPlanRid() string {
+	if x != nil {
+		return x.PlanRid
+	}
+	return ""
+}
+
+func (x *ListPlanAssetGroupSummariesRequest) GetAt() *v1.BranchOrCommit {
+	if x != nil {
+		return x.At
+	}
+	return nil
+}
+
+func (x *ListPlanAssetGroupSummariesRequest) GetContainingAssetRid() string {
+	if x != nil && x.ContainingAssetRid != nil {
+		return *x.ContainingAssetRid
+	}
+	return ""
+}
+
+type ListPlanAssetGroupSummariesResponse struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// One entry per distinct group id: the base pool first, then `asset_groups` in document order. A
+	// repeated id keeps its first declaration, as `ValidatePlan` reads it. Not paginated: the set is fixed
+	// by the revision the request names and capped by the content's own limits (1000 groups plus the
+	// base pool), all of which the caller can already read in full through `GetPlan`.
+	AssetGroupSummaries []*AssetGroupSummary `protobuf:"bytes,1,rep,name=asset_group_summaries,json=assetGroupSummaries,proto3" json:"asset_group_summaries,omitempty"`
+	// The revision the counts describe, so a caller can drop a result a newer commit has overtaken.
+	Commit        *v1.Commit `protobuf:"bytes,2,opt,name=commit,proto3" json:"commit,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ListPlanAssetGroupSummariesResponse) Reset() {
+	*x = ListPlanAssetGroupSummariesResponse{}
+	mi := &file_nominal_protos_plan_v1_plan_proto_msgTypes[89]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ListPlanAssetGroupSummariesResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ListPlanAssetGroupSummariesResponse) ProtoMessage() {}
+
+func (x *ListPlanAssetGroupSummariesResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_nominal_protos_plan_v1_plan_proto_msgTypes[89]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ListPlanAssetGroupSummariesResponse.ProtoReflect.Descriptor instead.
+func (*ListPlanAssetGroupSummariesResponse) Descriptor() ([]byte, []int) {
+	return file_nominal_protos_plan_v1_plan_proto_rawDescGZIP(), []int{89}
+}
+
+func (x *ListPlanAssetGroupSummariesResponse) GetAssetGroupSummaries() []*AssetGroupSummary {
+	if x != nil {
+		return x.AssetGroupSummaries
+	}
+	return nil
+}
+
+func (x *ListPlanAssetGroupSummariesResponse) GetCommit() *v1.Commit {
+	if x != nil {
+		return x.Commit
+	}
+	return nil
+}
+
+// The index's view of one asset group at one revision. SENSITIVE: `asset_group_id` is author-chosen.
+type AssetGroupSummary struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// `AssetGroup.id`; plan-local, so no alias (see the `Content leaves` note).
+	AssetGroupId string `protobuf:"bytes,1,opt,name=asset_group_id,json=assetGroupId,proto3" json:"asset_group_id,omitempty"`
+	// Distinct assets in the group's effective membership: the union of its sources, intersected with
+	// `PlanContentV1.base_asset_pool` unless the group is exempt, is the pool itself, or no pool is set.
+	// A group with no sources counts 0, as does every non-exempt group under a pool with no sources.
+	// Counted as `AssetService.SearchAssets` would count the same query within the plan's workspace (see
+	// `AssetSource`): excluding staged assets, and excluding archived assets unless a source filters on
+	// `archived`. Not narrowed by per-asset permissions, matching `SearchAssetsResponse.total_count`. A
+	// source RID that cannot name an indexed asset contributes nothing.
+	AssetCount    int32 `protobuf:"varint,2,opt,name=asset_count,json=assetCount,proto3" json:"asset_count,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *AssetGroupSummary) Reset() {
+	*x = AssetGroupSummary{}
+	mi := &file_nominal_protos_plan_v1_plan_proto_msgTypes[90]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *AssetGroupSummary) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*AssetGroupSummary) ProtoMessage() {}
+
+func (x *AssetGroupSummary) ProtoReflect() protoreflect.Message {
+	mi := &file_nominal_protos_plan_v1_plan_proto_msgTypes[90]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use AssetGroupSummary.ProtoReflect.Descriptor instead.
+func (*AssetGroupSummary) Descriptor() ([]byte, []int) {
+	return file_nominal_protos_plan_v1_plan_proto_rawDescGZIP(), []int{90}
+}
+
+func (x *AssetGroupSummary) GetAssetGroupId() string {
+	if x != nil {
+		return x.AssetGroupId
+	}
+	return ""
+}
+
+func (x *AssetGroupSummary) GetAssetCount() int32 {
+	if x != nil {
+		return x.AssetCount
+	}
+	return 0
+}
+
+type PlanViolationDetails_Comparison struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// The condition that must hold is `observed operator limit`. Day counts are rounded up to whole days.
+	Observed *int64 `protobuf:"varint,1,opt,name=observed,proto3,oneof" json:"observed,omitempty"`
+	Limit    *int64 `protobuf:"varint,2,opt,name=limit,proto3,oneof" json:"limit,omitempty"`
+	// Shared unit of `observed` and `limit`, e.g. "days".
+	Unit          string                                   `protobuf:"bytes,3,opt,name=unit,proto3" json:"unit,omitempty"`
+	Operator      PlanViolationDetails_Comparison_Operator `protobuf:"varint,4,opt,name=operator,proto3,enum=nominal.plan.v1.PlanViolationDetails_Comparison_Operator" json:"operator,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *PlanViolationDetails_Comparison) Reset() {
+	*x = PlanViolationDetails_Comparison{}
+	mi := &file_nominal_protos_plan_v1_plan_proto_msgTypes[96]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *PlanViolationDetails_Comparison) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*PlanViolationDetails_Comparison) ProtoMessage() {}
+
+func (x *PlanViolationDetails_Comparison) ProtoReflect() protoreflect.Message {
+	mi := &file_nominal_protos_plan_v1_plan_proto_msgTypes[96]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use PlanViolationDetails_Comparison.ProtoReflect.Descriptor instead.
+func (*PlanViolationDetails_Comparison) Descriptor() ([]byte, []int) {
+	return file_nominal_protos_plan_v1_plan_proto_rawDescGZIP(), []int{86, 0}
+}
+
+func (x *PlanViolationDetails_Comparison) GetObserved() int64 {
+	if x != nil && x.Observed != nil {
+		return *x.Observed
+	}
+	return 0
+}
+
+func (x *PlanViolationDetails_Comparison) GetLimit() int64 {
+	if x != nil && x.Limit != nil {
+		return *x.Limit
+	}
+	return 0
+}
+
+func (x *PlanViolationDetails_Comparison) GetUnit() string {
+	if x != nil {
+		return x.Unit
+	}
+	return ""
+}
+
+func (x *PlanViolationDetails_Comparison) GetOperator() PlanViolationDetails_Comparison_Operator {
+	if x != nil {
+		return x.Operator
+	}
+	return PlanViolationDetails_Comparison_OPERATOR_UNSPECIFIED
+}
+
 var File_nominal_protos_plan_v1_plan_proto protoreflect.FileDescriptor
 
 const file_nominal_protos_plan_v1_plan_proto_rawDesc = "" +
 	"\n" +
-	"!nominal/protos/plan/v1/plan.proto\x12\x0fnominal.plan.v1\x1a\x1bbuf/validate/validate.proto\x1a\x1cgoogle/api/annotations.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a#nominal/protos/asset/v2/asset.proto\x1a!nominal/protos/gen/v1/alias.proto\x1a!nominal/protos/gen/v1/error.proto\x1a!nominal/protos/types/common.proto\x1a nominal/protos/types/types.proto\x1a-nominal/protos/versioning/v1/versioning.proto\"\xeb\x01\n" +
+	"!nominal/protos/plan/v1/plan.proto\x12\x0fnominal.plan.v1\x1a\x1bbuf/validate/validate.proto\x1a\x1cgoogle/api/annotations.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a#nominal/protos/asset/v2/asset.proto\x1a)nominal/protos/authz/v1/annotations.proto\x1a!nominal/protos/gen/v1/alias.proto\x1a!nominal/protos/gen/v1/error.proto\x1a!nominal/protos/types/common.proto\x1a nominal/protos/types/types.proto\x1a-nominal/protos/versioning/v1/versioning.proto\"\xeb\x01\n" +
 	"\x04Plan\x129\n" +
 	"\x03rid\x18\x01 \x01(\tB'\x9a\xb2\x1a#\n" +
 	"!io.nominal.scout.plan.api.PlanRidR\x03rid\x129\n" +
@@ -5903,7 +6878,7 @@ const file_nominal_protos_plan_v1_plan_proto_rawDesc = "" +
 	"\rCancelledPlan\"V\n" +
 	"\vPlanContent\x120\n" +
 	"\x02v1\x18\x01 \x01(\v2\x1e.nominal.plan.v1.PlanContentV1H\x00R\x02v1B\x15\n" +
-	"\fplan_content\x12\x05\xbaH\x02\b\x01\"\xa2\x05\n" +
+	"\fplan_content\x12\x05\xbaH\x02\b\x01\"\xc9\x06\n" +
 	"\rPlanContentV1\x120\n" +
 	"\x05start\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampR\x05start\x121\n" +
 	"\x03end\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampH\x00R\x03end\x88\x01\x01\x12E\n" +
@@ -5921,9 +6896,12 @@ const file_nominal_protos_plan_v1_plan_proto_rawDesc = "" +
 	"\vconstraints\x18\b \x03(\v2\x1b.nominal.plan.v1.ConstraintB\t\xbaH\x06\x92\x01\x03\x10\xe8\aR\vconstraints\x12(\n" +
 	"\btimezone\x18\t \x01(\tB\a\xbaH\x04r\x02\x18@H\x01R\btimezone\x88\x01\x01\x12C\n" +
 	"\x0fbase_asset_pool\x18\n" +
-	" \x01(\v2\x1b.nominal.plan.v1.AssetGroupR\rbaseAssetPoolB\x06\n" +
+	" \x01(\v2\x1b.nominal.plan.v1.AssetGroupR\rbaseAssetPool\x12U\n" +
+	"\x10objective_groups\x18\v \x03(\v2\x1f.nominal.plan.v1.ObjectiveGroupB\t\xbaH\x06\x92\x01\x03\x10\xe8\aR\x0fobjectiveGroups\x125\n" +
+	"\x14inherit_asset_limits\x18\f \x01(\bH\x02R\x12inheritAssetLimits\x88\x01\x01B\x06\n" +
 	"\x04_endB\v\n" +
-	"\t_timezone\"\x86\x01\n" +
+	"\t_timezoneB\x17\n" +
+	"\x15_inherit_asset_limits\"\x86\x01\n" +
 	"\tMilestone\x12\x1a\n" +
 	"\x02id\x18\x01 \x01(\tB\n" +
 	"\xbaH\ar\x05\x10\x01\x18\x80\x01R\x02id\x12\x1c\n" +
@@ -5952,7 +6930,7 @@ const file_nominal_protos_plan_v1_plan_proto_rawDesc = "" +
 	"\x11_planned_duration\"g\n" +
 	"\x0fActivityDetails\x129\n" +
 	"\x06single\x18\x01 \x01(\v2\x1f.nominal.plan.v1.SingleActivityH\x00R\x06singleB\x19\n" +
-	"\x10activity_details\x12\x05\xbaH\x02\b\x01\"\x98\x03\n" +
+	"\x10activity_details\x12\x05\xbaH\x02\b\x01\"\xd9\x03\n" +
 	"\x0eSingleActivity\x125\n" +
 	"\x05start\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampH\x00R\x05start\x88\x01\x01\x121\n" +
 	"\x03end\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampH\x01R\x03end\x88\x01\x01\x12.\n" +
@@ -5960,12 +6938,16 @@ const file_nominal_protos_plan_v1_plan_proto_rawDesc = "" +
 	"segment_id\x18\x03 \x01(\tB\n" +
 	"\xbaH\ar\x05\x10\x01\x18\x80\x01H\x02R\tsegmentId\x88\x01\x01\x12-\n" +
 	"\robjective_ids\x18\x04 \x03(\tB\b\xbaH\x05\x92\x01\x02\x10dR\fobjectiveIds\x127\n" +
-	"\x06status\x18\x05 \x01(\v2\x1f.nominal.plan.v1.ActivityStatusR\x06status\x12c\n" +
-	"\x14finalized_asset_rids\x18\x06 \x03(\tB1\xbaH\x06\x92\x01\x03\x10\xe8\a\x9a\xb2\x1a$\n" +
-	"\"io.nominal.scout.rids.api.AssetRidR\x12finalizedAssetRidsB\b\n" +
+	"\x06status\x18\x05 \x01(\v2\x1f.nominal.plan.v1.ActivityStatusR\x06status\x12X\n" +
+	"\x11asset_assignments\x18\a \x03(\v2 .nominal.plan.v1.AssetAssignmentB\t\xbaH\x06\x92\x01\x03\x10\xe8\aR\x10assetAssignments\x12.\n" +
+	"\x03pin\x18\b \x01(\v2\x1c.nominal.plan.v1.ActivityPinR\x03pinB\b\n" +
 	"\x06_startB\x06\n" +
 	"\x04_endB\r\n" +
-	"\v_segment_id\"\xfc\x02\n" +
+	"\v_segment_idJ\x04\b\x06\x10\aR\x14finalized_asset_rids\"\x98\x01\n" +
+	"\x0fAssetAssignment\x12O\n" +
+	"\tasset_rid\x18\x01 \x01(\tB2\xbaH\ar\x05\x10\x01(\x80\x02\x9a\xb2\x1a$\n" +
+	"\"io.nominal.scout.rids.api.AssetRidR\bassetRid\x124\n" +
+	"\fresource_ids\x18\x02 \x03(\tB\x11\xbaH\x0e\x92\x01\v\x10d\"\ar\x05\x10\x01\x18\x80\x01R\vresourceIds\"\xfc\x02\n" +
 	"\x0eActivityStatus\x12<\n" +
 	"\acreated\x18\x01 \x01(\v2 .nominal.plan.v1.CreatedActivityH\x00R\acreated\x12B\n" +
 	"\tfinalized\x18\x02 \x01(\v2\".nominal.plan.v1.FinalizedActivityH\x00R\tfinalized\x12F\n" +
@@ -5983,7 +6965,11 @@ const file_nominal_protos_plan_v1_plan_proto_rawDesc = "" +
 	"\x11CancelledActivity\x12 \n" +
 	"\x06reason\x18\x01 \x01(\tB\b\xbaH\x05r\x03\x18\x80 R\x06reason\x12#\n" +
 	"\x05notes\x18\x02 \x01(\tB\b\xbaH\x05r\x03\x18\x80 H\x00R\x05notes\x88\x01\x01B\b\n" +
-	"\x06_notes\"\xe7\a\n" +
+	"\x06_notes\"_\n" +
+	"\vActivityPin\x129\n" +
+	"\x06pinned\x18\x01 \x01(\v2\x1f.nominal.plan.v1.PinnedActivityH\x00R\x06pinnedB\x15\n" +
+	"\factivity_pin\x12\x05\xbaH\x02\b\x01\"\x10\n" +
+	"\x0ePinnedActivity\"\xe7\a\n" +
 	"\tObjective\x12\x1a\n" +
 	"\x02id\x18\x01 \x01(\tB\n" +
 	"\xbaH\ar\x05\x10\x01\x18\x80\x01R\x02id\x12\x1c\n" +
@@ -6051,7 +7037,7 @@ const file_nominal_protos_plan_v1_plan_proto_rawDesc = "" +
 	"\bResource\x12\x1c\n" +
 	"\x04name\x18\x01 \x01(\tB\b\xbaH\x05r\x03\x18\xff\x01R\x04name\x12/\n" +
 	"\vdescription\x18\x02 \x01(\tB\b\xbaH\x05r\x03\x18\x80 H\x00R\vdescription\x88\x01\x01\x12\"\n" +
-	"\x05count\x18\x03 \x01(\x05B\a\xbaH\x04\x1a\x02(\x00H\x01R\x05count\x88\x01\x01\x12O\n" +
+	"\x05count\x18\x03 \x01(\x05B\a\xbaH\x04\x1a\x02(\x01H\x01R\x05count\x88\x01\x01\x12O\n" +
 	"\x10candidate_assets\x18\x04 \x01(\v2$.nominal.plan.v1.CandidateAssetGroupR\x0fcandidateAssets\x12\x18\n" +
 	"\x02id\x18\x06 \x01(\tB\b\xbaH\x05r\x03\x18\x80\x01R\x02id\x12:\n" +
 	"\x06labels\x18\a \x03(\tB\"\xbaH\x05\x92\x01\x02\x10@\x9a\xb2\x1a\x16\n" +
@@ -6084,7 +7070,18 @@ const file_nominal_protos_plan_v1_plan_proto_rawDesc = "" +
 	"\fasset_search\x18\x01 \x01(\v2#.nominal.asset.v2.SearchAssetsQueryH\x00R\vassetSearch\x12G\n" +
 	"\tasset_rid\x18\x02 \x01(\tB(\x9a\xb2\x1a$\n" +
 	"\"io.nominal.scout.rids.api.AssetRidH\x00R\bassetRidB\x15\n" +
-	"\fasset_source\x12\x05\xbaH\x02\b\x01\"\x86\x04\n" +
+	"\fasset_source\x12\x05\xbaH\x02\b\x01\"\xd2\x01\n" +
+	"\x0eObjectiveGroup\x12\x1a\n" +
+	"\x02id\x18\x01 \x01(\tB\n" +
+	"\xbaH\ar\x05\x10\x01\x18\x80\x01R\x02id\x12\x1c\n" +
+	"\x04name\x18\x02 \x01(\tB\b\xbaH\x05r\x03\x18\xff\x01R\x04name\x12/\n" +
+	"\vdescription\x18\x03 \x01(\tB\b\xbaH\x05r\x03\x18\x80 H\x00R\vdescription\x88\x01\x01\x12E\n" +
+	"\asources\x18\x04 \x03(\v2 .nominal.plan.v1.ObjectiveSourceB\t\xbaH\x06\x92\x01\x03\x10\xe8\aR\asourcesB\x0e\n" +
+	"\f_description\"]\n" +
+	"\x0fObjectiveSource\x12/\n" +
+	"\fobjective_id\x18\x01 \x01(\tB\n" +
+	"\xbaH\ar\x05\x10\x01\x18\x80\x01H\x00R\vobjectiveIdB\x19\n" +
+	"\x10objective_source\x12\x05\xbaH\x02\b\x01\"\x86\x04\n" +
 	"\aSegment\x12\x1a\n" +
 	"\x02id\x18\x01 \x01(\tB\n" +
 	"\xbaH\ar\x05\x10\x01\x18\x80\x01R\x02id\x12\x1c\n" +
@@ -6123,7 +7120,7 @@ const file_nominal_protos_plan_v1_plan_proto_rawDesc = "" +
 	"\bsubjects\x18\x03 \x03(\v2\".nominal.plan.v1.ConstraintSubjectB\n" +
 	"\xbaH\a\x92\x01\x04\b\x01\x10dR\bsubjects\x123\n" +
 	"\x04kind\x18\x04 \x01(\v2\x1f.nominal.plan.v1.ConstraintKindR\x04kind:\xf0\x01\xbaH\xec\x01\x1a\xe9\x01\n" +
-	"\x1fplan.constraint.precedence-self\x12Ia precedence constraint's prerequisite cannot also be one of its subjects\x1a{!has(this.kind.precedence) || !has(this.kind.precedence.after) || !this.subjects.exists(s, s == this.kind.precedence.after)\"\x98\x03\n" +
+	"\x1fplan.constraint.precedence-self\x12Ia precedence constraint's prerequisite cannot also be one of its subjects\x1a{!has(this.kind.precedence) || !has(this.kind.precedence.after) || !this.subjects.exists(s, s == this.kind.precedence.after)\"\xd4\x03\n" +
 	"\x11ConstraintSubject\x12-\n" +
 	"\vactivity_id\x18\x01 \x01(\tB\n" +
 	"\xbaH\ar\x05\x10\x01\x18\x80\x01H\x00R\n" +
@@ -6140,7 +7137,9 @@ const file_nominal_protos_plan_v1_plan_proto_rawDesc = "" +
 	"\tplan_wide\x18\x06 \x01(\v2\x19.nominal.plan.v1.PlanWideH\x00R\bplanWide\x12+\n" +
 	"\n" +
 	"segment_id\x18\a \x01(\tB\n" +
-	"\xbaH\ar\x05\x10\x01\x18\x80\x01H\x00R\tsegmentIdB\x10\n" +
+	"\xbaH\ar\x05\x10\x01\x18\x80\x01H\x00R\tsegmentId\x12:\n" +
+	"\x12objective_group_id\x18\b \x01(\tB\n" +
+	"\xbaH\ar\x05\x10\x01\x18\x80\x01H\x00R\x10objectiveGroupIdB\x10\n" +
 	"\asubject\x12\x05\xbaH\x02\b\x01\"\n" +
 	"\n" +
 	"\bPlanWide\"\xe7\x03\n" +
@@ -6192,12 +7191,15 @@ const file_nominal_protos_plan_v1_plan_proto_rawDesc = "" +
 	"\n" +
 	"no_overlap\x18\x01 \x01(\v2\x1a.nominal.plan.v1.NoOverlapH\x00R\tnoOverlapB$\n" +
 	"\x1bmutual_exclusion_constraint\x12\x05\xbaH\x02\b\x01\"\v\n" +
-	"\tNoOverlap\"b\n" +
+	"\tNoOverlap\"\x92\x01\n" +
 	"\x11CreatePlanRequest\x12)\n" +
 	"\x04plan\x18\x01 \x01(\v2\x15.nominal.plan.v1.PlanR\x04plan\x12\"\n" +
-	"\amessage\x18\x02 \x01(\tB\b\xbaH\x05r\x03\x18\x80\bR\amessage\"?\n" +
+	"\amessage\x18\x02 \x01(\tB\b\xbaH\x05r\x03\x18\x80\bR\amessage\x12.\n" +
+	"\x13import_asset_limits\x18\x03 \x01(\bR\x11importAssetLimits\"\xba\x01\n" +
 	"\x12CreatePlanResponse\x12)\n" +
-	"\x04plan\x18\x01 \x01(\v2\x15.nominal.plan.v1.PlanR\x04plan\"\x8b\x01\n" +
+	"\x04plan\x18\x01 \x01(\v2\x15.nominal.plan.v1.PlanR\x04plan\x12E\n" +
+	"\bwarnings\x18\x02 \x03(\v2\x1e.nominal.plan.v1.PlanViolationB\t\xbaH\x06\x92\x01\x03\x10\xc8\x01R\bwarnings\x122\n" +
+	"\x15is_warnings_truncated\x18\x03 \x01(\bR\x13isWarningsTruncated\"\x8b\x01\n" +
 	"\x0eGetPlanRequest\x12B\n" +
 	"\bplan_rid\x18\x01 \x01(\tB'\x9a\xb2\x1a#\n" +
 	"!io.nominal.scout.plan.api.PlanRidR\aplanRid\x125\n" +
@@ -6208,7 +7210,12 @@ const file_nominal_protos_plan_v1_plan_proto_rawDesc = "" +
 	"\tplan_rids\x18\x01 \x03(\tB0\xbaH\x06\x92\x01\x03\x10\xe8\a\x9a\xb2\x1a#\n" +
 	"!io.nominal.scout.plan.api.PlanRidR\bplanRids\"D\n" +
 	"\x15BatchGetPlansResponse\x12+\n" +
-	"\x05plans\x18\x01 \x03(\v2\x15.nominal.plan.v1.PlanR\x05plans\"\xc1\x04\n" +
+	"\x05plans\x18\x01 \x03(\v2\x15.nominal.plan.v1.PlanR\x05plans\"m\n" +
+	"\x1cBatchGetPlanSummariesRequest\x12M\n" +
+	"\tplan_rids\x18\x01 \x03(\tB0\xbaH\x06\x92\x01\x03\x10\xe8\a\x9a\xb2\x1a#\n" +
+	"!io.nominal.scout.plan.api.PlanRidR\bplanRids\"S\n" +
+	"\x1dBatchGetPlanSummariesResponse\x122\n" +
+	"\x05plans\x18\x01 \x03(\v2\x1c.nominal.plan.v1.PlanSummaryR\x05plans\"\xf1\x04\n" +
 	"\x17CreatePlanCommitRequest\x12B\n" +
 	"\bplan_rid\x18\x01 \x01(\tB'\x9a\xb2\x1a#\n" +
 	"!io.nominal.scout.plan.api.PlanRidR\aplanRid\x126\n" +
@@ -6218,12 +7225,15 @@ const file_nominal_protos_plan_v1_plan_proto_rawDesc = "" +
 	"\amessage\x18\x04 \x01(\tB\b\xbaH\x05r\x03\x18\x80\bR\amessage\x12(\n" +
 	"\x10is_working_state\x18\x05 \x01(\bR\x0eisWorkingState\x12i\n" +
 	"\x16expected_latest_commit\x18\x06 \x01(\tB.\x9a\xb2\x1a*\n" +
-	"(io.nominal.scout.versioning.api.CommitIdH\x01R\x14expectedLatestCommit\x88\x01\x01:|\xbaHy\x1aw\n" +
+	"(io.nominal.scout.versioning.api.CommitIdH\x01R\x14expectedLatestCommit\x88\x01\x01\x12.\n" +
+	"\x13import_asset_limits\x18\a \x01(\bR\x11importAssetLimits:|\xbaHy\x1aw\n" +
 	"\x1cplan.commit.message-required\x12*message is required for a permanent commit\x1a+this.is_working_state || this.message != ''B\t\n" +
 	"\a_branchB\x19\n" +
-	"\x17_expected_latest_commit\"E\n" +
+	"\x17_expected_latest_commit\"\xc0\x01\n" +
 	"\x18CreatePlanCommitResponse\x12)\n" +
-	"\x04plan\x18\x01 \x01(\v2\x15.nominal.plan.v1.PlanR\x04plan\"\xf4\x03\n" +
+	"\x04plan\x18\x01 \x01(\v2\x15.nominal.plan.v1.PlanR\x04plan\x12E\n" +
+	"\bwarnings\x18\x02 \x03(\v2\x1e.nominal.plan.v1.PlanViolationB\t\xbaH\x06\x92\x01\x03\x10\xc8\x01R\bwarnings\x122\n" +
+	"\x15is_warnings_truncated\x18\x03 \x01(\bR\x13isWarningsTruncated\"\xf4\x03\n" +
 	"\x19UpdatePlanMetadataRequest\x12B\n" +
 	"\bplan_rid\x18\x01 \x01(\tB'\x9a\xb2\x1a#\n" +
 	"!io.nominal.scout.plan.api.PlanRidR\aplanRid\x12#\n" +
@@ -6298,11 +7308,14 @@ const file_nominal_protos_plan_v1_plan_proto_rawDesc = "" +
 	"\aresults\x18\x01 \x03(\v2\x1c.nominal.plan.v1.PlanSummaryR\aresults\x12G\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tB\x1a\x9a\xb2\x1a\x16\n" +
 	"\x14io.nominal.api.TokenH\x00R\rnextPageToken\x88\x01\x01B\x12\n" +
-	"\x10_next_page_token\"\xa3\x01\n" +
+	"\x10_next_page_token\"\x87\x02\n" +
 	"\x13ValidatePlanRequest\x129\n" +
 	"\x04plan\x18\x01 \x01(\v2#.nominal.plan.v1.StoredPlanRevisionH\x00R\x04plan\x12@\n" +
-	"\acontent\x18\x02 \x01(\v2\x1c.nominal.plan.v1.PlanContentB\x06\xbaH\x03\xd8\x01\x03H\x00R\acontentB\x0f\n" +
-	"\x06source\x12\x05\xbaH\x02\b\x01\"\x8f\x01\n" +
+	"\acontent\x18\x02 \x01(\v2\x1c.nominal.plan.v1.PlanContentB\x06\xbaH\x03\xd8\x01\x03H\x00R\acontent\x12P\n" +
+	"\rworkspace_rid\x18\x03 \x01(\tB&\x9a\xb2\x1a\"\n" +
+	" io.nominal.api.rids.WorkspaceRidH\x01R\fworkspaceRid\x88\x01\x01B\x0f\n" +
+	"\x06source\x12\x05\xbaH\x02\b\x01B\x10\n" +
+	"\x0e_workspace_rid\"\x8f\x01\n" +
 	"\x12StoredPlanRevision\x12B\n" +
 	"\bplan_rid\x18\x01 \x01(\tB'\x9a\xb2\x1a#\n" +
 	"!io.nominal.scout.plan.api.PlanRidR\aplanRid\x125\n" +
@@ -6312,16 +7325,54 @@ const file_nominal_protos_plan_v1_plan_proto_rawDesc = "" +
 	"violations\x18\x01 \x03(\v2\x1e.nominal.plan.v1.PlanViolationB\t\xbaH\x06\x92\x01\x03\x10\xc8\x01R\n" +
 	"violations\x12!\n" +
 	"\fis_truncated\x18\x02 \x01(\bR\visTruncated\x125\n" +
-	"\x06commit\x18\x03 \x01(\v2\x1d.nominal.versioning.v1.CommitR\x06commit\"\xe2\x01\n" +
+	"\x06commit\x18\x03 \x01(\v2\x1d.nominal.versioning.v1.CommitR\x06commit\"\xa3\x02\n" +
 	"\rPlanViolation\x12B\n" +
 	"\bseverity\x18\x01 \x01(\x0e2&.nominal.plan.v1.PlanViolationSeverityR\bseverity\x12\x1c\n" +
 	"\x04code\x18\x02 \x01(\tB\b\xbaH\x05r\x03\x18\x80\x01R\x04code\x12\"\n" +
 	"\amessage\x18\x03 \x01(\tB\b\xbaH\x05r\x03\x18\x80 R\amessage\x12K\n" +
-	"\bsubjects\x18\x04 \x03(\v2%.nominal.plan.v1.PlanViolationSubjectB\b\xbaH\x05\x92\x01\x02\x10\x10R\bsubjects\"\x84\x01\n" +
+	"\bsubjects\x18\x04 \x03(\v2%.nominal.plan.v1.PlanViolationSubjectB\b\xbaH\x05\x92\x01\x02\x10\x10R\bsubjects\x12?\n" +
+	"\adetails\x18\x06 \x01(\v2%.nominal.plan.v1.PlanViolationDetailsR\adetails\"\xb6\x04\n" +
+	"\x14PlanViolationDetails\x12R\n" +
+	"\n" +
+	"comparison\x18\x01 \x01(\v20.nominal.plan.v1.PlanViolationDetails.ComparisonH\x00R\n" +
+	"comparison\x1a\xba\x03\n" +
+	"\n" +
+	"Comparison\x12'\n" +
+	"\bobserved\x18\x01 \x01(\x03B\x06\xbaH\x03\xc8\x01\x01H\x00R\bobserved\x88\x01\x01\x12!\n" +
+	"\x05limit\x18\x02 \x01(\x03B\x06\xbaH\x03\xc8\x01\x01H\x01R\x05limit\x88\x01\x01\x12\x1b\n" +
+	"\x04unit\x18\x03 \x01(\tB\a\xbaH\x04r\x02\x18 R\x04unit\x12a\n" +
+	"\boperator\x18\x04 \x01(\x0e29.nominal.plan.v1.PlanViolationDetails.Comparison.OperatorB\n" +
+	"\xbaH\a\x82\x01\x04\x10\x01 \x00R\boperator\"\xc8\x01\n" +
+	"\bOperator\x12\x18\n" +
+	"\x14OPERATOR_UNSPECIFIED\x10\x00\x12\x16\n" +
+	"\x12OPERATOR_LESS_THAN\x10\x01\x12\x1f\n" +
+	"\x1bOPERATOR_LESS_THAN_OR_EQUAL\x10\x02\x12\x19\n" +
+	"\x15OPERATOR_GREATER_THAN\x10\x03\x12\"\n" +
+	"\x1eOPERATOR_GREATER_THAN_OR_EQUAL\x10\x04\x12\x12\n" +
+	"\x0eOPERATOR_EQUAL\x10\x05\x12\x16\n" +
+	"\x12OPERATOR_NOT_EQUAL\x10\x06B\v\n" +
+	"\t_observedB\b\n" +
+	"\x06_limitB\r\n" +
+	"\x04kind\x12\x05\xbaH\x02\b\x01\"\x84\x01\n" +
 	"\x14PlanViolationSubject\x124\n" +
 	"\x04kind\x18\x01 \x01(\x0e2 .nominal.plan.v1.PlanElementKindR\x04kind\x12\x18\n" +
 	"\x02id\x18\x02 \x01(\tB\b\xbaH\x05r\x03\x18\x80\x01R\x02id\x12\x1c\n" +
-	"\x04path\x18\x03 \x01(\tB\b\xbaH\x05r\x03\x18\x80\x04R\x04path*w\n" +
+	"\x04path\x18\x03 \x01(\tB\b\xbaH\x05r\x03\x18\x80\x04R\x04path\"\x99\x02\n" +
+	"\"ListPlanAssetGroupSummariesRequest\x12B\n" +
+	"\bplan_rid\x18\x01 \x01(\tB'\x9a\xb2\x1a#\n" +
+	"!io.nominal.scout.plan.api.PlanRidR\aplanRid\x125\n" +
+	"\x02at\x18\x02 \x01(\v2%.nominal.versioning.v1.BranchOrCommitR\x02at\x12_\n" +
+	"\x14containing_asset_rid\x18\x03 \x01(\tB(\x9a\xb2\x1a$\n" +
+	"\"io.nominal.scout.rids.api.AssetRidH\x00R\x12containingAssetRid\x88\x01\x01B\x17\n" +
+	"\x15_containing_asset_rid\"\xbf\x01\n" +
+	"#ListPlanAssetGroupSummariesResponse\x12a\n" +
+	"\x15asset_group_summaries\x18\x01 \x03(\v2\".nominal.plan.v1.AssetGroupSummaryB\t\xbaH\x06\x92\x01\x03\x10\xe9\aR\x13assetGroupSummaries\x125\n" +
+	"\x06commit\x18\x02 \x01(\v2\x1d.nominal.versioning.v1.CommitR\x06commit\"f\n" +
+	"\x11AssetGroupSummary\x120\n" +
+	"\x0easset_group_id\x18\x01 \x01(\tB\n" +
+	"\xbaH\ar\x05\x10\x01\x18\x80\x01R\fassetGroupId\x12\x1f\n" +
+	"\vasset_count\x18\x02 \x01(\x05R\n" +
+	"assetCount*w\n" +
 	"\rPlanSortField\x12\x1f\n" +
 	"\x1bPLAN_SORT_FIELD_UNSPECIFIED\x10\x00\x12\b\n" +
 	"\x04NAME\x10\x01\x12\x0e\n" +
@@ -6330,11 +7381,12 @@ const file_nominal_protos_plan_v1_plan_proto_rawDesc = "" +
 	"\tEDITED_AT\x10\x03\x12\x0e\n" +
 	"\n" +
 	"START_DATE\x10\x04\x12\f\n" +
-	"\bEND_DATE\x10\x05*\x88\x01\n" +
+	"\bEND_DATE\x10\x05*\xaa\x01\n" +
 	"\x15PlanViolationSeverity\x12'\n" +
 	"#PLAN_VIOLATION_SEVERITY_UNSPECIFIED\x10\x00\x12!\n" +
 	"\x1dPLAN_VIOLATION_SEVERITY_ERROR\x10\x01\x12#\n" +
-	"\x1fPLAN_VIOLATION_SEVERITY_WARNING\x10\x02*\x96\x02\n" +
+	"\x1fPLAN_VIOLATION_SEVERITY_WARNING\x10\x02\x12 \n" +
+	"\x1cPLAN_VIOLATION_SEVERITY_INFO\x10\x03*\xdd\x02\n" +
 	"\x0fPlanElementKind\x12!\n" +
 	"\x1dPLAN_ELEMENT_KIND_UNSPECIFIED\x10\x00\x12\x1a\n" +
 	"\x16PLAN_ELEMENT_KIND_PLAN\x10\x01\x12\x1f\n" +
@@ -6343,7 +7395,9 @@ const file_nominal_protos_plan_v1_plan_proto_rawDesc = "" +
 	"\x19PLAN_ELEMENT_KIND_SEGMENT\x10\x04\x12\x1f\n" +
 	"\x1bPLAN_ELEMENT_KIND_MILESTONE\x10\x05\x12!\n" +
 	"\x1dPLAN_ELEMENT_KIND_ASSET_GROUP\x10\x06\x12 \n" +
-	"\x1cPLAN_ELEMENT_KIND_CONSTRAINT\x10\a*\xb7\x02\n" +
+	"\x1cPLAN_ELEMENT_KIND_CONSTRAINT\x10\a\x12\x1e\n" +
+	"\x1aPLAN_ELEMENT_KIND_RESOURCE\x10\b\x12%\n" +
+	"!PLAN_ELEMENT_KIND_OBJECTIVE_GROUP\x10\t*\xb7\x02\n" +
 	"\tPlanError\x12<\n" +
 	"\x19PLAN_ERROR_PLAN_NOT_FOUND\x10\x00\x1a\x1d\xb2\xb2\x1a\x19\n" +
 	"\tNOT_FOUND\x12\fPlanNotFound\x12V\n" +
@@ -6352,16 +7406,34 @@ const file_nominal_protos_plan_v1_plan_proto_rawDesc = "" +
 	"\x1aPLAN_ERROR_COMMIT_CONFLICT\x10\x02\x1a-\xb2\xb2\x1a)\n" +
 	"\x13FAILED_PRECONDITION\x12\x12PlanCommitConflict\x12E\n" +
 	"\x18PLAN_ERROR_PLAN_ARCHIVED\x10\x03\x1a'\xb2\xb2\x1a#\n" +
-	"\x13FAILED_PRECONDITION\x12\fPlanArchived2\xaa\a\n" +
-	"\vPlanService\x12p\n" +
+	"\x13FAILED_PRECONDITION\x12\fPlanArchived2\xef\v\n" +
+	"\vPlanService\x12\x8e\x01\n" +
 	"\n" +
-	"CreatePlan\x12\".nominal.plan.v1.CreatePlanRequest\x1a#.nominal.plan.v1.CreatePlanResponse\"\x19\x82\xd3\xe4\x93\x02\x13:\x01*\"\x0e/plan/v1/plans\x12o\n" +
-	"\aGetPlan\x12\x1f.nominal.plan.v1.GetPlanRequest\x1a .nominal.plan.v1.GetPlanResponse\"!\x82\xd3\xe4\x93\x02\x1b\x12\x19/plan/v1/plans/{plan_rid}\x12\x83\x01\n" +
-	"\rBatchGetPlans\x12%.nominal.plan.v1.BatchGetPlansRequest\x1a&.nominal.plan.v1.BatchGetPlansResponse\"#\x82\xd3\xe4\x93\x02\x1d:\x01*\"\x18/plan/v1/plans/batch-get\x12\x95\x01\n" +
-	"\x10CreatePlanCommit\x12(.nominal.plan.v1.CreatePlanCommitRequest\x1a).nominal.plan.v1.CreatePlanCommitResponse\",\x82\xd3\xe4\x93\x02&:\x01*\"!/plan/v1/plans/{plan_rid}/commits\x12\x9c\x01\n" +
-	"\x12UpdatePlanMetadata\x12*.nominal.plan.v1.UpdatePlanMetadataRequest\x1a+.nominal.plan.v1.UpdatePlanMetadataResponse\"-\x82\xd3\xe4\x93\x02':\x01*\x1a\"/plan/v1/plans/{plan_rid}/metadata\x12z\n" +
-	"\vSearchPlans\x12#.nominal.plan.v1.SearchPlansRequest\x1a$.nominal.plan.v1.SearchPlansResponse\" \x82\xd3\xe4\x93\x02\x1a:\x01*\"\x15/plan/v1/plans/search\x12\x7f\n" +
-	"\fValidatePlan\x12$.nominal.plan.v1.ValidatePlanRequest\x1a%.nominal.plan.v1.ValidatePlanResponse\"\"\x82\xd3\xe4\x93\x02\x1c:\x01*\"\x17/plan/v1/plans/validateB\xc9\x01\n" +
+	"CreatePlan\x12\".nominal.plan.v1.CreatePlanRequest\x1a#.nominal.plan.v1.CreatePlanResponse\"7\xba\xb2\x1a\x1a\n" +
+	"\x18\n" +
+	"\x14workspace:edit_plans\"\x00\x82\xd3\xe4\x93\x02\x13:\x01*\"\x0e/plan/v1/plans\x12\x87\x01\n" +
+	"\aGetPlan\x12\x1f.nominal.plan.v1.GetPlanRequest\x1a .nominal.plan.v1.GetPlanResponse\"9\xba\xb2\x1a\x14\n" +
+	"\x12\n" +
+	"\x0eworkspace:view\"\x00\x82\xd3\xe4\x93\x02\x1b\x12\x19/plan/v1/plans/{plan_rid}\x12\x9b\x01\n" +
+	"\rBatchGetPlans\x12%.nominal.plan.v1.BatchGetPlansRequest\x1a&.nominal.plan.v1.BatchGetPlansResponse\";\xba\xb2\x1a\x14\n" +
+	"\x12\n" +
+	"\x0eworkspace:view\"\x00\x82\xd3\xe4\x93\x02\x1d:\x01*\"\x18/plan/v1/plans/batch-get\x12\xbd\x01\n" +
+	"\x15BatchGetPlanSummaries\x12-.nominal.plan.v1.BatchGetPlanSummariesRequest\x1a..nominal.plan.v1.BatchGetPlanSummariesResponse\"E\xba\xb2\x1a\x14\n" +
+	"\x12\n" +
+	"\x0eworkspace:view\"\x00\x82\xd3\xe4\x93\x02':\x01*\"\"/plan/v1/plans/batch-get-summaries\x12\xb3\x01\n" +
+	"\x10CreatePlanCommit\x12(.nominal.plan.v1.CreatePlanCommitRequest\x1a).nominal.plan.v1.CreatePlanCommitResponse\"J\xba\xb2\x1a\x1a\n" +
+	"\x18\n" +
+	"\x14workspace:edit_plans\"\x00\x82\xd3\xe4\x93\x02&:\x01*\"!/plan/v1/plans/{plan_rid}/commits\x12\xba\x01\n" +
+	"\x12UpdatePlanMetadata\x12*.nominal.plan.v1.UpdatePlanMetadataRequest\x1a+.nominal.plan.v1.UpdatePlanMetadataResponse\"K\xba\xb2\x1a\x1a\n" +
+	"\x18\n" +
+	"\x14workspace:edit_plans\"\x00\x82\xd3\xe4\x93\x02':\x01*\x1a\"/plan/v1/plans/{plan_rid}/metadata\x12~\n" +
+	"\vSearchPlans\x12#.nominal.plan.v1.SearchPlansRequest\x1a$.nominal.plan.v1.SearchPlansResponse\"$\xba\xb2\x1a\x00\x82\xd3\xe4\x93\x02\x1a:\x01*\"\x15/plan/v1/plans/search\x12\x97\x01\n" +
+	"\fValidatePlan\x12$.nominal.plan.v1.ValidatePlanRequest\x1a%.nominal.plan.v1.ValidatePlanResponse\":\xba\xb2\x1a\x14\n" +
+	"\x12\n" +
+	"\x0eworkspace:view\"\x00\x82\xd3\xe4\x93\x02\x1c:\x01*\"\x17/plan/v1/plans/validate\x12\xd9\x01\n" +
+	"\x1bListPlanAssetGroupSummaries\x123.nominal.plan.v1.ListPlanAssetGroupSummariesRequest\x1a4.nominal.plan.v1.ListPlanAssetGroupSummariesResponse\"O\xba\xb2\x1a\x14\n" +
+	"\x12\n" +
+	"\x0eworkspace:view\"\x00\x82\xd3\xe4\x93\x021\x12//plan/v1/plans/{plan_rid}/asset-group-summariesB\xc9\x01\n" +
 	"\x13com.nominal.plan.v1B\tPlanProtoP\x01ZIgithub.com/nominal-io/nominal-api-protos-go/nominal/protos/plan/v1;planv1\xa2\x02\x03NPX\xaa\x02\x0fNominal.Plan.V1\xca\x02\x0fNominal\\Plan\\V1\xe2\x02\x1bNominal\\Plan\\V1\\GPBMetadata\xea\x02\x11Nominal::Plan::V1b\x06proto3"
 
 var (
@@ -6376,252 +7448,283 @@ func file_nominal_protos_plan_v1_plan_proto_rawDescGZIP() []byte {
 	return file_nominal_protos_plan_v1_plan_proto_rawDescData
 }
 
-var file_nominal_protos_plan_v1_plan_proto_enumTypes = make([]protoimpl.EnumInfo, 4)
-var file_nominal_protos_plan_v1_plan_proto_msgTypes = make([]protoimpl.MessageInfo, 85)
+var file_nominal_protos_plan_v1_plan_proto_enumTypes = make([]protoimpl.EnumInfo, 5)
+var file_nominal_protos_plan_v1_plan_proto_msgTypes = make([]protoimpl.MessageInfo, 97)
 var file_nominal_protos_plan_v1_plan_proto_goTypes = []any{
-	(PlanSortField)(0),                  // 0: nominal.plan.v1.PlanSortField
-	(PlanViolationSeverity)(0),          // 1: nominal.plan.v1.PlanViolationSeverity
-	(PlanElementKind)(0),                // 2: nominal.plan.v1.PlanElementKind
-	(PlanError)(0),                      // 3: nominal.plan.v1.PlanError
-	(*Plan)(nil),                        // 4: nominal.plan.v1.Plan
-	(*PlanSummary)(nil),                 // 5: nominal.plan.v1.PlanSummary
-	(*PlanMetadata)(nil),                // 6: nominal.plan.v1.PlanMetadata
-	(*PlanStatus)(nil),                  // 7: nominal.plan.v1.PlanStatus
-	(*OpenPlan)(nil),                    // 8: nominal.plan.v1.OpenPlan
-	(*CompletedPlan)(nil),               // 9: nominal.plan.v1.CompletedPlan
-	(*CancelledPlan)(nil),               // 10: nominal.plan.v1.CancelledPlan
-	(*PlanContent)(nil),                 // 11: nominal.plan.v1.PlanContent
-	(*PlanContentV1)(nil),               // 12: nominal.plan.v1.PlanContentV1
-	(*Milestone)(nil),                   // 13: nominal.plan.v1.Milestone
-	(*Activity)(nil),                    // 14: nominal.plan.v1.Activity
-	(*ActivityDetails)(nil),             // 15: nominal.plan.v1.ActivityDetails
-	(*SingleActivity)(nil),              // 16: nominal.plan.v1.SingleActivity
-	(*ActivityStatus)(nil),              // 17: nominal.plan.v1.ActivityStatus
-	(*CreatedActivity)(nil),             // 18: nominal.plan.v1.CreatedActivity
-	(*FinalizedActivity)(nil),           // 19: nominal.plan.v1.FinalizedActivity
-	(*InProgressActivity)(nil),          // 20: nominal.plan.v1.InProgressActivity
-	(*CompletedActivity)(nil),           // 21: nominal.plan.v1.CompletedActivity
-	(*CancelledActivity)(nil),           // 22: nominal.plan.v1.CancelledActivity
-	(*Objective)(nil),                   // 23: nominal.plan.v1.Objective
-	(*ObjectiveStatus)(nil),             // 24: nominal.plan.v1.ObjectiveStatus
-	(*DraftObjective)(nil),              // 25: nominal.plan.v1.DraftObjective
-	(*ProposedObjective)(nil),           // 26: nominal.plan.v1.ProposedObjective
-	(*FinalizedObjective)(nil),          // 27: nominal.plan.v1.FinalizedObjective
-	(*CompletedObjective)(nil),          // 28: nominal.plan.v1.CompletedObjective
-	(*RejectedObjective)(nil),           // 29: nominal.plan.v1.RejectedObjective
-	(*ObjectiveDisposition)(nil),        // 30: nominal.plan.v1.ObjectiveDisposition
-	(*SuccessfulObjective)(nil),         // 31: nominal.plan.v1.SuccessfulObjective
-	(*FailedObjective)(nil),             // 32: nominal.plan.v1.FailedObjective
-	(*ObjectiveDetails)(nil),            // 33: nominal.plan.v1.ObjectiveDetails
-	(*SimpleObjective)(nil),             // 34: nominal.plan.v1.SimpleObjective
-	(*Resource)(nil),                    // 35: nominal.plan.v1.Resource
-	(*CandidateAssetGroup)(nil),         // 36: nominal.plan.v1.CandidateAssetGroup
-	(*AssetSourceList)(nil),             // 37: nominal.plan.v1.AssetSourceList
-	(*AssetGroup)(nil),                  // 38: nominal.plan.v1.AssetGroup
-	(*AssetSource)(nil),                 // 39: nominal.plan.v1.AssetSource
-	(*Segment)(nil),                     // 40: nominal.plan.v1.Segment
-	(*SegmentStatus)(nil),               // 41: nominal.plan.v1.SegmentStatus
-	(*DraftSegment)(nil),                // 42: nominal.plan.v1.DraftSegment
-	(*FinalizedSegment)(nil),            // 43: nominal.plan.v1.FinalizedSegment
-	(*Link)(nil),                        // 44: nominal.plan.v1.Link
-	(*MinuteDuration)(nil),              // 45: nominal.plan.v1.MinuteDuration
-	(*Constraint)(nil),                  // 46: nominal.plan.v1.Constraint
-	(*ConstraintSubject)(nil),           // 47: nominal.plan.v1.ConstraintSubject
-	(*PlanWide)(nil),                    // 48: nominal.plan.v1.PlanWide
-	(*ConstraintKind)(nil),              // 49: nominal.plan.v1.ConstraintKind
-	(*AllowedWindowsConstraint)(nil),    // 50: nominal.plan.v1.AllowedWindowsConstraint
-	(*ExplicitWindows)(nil),             // 51: nominal.plan.v1.ExplicitWindows
-	(*TimeRange)(nil),                   // 52: nominal.plan.v1.TimeRange
-	(*CapacityConstraint)(nil),          // 53: nominal.plan.v1.CapacityConstraint
-	(*UniformCapacity)(nil),             // 54: nominal.plan.v1.UniformCapacity
-	(*BufferConstraint)(nil),            // 55: nominal.plan.v1.BufferConstraint
-	(*FixedBuffer)(nil),                 // 56: nominal.plan.v1.FixedBuffer
-	(*UsageCeilingConstraint)(nil),      // 57: nominal.plan.v1.UsageCeilingConstraint
-	(*DailyUsageCeiling)(nil),           // 58: nominal.plan.v1.DailyUsageCeiling
-	(*PrecedenceConstraint)(nil),        // 59: nominal.plan.v1.PrecedenceConstraint
-	(*MutualExclusionConstraint)(nil),   // 60: nominal.plan.v1.MutualExclusionConstraint
-	(*NoOverlap)(nil),                   // 61: nominal.plan.v1.NoOverlap
-	(*CreatePlanRequest)(nil),           // 62: nominal.plan.v1.CreatePlanRequest
-	(*CreatePlanResponse)(nil),          // 63: nominal.plan.v1.CreatePlanResponse
-	(*GetPlanRequest)(nil),              // 64: nominal.plan.v1.GetPlanRequest
-	(*GetPlanResponse)(nil),             // 65: nominal.plan.v1.GetPlanResponse
-	(*BatchGetPlansRequest)(nil),        // 66: nominal.plan.v1.BatchGetPlansRequest
-	(*BatchGetPlansResponse)(nil),       // 67: nominal.plan.v1.BatchGetPlansResponse
-	(*CreatePlanCommitRequest)(nil),     // 68: nominal.plan.v1.CreatePlanCommitRequest
-	(*CreatePlanCommitResponse)(nil),    // 69: nominal.plan.v1.CreatePlanCommitResponse
-	(*UpdatePlanMetadataRequest)(nil),   // 70: nominal.plan.v1.UpdatePlanMetadataRequest
-	(*UpdatePlanMetadataResponse)(nil),  // 71: nominal.plan.v1.UpdatePlanMetadataResponse
-	(*SearchPlansQuery)(nil),            // 72: nominal.plan.v1.SearchPlansQuery
-	(*PlanDateRangeFilter)(nil),         // 73: nominal.plan.v1.PlanDateRangeFilter
-	(*SearchPlansQueryList)(nil),        // 74: nominal.plan.v1.SearchPlansQueryList
-	(*UserRidList)(nil),                 // 75: nominal.plan.v1.UserRidList
-	(*PlanSortOptions)(nil),             // 76: nominal.plan.v1.PlanSortOptions
-	(*SearchPlansRequest)(nil),          // 77: nominal.plan.v1.SearchPlansRequest
-	(*SearchPlansResponse)(nil),         // 78: nominal.plan.v1.SearchPlansResponse
-	(*ValidatePlanRequest)(nil),         // 79: nominal.plan.v1.ValidatePlanRequest
-	(*StoredPlanRevision)(nil),          // 80: nominal.plan.v1.StoredPlanRevision
-	(*ValidatePlanResponse)(nil),        // 81: nominal.plan.v1.ValidatePlanResponse
-	(*PlanViolation)(nil),               // 82: nominal.plan.v1.PlanViolation
-	(*PlanViolationSubject)(nil),        // 83: nominal.plan.v1.PlanViolationSubject
-	nil,                                 // 84: nominal.plan.v1.PlanMetadata.PropertiesEntry
-	nil,                                 // 85: nominal.plan.v1.Activity.PropertiesEntry
-	nil,                                 // 86: nominal.plan.v1.Objective.PropertiesEntry
-	nil,                                 // 87: nominal.plan.v1.Resource.PropertiesEntry
-	nil,                                 // 88: nominal.plan.v1.Segment.PropertiesEntry
-	(*v1.Commit)(nil),                   // 89: nominal.versioning.v1.Commit
-	(*timestamppb.Timestamp)(nil),       // 90: google.protobuf.Timestamp
-	(types.Priority)(0),                 // 91: nominal.types.Priority
-	(*v2.SearchAssetsQuery)(nil),        // 92: nominal.asset.v2.SearchAssetsQuery
-	(*types.Duration)(nil),              // 93: nominal.types.Duration
-	(*v1.BranchOrCommit)(nil),           // 94: nominal.versioning.v1.BranchOrCommit
-	(*types.LabelUpdateWrapper)(nil),    // 95: nominal.types.LabelUpdateWrapper
-	(*types.PropertyUpdateWrapper)(nil), // 96: nominal.types.PropertyUpdateWrapper
-	(*types.LabelsFilter)(nil),          // 97: nominal.types.LabelsFilter
-	(*types.PropertiesFilter)(nil),      // 98: nominal.types.PropertiesFilter
+	(PlanSortField)(0),                            // 0: nominal.plan.v1.PlanSortField
+	(PlanViolationSeverity)(0),                    // 1: nominal.plan.v1.PlanViolationSeverity
+	(PlanElementKind)(0),                          // 2: nominal.plan.v1.PlanElementKind
+	(PlanError)(0),                                // 3: nominal.plan.v1.PlanError
+	(PlanViolationDetails_Comparison_Operator)(0), // 4: nominal.plan.v1.PlanViolationDetails.Comparison.Operator
+	(*Plan)(nil),                                  // 5: nominal.plan.v1.Plan
+	(*PlanSummary)(nil),                           // 6: nominal.plan.v1.PlanSummary
+	(*PlanMetadata)(nil),                          // 7: nominal.plan.v1.PlanMetadata
+	(*PlanStatus)(nil),                            // 8: nominal.plan.v1.PlanStatus
+	(*OpenPlan)(nil),                              // 9: nominal.plan.v1.OpenPlan
+	(*CompletedPlan)(nil),                         // 10: nominal.plan.v1.CompletedPlan
+	(*CancelledPlan)(nil),                         // 11: nominal.plan.v1.CancelledPlan
+	(*PlanContent)(nil),                           // 12: nominal.plan.v1.PlanContent
+	(*PlanContentV1)(nil),                         // 13: nominal.plan.v1.PlanContentV1
+	(*Milestone)(nil),                             // 14: nominal.plan.v1.Milestone
+	(*Activity)(nil),                              // 15: nominal.plan.v1.Activity
+	(*ActivityDetails)(nil),                       // 16: nominal.plan.v1.ActivityDetails
+	(*SingleActivity)(nil),                        // 17: nominal.plan.v1.SingleActivity
+	(*AssetAssignment)(nil),                       // 18: nominal.plan.v1.AssetAssignment
+	(*ActivityStatus)(nil),                        // 19: nominal.plan.v1.ActivityStatus
+	(*CreatedActivity)(nil),                       // 20: nominal.plan.v1.CreatedActivity
+	(*FinalizedActivity)(nil),                     // 21: nominal.plan.v1.FinalizedActivity
+	(*InProgressActivity)(nil),                    // 22: nominal.plan.v1.InProgressActivity
+	(*CompletedActivity)(nil),                     // 23: nominal.plan.v1.CompletedActivity
+	(*CancelledActivity)(nil),                     // 24: nominal.plan.v1.CancelledActivity
+	(*ActivityPin)(nil),                           // 25: nominal.plan.v1.ActivityPin
+	(*PinnedActivity)(nil),                        // 26: nominal.plan.v1.PinnedActivity
+	(*Objective)(nil),                             // 27: nominal.plan.v1.Objective
+	(*ObjectiveStatus)(nil),                       // 28: nominal.plan.v1.ObjectiveStatus
+	(*DraftObjective)(nil),                        // 29: nominal.plan.v1.DraftObjective
+	(*ProposedObjective)(nil),                     // 30: nominal.plan.v1.ProposedObjective
+	(*FinalizedObjective)(nil),                    // 31: nominal.plan.v1.FinalizedObjective
+	(*CompletedObjective)(nil),                    // 32: nominal.plan.v1.CompletedObjective
+	(*RejectedObjective)(nil),                     // 33: nominal.plan.v1.RejectedObjective
+	(*ObjectiveDisposition)(nil),                  // 34: nominal.plan.v1.ObjectiveDisposition
+	(*SuccessfulObjective)(nil),                   // 35: nominal.plan.v1.SuccessfulObjective
+	(*FailedObjective)(nil),                       // 36: nominal.plan.v1.FailedObjective
+	(*ObjectiveDetails)(nil),                      // 37: nominal.plan.v1.ObjectiveDetails
+	(*SimpleObjective)(nil),                       // 38: nominal.plan.v1.SimpleObjective
+	(*Resource)(nil),                              // 39: nominal.plan.v1.Resource
+	(*CandidateAssetGroup)(nil),                   // 40: nominal.plan.v1.CandidateAssetGroup
+	(*AssetSourceList)(nil),                       // 41: nominal.plan.v1.AssetSourceList
+	(*AssetGroup)(nil),                            // 42: nominal.plan.v1.AssetGroup
+	(*AssetSource)(nil),                           // 43: nominal.plan.v1.AssetSource
+	(*ObjectiveGroup)(nil),                        // 44: nominal.plan.v1.ObjectiveGroup
+	(*ObjectiveSource)(nil),                       // 45: nominal.plan.v1.ObjectiveSource
+	(*Segment)(nil),                               // 46: nominal.plan.v1.Segment
+	(*SegmentStatus)(nil),                         // 47: nominal.plan.v1.SegmentStatus
+	(*DraftSegment)(nil),                          // 48: nominal.plan.v1.DraftSegment
+	(*FinalizedSegment)(nil),                      // 49: nominal.plan.v1.FinalizedSegment
+	(*Link)(nil),                                  // 50: nominal.plan.v1.Link
+	(*MinuteDuration)(nil),                        // 51: nominal.plan.v1.MinuteDuration
+	(*Constraint)(nil),                            // 52: nominal.plan.v1.Constraint
+	(*ConstraintSubject)(nil),                     // 53: nominal.plan.v1.ConstraintSubject
+	(*PlanWide)(nil),                              // 54: nominal.plan.v1.PlanWide
+	(*ConstraintKind)(nil),                        // 55: nominal.plan.v1.ConstraintKind
+	(*AllowedWindowsConstraint)(nil),              // 56: nominal.plan.v1.AllowedWindowsConstraint
+	(*ExplicitWindows)(nil),                       // 57: nominal.plan.v1.ExplicitWindows
+	(*TimeRange)(nil),                             // 58: nominal.plan.v1.TimeRange
+	(*CapacityConstraint)(nil),                    // 59: nominal.plan.v1.CapacityConstraint
+	(*UniformCapacity)(nil),                       // 60: nominal.plan.v1.UniformCapacity
+	(*BufferConstraint)(nil),                      // 61: nominal.plan.v1.BufferConstraint
+	(*FixedBuffer)(nil),                           // 62: nominal.plan.v1.FixedBuffer
+	(*UsageCeilingConstraint)(nil),                // 63: nominal.plan.v1.UsageCeilingConstraint
+	(*DailyUsageCeiling)(nil),                     // 64: nominal.plan.v1.DailyUsageCeiling
+	(*PrecedenceConstraint)(nil),                  // 65: nominal.plan.v1.PrecedenceConstraint
+	(*MutualExclusionConstraint)(nil),             // 66: nominal.plan.v1.MutualExclusionConstraint
+	(*NoOverlap)(nil),                             // 67: nominal.plan.v1.NoOverlap
+	(*CreatePlanRequest)(nil),                     // 68: nominal.plan.v1.CreatePlanRequest
+	(*CreatePlanResponse)(nil),                    // 69: nominal.plan.v1.CreatePlanResponse
+	(*GetPlanRequest)(nil),                        // 70: nominal.plan.v1.GetPlanRequest
+	(*GetPlanResponse)(nil),                       // 71: nominal.plan.v1.GetPlanResponse
+	(*BatchGetPlansRequest)(nil),                  // 72: nominal.plan.v1.BatchGetPlansRequest
+	(*BatchGetPlansResponse)(nil),                 // 73: nominal.plan.v1.BatchGetPlansResponse
+	(*BatchGetPlanSummariesRequest)(nil),          // 74: nominal.plan.v1.BatchGetPlanSummariesRequest
+	(*BatchGetPlanSummariesResponse)(nil),         // 75: nominal.plan.v1.BatchGetPlanSummariesResponse
+	(*CreatePlanCommitRequest)(nil),               // 76: nominal.plan.v1.CreatePlanCommitRequest
+	(*CreatePlanCommitResponse)(nil),              // 77: nominal.plan.v1.CreatePlanCommitResponse
+	(*UpdatePlanMetadataRequest)(nil),             // 78: nominal.plan.v1.UpdatePlanMetadataRequest
+	(*UpdatePlanMetadataResponse)(nil),            // 79: nominal.plan.v1.UpdatePlanMetadataResponse
+	(*SearchPlansQuery)(nil),                      // 80: nominal.plan.v1.SearchPlansQuery
+	(*PlanDateRangeFilter)(nil),                   // 81: nominal.plan.v1.PlanDateRangeFilter
+	(*SearchPlansQueryList)(nil),                  // 82: nominal.plan.v1.SearchPlansQueryList
+	(*UserRidList)(nil),                           // 83: nominal.plan.v1.UserRidList
+	(*PlanSortOptions)(nil),                       // 84: nominal.plan.v1.PlanSortOptions
+	(*SearchPlansRequest)(nil),                    // 85: nominal.plan.v1.SearchPlansRequest
+	(*SearchPlansResponse)(nil),                   // 86: nominal.plan.v1.SearchPlansResponse
+	(*ValidatePlanRequest)(nil),                   // 87: nominal.plan.v1.ValidatePlanRequest
+	(*StoredPlanRevision)(nil),                    // 88: nominal.plan.v1.StoredPlanRevision
+	(*ValidatePlanResponse)(nil),                  // 89: nominal.plan.v1.ValidatePlanResponse
+	(*PlanViolation)(nil),                         // 90: nominal.plan.v1.PlanViolation
+	(*PlanViolationDetails)(nil),                  // 91: nominal.plan.v1.PlanViolationDetails
+	(*PlanViolationSubject)(nil),                  // 92: nominal.plan.v1.PlanViolationSubject
+	(*ListPlanAssetGroupSummariesRequest)(nil),    // 93: nominal.plan.v1.ListPlanAssetGroupSummariesRequest
+	(*ListPlanAssetGroupSummariesResponse)(nil),   // 94: nominal.plan.v1.ListPlanAssetGroupSummariesResponse
+	(*AssetGroupSummary)(nil),                     // 95: nominal.plan.v1.AssetGroupSummary
+	nil,                                           // 96: nominal.plan.v1.PlanMetadata.PropertiesEntry
+	nil,                                           // 97: nominal.plan.v1.Activity.PropertiesEntry
+	nil,                                           // 98: nominal.plan.v1.Objective.PropertiesEntry
+	nil,                                           // 99: nominal.plan.v1.Resource.PropertiesEntry
+	nil,                                           // 100: nominal.plan.v1.Segment.PropertiesEntry
+	(*PlanViolationDetails_Comparison)(nil),       // 101: nominal.plan.v1.PlanViolationDetails.Comparison
+	(*v1.Commit)(nil),                             // 102: nominal.versioning.v1.Commit
+	(*timestamppb.Timestamp)(nil),                 // 103: google.protobuf.Timestamp
+	(types.Priority)(0),                           // 104: nominal.types.Priority
+	(*v2.SearchAssetsQuery)(nil),                  // 105: nominal.asset.v2.SearchAssetsQuery
+	(*types.Duration)(nil),                        // 106: nominal.types.Duration
+	(*v1.BranchOrCommit)(nil),                     // 107: nominal.versioning.v1.BranchOrCommit
+	(*types.LabelUpdateWrapper)(nil),              // 108: nominal.types.LabelUpdateWrapper
+	(*types.PropertyUpdateWrapper)(nil),           // 109: nominal.types.PropertyUpdateWrapper
+	(*types.LabelsFilter)(nil),                    // 110: nominal.types.LabelsFilter
+	(*types.PropertiesFilter)(nil),                // 111: nominal.types.PropertiesFilter
 }
 var file_nominal_protos_plan_v1_plan_proto_depIdxs = []int32{
-	6,   // 0: nominal.plan.v1.Plan.metadata:type_name -> nominal.plan.v1.PlanMetadata
-	89,  // 1: nominal.plan.v1.Plan.commit:type_name -> nominal.versioning.v1.Commit
-	11,  // 2: nominal.plan.v1.Plan.content:type_name -> nominal.plan.v1.PlanContent
-	6,   // 3: nominal.plan.v1.PlanSummary.metadata:type_name -> nominal.plan.v1.PlanMetadata
-	90,  // 4: nominal.plan.v1.PlanSummary.start:type_name -> google.protobuf.Timestamp
-	90,  // 5: nominal.plan.v1.PlanSummary.end:type_name -> google.protobuf.Timestamp
-	90,  // 6: nominal.plan.v1.PlanSummary.earliest_scheduled_start:type_name -> google.protobuf.Timestamp
-	90,  // 7: nominal.plan.v1.PlanSummary.latest_scheduled_end:type_name -> google.protobuf.Timestamp
-	84,  // 8: nominal.plan.v1.PlanMetadata.properties:type_name -> nominal.plan.v1.PlanMetadata.PropertiesEntry
-	90,  // 9: nominal.plan.v1.PlanMetadata.created_at:type_name -> google.protobuf.Timestamp
-	90,  // 10: nominal.plan.v1.PlanMetadata.updated_at:type_name -> google.protobuf.Timestamp
-	90,  // 11: nominal.plan.v1.PlanMetadata.edited_at:type_name -> google.protobuf.Timestamp
-	7,   // 12: nominal.plan.v1.PlanMetadata.status:type_name -> nominal.plan.v1.PlanStatus
-	8,   // 13: nominal.plan.v1.PlanStatus.open:type_name -> nominal.plan.v1.OpenPlan
-	9,   // 14: nominal.plan.v1.PlanStatus.completed:type_name -> nominal.plan.v1.CompletedPlan
-	10,  // 15: nominal.plan.v1.PlanStatus.cancelled:type_name -> nominal.plan.v1.CancelledPlan
-	12,  // 16: nominal.plan.v1.PlanContent.v1:type_name -> nominal.plan.v1.PlanContentV1
-	90,  // 17: nominal.plan.v1.PlanContentV1.start:type_name -> google.protobuf.Timestamp
-	90,  // 18: nominal.plan.v1.PlanContentV1.end:type_name -> google.protobuf.Timestamp
-	23,  // 19: nominal.plan.v1.PlanContentV1.objectives:type_name -> nominal.plan.v1.Objective
-	14,  // 20: nominal.plan.v1.PlanContentV1.activities:type_name -> nominal.plan.v1.Activity
-	40,  // 21: nominal.plan.v1.PlanContentV1.segments:type_name -> nominal.plan.v1.Segment
-	38,  // 22: nominal.plan.v1.PlanContentV1.asset_groups:type_name -> nominal.plan.v1.AssetGroup
-	13,  // 23: nominal.plan.v1.PlanContentV1.milestones:type_name -> nominal.plan.v1.Milestone
-	46,  // 24: nominal.plan.v1.PlanContentV1.constraints:type_name -> nominal.plan.v1.Constraint
-	38,  // 25: nominal.plan.v1.PlanContentV1.base_asset_pool:type_name -> nominal.plan.v1.AssetGroup
-	15,  // 26: nominal.plan.v1.Activity.details:type_name -> nominal.plan.v1.ActivityDetails
-	45,  // 27: nominal.plan.v1.Activity.planned_duration:type_name -> nominal.plan.v1.MinuteDuration
-	85,  // 28: nominal.plan.v1.Activity.properties:type_name -> nominal.plan.v1.Activity.PropertiesEntry
-	44,  // 29: nominal.plan.v1.Activity.links:type_name -> nominal.plan.v1.Link
-	16,  // 30: nominal.plan.v1.ActivityDetails.single:type_name -> nominal.plan.v1.SingleActivity
-	90,  // 31: nominal.plan.v1.SingleActivity.start:type_name -> google.protobuf.Timestamp
-	90,  // 32: nominal.plan.v1.SingleActivity.end:type_name -> google.protobuf.Timestamp
-	17,  // 33: nominal.plan.v1.SingleActivity.status:type_name -> nominal.plan.v1.ActivityStatus
-	18,  // 34: nominal.plan.v1.ActivityStatus.created:type_name -> nominal.plan.v1.CreatedActivity
-	19,  // 35: nominal.plan.v1.ActivityStatus.finalized:type_name -> nominal.plan.v1.FinalizedActivity
-	20,  // 36: nominal.plan.v1.ActivityStatus.in_progress:type_name -> nominal.plan.v1.InProgressActivity
-	21,  // 37: nominal.plan.v1.ActivityStatus.completed:type_name -> nominal.plan.v1.CompletedActivity
-	22,  // 38: nominal.plan.v1.ActivityStatus.cancelled:type_name -> nominal.plan.v1.CancelledActivity
-	90,  // 39: nominal.plan.v1.Objective.created_at:type_name -> google.protobuf.Timestamp
-	91,  // 40: nominal.plan.v1.Objective.priority:type_name -> nominal.types.Priority
-	33,  // 41: nominal.plan.v1.Objective.details:type_name -> nominal.plan.v1.ObjectiveDetails
-	24,  // 42: nominal.plan.v1.Objective.status:type_name -> nominal.plan.v1.ObjectiveStatus
-	45,  // 43: nominal.plan.v1.Objective.planned_duration:type_name -> nominal.plan.v1.MinuteDuration
-	86,  // 44: nominal.plan.v1.Objective.properties:type_name -> nominal.plan.v1.Objective.PropertiesEntry
-	44,  // 45: nominal.plan.v1.Objective.links:type_name -> nominal.plan.v1.Link
-	25,  // 46: nominal.plan.v1.ObjectiveStatus.draft:type_name -> nominal.plan.v1.DraftObjective
-	26,  // 47: nominal.plan.v1.ObjectiveStatus.proposed:type_name -> nominal.plan.v1.ProposedObjective
-	27,  // 48: nominal.plan.v1.ObjectiveStatus.finalized:type_name -> nominal.plan.v1.FinalizedObjective
-	28,  // 49: nominal.plan.v1.ObjectiveStatus.completed:type_name -> nominal.plan.v1.CompletedObjective
-	29,  // 50: nominal.plan.v1.ObjectiveStatus.rejected:type_name -> nominal.plan.v1.RejectedObjective
-	30,  // 51: nominal.plan.v1.CompletedObjective.disposition:type_name -> nominal.plan.v1.ObjectiveDisposition
-	31,  // 52: nominal.plan.v1.ObjectiveDisposition.successful:type_name -> nominal.plan.v1.SuccessfulObjective
-	32,  // 53: nominal.plan.v1.ObjectiveDisposition.failed:type_name -> nominal.plan.v1.FailedObjective
-	34,  // 54: nominal.plan.v1.ObjectiveDetails.simple:type_name -> nominal.plan.v1.SimpleObjective
-	35,  // 55: nominal.plan.v1.SimpleObjective.resources:type_name -> nominal.plan.v1.Resource
-	36,  // 56: nominal.plan.v1.Resource.candidate_assets:type_name -> nominal.plan.v1.CandidateAssetGroup
-	87,  // 57: nominal.plan.v1.Resource.properties:type_name -> nominal.plan.v1.Resource.PropertiesEntry
-	37,  // 58: nominal.plan.v1.CandidateAssetGroup.sources:type_name -> nominal.plan.v1.AssetSourceList
-	39,  // 59: nominal.plan.v1.AssetSourceList.sources:type_name -> nominal.plan.v1.AssetSource
-	39,  // 60: nominal.plan.v1.AssetGroup.sources:type_name -> nominal.plan.v1.AssetSource
-	92,  // 61: nominal.plan.v1.AssetSource.asset_search:type_name -> nominal.asset.v2.SearchAssetsQuery
-	90,  // 62: nominal.plan.v1.Segment.start:type_name -> google.protobuf.Timestamp
-	90,  // 63: nominal.plan.v1.Segment.end:type_name -> google.protobuf.Timestamp
-	41,  // 64: nominal.plan.v1.Segment.status:type_name -> nominal.plan.v1.SegmentStatus
-	88,  // 65: nominal.plan.v1.Segment.properties:type_name -> nominal.plan.v1.Segment.PropertiesEntry
-	42,  // 66: nominal.plan.v1.SegmentStatus.draft:type_name -> nominal.plan.v1.DraftSegment
-	43,  // 67: nominal.plan.v1.SegmentStatus.finalized:type_name -> nominal.plan.v1.FinalizedSegment
-	93,  // 68: nominal.plan.v1.MinuteDuration.value:type_name -> nominal.types.Duration
-	47,  // 69: nominal.plan.v1.Constraint.subjects:type_name -> nominal.plan.v1.ConstraintSubject
-	49,  // 70: nominal.plan.v1.Constraint.kind:type_name -> nominal.plan.v1.ConstraintKind
-	48,  // 71: nominal.plan.v1.ConstraintSubject.plan_wide:type_name -> nominal.plan.v1.PlanWide
-	50,  // 72: nominal.plan.v1.ConstraintKind.allowed_windows:type_name -> nominal.plan.v1.AllowedWindowsConstraint
-	53,  // 73: nominal.plan.v1.ConstraintKind.capacity:type_name -> nominal.plan.v1.CapacityConstraint
-	55,  // 74: nominal.plan.v1.ConstraintKind.buffer:type_name -> nominal.plan.v1.BufferConstraint
-	57,  // 75: nominal.plan.v1.ConstraintKind.usage_ceiling:type_name -> nominal.plan.v1.UsageCeilingConstraint
-	59,  // 76: nominal.plan.v1.ConstraintKind.precedence:type_name -> nominal.plan.v1.PrecedenceConstraint
-	60,  // 77: nominal.plan.v1.ConstraintKind.mutual_exclusion:type_name -> nominal.plan.v1.MutualExclusionConstraint
-	51,  // 78: nominal.plan.v1.AllowedWindowsConstraint.explicit:type_name -> nominal.plan.v1.ExplicitWindows
-	52,  // 79: nominal.plan.v1.ExplicitWindows.ranges:type_name -> nominal.plan.v1.TimeRange
-	90,  // 80: nominal.plan.v1.TimeRange.start:type_name -> google.protobuf.Timestamp
-	90,  // 81: nominal.plan.v1.TimeRange.end:type_name -> google.protobuf.Timestamp
-	54,  // 82: nominal.plan.v1.CapacityConstraint.uniform:type_name -> nominal.plan.v1.UniformCapacity
-	56,  // 83: nominal.plan.v1.BufferConstraint.fixed:type_name -> nominal.plan.v1.FixedBuffer
-	45,  // 84: nominal.plan.v1.FixedBuffer.min_gap:type_name -> nominal.plan.v1.MinuteDuration
-	58,  // 85: nominal.plan.v1.UsageCeilingConstraint.per_calendar_day:type_name -> nominal.plan.v1.DailyUsageCeiling
-	45,  // 86: nominal.plan.v1.DailyUsageCeiling.max_duration:type_name -> nominal.plan.v1.MinuteDuration
-	47,  // 87: nominal.plan.v1.PrecedenceConstraint.after:type_name -> nominal.plan.v1.ConstraintSubject
-	61,  // 88: nominal.plan.v1.MutualExclusionConstraint.no_overlap:type_name -> nominal.plan.v1.NoOverlap
-	4,   // 89: nominal.plan.v1.CreatePlanRequest.plan:type_name -> nominal.plan.v1.Plan
-	4,   // 90: nominal.plan.v1.CreatePlanResponse.plan:type_name -> nominal.plan.v1.Plan
-	94,  // 91: nominal.plan.v1.GetPlanRequest.at:type_name -> nominal.versioning.v1.BranchOrCommit
-	4,   // 92: nominal.plan.v1.GetPlanResponse.plan:type_name -> nominal.plan.v1.Plan
-	4,   // 93: nominal.plan.v1.BatchGetPlansResponse.plans:type_name -> nominal.plan.v1.Plan
-	11,  // 94: nominal.plan.v1.CreatePlanCommitRequest.content:type_name -> nominal.plan.v1.PlanContent
-	4,   // 95: nominal.plan.v1.CreatePlanCommitResponse.plan:type_name -> nominal.plan.v1.Plan
-	95,  // 96: nominal.plan.v1.UpdatePlanMetadataRequest.labels:type_name -> nominal.types.LabelUpdateWrapper
-	96,  // 97: nominal.plan.v1.UpdatePlanMetadataRequest.properties:type_name -> nominal.types.PropertyUpdateWrapper
-	7,   // 98: nominal.plan.v1.UpdatePlanMetadataRequest.status:type_name -> nominal.plan.v1.PlanStatus
-	6,   // 99: nominal.plan.v1.UpdatePlanMetadataResponse.metadata:type_name -> nominal.plan.v1.PlanMetadata
-	74,  // 100: nominal.plan.v1.SearchPlansQuery.and:type_name -> nominal.plan.v1.SearchPlansQueryList
-	74,  // 101: nominal.plan.v1.SearchPlansQuery.or:type_name -> nominal.plan.v1.SearchPlansQueryList
-	72,  // 102: nominal.plan.v1.SearchPlansQuery.not:type_name -> nominal.plan.v1.SearchPlansQuery
-	97,  // 103: nominal.plan.v1.SearchPlansQuery.labels:type_name -> nominal.types.LabelsFilter
-	98,  // 104: nominal.plan.v1.SearchPlansQuery.properties:type_name -> nominal.types.PropertiesFilter
-	75,  // 105: nominal.plan.v1.SearchPlansQuery.author_rids:type_name -> nominal.plan.v1.UserRidList
-	73,  // 106: nominal.plan.v1.SearchPlansQuery.date_range_overlaps:type_name -> nominal.plan.v1.PlanDateRangeFilter
-	7,   // 107: nominal.plan.v1.SearchPlansQuery.status:type_name -> nominal.plan.v1.PlanStatus
-	90,  // 108: nominal.plan.v1.PlanDateRangeFilter.start:type_name -> google.protobuf.Timestamp
-	90,  // 109: nominal.plan.v1.PlanDateRangeFilter.end:type_name -> google.protobuf.Timestamp
-	72,  // 110: nominal.plan.v1.SearchPlansQueryList.queries:type_name -> nominal.plan.v1.SearchPlansQuery
-	0,   // 111: nominal.plan.v1.PlanSortOptions.field:type_name -> nominal.plan.v1.PlanSortField
-	72,  // 112: nominal.plan.v1.SearchPlansRequest.query:type_name -> nominal.plan.v1.SearchPlansQuery
-	76,  // 113: nominal.plan.v1.SearchPlansRequest.sort:type_name -> nominal.plan.v1.PlanSortOptions
-	5,   // 114: nominal.plan.v1.SearchPlansResponse.results:type_name -> nominal.plan.v1.PlanSummary
-	80,  // 115: nominal.plan.v1.ValidatePlanRequest.plan:type_name -> nominal.plan.v1.StoredPlanRevision
-	11,  // 116: nominal.plan.v1.ValidatePlanRequest.content:type_name -> nominal.plan.v1.PlanContent
-	94,  // 117: nominal.plan.v1.StoredPlanRevision.at:type_name -> nominal.versioning.v1.BranchOrCommit
-	82,  // 118: nominal.plan.v1.ValidatePlanResponse.violations:type_name -> nominal.plan.v1.PlanViolation
-	89,  // 119: nominal.plan.v1.ValidatePlanResponse.commit:type_name -> nominal.versioning.v1.Commit
-	1,   // 120: nominal.plan.v1.PlanViolation.severity:type_name -> nominal.plan.v1.PlanViolationSeverity
-	83,  // 121: nominal.plan.v1.PlanViolation.subjects:type_name -> nominal.plan.v1.PlanViolationSubject
-	2,   // 122: nominal.plan.v1.PlanViolationSubject.kind:type_name -> nominal.plan.v1.PlanElementKind
-	62,  // 123: nominal.plan.v1.PlanService.CreatePlan:input_type -> nominal.plan.v1.CreatePlanRequest
-	64,  // 124: nominal.plan.v1.PlanService.GetPlan:input_type -> nominal.plan.v1.GetPlanRequest
-	66,  // 125: nominal.plan.v1.PlanService.BatchGetPlans:input_type -> nominal.plan.v1.BatchGetPlansRequest
-	68,  // 126: nominal.plan.v1.PlanService.CreatePlanCommit:input_type -> nominal.plan.v1.CreatePlanCommitRequest
-	70,  // 127: nominal.plan.v1.PlanService.UpdatePlanMetadata:input_type -> nominal.plan.v1.UpdatePlanMetadataRequest
-	77,  // 128: nominal.plan.v1.PlanService.SearchPlans:input_type -> nominal.plan.v1.SearchPlansRequest
-	79,  // 129: nominal.plan.v1.PlanService.ValidatePlan:input_type -> nominal.plan.v1.ValidatePlanRequest
-	63,  // 130: nominal.plan.v1.PlanService.CreatePlan:output_type -> nominal.plan.v1.CreatePlanResponse
-	65,  // 131: nominal.plan.v1.PlanService.GetPlan:output_type -> nominal.plan.v1.GetPlanResponse
-	67,  // 132: nominal.plan.v1.PlanService.BatchGetPlans:output_type -> nominal.plan.v1.BatchGetPlansResponse
-	69,  // 133: nominal.plan.v1.PlanService.CreatePlanCommit:output_type -> nominal.plan.v1.CreatePlanCommitResponse
-	71,  // 134: nominal.plan.v1.PlanService.UpdatePlanMetadata:output_type -> nominal.plan.v1.UpdatePlanMetadataResponse
-	78,  // 135: nominal.plan.v1.PlanService.SearchPlans:output_type -> nominal.plan.v1.SearchPlansResponse
-	81,  // 136: nominal.plan.v1.PlanService.ValidatePlan:output_type -> nominal.plan.v1.ValidatePlanResponse
-	130, // [130:137] is the sub-list for method output_type
-	123, // [123:130] is the sub-list for method input_type
-	123, // [123:123] is the sub-list for extension type_name
-	123, // [123:123] is the sub-list for extension extendee
-	0,   // [0:123] is the sub-list for field type_name
+	7,   // 0: nominal.plan.v1.Plan.metadata:type_name -> nominal.plan.v1.PlanMetadata
+	102, // 1: nominal.plan.v1.Plan.commit:type_name -> nominal.versioning.v1.Commit
+	12,  // 2: nominal.plan.v1.Plan.content:type_name -> nominal.plan.v1.PlanContent
+	7,   // 3: nominal.plan.v1.PlanSummary.metadata:type_name -> nominal.plan.v1.PlanMetadata
+	103, // 4: nominal.plan.v1.PlanSummary.start:type_name -> google.protobuf.Timestamp
+	103, // 5: nominal.plan.v1.PlanSummary.end:type_name -> google.protobuf.Timestamp
+	103, // 6: nominal.plan.v1.PlanSummary.earliest_scheduled_start:type_name -> google.protobuf.Timestamp
+	103, // 7: nominal.plan.v1.PlanSummary.latest_scheduled_end:type_name -> google.protobuf.Timestamp
+	96,  // 8: nominal.plan.v1.PlanMetadata.properties:type_name -> nominal.plan.v1.PlanMetadata.PropertiesEntry
+	103, // 9: nominal.plan.v1.PlanMetadata.created_at:type_name -> google.protobuf.Timestamp
+	103, // 10: nominal.plan.v1.PlanMetadata.updated_at:type_name -> google.protobuf.Timestamp
+	103, // 11: nominal.plan.v1.PlanMetadata.edited_at:type_name -> google.protobuf.Timestamp
+	8,   // 12: nominal.plan.v1.PlanMetadata.status:type_name -> nominal.plan.v1.PlanStatus
+	9,   // 13: nominal.plan.v1.PlanStatus.open:type_name -> nominal.plan.v1.OpenPlan
+	10,  // 14: nominal.plan.v1.PlanStatus.completed:type_name -> nominal.plan.v1.CompletedPlan
+	11,  // 15: nominal.plan.v1.PlanStatus.cancelled:type_name -> nominal.plan.v1.CancelledPlan
+	13,  // 16: nominal.plan.v1.PlanContent.v1:type_name -> nominal.plan.v1.PlanContentV1
+	103, // 17: nominal.plan.v1.PlanContentV1.start:type_name -> google.protobuf.Timestamp
+	103, // 18: nominal.plan.v1.PlanContentV1.end:type_name -> google.protobuf.Timestamp
+	27,  // 19: nominal.plan.v1.PlanContentV1.objectives:type_name -> nominal.plan.v1.Objective
+	15,  // 20: nominal.plan.v1.PlanContentV1.activities:type_name -> nominal.plan.v1.Activity
+	46,  // 21: nominal.plan.v1.PlanContentV1.segments:type_name -> nominal.plan.v1.Segment
+	42,  // 22: nominal.plan.v1.PlanContentV1.asset_groups:type_name -> nominal.plan.v1.AssetGroup
+	14,  // 23: nominal.plan.v1.PlanContentV1.milestones:type_name -> nominal.plan.v1.Milestone
+	52,  // 24: nominal.plan.v1.PlanContentV1.constraints:type_name -> nominal.plan.v1.Constraint
+	42,  // 25: nominal.plan.v1.PlanContentV1.base_asset_pool:type_name -> nominal.plan.v1.AssetGroup
+	44,  // 26: nominal.plan.v1.PlanContentV1.objective_groups:type_name -> nominal.plan.v1.ObjectiveGroup
+	16,  // 27: nominal.plan.v1.Activity.details:type_name -> nominal.plan.v1.ActivityDetails
+	51,  // 28: nominal.plan.v1.Activity.planned_duration:type_name -> nominal.plan.v1.MinuteDuration
+	97,  // 29: nominal.plan.v1.Activity.properties:type_name -> nominal.plan.v1.Activity.PropertiesEntry
+	50,  // 30: nominal.plan.v1.Activity.links:type_name -> nominal.plan.v1.Link
+	17,  // 31: nominal.plan.v1.ActivityDetails.single:type_name -> nominal.plan.v1.SingleActivity
+	103, // 32: nominal.plan.v1.SingleActivity.start:type_name -> google.protobuf.Timestamp
+	103, // 33: nominal.plan.v1.SingleActivity.end:type_name -> google.protobuf.Timestamp
+	19,  // 34: nominal.plan.v1.SingleActivity.status:type_name -> nominal.plan.v1.ActivityStatus
+	18,  // 35: nominal.plan.v1.SingleActivity.asset_assignments:type_name -> nominal.plan.v1.AssetAssignment
+	25,  // 36: nominal.plan.v1.SingleActivity.pin:type_name -> nominal.plan.v1.ActivityPin
+	20,  // 37: nominal.plan.v1.ActivityStatus.created:type_name -> nominal.plan.v1.CreatedActivity
+	21,  // 38: nominal.plan.v1.ActivityStatus.finalized:type_name -> nominal.plan.v1.FinalizedActivity
+	22,  // 39: nominal.plan.v1.ActivityStatus.in_progress:type_name -> nominal.plan.v1.InProgressActivity
+	23,  // 40: nominal.plan.v1.ActivityStatus.completed:type_name -> nominal.plan.v1.CompletedActivity
+	24,  // 41: nominal.plan.v1.ActivityStatus.cancelled:type_name -> nominal.plan.v1.CancelledActivity
+	26,  // 42: nominal.plan.v1.ActivityPin.pinned:type_name -> nominal.plan.v1.PinnedActivity
+	103, // 43: nominal.plan.v1.Objective.created_at:type_name -> google.protobuf.Timestamp
+	104, // 44: nominal.plan.v1.Objective.priority:type_name -> nominal.types.Priority
+	37,  // 45: nominal.plan.v1.Objective.details:type_name -> nominal.plan.v1.ObjectiveDetails
+	28,  // 46: nominal.plan.v1.Objective.status:type_name -> nominal.plan.v1.ObjectiveStatus
+	51,  // 47: nominal.plan.v1.Objective.planned_duration:type_name -> nominal.plan.v1.MinuteDuration
+	98,  // 48: nominal.plan.v1.Objective.properties:type_name -> nominal.plan.v1.Objective.PropertiesEntry
+	50,  // 49: nominal.plan.v1.Objective.links:type_name -> nominal.plan.v1.Link
+	29,  // 50: nominal.plan.v1.ObjectiveStatus.draft:type_name -> nominal.plan.v1.DraftObjective
+	30,  // 51: nominal.plan.v1.ObjectiveStatus.proposed:type_name -> nominal.plan.v1.ProposedObjective
+	31,  // 52: nominal.plan.v1.ObjectiveStatus.finalized:type_name -> nominal.plan.v1.FinalizedObjective
+	32,  // 53: nominal.plan.v1.ObjectiveStatus.completed:type_name -> nominal.plan.v1.CompletedObjective
+	33,  // 54: nominal.plan.v1.ObjectiveStatus.rejected:type_name -> nominal.plan.v1.RejectedObjective
+	34,  // 55: nominal.plan.v1.CompletedObjective.disposition:type_name -> nominal.plan.v1.ObjectiveDisposition
+	35,  // 56: nominal.plan.v1.ObjectiveDisposition.successful:type_name -> nominal.plan.v1.SuccessfulObjective
+	36,  // 57: nominal.plan.v1.ObjectiveDisposition.failed:type_name -> nominal.plan.v1.FailedObjective
+	38,  // 58: nominal.plan.v1.ObjectiveDetails.simple:type_name -> nominal.plan.v1.SimpleObjective
+	39,  // 59: nominal.plan.v1.SimpleObjective.resources:type_name -> nominal.plan.v1.Resource
+	40,  // 60: nominal.plan.v1.Resource.candidate_assets:type_name -> nominal.plan.v1.CandidateAssetGroup
+	99,  // 61: nominal.plan.v1.Resource.properties:type_name -> nominal.plan.v1.Resource.PropertiesEntry
+	41,  // 62: nominal.plan.v1.CandidateAssetGroup.sources:type_name -> nominal.plan.v1.AssetSourceList
+	43,  // 63: nominal.plan.v1.AssetSourceList.sources:type_name -> nominal.plan.v1.AssetSource
+	43,  // 64: nominal.plan.v1.AssetGroup.sources:type_name -> nominal.plan.v1.AssetSource
+	105, // 65: nominal.plan.v1.AssetSource.asset_search:type_name -> nominal.asset.v2.SearchAssetsQuery
+	45,  // 66: nominal.plan.v1.ObjectiveGroup.sources:type_name -> nominal.plan.v1.ObjectiveSource
+	103, // 67: nominal.plan.v1.Segment.start:type_name -> google.protobuf.Timestamp
+	103, // 68: nominal.plan.v1.Segment.end:type_name -> google.protobuf.Timestamp
+	47,  // 69: nominal.plan.v1.Segment.status:type_name -> nominal.plan.v1.SegmentStatus
+	100, // 70: nominal.plan.v1.Segment.properties:type_name -> nominal.plan.v1.Segment.PropertiesEntry
+	48,  // 71: nominal.plan.v1.SegmentStatus.draft:type_name -> nominal.plan.v1.DraftSegment
+	49,  // 72: nominal.plan.v1.SegmentStatus.finalized:type_name -> nominal.plan.v1.FinalizedSegment
+	106, // 73: nominal.plan.v1.MinuteDuration.value:type_name -> nominal.types.Duration
+	53,  // 74: nominal.plan.v1.Constraint.subjects:type_name -> nominal.plan.v1.ConstraintSubject
+	55,  // 75: nominal.plan.v1.Constraint.kind:type_name -> nominal.plan.v1.ConstraintKind
+	54,  // 76: nominal.plan.v1.ConstraintSubject.plan_wide:type_name -> nominal.plan.v1.PlanWide
+	56,  // 77: nominal.plan.v1.ConstraintKind.allowed_windows:type_name -> nominal.plan.v1.AllowedWindowsConstraint
+	59,  // 78: nominal.plan.v1.ConstraintKind.capacity:type_name -> nominal.plan.v1.CapacityConstraint
+	61,  // 79: nominal.plan.v1.ConstraintKind.buffer:type_name -> nominal.plan.v1.BufferConstraint
+	63,  // 80: nominal.plan.v1.ConstraintKind.usage_ceiling:type_name -> nominal.plan.v1.UsageCeilingConstraint
+	65,  // 81: nominal.plan.v1.ConstraintKind.precedence:type_name -> nominal.plan.v1.PrecedenceConstraint
+	66,  // 82: nominal.plan.v1.ConstraintKind.mutual_exclusion:type_name -> nominal.plan.v1.MutualExclusionConstraint
+	57,  // 83: nominal.plan.v1.AllowedWindowsConstraint.explicit:type_name -> nominal.plan.v1.ExplicitWindows
+	58,  // 84: nominal.plan.v1.ExplicitWindows.ranges:type_name -> nominal.plan.v1.TimeRange
+	103, // 85: nominal.plan.v1.TimeRange.start:type_name -> google.protobuf.Timestamp
+	103, // 86: nominal.plan.v1.TimeRange.end:type_name -> google.protobuf.Timestamp
+	60,  // 87: nominal.plan.v1.CapacityConstraint.uniform:type_name -> nominal.plan.v1.UniformCapacity
+	62,  // 88: nominal.plan.v1.BufferConstraint.fixed:type_name -> nominal.plan.v1.FixedBuffer
+	51,  // 89: nominal.plan.v1.FixedBuffer.min_gap:type_name -> nominal.plan.v1.MinuteDuration
+	64,  // 90: nominal.plan.v1.UsageCeilingConstraint.per_calendar_day:type_name -> nominal.plan.v1.DailyUsageCeiling
+	51,  // 91: nominal.plan.v1.DailyUsageCeiling.max_duration:type_name -> nominal.plan.v1.MinuteDuration
+	53,  // 92: nominal.plan.v1.PrecedenceConstraint.after:type_name -> nominal.plan.v1.ConstraintSubject
+	67,  // 93: nominal.plan.v1.MutualExclusionConstraint.no_overlap:type_name -> nominal.plan.v1.NoOverlap
+	5,   // 94: nominal.plan.v1.CreatePlanRequest.plan:type_name -> nominal.plan.v1.Plan
+	5,   // 95: nominal.plan.v1.CreatePlanResponse.plan:type_name -> nominal.plan.v1.Plan
+	90,  // 96: nominal.plan.v1.CreatePlanResponse.warnings:type_name -> nominal.plan.v1.PlanViolation
+	107, // 97: nominal.plan.v1.GetPlanRequest.at:type_name -> nominal.versioning.v1.BranchOrCommit
+	5,   // 98: nominal.plan.v1.GetPlanResponse.plan:type_name -> nominal.plan.v1.Plan
+	5,   // 99: nominal.plan.v1.BatchGetPlansResponse.plans:type_name -> nominal.plan.v1.Plan
+	6,   // 100: nominal.plan.v1.BatchGetPlanSummariesResponse.plans:type_name -> nominal.plan.v1.PlanSummary
+	12,  // 101: nominal.plan.v1.CreatePlanCommitRequest.content:type_name -> nominal.plan.v1.PlanContent
+	5,   // 102: nominal.plan.v1.CreatePlanCommitResponse.plan:type_name -> nominal.plan.v1.Plan
+	90,  // 103: nominal.plan.v1.CreatePlanCommitResponse.warnings:type_name -> nominal.plan.v1.PlanViolation
+	108, // 104: nominal.plan.v1.UpdatePlanMetadataRequest.labels:type_name -> nominal.types.LabelUpdateWrapper
+	109, // 105: nominal.plan.v1.UpdatePlanMetadataRequest.properties:type_name -> nominal.types.PropertyUpdateWrapper
+	8,   // 106: nominal.plan.v1.UpdatePlanMetadataRequest.status:type_name -> nominal.plan.v1.PlanStatus
+	7,   // 107: nominal.plan.v1.UpdatePlanMetadataResponse.metadata:type_name -> nominal.plan.v1.PlanMetadata
+	82,  // 108: nominal.plan.v1.SearchPlansQuery.and:type_name -> nominal.plan.v1.SearchPlansQueryList
+	82,  // 109: nominal.plan.v1.SearchPlansQuery.or:type_name -> nominal.plan.v1.SearchPlansQueryList
+	80,  // 110: nominal.plan.v1.SearchPlansQuery.not:type_name -> nominal.plan.v1.SearchPlansQuery
+	110, // 111: nominal.plan.v1.SearchPlansQuery.labels:type_name -> nominal.types.LabelsFilter
+	111, // 112: nominal.plan.v1.SearchPlansQuery.properties:type_name -> nominal.types.PropertiesFilter
+	83,  // 113: nominal.plan.v1.SearchPlansQuery.author_rids:type_name -> nominal.plan.v1.UserRidList
+	81,  // 114: nominal.plan.v1.SearchPlansQuery.date_range_overlaps:type_name -> nominal.plan.v1.PlanDateRangeFilter
+	8,   // 115: nominal.plan.v1.SearchPlansQuery.status:type_name -> nominal.plan.v1.PlanStatus
+	103, // 116: nominal.plan.v1.PlanDateRangeFilter.start:type_name -> google.protobuf.Timestamp
+	103, // 117: nominal.plan.v1.PlanDateRangeFilter.end:type_name -> google.protobuf.Timestamp
+	80,  // 118: nominal.plan.v1.SearchPlansQueryList.queries:type_name -> nominal.plan.v1.SearchPlansQuery
+	0,   // 119: nominal.plan.v1.PlanSortOptions.field:type_name -> nominal.plan.v1.PlanSortField
+	80,  // 120: nominal.plan.v1.SearchPlansRequest.query:type_name -> nominal.plan.v1.SearchPlansQuery
+	84,  // 121: nominal.plan.v1.SearchPlansRequest.sort:type_name -> nominal.plan.v1.PlanSortOptions
+	6,   // 122: nominal.plan.v1.SearchPlansResponse.results:type_name -> nominal.plan.v1.PlanSummary
+	88,  // 123: nominal.plan.v1.ValidatePlanRequest.plan:type_name -> nominal.plan.v1.StoredPlanRevision
+	12,  // 124: nominal.plan.v1.ValidatePlanRequest.content:type_name -> nominal.plan.v1.PlanContent
+	107, // 125: nominal.plan.v1.StoredPlanRevision.at:type_name -> nominal.versioning.v1.BranchOrCommit
+	90,  // 126: nominal.plan.v1.ValidatePlanResponse.violations:type_name -> nominal.plan.v1.PlanViolation
+	102, // 127: nominal.plan.v1.ValidatePlanResponse.commit:type_name -> nominal.versioning.v1.Commit
+	1,   // 128: nominal.plan.v1.PlanViolation.severity:type_name -> nominal.plan.v1.PlanViolationSeverity
+	92,  // 129: nominal.plan.v1.PlanViolation.subjects:type_name -> nominal.plan.v1.PlanViolationSubject
+	91,  // 130: nominal.plan.v1.PlanViolation.details:type_name -> nominal.plan.v1.PlanViolationDetails
+	101, // 131: nominal.plan.v1.PlanViolationDetails.comparison:type_name -> nominal.plan.v1.PlanViolationDetails.Comparison
+	2,   // 132: nominal.plan.v1.PlanViolationSubject.kind:type_name -> nominal.plan.v1.PlanElementKind
+	107, // 133: nominal.plan.v1.ListPlanAssetGroupSummariesRequest.at:type_name -> nominal.versioning.v1.BranchOrCommit
+	95,  // 134: nominal.plan.v1.ListPlanAssetGroupSummariesResponse.asset_group_summaries:type_name -> nominal.plan.v1.AssetGroupSummary
+	102, // 135: nominal.plan.v1.ListPlanAssetGroupSummariesResponse.commit:type_name -> nominal.versioning.v1.Commit
+	4,   // 136: nominal.plan.v1.PlanViolationDetails.Comparison.operator:type_name -> nominal.plan.v1.PlanViolationDetails.Comparison.Operator
+	68,  // 137: nominal.plan.v1.PlanService.CreatePlan:input_type -> nominal.plan.v1.CreatePlanRequest
+	70,  // 138: nominal.plan.v1.PlanService.GetPlan:input_type -> nominal.plan.v1.GetPlanRequest
+	72,  // 139: nominal.plan.v1.PlanService.BatchGetPlans:input_type -> nominal.plan.v1.BatchGetPlansRequest
+	74,  // 140: nominal.plan.v1.PlanService.BatchGetPlanSummaries:input_type -> nominal.plan.v1.BatchGetPlanSummariesRequest
+	76,  // 141: nominal.plan.v1.PlanService.CreatePlanCommit:input_type -> nominal.plan.v1.CreatePlanCommitRequest
+	78,  // 142: nominal.plan.v1.PlanService.UpdatePlanMetadata:input_type -> nominal.plan.v1.UpdatePlanMetadataRequest
+	85,  // 143: nominal.plan.v1.PlanService.SearchPlans:input_type -> nominal.plan.v1.SearchPlansRequest
+	87,  // 144: nominal.plan.v1.PlanService.ValidatePlan:input_type -> nominal.plan.v1.ValidatePlanRequest
+	93,  // 145: nominal.plan.v1.PlanService.ListPlanAssetGroupSummaries:input_type -> nominal.plan.v1.ListPlanAssetGroupSummariesRequest
+	69,  // 146: nominal.plan.v1.PlanService.CreatePlan:output_type -> nominal.plan.v1.CreatePlanResponse
+	71,  // 147: nominal.plan.v1.PlanService.GetPlan:output_type -> nominal.plan.v1.GetPlanResponse
+	73,  // 148: nominal.plan.v1.PlanService.BatchGetPlans:output_type -> nominal.plan.v1.BatchGetPlansResponse
+	75,  // 149: nominal.plan.v1.PlanService.BatchGetPlanSummaries:output_type -> nominal.plan.v1.BatchGetPlanSummariesResponse
+	77,  // 150: nominal.plan.v1.PlanService.CreatePlanCommit:output_type -> nominal.plan.v1.CreatePlanCommitResponse
+	79,  // 151: nominal.plan.v1.PlanService.UpdatePlanMetadata:output_type -> nominal.plan.v1.UpdatePlanMetadataResponse
+	86,  // 152: nominal.plan.v1.PlanService.SearchPlans:output_type -> nominal.plan.v1.SearchPlansResponse
+	89,  // 153: nominal.plan.v1.PlanService.ValidatePlan:output_type -> nominal.plan.v1.ValidatePlanResponse
+	94,  // 154: nominal.plan.v1.PlanService.ListPlanAssetGroupSummaries:output_type -> nominal.plan.v1.ListPlanAssetGroupSummariesResponse
+	146, // [146:155] is the sub-list for method output_type
+	137, // [137:146] is the sub-list for method input_type
+	137, // [137:137] is the sub-list for extension type_name
+	137, // [137:137] is the sub-list for extension extendee
+	0,   // [0:137] is the sub-list for field type_name
 }
 
 func init() { file_nominal_protos_plan_v1_plan_proto_init() }
@@ -6646,49 +7749,56 @@ func file_nominal_protos_plan_v1_plan_proto_init() {
 		(*ActivityDetails_Single)(nil),
 	}
 	file_nominal_protos_plan_v1_plan_proto_msgTypes[12].OneofWrappers = []any{}
-	file_nominal_protos_plan_v1_plan_proto_msgTypes[13].OneofWrappers = []any{
+	file_nominal_protos_plan_v1_plan_proto_msgTypes[14].OneofWrappers = []any{
 		(*ActivityStatus_Created)(nil),
 		(*ActivityStatus_Finalized)(nil),
 		(*ActivityStatus_InProgress)(nil),
 		(*ActivityStatus_Completed)(nil),
 		(*ActivityStatus_Cancelled)(nil),
 	}
-	file_nominal_protos_plan_v1_plan_proto_msgTypes[17].OneofWrappers = []any{}
 	file_nominal_protos_plan_v1_plan_proto_msgTypes[18].OneofWrappers = []any{}
 	file_nominal_protos_plan_v1_plan_proto_msgTypes[19].OneofWrappers = []any{}
 	file_nominal_protos_plan_v1_plan_proto_msgTypes[20].OneofWrappers = []any{
+		(*ActivityPin_Pinned)(nil),
+	}
+	file_nominal_protos_plan_v1_plan_proto_msgTypes[22].OneofWrappers = []any{}
+	file_nominal_protos_plan_v1_plan_proto_msgTypes[23].OneofWrappers = []any{
 		(*ObjectiveStatus_Draft)(nil),
 		(*ObjectiveStatus_Proposed)(nil),
 		(*ObjectiveStatus_Finalized)(nil),
 		(*ObjectiveStatus_Completed)(nil),
 		(*ObjectiveStatus_Rejected)(nil),
 	}
-	file_nominal_protos_plan_v1_plan_proto_msgTypes[26].OneofWrappers = []any{
+	file_nominal_protos_plan_v1_plan_proto_msgTypes[29].OneofWrappers = []any{
 		(*ObjectiveDisposition_Successful)(nil),
 		(*ObjectiveDisposition_Failed)(nil),
 	}
-	file_nominal_protos_plan_v1_plan_proto_msgTypes[27].OneofWrappers = []any{}
-	file_nominal_protos_plan_v1_plan_proto_msgTypes[28].OneofWrappers = []any{}
-	file_nominal_protos_plan_v1_plan_proto_msgTypes[29].OneofWrappers = []any{
-		(*ObjectiveDetails_Simple)(nil),
-	}
+	file_nominal_protos_plan_v1_plan_proto_msgTypes[30].OneofWrappers = []any{}
 	file_nominal_protos_plan_v1_plan_proto_msgTypes[31].OneofWrappers = []any{}
 	file_nominal_protos_plan_v1_plan_proto_msgTypes[32].OneofWrappers = []any{
-		(*CandidateAssetGroup_Sources)(nil),
-		(*CandidateAssetGroup_AssetGroupId)(nil),
+		(*ObjectiveDetails_Simple)(nil),
 	}
 	file_nominal_protos_plan_v1_plan_proto_msgTypes[34].OneofWrappers = []any{}
 	file_nominal_protos_plan_v1_plan_proto_msgTypes[35].OneofWrappers = []any{
+		(*CandidateAssetGroup_Sources)(nil),
+		(*CandidateAssetGroup_AssetGroupId)(nil),
+	}
+	file_nominal_protos_plan_v1_plan_proto_msgTypes[37].OneofWrappers = []any{}
+	file_nominal_protos_plan_v1_plan_proto_msgTypes[38].OneofWrappers = []any{
 		(*AssetSource_AssetSearch)(nil),
 		(*AssetSource_AssetRid)(nil),
 	}
-	file_nominal_protos_plan_v1_plan_proto_msgTypes[36].OneofWrappers = []any{}
-	file_nominal_protos_plan_v1_plan_proto_msgTypes[37].OneofWrappers = []any{
+	file_nominal_protos_plan_v1_plan_proto_msgTypes[39].OneofWrappers = []any{}
+	file_nominal_protos_plan_v1_plan_proto_msgTypes[40].OneofWrappers = []any{
+		(*ObjectiveSource_ObjectiveId)(nil),
+	}
+	file_nominal_protos_plan_v1_plan_proto_msgTypes[41].OneofWrappers = []any{}
+	file_nominal_protos_plan_v1_plan_proto_msgTypes[42].OneofWrappers = []any{
 		(*SegmentStatus_Draft)(nil),
 		(*SegmentStatus_Finalized)(nil),
 	}
-	file_nominal_protos_plan_v1_plan_proto_msgTypes[40].OneofWrappers = []any{}
-	file_nominal_protos_plan_v1_plan_proto_msgTypes[43].OneofWrappers = []any{
+	file_nominal_protos_plan_v1_plan_proto_msgTypes[45].OneofWrappers = []any{}
+	file_nominal_protos_plan_v1_plan_proto_msgTypes[48].OneofWrappers = []any{
 		(*ConstraintSubject_ActivityId)(nil),
 		(*ConstraintSubject_ObjectiveId)(nil),
 		(*ConstraintSubject_ResourceId)(nil),
@@ -6696,8 +7806,9 @@ func file_nominal_protos_plan_v1_plan_proto_init() {
 		(*ConstraintSubject_AssetRid)(nil),
 		(*ConstraintSubject_PlanWide)(nil),
 		(*ConstraintSubject_SegmentId)(nil),
+		(*ConstraintSubject_ObjectiveGroupId)(nil),
 	}
-	file_nominal_protos_plan_v1_plan_proto_msgTypes[45].OneofWrappers = []any{
+	file_nominal_protos_plan_v1_plan_proto_msgTypes[50].OneofWrappers = []any{
 		(*ConstraintKind_AllowedWindows)(nil),
 		(*ConstraintKind_Capacity)(nil),
 		(*ConstraintKind_Buffer)(nil),
@@ -6705,28 +7816,28 @@ func file_nominal_protos_plan_v1_plan_proto_init() {
 		(*ConstraintKind_Precedence)(nil),
 		(*ConstraintKind_MutualExclusion)(nil),
 	}
-	file_nominal_protos_plan_v1_plan_proto_msgTypes[46].OneofWrappers = []any{
+	file_nominal_protos_plan_v1_plan_proto_msgTypes[51].OneofWrappers = []any{
 		(*AllowedWindowsConstraint_Explicit)(nil),
 	}
-	file_nominal_protos_plan_v1_plan_proto_msgTypes[49].OneofWrappers = []any{
+	file_nominal_protos_plan_v1_plan_proto_msgTypes[54].OneofWrappers = []any{
 		(*CapacityConstraint_Uniform)(nil),
 	}
-	file_nominal_protos_plan_v1_plan_proto_msgTypes[51].OneofWrappers = []any{
+	file_nominal_protos_plan_v1_plan_proto_msgTypes[56].OneofWrappers = []any{
 		(*BufferConstraint_Fixed)(nil),
 	}
-	file_nominal_protos_plan_v1_plan_proto_msgTypes[53].OneofWrappers = []any{
+	file_nominal_protos_plan_v1_plan_proto_msgTypes[58].OneofWrappers = []any{
 		(*UsageCeilingConstraint_PerCalendarDay)(nil),
 	}
-	file_nominal_protos_plan_v1_plan_proto_msgTypes[54].OneofWrappers = []any{}
-	file_nominal_protos_plan_v1_plan_proto_msgTypes[55].OneofWrappers = []any{
+	file_nominal_protos_plan_v1_plan_proto_msgTypes[59].OneofWrappers = []any{}
+	file_nominal_protos_plan_v1_plan_proto_msgTypes[60].OneofWrappers = []any{
 		(*PrecedenceConstraint_After)(nil),
 	}
-	file_nominal_protos_plan_v1_plan_proto_msgTypes[56].OneofWrappers = []any{
+	file_nominal_protos_plan_v1_plan_proto_msgTypes[61].OneofWrappers = []any{
 		(*MutualExclusionConstraint_NoOverlap)(nil),
 	}
-	file_nominal_protos_plan_v1_plan_proto_msgTypes[64].OneofWrappers = []any{}
-	file_nominal_protos_plan_v1_plan_proto_msgTypes[66].OneofWrappers = []any{}
-	file_nominal_protos_plan_v1_plan_proto_msgTypes[68].OneofWrappers = []any{
+	file_nominal_protos_plan_v1_plan_proto_msgTypes[71].OneofWrappers = []any{}
+	file_nominal_protos_plan_v1_plan_proto_msgTypes[73].OneofWrappers = []any{}
+	file_nominal_protos_plan_v1_plan_proto_msgTypes[75].OneofWrappers = []any{
 		(*SearchPlansQuery_And)(nil),
 		(*SearchPlansQuery_Or)(nil),
 		(*SearchPlansQuery_Not)(nil),
@@ -6743,20 +7854,25 @@ func file_nominal_protos_plan_v1_plan_proto_init() {
 		(*SearchPlansQuery_DateRangeOverlaps)(nil),
 		(*SearchPlansQuery_Status)(nil),
 	}
-	file_nominal_protos_plan_v1_plan_proto_msgTypes[69].OneofWrappers = []any{}
-	file_nominal_protos_plan_v1_plan_proto_msgTypes[73].OneofWrappers = []any{}
-	file_nominal_protos_plan_v1_plan_proto_msgTypes[74].OneofWrappers = []any{}
-	file_nominal_protos_plan_v1_plan_proto_msgTypes[75].OneofWrappers = []any{
+	file_nominal_protos_plan_v1_plan_proto_msgTypes[76].OneofWrappers = []any{}
+	file_nominal_protos_plan_v1_plan_proto_msgTypes[80].OneofWrappers = []any{}
+	file_nominal_protos_plan_v1_plan_proto_msgTypes[81].OneofWrappers = []any{}
+	file_nominal_protos_plan_v1_plan_proto_msgTypes[82].OneofWrappers = []any{
 		(*ValidatePlanRequest_Plan)(nil),
 		(*ValidatePlanRequest_Content)(nil),
 	}
+	file_nominal_protos_plan_v1_plan_proto_msgTypes[86].OneofWrappers = []any{
+		(*PlanViolationDetails_Comparison_)(nil),
+	}
+	file_nominal_protos_plan_v1_plan_proto_msgTypes[88].OneofWrappers = []any{}
+	file_nominal_protos_plan_v1_plan_proto_msgTypes[96].OneofWrappers = []any{}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_nominal_protos_plan_v1_plan_proto_rawDesc), len(file_nominal_protos_plan_v1_plan_proto_rawDesc)),
-			NumEnums:      4,
-			NumMessages:   85,
+			NumEnums:      5,
+			NumMessages:   97,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

@@ -902,10 +902,10 @@ const file_nominal_protos_authorization_resources_v1_resource_shares_proto_rawDe
 	"\x1bDeleteResourceShareResponse*X\n" +
 	"\x11ResourceShareRole\x12#\n" +
 	"\x1fRESOURCE_SHARE_ROLE_UNSPECIFIED\x10\x00\x12\x1e\n" +
-	"\x1aRESOURCE_SHARE_ROLE_VIEWER\x10\x012\x9c\a\n" +
-	"\x14ResourceShareService\x12\xf4\x01\n" +
-	"\x13CreateResourceShare\x12>.nominal.authorization.resources.v1.CreateResourceShareRequest\x1a?.nominal.authorization.resources.v1.CreateResourceShareResponse\"\\\x82\xd3\xe4\x93\x02V:\x0eresource_share\"D/authorization/resources/v1/{resource_share.key.resource_rid}/shares\x12\xd8\x01\n" +
-	"\x16BatchGetResourceShares\x12A.nominal.authorization.resources.v1.BatchGetResourceSharesRequest\x1aB.nominal.authorization.resources.v1.BatchGetResourceSharesResponse\"7\x82\xd3\xe4\x93\x021:\x01*\",/authorization/resources/v1/shares/batch-get\x12\xce\x01\n" +
+	"\x1aRESOURCE_SHARE_ROLE_VIEWER\x10\x012\xa2\a\n" +
+	"\x14ResourceShareService\x12\xf7\x01\n" +
+	"\x13CreateResourceShare\x12>.nominal.authorization.resources.v1.CreateResourceShareRequest\x1a?.nominal.authorization.resources.v1.CreateResourceShareResponse\"_\x82\xd3\xe4\x93\x02V:\x0eresource_share\"D/authorization/resources/v1/{resource_share.key.resource_rid}/shares\x90\x02\x02\x12\xdb\x01\n" +
+	"\x16BatchGetResourceShares\x12A.nominal.authorization.resources.v1.BatchGetResourceSharesRequest\x1aB.nominal.authorization.resources.v1.BatchGetResourceSharesResponse\":\x82\xd3\xe4\x93\x021:\x01*\",/authorization/resources/v1/shares/batch-get\x90\x02\x01\x12\xce\x01\n" +
 	"\x12ListResourceShares\x12=.nominal.authorization.resources.v1.ListResourceSharesRequest\x1a>.nominal.authorization.resources.v1.ListResourceSharesResponse\"9\x82\xd3\xe4\x93\x023\x121/authorization/resources/v1/{resource_rid}/shares\x12\xe0\x01\n" +
 	"\x13DeleteResourceShare\x12>.nominal.authorization.resources.v1.DeleteResourceShareRequest\x1a?.nominal.authorization.resources.v1.DeleteResourceShareResponse\"H\x82\xd3\xe4\x93\x02B*@/authorization/resources/v1/{key.resource_rid}/shares/{key.role}B\xcb\x02\n" +
 	"&com.nominal.authorization.resources.v1B\x13ResourceSharesProtoP\x01Zagithub.com/nominal-io/nominal-api-protos-go/nominal/protos/authorization/resources/v1;resourcesv1\xa2\x02\x03NAR\xaa\x02\"Nominal.Authorization.Resources.V1\xca\x02\"Nominal\\Authorization\\Resources\\V1\xe2\x02.Nominal\\Authorization\\Resources\\V1\\GPBMetadata\xea\x02%Nominal::Authorization::Resources::V1b\x06proto3"

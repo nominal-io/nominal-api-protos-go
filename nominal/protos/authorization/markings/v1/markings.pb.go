@@ -2109,43 +2109,45 @@ const file_nominal_protos_authorization_markings_v1_markings_proto_rawDesc = "" 
 	"$io.nominal.scout.rids.api.MarkingRidR\n" +
 	"markingRid\x129\n" +
 	"\n" +
-	"applied_at\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampR\tappliedAt2\xef\x17\n" +
+	"applied_at\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampR\tappliedAt2\xd8\x17\n" +
 	"\x0eMarkingService\x12\xd7\x01\n" +
 	"\rCreateMarking\x127.nominal.authorization.markings.v1.CreateMarkingRequest\x1a8.nominal.authorization.markings.v1.CreateMarkingResponse\"S\xba\xb2\x1a!\n" +
 	"\x1f\n" +
-	"\x1borganization:create_marking\x1a\x00\x82\xd3\xe4\x93\x02(:\x01*b\amarking\"\x1a/authorization/markings/v1\x12\xc7\x01\n" +
+	"\x1borganization:create_marking\x1a\x00\x82\xd3\xe4\x93\x02(:\x01*b\amarking\"\x1a/authorization/markings/v1\x12\xca\x01\n" +
 	"\n" +
-	"GetMarking\x124.nominal.authorization.markings.v1.GetMarkingRequest\x1a5.nominal.authorization.markings.v1.GetMarkingResponse\"L\xba\xb2\x1a\x17\n" +
+	"GetMarking\x124.nominal.authorization.markings.v1.GetMarkingRequest\x1a5.nominal.authorization.markings.v1.GetMarkingResponse\"O\xba\xb2\x1a\x17\n" +
 	"\x15\n" +
 	"\fmarking:read\x12\x05\n" +
-	"\x03rid\x82\xd3\xe4\x93\x02+b\amarking\x12 /authorization/markings/v1/{rid}\x12\x8d\x02\n" +
-	"\x0eGetMarkingById\x128.nominal.authorization.markings.v1.GetMarkingByIdRequest\x1a9.nominal.authorization.markings.v1.GetMarkingByIdResponse\"\x85\x01\xba\xb2\x1aN\x10\x01\x1aJmarking:read is checked against a RID the handler resolves from request.id\x82\xd3\xe4\x93\x02-b\amarking\x12\"/authorization/markings/v1/id/{id}\x12\xc3\x01\n" +
-	"\x10BatchGetMarkings\x12:.nominal.authorization.markings.v1.BatchGetMarkingsRequest\x1a;.nominal.authorization.markings.v1.BatchGetMarkingsResponse\"6\xba\xb2\x1a\x00\x82\xd3\xe4\x93\x02,:\x01*b\x01*\"$/authorization/markings/v1/batch-get\x12\xe1\x01\n" +
-	"\x17BatchGetMarkingMetadata\x12A.nominal.authorization.markings.v1.BatchGetMarkingMetadataRequest\x1aB.nominal.authorization.markings.v1.BatchGetMarkingMetadataResponse\"?\xba\xb2\x1a\x00\x82\xd3\xe4\x93\x025:\x01*b\x01*\"-/authorization/markings/v1/batch-get-metadata\x12\xfa\x01\n" +
-	"\x1cGetAuthorizedGroupsByMarking\x12F.nominal.authorization.markings.v1.GetAuthorizedGroupsByMarkingRequest\x1aG.nominal.authorization.markings.v1.GetAuthorizedGroupsByMarkingResponse\"I\xba\xb2\x1a\x00\x82\xd3\xe4\x93\x02?:\x01*b\x01*\"7/authorization/markings/v1/authorized-groups-by-marking\x12\xba\x01\n" +
-	"\x0eSearchMarkings\x128.nominal.authorization.markings.v1.SearchMarkingsRequest\x1a9.nominal.authorization.markings.v1.SearchMarkingsResponse\"3\xba\xb2\x1a\x00\x82\xd3\xe4\x93\x02):\x01*b\x01*\"!/authorization/markings/v1/search\x12\xd5\x01\n" +
-	"\rUpdateMarking\x127.nominal.authorization.markings.v1.UpdateMarkingRequest\x1a8.nominal.authorization.markings.v1.UpdateMarkingResponse\"Q\xba\xb2\x1a\x19\n" +
+	"\x03rid\x82\xd3\xe4\x93\x02+b\amarking\x12 /authorization/markings/v1/{rid}\x90\x02\x01\x12\xd5\x01\n" +
+	"\x0eGetMarkingById\x128.nominal.authorization.markings.v1.GetMarkingByIdRequest\x1a9.nominal.authorization.markings.v1.GetMarkingByIdResponse\"N\xba\xb2\x1a\x14\n" +
+	"\x12\n" +
+	"\x0eworkspace:view\"\x00\x82\xd3\xe4\x93\x02-b\amarking\x12\"/authorization/markings/v1/id/{id}\x90\x02\x01\x12\xc6\x01\n" +
+	"\x10BatchGetMarkings\x12:.nominal.authorization.markings.v1.BatchGetMarkingsRequest\x1a;.nominal.authorization.markings.v1.BatchGetMarkingsResponse\"9\xba\xb2\x1a\x00\x82\xd3\xe4\x93\x02,:\x01*b\x01*\"$/authorization/markings/v1/batch-get\x90\x02\x01\x12\xe4\x01\n" +
+	"\x17BatchGetMarkingMetadata\x12A.nominal.authorization.markings.v1.BatchGetMarkingMetadataRequest\x1aB.nominal.authorization.markings.v1.BatchGetMarkingMetadataResponse\"B\xba\xb2\x1a\x00\x82\xd3\xe4\x93\x025:\x01*b\x01*\"-/authorization/markings/v1/batch-get-metadata\x90\x02\x01\x12\xfd\x01\n" +
+	"\x1cGetAuthorizedGroupsByMarking\x12F.nominal.authorization.markings.v1.GetAuthorizedGroupsByMarkingRequest\x1aG.nominal.authorization.markings.v1.GetAuthorizedGroupsByMarkingResponse\"L\xba\xb2\x1a\x00\x82\xd3\xe4\x93\x02?:\x01*b\x01*\"7/authorization/markings/v1/authorized-groups-by-marking\x90\x02\x01\x12\xbd\x01\n" +
+	"\x0eSearchMarkings\x128.nominal.authorization.markings.v1.SearchMarkingsRequest\x1a9.nominal.authorization.markings.v1.SearchMarkingsResponse\"6\xba\xb2\x1a\x00\x82\xd3\xe4\x93\x02):\x01*b\x01*\"!/authorization/markings/v1/search\x90\x02\x01\x12\xd8\x01\n" +
+	"\rUpdateMarking\x127.nominal.authorization.markings.v1.UpdateMarkingRequest\x1a8.nominal.authorization.markings.v1.UpdateMarkingResponse\"T\xba\xb2\x1a\x19\n" +
 	"\x17\n" +
 	"\x0emarking:update\x12\x05\n" +
-	"\x03rid\x82\xd3\xe4\x93\x02.:\x01*b\amarking\x1a /authorization/markings/v1/{rid}\x12\xee\x01\n" +
-	"\x0fArchiveMarkings\x129.nominal.authorization.markings.v1.ArchiveMarkingsRequest\x1a:.nominal.authorization.markings.v1.ArchiveMarkingsResponse\"d\xba\xb2\x1a\"\n" +
+	"\x03rid\x82\xd3\xe4\x93\x02.:\x01*b\amarking\x1a /authorization/markings/v1/{rid}\x90\x02\x02\x12\xf1\x01\n" +
+	"\x0fArchiveMarkings\x129.nominal.authorization.markings.v1.ArchiveMarkingsRequest\x1a:.nominal.authorization.markings.v1.ArchiveMarkingsResponse\"g\xba\xb2\x1a\"\n" +
 	" \n" +
 	"\x0emarking:update\x12\x0e\n" +
-	"\fmarking_rids\x82\xd3\xe4\x93\x028:\fmarking_rids\"(/authorization/markings/v1/archive-batch\x12\xf6\x01\n" +
-	"\x11UnarchiveMarkings\x12;.nominal.authorization.markings.v1.UnarchiveMarkingsRequest\x1a<.nominal.authorization.markings.v1.UnarchiveMarkingsResponse\"f\xba\xb2\x1a\"\n" +
+	"\fmarking_rids\x82\xd3\xe4\x93\x028:\fmarking_rids\"(/authorization/markings/v1/archive-batch\x90\x02\x02\x12\xf9\x01\n" +
+	"\x11UnarchiveMarkings\x12;.nominal.authorization.markings.v1.UnarchiveMarkingsRequest\x1a<.nominal.authorization.markings.v1.UnarchiveMarkingsResponse\"i\xba\xb2\x1a\"\n" +
 	" \n" +
 	"\x0emarking:update\x12\x0e\n" +
-	"\fmarking_rids\x82\xd3\xe4\x93\x02::\fmarking_rids\"*/authorization/markings/v1/unarchive-batch\x12\x95\x02\n" +
-	"\x18UpdateMarkingsOnResource\x12B.nominal.authorization.markings.v1.UpdateMarkingsOnResourceRequest\x1aC.nominal.authorization.markings.v1.UpdateMarkingsOnResourceResponse\"p\xba\xb2\x1a*\n" +
+	"\fmarking_rids\x82\xd3\xe4\x93\x02::\fmarking_rids\"*/authorization/markings/v1/unarchive-batch\x90\x02\x02\x12\x98\x02\n" +
+	"\x18UpdateMarkingsOnResource\x12B.nominal.authorization.markings.v1.UpdateMarkingsOnResourceRequest\x1aC.nominal.authorization.markings.v1.UpdateMarkingsOnResourceResponse\"s\xba\xb2\x1a*\n" +
 	"(\n" +
 	"\x1adatasource:update_markings\x12\n" +
 	"\n" +
-	"\bresource\x82\xd3\xe4\x93\x02<:\x01*\"7/authorization/markings/v1/resource/{resource}/markings\x12\x82\x02\n" +
-	"\x16GetResourcesForMarking\x12@.nominal.authorization.markings.v1.GetResourcesForMarkingRequest\x1aA.nominal.authorization.markings.v1.GetResourcesForMarkingResponse\"c\xba\xb2\x1a\x1f\n" +
+	"\bresource\x82\xd3\xe4\x93\x02<:\x01*\"7/authorization/markings/v1/resource/{resource}/markings\x90\x02\x02\x12\x85\x02\n" +
+	"\x16GetResourcesForMarking\x12@.nominal.authorization.markings.v1.GetResourcesForMarkingRequest\x1aA.nominal.authorization.markings.v1.GetResourcesForMarkingResponse\"f\xba\xb2\x1a\x1f\n" +
 	"\x1d\n" +
 	"\fmarking:read\x12\r\n" +
-	"\vmarking_rid\x82\xd3\xe4\x93\x02::\x01*b\x01*\"2/authorization/markings/v1/{marking_rid}/resources\x12\xe5\x01\n" +
-	"\x17GetMarkingsForResources\x12A.nominal.authorization.markings.v1.GetMarkingsForResourcesRequest\x1aB.nominal.authorization.markings.v1.GetMarkingsForResourcesResponse\"C\xba\xb2\x1a\x00\x82\xd3\xe4\x93\x029:\x01*b\x01*\"1/authorization/markings/v1/markings-for-resourcesB\xbe\x02\n" +
+	"\vmarking_rid\x82\xd3\xe4\x93\x02::\x01*b\x01*\"2/authorization/markings/v1/{marking_rid}/resources\x90\x02\x01\x12\xe8\x01\n" +
+	"\x17GetMarkingsForResources\x12A.nominal.authorization.markings.v1.GetMarkingsForResourcesRequest\x1aB.nominal.authorization.markings.v1.GetMarkingsForResourcesResponse\"F\xba\xb2\x1a\x00\x82\xd3\xe4\x93\x029:\x01*b\x01*\"1/authorization/markings/v1/markings-for-resources\x90\x02\x01B\xbe\x02\n" +
 	"%com.nominal.authorization.markings.v1B\rMarkingsProtoP\x01Z_github.com/nominal-io/nominal-api-protos-go/nominal/protos/authorization/markings/v1;markingsv1\xa2\x02\x03NAM\xaa\x02!Nominal.Authorization.Markings.V1\xca\x02!Nominal\\Authorization\\Markings\\V1\xe2\x02-Nominal\\Authorization\\Markings\\V1\\GPBMetadata\xea\x02$Nominal::Authorization::Markings::V1b\x06proto3"
 
 var (

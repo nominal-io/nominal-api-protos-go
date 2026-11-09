@@ -55,6 +55,9 @@ type ResourceMetadataServiceClient interface {
 	SearchLabels(ctx context.Context, in *SearchLabelsRequest, opts ...grpc.CallOption) (*SearchLabelsResponse, error)
 	// Returns a paginated list of string and numeric property keys with typed statistics,
 	// filterable by resource type, workspace, and search text.
+	// ALPHABETICAL sort pages efficiently at any workspace size. USAGE_COUNT and PROPERTY_VALUE_COUNT rank every
+	// key in the workspace, so on large workspaces pass search_text or the request may fail with
+	// METADATA_ERROR_QUERY_TOO_BROAD.
 	SearchPropertyKeys(ctx context.Context, in *SearchPropertyKeysRequest, opts ...grpc.CallOption) (*SearchPropertyKeysResponse, error)
 	// Returns a paginated list of string property values for a given property key with
 	// document usage counts, filterable by resource type, workspace, and search text.
@@ -180,6 +183,9 @@ type ResourceMetadataServiceServer interface {
 	SearchLabels(context.Context, *SearchLabelsRequest) (*SearchLabelsResponse, error)
 	// Returns a paginated list of string and numeric property keys with typed statistics,
 	// filterable by resource type, workspace, and search text.
+	// ALPHABETICAL sort pages efficiently at any workspace size. USAGE_COUNT and PROPERTY_VALUE_COUNT rank every
+	// key in the workspace, so on large workspaces pass search_text or the request may fail with
+	// METADATA_ERROR_QUERY_TOO_BROAD.
 	SearchPropertyKeys(context.Context, *SearchPropertyKeysRequest) (*SearchPropertyKeysResponse, error)
 	// Returns a paginated list of string property values for a given property key with
 	// document usage counts, filterable by resource type, workspace, and search text.

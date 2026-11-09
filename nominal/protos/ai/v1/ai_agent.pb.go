@@ -8,6 +8,7 @@ package aiv1
 
 import (
 	_ "buf.build/gen/go/bufbuild/protovalidate/protocolbuffers/go/buf/validate"
+	v1 "github.com/nominal-io/nominal-api-protos-go/nominal/protos/file_store/v1"
 	_ "github.com/nominal-io/nominal-api-protos-go/nominal/protos/gen/v1"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
@@ -23,58 +24,6 @@ const (
 	// Verify that runtime/protoimpl is sufficiently up-to-date.
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
-
-type QueuedMessageState int32
-
-const (
-	QueuedMessageState_QUEUED_MESSAGE_STATE_UNSPECIFIED QueuedMessageState = 0
-	QueuedMessageState_QUEUED_MESSAGE_STATE_QUEUED      QueuedMessageState = 1
-	QueuedMessageState_QUEUED_MESSAGE_STATE_DISPATCHING QueuedMessageState = 2
-	QueuedMessageState_QUEUED_MESSAGE_STATE_FAILED      QueuedMessageState = 3
-)
-
-// Enum value maps for QueuedMessageState.
-var (
-	QueuedMessageState_name = map[int32]string{
-		0: "QUEUED_MESSAGE_STATE_UNSPECIFIED",
-		1: "QUEUED_MESSAGE_STATE_QUEUED",
-		2: "QUEUED_MESSAGE_STATE_DISPATCHING",
-		3: "QUEUED_MESSAGE_STATE_FAILED",
-	}
-	QueuedMessageState_value = map[string]int32{
-		"QUEUED_MESSAGE_STATE_UNSPECIFIED": 0,
-		"QUEUED_MESSAGE_STATE_QUEUED":      1,
-		"QUEUED_MESSAGE_STATE_DISPATCHING": 2,
-		"QUEUED_MESSAGE_STATE_FAILED":      3,
-	}
-)
-
-func (x QueuedMessageState) Enum() *QueuedMessageState {
-	p := new(QueuedMessageState)
-	*p = x
-	return p
-}
-
-func (x QueuedMessageState) String() string {
-	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
-}
-
-func (QueuedMessageState) Descriptor() protoreflect.EnumDescriptor {
-	return file_nominal_protos_ai_v1_ai_agent_proto_enumTypes[0].Descriptor()
-}
-
-func (QueuedMessageState) Type() protoreflect.EnumType {
-	return &file_nominal_protos_ai_v1_ai_agent_proto_enumTypes[0]
-}
-
-func (x QueuedMessageState) Number() protoreflect.EnumNumber {
-	return protoreflect.EnumNumber(x)
-}
-
-// Deprecated: Use QueuedMessageState.Descriptor instead.
-func (QueuedMessageState) EnumDescriptor() ([]byte, []int) {
-	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{0}
-}
 
 type FeedbackVote int32
 
@@ -109,11 +58,11 @@ func (x FeedbackVote) String() string {
 }
 
 func (FeedbackVote) Descriptor() protoreflect.EnumDescriptor {
-	return file_nominal_protos_ai_v1_ai_agent_proto_enumTypes[1].Descriptor()
+	return file_nominal_protos_ai_v1_ai_agent_proto_enumTypes[0].Descriptor()
 }
 
 func (FeedbackVote) Type() protoreflect.EnumType {
-	return &file_nominal_protos_ai_v1_ai_agent_proto_enumTypes[1]
+	return &file_nominal_protos_ai_v1_ai_agent_proto_enumTypes[0]
 }
 
 func (x FeedbackVote) Number() protoreflect.EnumNumber {
@@ -122,6 +71,94 @@ func (x FeedbackVote) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use FeedbackVote.Descriptor instead.
 func (FeedbackVote) EnumDescriptor() ([]byte, []int) {
+	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{0}
+}
+
+// What the person did with a ShouldKnowOffer card.
+type ShouldKnowAnswer int32
+
+const (
+	ShouldKnowAnswer_SHOULD_KNOW_ANSWER_UNSPECIFIED ShouldKnowAnswer = 0
+	// Opened the explanation.
+	ShouldKnowAnswer_SHOULD_KNOW_ANSWER_LEARN_MORE ShouldKnowAnswer = 1
+	// Already knew the line. Later offers skip it.
+	ShouldKnowAnswer_SHOULD_KNOW_ANSWER_KNEW_IT ShouldKnowAnswer = 2
+	// Dismissed the card without opening the explanation.
+	ShouldKnowAnswer_SHOULD_KNOW_ANSWER_NOT_NOW ShouldKnowAnswer = 3
+	// Read the explanation and understood it. Later offers skip the line.
+	ShouldKnowAnswer_SHOULD_KNOW_ANSWER_UNDERSTOOD ShouldKnowAnswer = 4
+	// Took the explanation into the conversation.
+	ShouldKnowAnswer_SHOULD_KNOW_ANSWER_CHAT ShouldKnowAnswer = 5
+	// Dismissed the card after opening the explanation.
+	ShouldKnowAnswer_SHOULD_KNOW_ANSWER_DISMISSED ShouldKnowAnswer = 6
+	// Said a dismissed card was helpful. Later offers skip the line.
+	ShouldKnowAnswer_SHOULD_KNOW_ANSWER_HELPFUL ShouldKnowAnswer = 7
+	// Said a dismissed card was not relevant.
+	ShouldKnowAnswer_SHOULD_KNOW_ANSWER_NOT_RELEVANT ShouldKnowAnswer = 8
+	// Said a dismissed card was hard to understand.
+	ShouldKnowAnswer_SHOULD_KNOW_ANSWER_NOT_UNDERSTOOD ShouldKnowAnswer = 9
+	// Kept sending messages while the card stood unanswered. Repeats make offers rarer.
+	ShouldKnowAnswer_SHOULD_KNOW_ANSWER_IGNORED_SUBMIT ShouldKnowAnswer = 10
+	// Left the post-dismissal question unanswered.
+	ShouldKnowAnswer_SHOULD_KNOW_ANSWER_IGNORED_TIMEOUT ShouldKnowAnswer = 11
+)
+
+// Enum value maps for ShouldKnowAnswer.
+var (
+	ShouldKnowAnswer_name = map[int32]string{
+		0:  "SHOULD_KNOW_ANSWER_UNSPECIFIED",
+		1:  "SHOULD_KNOW_ANSWER_LEARN_MORE",
+		2:  "SHOULD_KNOW_ANSWER_KNEW_IT",
+		3:  "SHOULD_KNOW_ANSWER_NOT_NOW",
+		4:  "SHOULD_KNOW_ANSWER_UNDERSTOOD",
+		5:  "SHOULD_KNOW_ANSWER_CHAT",
+		6:  "SHOULD_KNOW_ANSWER_DISMISSED",
+		7:  "SHOULD_KNOW_ANSWER_HELPFUL",
+		8:  "SHOULD_KNOW_ANSWER_NOT_RELEVANT",
+		9:  "SHOULD_KNOW_ANSWER_NOT_UNDERSTOOD",
+		10: "SHOULD_KNOW_ANSWER_IGNORED_SUBMIT",
+		11: "SHOULD_KNOW_ANSWER_IGNORED_TIMEOUT",
+	}
+	ShouldKnowAnswer_value = map[string]int32{
+		"SHOULD_KNOW_ANSWER_UNSPECIFIED":     0,
+		"SHOULD_KNOW_ANSWER_LEARN_MORE":      1,
+		"SHOULD_KNOW_ANSWER_KNEW_IT":         2,
+		"SHOULD_KNOW_ANSWER_NOT_NOW":         3,
+		"SHOULD_KNOW_ANSWER_UNDERSTOOD":      4,
+		"SHOULD_KNOW_ANSWER_CHAT":            5,
+		"SHOULD_KNOW_ANSWER_DISMISSED":       6,
+		"SHOULD_KNOW_ANSWER_HELPFUL":         7,
+		"SHOULD_KNOW_ANSWER_NOT_RELEVANT":    8,
+		"SHOULD_KNOW_ANSWER_NOT_UNDERSTOOD":  9,
+		"SHOULD_KNOW_ANSWER_IGNORED_SUBMIT":  10,
+		"SHOULD_KNOW_ANSWER_IGNORED_TIMEOUT": 11,
+	}
+)
+
+func (x ShouldKnowAnswer) Enum() *ShouldKnowAnswer {
+	p := new(ShouldKnowAnswer)
+	*p = x
+	return p
+}
+
+func (x ShouldKnowAnswer) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (ShouldKnowAnswer) Descriptor() protoreflect.EnumDescriptor {
+	return file_nominal_protos_ai_v1_ai_agent_proto_enumTypes[1].Descriptor()
+}
+
+func (ShouldKnowAnswer) Type() protoreflect.EnumType {
+	return &file_nominal_protos_ai_v1_ai_agent_proto_enumTypes[1]
+}
+
+func (x ShouldKnowAnswer) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use ShouldKnowAnswer.Descriptor instead.
+func (ShouldKnowAnswer) EnumDescriptor() ([]byte, []int) {
 	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{1}
 }
 
@@ -174,6 +211,112 @@ func (AgentRunExecutionMode) EnumDescriptor() ([]byte, []int) {
 	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{2}
 }
 
+type ConversationSandboxStatus int32
+
+const (
+	ConversationSandboxStatus_CONVERSATION_SANDBOX_STATUS_UNSPECIFIED ConversationSandboxStatus = 0
+	// Compute is up, so a command starts at once.
+	ConversationSandboxStatus_CONVERSATION_SANDBOX_STATUS_RUNNING ConversationSandboxStatus = 1
+	// Compute is stopped. Files remain, and the next command resumes compute.
+	ConversationSandboxStatus_CONVERSATION_SANDBOX_STATUS_IDLE ConversationSandboxStatus = 2
+	// Compute is starting.
+	ConversationSandboxStatus_CONVERSATION_SANDBOX_STATUS_RESUMING ConversationSandboxStatus = 3
+)
+
+// Enum value maps for ConversationSandboxStatus.
+var (
+	ConversationSandboxStatus_name = map[int32]string{
+		0: "CONVERSATION_SANDBOX_STATUS_UNSPECIFIED",
+		1: "CONVERSATION_SANDBOX_STATUS_RUNNING",
+		2: "CONVERSATION_SANDBOX_STATUS_IDLE",
+		3: "CONVERSATION_SANDBOX_STATUS_RESUMING",
+	}
+	ConversationSandboxStatus_value = map[string]int32{
+		"CONVERSATION_SANDBOX_STATUS_UNSPECIFIED": 0,
+		"CONVERSATION_SANDBOX_STATUS_RUNNING":     1,
+		"CONVERSATION_SANDBOX_STATUS_IDLE":        2,
+		"CONVERSATION_SANDBOX_STATUS_RESUMING":    3,
+	}
+)
+
+func (x ConversationSandboxStatus) Enum() *ConversationSandboxStatus {
+	p := new(ConversationSandboxStatus)
+	*p = x
+	return p
+}
+
+func (x ConversationSandboxStatus) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (ConversationSandboxStatus) Descriptor() protoreflect.EnumDescriptor {
+	return file_nominal_protos_ai_v1_ai_agent_proto_enumTypes[3].Descriptor()
+}
+
+func (ConversationSandboxStatus) Type() protoreflect.EnumType {
+	return &file_nominal_protos_ai_v1_ai_agent_proto_enumTypes[3]
+}
+
+func (x ConversationSandboxStatus) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use ConversationSandboxStatus.Descriptor instead.
+func (ConversationSandboxStatus) EnumDescriptor() ([]byte, []int) {
+	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{3}
+}
+
+type ShouldKnowTag int32
+
+const (
+	ShouldKnowTag_SHOULD_KNOW_TAG_UNSPECIFIED ShouldKnowTag = 0
+	// How something works, and it matters for the person's work. Display as "You should know".
+	ShouldKnowTag_SHOULD_KNOW_TAG_YOU_SHOULD_KNOW ShouldKnowTag = 1
+	// A decision or result in this run with an immediate cost if missed. Display as "Heads up".
+	ShouldKnowTag_SHOULD_KNOW_TAG_HEADS_UP ShouldKnowTag = 2
+)
+
+// Enum value maps for ShouldKnowTag.
+var (
+	ShouldKnowTag_name = map[int32]string{
+		0: "SHOULD_KNOW_TAG_UNSPECIFIED",
+		1: "SHOULD_KNOW_TAG_YOU_SHOULD_KNOW",
+		2: "SHOULD_KNOW_TAG_HEADS_UP",
+	}
+	ShouldKnowTag_value = map[string]int32{
+		"SHOULD_KNOW_TAG_UNSPECIFIED":     0,
+		"SHOULD_KNOW_TAG_YOU_SHOULD_KNOW": 1,
+		"SHOULD_KNOW_TAG_HEADS_UP":        2,
+	}
+)
+
+func (x ShouldKnowTag) Enum() *ShouldKnowTag {
+	p := new(ShouldKnowTag)
+	*p = x
+	return p
+}
+
+func (x ShouldKnowTag) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (ShouldKnowTag) Descriptor() protoreflect.EnumDescriptor {
+	return file_nominal_protos_ai_v1_ai_agent_proto_enumTypes[4].Descriptor()
+}
+
+func (ShouldKnowTag) Type() protoreflect.EnumType {
+	return &file_nominal_protos_ai_v1_ai_agent_proto_enumTypes[4]
+}
+
+func (x ShouldKnowTag) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use ShouldKnowTag.Descriptor instead.
+func (ShouldKnowTag) EnumDescriptor() ([]byte, []int) {
+	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{4}
+}
+
 type ToolCallStatus int32
 
 const (
@@ -210,11 +353,11 @@ func (x ToolCallStatus) String() string {
 }
 
 func (ToolCallStatus) Descriptor() protoreflect.EnumDescriptor {
-	return file_nominal_protos_ai_v1_ai_agent_proto_enumTypes[3].Descriptor()
+	return file_nominal_protos_ai_v1_ai_agent_proto_enumTypes[5].Descriptor()
 }
 
 func (ToolCallStatus) Type() protoreflect.EnumType {
-	return &file_nominal_protos_ai_v1_ai_agent_proto_enumTypes[3]
+	return &file_nominal_protos_ai_v1_ai_agent_proto_enumTypes[5]
 }
 
 func (x ToolCallStatus) Number() protoreflect.EnumNumber {
@@ -223,7 +366,7 @@ func (x ToolCallStatus) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use ToolCallStatus.Descriptor instead.
 func (ToolCallStatus) EnumDescriptor() ([]byte, []int) {
-	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{3}
+	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{5}
 }
 
 type UserQuestionState int32
@@ -262,11 +405,11 @@ func (x UserQuestionState) String() string {
 }
 
 func (UserQuestionState) Descriptor() protoreflect.EnumDescriptor {
-	return file_nominal_protos_ai_v1_ai_agent_proto_enumTypes[4].Descriptor()
+	return file_nominal_protos_ai_v1_ai_agent_proto_enumTypes[6].Descriptor()
 }
 
 func (UserQuestionState) Type() protoreflect.EnumType {
-	return &file_nominal_protos_ai_v1_ai_agent_proto_enumTypes[4]
+	return &file_nominal_protos_ai_v1_ai_agent_proto_enumTypes[6]
 }
 
 func (x UserQuestionState) Number() protoreflect.EnumNumber {
@@ -275,7 +418,59 @@ func (x UserQuestionState) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use UserQuestionState.Descriptor instead.
 func (UserQuestionState) EnumDescriptor() ([]byte, []int) {
-	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{4}
+	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{6}
+}
+
+type ResourceChangeType int32
+
+const (
+	ResourceChangeType_RESOURCE_CHANGE_TYPE_UNSPECIFIED ResourceChangeType = 0
+	ResourceChangeType_RESOURCE_CHANGE_TYPE_CREATED     ResourceChangeType = 1
+	ResourceChangeType_RESOURCE_CHANGE_TYPE_UPDATED     ResourceChangeType = 2
+	ResourceChangeType_RESOURCE_CHANGE_TYPE_ARCHIVED    ResourceChangeType = 3
+)
+
+// Enum value maps for ResourceChangeType.
+var (
+	ResourceChangeType_name = map[int32]string{
+		0: "RESOURCE_CHANGE_TYPE_UNSPECIFIED",
+		1: "RESOURCE_CHANGE_TYPE_CREATED",
+		2: "RESOURCE_CHANGE_TYPE_UPDATED",
+		3: "RESOURCE_CHANGE_TYPE_ARCHIVED",
+	}
+	ResourceChangeType_value = map[string]int32{
+		"RESOURCE_CHANGE_TYPE_UNSPECIFIED": 0,
+		"RESOURCE_CHANGE_TYPE_CREATED":     1,
+		"RESOURCE_CHANGE_TYPE_UPDATED":     2,
+		"RESOURCE_CHANGE_TYPE_ARCHIVED":    3,
+	}
+)
+
+func (x ResourceChangeType) Enum() *ResourceChangeType {
+	p := new(ResourceChangeType)
+	*p = x
+	return p
+}
+
+func (x ResourceChangeType) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (ResourceChangeType) Descriptor() protoreflect.EnumDescriptor {
+	return file_nominal_protos_ai_v1_ai_agent_proto_enumTypes[7].Descriptor()
+}
+
+func (ResourceChangeType) Type() protoreflect.EnumType {
+	return &file_nominal_protos_ai_v1_ai_agent_proto_enumTypes[7]
+}
+
+func (x ResourceChangeType) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use ResourceChangeType.Descriptor instead.
+func (ResourceChangeType) EnumDescriptor() ([]byte, []int) {
+	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{7}
 }
 
 type TimeRangeType int32
@@ -311,11 +506,11 @@ func (x TimeRangeType) String() string {
 }
 
 func (TimeRangeType) Descriptor() protoreflect.EnumDescriptor {
-	return file_nominal_protos_ai_v1_ai_agent_proto_enumTypes[5].Descriptor()
+	return file_nominal_protos_ai_v1_ai_agent_proto_enumTypes[8].Descriptor()
 }
 
 func (TimeRangeType) Type() protoreflect.EnumType {
-	return &file_nominal_protos_ai_v1_ai_agent_proto_enumTypes[5]
+	return &file_nominal_protos_ai_v1_ai_agent_proto_enumTypes[8]
 }
 
 func (x TimeRangeType) Number() protoreflect.EnumNumber {
@@ -324,7 +519,7 @@ func (x TimeRangeType) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use TimeRangeType.Descriptor instead.
 func (TimeRangeType) EnumDescriptor() ([]byte, []int) {
-	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{5}
+	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{8}
 }
 
 // What a compute response for a request decodes as, so a client can turn it into
@@ -422,11 +617,11 @@ func (x ComputeOutputType) String() string {
 }
 
 func (ComputeOutputType) Descriptor() protoreflect.EnumDescriptor {
-	return file_nominal_protos_ai_v1_ai_agent_proto_enumTypes[6].Descriptor()
+	return file_nominal_protos_ai_v1_ai_agent_proto_enumTypes[9].Descriptor()
 }
 
 func (ComputeOutputType) Type() protoreflect.EnumType {
-	return &file_nominal_protos_ai_v1_ai_agent_proto_enumTypes[6]
+	return &file_nominal_protos_ai_v1_ai_agent_proto_enumTypes[9]
 }
 
 func (x ComputeOutputType) Number() protoreflect.EnumNumber {
@@ -435,7 +630,59 @@ func (x ComputeOutputType) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use ComputeOutputType.Descriptor instead.
 func (ComputeOutputType) EnumDescriptor() ([]byte, []int) {
-	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{6}
+	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{9}
+}
+
+type CodeExecutionCallOutcome int32
+
+const (
+	CodeExecutionCallOutcome_CODE_EXECUTION_CALL_OUTCOME_UNSPECIFIED CodeExecutionCallOutcome = 0
+	CodeExecutionCallOutcome_CODE_EXECUTION_CALL_OUTCOME_SUCCEEDED   CodeExecutionCallOutcome = 1
+	CodeExecutionCallOutcome_CODE_EXECUTION_CALL_OUTCOME_FAILED      CodeExecutionCallOutcome = 2
+	CodeExecutionCallOutcome_CODE_EXECUTION_CALL_OUTCOME_DENIED      CodeExecutionCallOutcome = 3
+)
+
+// Enum value maps for CodeExecutionCallOutcome.
+var (
+	CodeExecutionCallOutcome_name = map[int32]string{
+		0: "CODE_EXECUTION_CALL_OUTCOME_UNSPECIFIED",
+		1: "CODE_EXECUTION_CALL_OUTCOME_SUCCEEDED",
+		2: "CODE_EXECUTION_CALL_OUTCOME_FAILED",
+		3: "CODE_EXECUTION_CALL_OUTCOME_DENIED",
+	}
+	CodeExecutionCallOutcome_value = map[string]int32{
+		"CODE_EXECUTION_CALL_OUTCOME_UNSPECIFIED": 0,
+		"CODE_EXECUTION_CALL_OUTCOME_SUCCEEDED":   1,
+		"CODE_EXECUTION_CALL_OUTCOME_FAILED":      2,
+		"CODE_EXECUTION_CALL_OUTCOME_DENIED":      3,
+	}
+)
+
+func (x CodeExecutionCallOutcome) Enum() *CodeExecutionCallOutcome {
+	p := new(CodeExecutionCallOutcome)
+	*p = x
+	return p
+}
+
+func (x CodeExecutionCallOutcome) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (CodeExecutionCallOutcome) Descriptor() protoreflect.EnumDescriptor {
+	return file_nominal_protos_ai_v1_ai_agent_proto_enumTypes[10].Descriptor()
+}
+
+func (CodeExecutionCallOutcome) Type() protoreflect.EnumType {
+	return &file_nominal_protos_ai_v1_ai_agent_proto_enumTypes[10]
+}
+
+func (x CodeExecutionCallOutcome) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use CodeExecutionCallOutcome.Descriptor instead.
+func (CodeExecutionCallOutcome) EnumDescriptor() ([]byte, []int) {
+	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{10}
 }
 
 type CompactionNotice_Trigger int32
@@ -471,11 +718,11 @@ func (x CompactionNotice_Trigger) String() string {
 }
 
 func (CompactionNotice_Trigger) Descriptor() protoreflect.EnumDescriptor {
-	return file_nominal_protos_ai_v1_ai_agent_proto_enumTypes[7].Descriptor()
+	return file_nominal_protos_ai_v1_ai_agent_proto_enumTypes[11].Descriptor()
 }
 
 func (CompactionNotice_Trigger) Type() protoreflect.EnumType {
-	return &file_nominal_protos_ai_v1_ai_agent_proto_enumTypes[7]
+	return &file_nominal_protos_ai_v1_ai_agent_proto_enumTypes[11]
 }
 
 func (x CompactionNotice_Trigger) Number() protoreflect.EnumNumber {
@@ -484,403 +731,102 @@ func (x CompactionNotice_Trigger) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use CompactionNotice_Trigger.Descriptor instead.
 func (CompactionNotice_Trigger) EnumDescriptor() ([]byte, []int) {
-	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{79, 0}
+	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{88, 0}
 }
 
-type QueuedMessage struct {
-	state           protoimpl.MessageState `protogen:"open.v1"`
-	Id              string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"` // Server UUID; deletion identifier.
-	ConversationRid string                 `protobuf:"bytes,2,opt,name=conversation_rid,json=conversationRid,proto3" json:"conversation_rid,omitempty"`
-	ClientMessageId string                 `protobuf:"bytes,3,opt,name=client_message_id,json=clientMessageId,proto3" json:"client_message_id,omitempty"` // Client UUID, idempotent within conversation.
-	Message         *StreamChatRequest     `protobuf:"bytes,4,opt,name=message,proto3" json:"message,omitempty"`
-	State           QueuedMessageState     `protobuf:"varint,5,opt,name=state,proto3,enum=nominal.ai.v1.QueuedMessageState" json:"state,omitempty"`
-	FailureCode     string                 `protobuf:"bytes,6,opt,name=failure_code,json=failureCode,proto3" json:"failure_code,omitempty"` // Empty unless failed; REAUTHENTICATION_REQUIRED on credential expiry.
-	CreatedAt       *timestamppb.Timestamp `protobuf:"bytes,7,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
-	unknownFields   protoimpl.UnknownFields
-	sizeCache       protoimpl.SizeCache
-}
+type CodeCellOutput_StreamName int32
 
-func (x *QueuedMessage) Reset() {
-	*x = QueuedMessage{}
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[0]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
+const (
+	CodeCellOutput_STREAM_NAME_UNSPECIFIED CodeCellOutput_StreamName = 0
+	CodeCellOutput_STREAM_NAME_STDOUT      CodeCellOutput_StreamName = 1
+	CodeCellOutput_STREAM_NAME_STDERR      CodeCellOutput_StreamName = 2
+)
 
-func (x *QueuedMessage) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*QueuedMessage) ProtoMessage() {}
-
-func (x *QueuedMessage) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[0]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
+// Enum value maps for CodeCellOutput_StreamName.
+var (
+	CodeCellOutput_StreamName_name = map[int32]string{
+		0: "STREAM_NAME_UNSPECIFIED",
+		1: "STREAM_NAME_STDOUT",
+		2: "STREAM_NAME_STDERR",
 	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use QueuedMessage.ProtoReflect.Descriptor instead.
-func (*QueuedMessage) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{0}
-}
-
-func (x *QueuedMessage) GetId() string {
-	if x != nil {
-		return x.Id
+	CodeCellOutput_StreamName_value = map[string]int32{
+		"STREAM_NAME_UNSPECIFIED": 0,
+		"STREAM_NAME_STDOUT":      1,
+		"STREAM_NAME_STDERR":      2,
 	}
-	return ""
+)
+
+func (x CodeCellOutput_StreamName) Enum() *CodeCellOutput_StreamName {
+	p := new(CodeCellOutput_StreamName)
+	*p = x
+	return p
 }
 
-func (x *QueuedMessage) GetConversationRid() string {
-	if x != nil {
-		return x.ConversationRid
+func (x CodeCellOutput_StreamName) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (CodeCellOutput_StreamName) Descriptor() protoreflect.EnumDescriptor {
+	return file_nominal_protos_ai_v1_ai_agent_proto_enumTypes[12].Descriptor()
+}
+
+func (CodeCellOutput_StreamName) Type() protoreflect.EnumType {
+	return &file_nominal_protos_ai_v1_ai_agent_proto_enumTypes[12]
+}
+
+func (x CodeCellOutput_StreamName) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use CodeCellOutput_StreamName.Descriptor instead.
+func (CodeCellOutput_StreamName) EnumDescriptor() ([]byte, []int) {
+	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{104, 0}
+}
+
+type GetCitationResponseError_Reason int32
+
+const (
+	GetCitationResponseError_REASON_UNSPECIFIED GetCitationResponseError_Reason = 0
+	GetCitationResponseError_REASON_NOT_FOUND   GetCitationResponseError_Reason = 1
+)
+
+// Enum value maps for GetCitationResponseError_Reason.
+var (
+	GetCitationResponseError_Reason_name = map[int32]string{
+		0: "REASON_UNSPECIFIED",
+		1: "REASON_NOT_FOUND",
 	}
-	return ""
-}
-
-func (x *QueuedMessage) GetClientMessageId() string {
-	if x != nil {
-		return x.ClientMessageId
+	GetCitationResponseError_Reason_value = map[string]int32{
+		"REASON_UNSPECIFIED": 0,
+		"REASON_NOT_FOUND":   1,
 	}
-	return ""
+)
+
+func (x GetCitationResponseError_Reason) Enum() *GetCitationResponseError_Reason {
+	p := new(GetCitationResponseError_Reason)
+	*p = x
+	return p
 }
 
-func (x *QueuedMessage) GetMessage() *StreamChatRequest {
-	if x != nil {
-		return x.Message
-	}
-	return nil
+func (x GetCitationResponseError_Reason) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
 }
 
-func (x *QueuedMessage) GetState() QueuedMessageState {
-	if x != nil {
-		return x.State
-	}
-	return QueuedMessageState_QUEUED_MESSAGE_STATE_UNSPECIFIED
+func (GetCitationResponseError_Reason) Descriptor() protoreflect.EnumDescriptor {
+	return file_nominal_protos_ai_v1_ai_agent_proto_enumTypes[13].Descriptor()
 }
 
-func (x *QueuedMessage) GetFailureCode() string {
-	if x != nil {
-		return x.FailureCode
-	}
-	return ""
+func (GetCitationResponseError_Reason) Type() protoreflect.EnumType {
+	return &file_nominal_protos_ai_v1_ai_agent_proto_enumTypes[13]
 }
 
-func (x *QueuedMessage) GetCreatedAt() *timestamppb.Timestamp {
-	if x != nil {
-		return x.CreatedAt
-	}
-	return nil
+func (x GetCitationResponseError_Reason) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
 }
 
-type CreateQueuedMessageRequest struct {
-	state           protoimpl.MessageState `protogen:"open.v1"`
-	ConversationRid string                 `protobuf:"bytes,1,opt,name=conversation_rid,json=conversationRid,proto3" json:"conversation_rid,omitempty"`
-	ClientMessageId string                 `protobuf:"bytes,2,opt,name=client_message_id,json=clientMessageId,proto3" json:"client_message_id,omitempty"`
-	Message         *StreamChatRequest     `protobuf:"bytes,3,opt,name=message,proto3" json:"message,omitempty"`
-	unknownFields   protoimpl.UnknownFields
-	sizeCache       protoimpl.SizeCache
-}
-
-func (x *CreateQueuedMessageRequest) Reset() {
-	*x = CreateQueuedMessageRequest{}
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[1]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *CreateQueuedMessageRequest) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*CreateQueuedMessageRequest) ProtoMessage() {}
-
-func (x *CreateQueuedMessageRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[1]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use CreateQueuedMessageRequest.ProtoReflect.Descriptor instead.
-func (*CreateQueuedMessageRequest) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{1}
-}
-
-func (x *CreateQueuedMessageRequest) GetConversationRid() string {
-	if x != nil {
-		return x.ConversationRid
-	}
-	return ""
-}
-
-func (x *CreateQueuedMessageRequest) GetClientMessageId() string {
-	if x != nil {
-		return x.ClientMessageId
-	}
-	return ""
-}
-
-func (x *CreateQueuedMessageRequest) GetMessage() *StreamChatRequest {
-	if x != nil {
-		return x.Message
-	}
-	return nil
-}
-
-type CreateQueuedMessageResponse struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	QueuedMessage *QueuedMessage         `protobuf:"bytes,1,opt,name=queued_message,json=queuedMessage,proto3" json:"queued_message,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
-}
-
-func (x *CreateQueuedMessageResponse) Reset() {
-	*x = CreateQueuedMessageResponse{}
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[2]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *CreateQueuedMessageResponse) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*CreateQueuedMessageResponse) ProtoMessage() {}
-
-func (x *CreateQueuedMessageResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[2]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use CreateQueuedMessageResponse.ProtoReflect.Descriptor instead.
-func (*CreateQueuedMessageResponse) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{2}
-}
-
-func (x *CreateQueuedMessageResponse) GetQueuedMessage() *QueuedMessage {
-	if x != nil {
-		return x.QueuedMessage
-	}
-	return nil
-}
-
-type ListQueuedMessagesRequest struct {
-	state           protoimpl.MessageState `protogen:"open.v1"`
-	ConversationRid string                 `protobuf:"bytes,1,opt,name=conversation_rid,json=conversationRid,proto3" json:"conversation_rid,omitempty"`
-	PageSize        int32                  `protobuf:"varint,2,opt,name=page_size,json=pageSize,proto3" json:"page_size,omitempty"` // Default/max 20.
-	PageToken       string                 `protobuf:"bytes,3,opt,name=page_token,json=pageToken,proto3" json:"page_token,omitempty"`
-	unknownFields   protoimpl.UnknownFields
-	sizeCache       protoimpl.SizeCache
-}
-
-func (x *ListQueuedMessagesRequest) Reset() {
-	*x = ListQueuedMessagesRequest{}
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[3]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *ListQueuedMessagesRequest) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*ListQueuedMessagesRequest) ProtoMessage() {}
-
-func (x *ListQueuedMessagesRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[3]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use ListQueuedMessagesRequest.ProtoReflect.Descriptor instead.
-func (*ListQueuedMessagesRequest) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{3}
-}
-
-func (x *ListQueuedMessagesRequest) GetConversationRid() string {
-	if x != nil {
-		return x.ConversationRid
-	}
-	return ""
-}
-
-func (x *ListQueuedMessagesRequest) GetPageSize() int32 {
-	if x != nil {
-		return x.PageSize
-	}
-	return 0
-}
-
-func (x *ListQueuedMessagesRequest) GetPageToken() string {
-	if x != nil {
-		return x.PageToken
-	}
-	return ""
-}
-
-type ListQueuedMessagesResponse struct {
-	state          protoimpl.MessageState `protogen:"open.v1"`
-	QueuedMessages []*QueuedMessage       `protobuf:"bytes,1,rep,name=queued_messages,json=queuedMessages,proto3" json:"queued_messages,omitempty"`
-	NextPageToken  string                 `protobuf:"bytes,2,opt,name=next_page_token,json=nextPageToken,proto3" json:"next_page_token,omitempty"`
-	unknownFields  protoimpl.UnknownFields
-	sizeCache      protoimpl.SizeCache
-}
-
-func (x *ListQueuedMessagesResponse) Reset() {
-	*x = ListQueuedMessagesResponse{}
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[4]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *ListQueuedMessagesResponse) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*ListQueuedMessagesResponse) ProtoMessage() {}
-
-func (x *ListQueuedMessagesResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[4]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use ListQueuedMessagesResponse.ProtoReflect.Descriptor instead.
-func (*ListQueuedMessagesResponse) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{4}
-}
-
-func (x *ListQueuedMessagesResponse) GetQueuedMessages() []*QueuedMessage {
-	if x != nil {
-		return x.QueuedMessages
-	}
-	return nil
-}
-
-func (x *ListQueuedMessagesResponse) GetNextPageToken() string {
-	if x != nil {
-		return x.NextPageToken
-	}
-	return ""
-}
-
-type DeleteQueuedMessageRequest struct {
-	state           protoimpl.MessageState `protogen:"open.v1"`
-	ConversationRid string                 `protobuf:"bytes,1,opt,name=conversation_rid,json=conversationRid,proto3" json:"conversation_rid,omitempty"`
-	QueuedMessageId string                 `protobuf:"bytes,2,opt,name=queued_message_id,json=queuedMessageId,proto3" json:"queued_message_id,omitempty"`
-	unknownFields   protoimpl.UnknownFields
-	sizeCache       protoimpl.SizeCache
-}
-
-func (x *DeleteQueuedMessageRequest) Reset() {
-	*x = DeleteQueuedMessageRequest{}
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[5]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *DeleteQueuedMessageRequest) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*DeleteQueuedMessageRequest) ProtoMessage() {}
-
-func (x *DeleteQueuedMessageRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[5]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use DeleteQueuedMessageRequest.ProtoReflect.Descriptor instead.
-func (*DeleteQueuedMessageRequest) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{5}
-}
-
-func (x *DeleteQueuedMessageRequest) GetConversationRid() string {
-	if x != nil {
-		return x.ConversationRid
-	}
-	return ""
-}
-
-func (x *DeleteQueuedMessageRequest) GetQueuedMessageId() string {
-	if x != nil {
-		return x.QueuedMessageId
-	}
-	return ""
-}
-
-type DeleteQueuedMessageResponse struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
-}
-
-func (x *DeleteQueuedMessageResponse) Reset() {
-	*x = DeleteQueuedMessageResponse{}
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[6]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *DeleteQueuedMessageResponse) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*DeleteQueuedMessageResponse) ProtoMessage() {}
-
-func (x *DeleteQueuedMessageResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[6]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use DeleteQueuedMessageResponse.ProtoReflect.Descriptor instead.
-func (*DeleteQueuedMessageResponse) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{6}
+// Deprecated: Use GetCitationResponseError_Reason.Descriptor instead.
+func (GetCitationResponseError_Reason) EnumDescriptor() ([]byte, []int) {
+	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{134, 0}
 }
 
 type SubmitMessageFeedbackRequest struct {
@@ -904,7 +850,7 @@ type SubmitMessageFeedbackRequest struct {
 
 func (x *SubmitMessageFeedbackRequest) Reset() {
 	*x = SubmitMessageFeedbackRequest{}
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[7]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[0]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -916,7 +862,7 @@ func (x *SubmitMessageFeedbackRequest) String() string {
 func (*SubmitMessageFeedbackRequest) ProtoMessage() {}
 
 func (x *SubmitMessageFeedbackRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[7]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[0]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -929,7 +875,7 @@ func (x *SubmitMessageFeedbackRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SubmitMessageFeedbackRequest.ProtoReflect.Descriptor instead.
 func (*SubmitMessageFeedbackRequest) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{7}
+	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{0}
 }
 
 func (x *SubmitMessageFeedbackRequest) GetConversationRid() string {
@@ -975,7 +921,7 @@ type SubmitMessageFeedbackResponse struct {
 
 func (x *SubmitMessageFeedbackResponse) Reset() {
 	*x = SubmitMessageFeedbackResponse{}
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[8]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[1]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -987,7 +933,7 @@ func (x *SubmitMessageFeedbackResponse) String() string {
 func (*SubmitMessageFeedbackResponse) ProtoMessage() {}
 
 func (x *SubmitMessageFeedbackResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[8]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[1]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1000,7 +946,7 @@ func (x *SubmitMessageFeedbackResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SubmitMessageFeedbackResponse.ProtoReflect.Descriptor instead.
 func (*SubmitMessageFeedbackResponse) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{8}
+	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{1}
 }
 
 type CancelAgentRunRequest struct {
@@ -1013,7 +959,7 @@ type CancelAgentRunRequest struct {
 
 func (x *CancelAgentRunRequest) Reset() {
 	*x = CancelAgentRunRequest{}
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[9]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[2]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1025,7 +971,7 @@ func (x *CancelAgentRunRequest) String() string {
 func (*CancelAgentRunRequest) ProtoMessage() {}
 
 func (x *CancelAgentRunRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[9]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[2]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1038,7 +984,7 @@ func (x *CancelAgentRunRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CancelAgentRunRequest.ProtoReflect.Descriptor instead.
 func (*CancelAgentRunRequest) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{9}
+	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{2}
 }
 
 func (x *CancelAgentRunRequest) GetConversationRid() string {
@@ -1063,7 +1009,7 @@ type CancelAgentRunResponse struct {
 
 func (x *CancelAgentRunResponse) Reset() {
 	*x = CancelAgentRunResponse{}
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[10]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[3]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1075,7 +1021,7 @@ func (x *CancelAgentRunResponse) String() string {
 func (*CancelAgentRunResponse) ProtoMessage() {}
 
 func (x *CancelAgentRunResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[10]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[3]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1088,7 +1034,473 @@ func (x *CancelAgentRunResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CancelAgentRunResponse.ProtoReflect.Descriptor instead.
 func (*CancelAgentRunResponse) Descriptor() ([]byte, []int) {
+	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{3}
+}
+
+type SteerAgentRunRequest struct {
+	state           protoimpl.MessageState `protogen:"open.v1"`
+	ConversationRid string                 `protobuf:"bytes,1,opt,name=conversation_rid,json=conversationRid,proto3" json:"conversation_rid,omitempty"`
+	// Empty targets the conversation's active durable run. A set id must name that run.
+	AgentRunId string `protobuf:"bytes,2,opt,name=agent_run_id,json=agentRunId,proto3" json:"agent_run_id,omitempty"`
+	// Client UUID. A repeat for the same run is accepted once and delivered once.
+	ClientMessageId string `protobuf:"bytes,3,opt,name=client_message_id,json=clientMessageId,proto3" json:"client_message_id,omitempty"`
+	Text            string `protobuf:"bytes,4,opt,name=text,proto3" json:"text,omitempty"`
+	unknownFields   protoimpl.UnknownFields
+	sizeCache       protoimpl.SizeCache
+}
+
+func (x *SteerAgentRunRequest) Reset() {
+	*x = SteerAgentRunRequest{}
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[4]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *SteerAgentRunRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*SteerAgentRunRequest) ProtoMessage() {}
+
+func (x *SteerAgentRunRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[4]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use SteerAgentRunRequest.ProtoReflect.Descriptor instead.
+func (*SteerAgentRunRequest) Descriptor() ([]byte, []int) {
+	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{4}
+}
+
+func (x *SteerAgentRunRequest) GetConversationRid() string {
+	if x != nil {
+		return x.ConversationRid
+	}
+	return ""
+}
+
+func (x *SteerAgentRunRequest) GetAgentRunId() string {
+	if x != nil {
+		return x.AgentRunId
+	}
+	return ""
+}
+
+func (x *SteerAgentRunRequest) GetClientMessageId() string {
+	if x != nil {
+		return x.ClientMessageId
+	}
+	return ""
+}
+
+func (x *SteerAgentRunRequest) GetText() string {
+	if x != nil {
+		return x.Text
+	}
+	return ""
+}
+
+type SteerAgentRunResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *SteerAgentRunResponse) Reset() {
+	*x = SteerAgentRunResponse{}
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[5]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *SteerAgentRunResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*SteerAgentRunResponse) ProtoMessage() {}
+
+func (x *SteerAgentRunResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[5]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use SteerAgentRunResponse.ProtoReflect.Descriptor instead.
+func (*SteerAgentRunResponse) Descriptor() ([]byte, []int) {
+	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{5}
+}
+
+type AnswerShouldKnowOfferRequest struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// ShouldKnowOffer.id.
+	OfferId       string           `protobuf:"bytes,1,opt,name=offer_id,json=offerId,proto3" json:"offer_id,omitempty"`
+	Answer        ShouldKnowAnswer `protobuf:"varint,2,opt,name=answer,proto3,enum=nominal.ai.v1.ShouldKnowAnswer" json:"answer,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *AnswerShouldKnowOfferRequest) Reset() {
+	*x = AnswerShouldKnowOfferRequest{}
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[6]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *AnswerShouldKnowOfferRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*AnswerShouldKnowOfferRequest) ProtoMessage() {}
+
+func (x *AnswerShouldKnowOfferRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[6]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use AnswerShouldKnowOfferRequest.ProtoReflect.Descriptor instead.
+func (*AnswerShouldKnowOfferRequest) Descriptor() ([]byte, []int) {
+	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{6}
+}
+
+func (x *AnswerShouldKnowOfferRequest) GetOfferId() string {
+	if x != nil {
+		return x.OfferId
+	}
+	return ""
+}
+
+func (x *AnswerShouldKnowOfferRequest) GetAnswer() ShouldKnowAnswer {
+	if x != nil {
+		return x.Answer
+	}
+	return ShouldKnowAnswer_SHOULD_KNOW_ANSWER_UNSPECIFIED
+}
+
+type AnswerShouldKnowOfferResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *AnswerShouldKnowOfferResponse) Reset() {
+	*x = AnswerShouldKnowOfferResponse{}
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[7]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *AnswerShouldKnowOfferResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*AnswerShouldKnowOfferResponse) ProtoMessage() {}
+
+func (x *AnswerShouldKnowOfferResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[7]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use AnswerShouldKnowOfferResponse.ProtoReflect.Descriptor instead.
+func (*AnswerShouldKnowOfferResponse) Descriptor() ([]byte, []int) {
+	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{7}
+}
+
+// One thing a person did in an experiment's UI.
+type ExperimentEvent struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// The experiment's key, such as "should_know".
+	Experiment string `protobuf:"bytes,1,opt,name=experiment,proto3" json:"experiment,omitempty"`
+	// One of the experiment's declared client actions, such as "shown".
+	Action string `protobuf:"bytes,2,opt,name=action,proto3" json:"action,omitempty"`
+	// The id of what the action is about. The experiment declares its kind: for should_know, a
+	// ShouldKnowOffer.id.
+	SubjectId string `protobuf:"bytes,3,opt,name=subject_id,json=subjectId,proto3" json:"subject_id,omitempty"`
+	// Declared properties of the action, by camelCase name. A client may send any subset of them.
+	Properties map[string]*ExperimentEventValue `protobuf:"bytes,4,rep,name=properties,proto3" json:"properties,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
+	// Output only. The arm of the run the subject belongs to.
+	Arm           string `protobuf:"bytes,5,opt,name=arm,proto3" json:"arm,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ExperimentEvent) Reset() {
+	*x = ExperimentEvent{}
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[8]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ExperimentEvent) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ExperimentEvent) ProtoMessage() {}
+
+func (x *ExperimentEvent) ProtoReflect() protoreflect.Message {
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[8]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ExperimentEvent.ProtoReflect.Descriptor instead.
+func (*ExperimentEvent) Descriptor() ([]byte, []int) {
+	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{8}
+}
+
+func (x *ExperimentEvent) GetExperiment() string {
+	if x != nil {
+		return x.Experiment
+	}
+	return ""
+}
+
+func (x *ExperimentEvent) GetAction() string {
+	if x != nil {
+		return x.Action
+	}
+	return ""
+}
+
+func (x *ExperimentEvent) GetSubjectId() string {
+	if x != nil {
+		return x.SubjectId
+	}
+	return ""
+}
+
+func (x *ExperimentEvent) GetProperties() map[string]*ExperimentEventValue {
+	if x != nil {
+		return x.Properties
+	}
+	return nil
+}
+
+func (x *ExperimentEvent) GetArm() string {
+	if x != nil {
+		return x.Arm
+	}
+	return ""
+}
+
+type ExperimentEventValue struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Types that are valid to be assigned to Value:
+	//
+	//	*ExperimentEventValue_IntValue
+	//	*ExperimentEventValue_BoolValue
+	//	*ExperimentEventValue_EnumValue
+	Value         isExperimentEventValue_Value `protobuf_oneof:"value"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ExperimentEventValue) Reset() {
+	*x = ExperimentEventValue{}
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[9]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ExperimentEventValue) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ExperimentEventValue) ProtoMessage() {}
+
+func (x *ExperimentEventValue) ProtoReflect() protoreflect.Message {
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[9]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ExperimentEventValue.ProtoReflect.Descriptor instead.
+func (*ExperimentEventValue) Descriptor() ([]byte, []int) {
+	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{9}
+}
+
+func (x *ExperimentEventValue) GetValue() isExperimentEventValue_Value {
+	if x != nil {
+		return x.Value
+	}
+	return nil
+}
+
+func (x *ExperimentEventValue) GetIntValue() int64 {
+	if x != nil {
+		if x, ok := x.Value.(*ExperimentEventValue_IntValue); ok {
+			return x.IntValue
+		}
+	}
+	return 0
+}
+
+func (x *ExperimentEventValue) GetBoolValue() bool {
+	if x != nil {
+		if x, ok := x.Value.(*ExperimentEventValue_BoolValue); ok {
+			return x.BoolValue
+		}
+	}
+	return false
+}
+
+func (x *ExperimentEventValue) GetEnumValue() string {
+	if x != nil {
+		if x, ok := x.Value.(*ExperimentEventValue_EnumValue); ok {
+			return x.EnumValue
+		}
+	}
+	return ""
+}
+
+type isExperimentEventValue_Value interface {
+	isExperimentEventValue_Value()
+}
+
+type ExperimentEventValue_IntValue struct {
+	IntValue int64 `protobuf:"varint,1,opt,name=int_value,json=intValue,proto3,oneof"`
+}
+
+type ExperimentEventValue_BoolValue struct {
+	BoolValue bool `protobuf:"varint,2,opt,name=bool_value,json=boolValue,proto3,oneof"`
+}
+
+type ExperimentEventValue_EnumValue struct {
+	// One of the values the property declares.
+	EnumValue string `protobuf:"bytes,3,opt,name=enum_value,json=enumValue,proto3,oneof"`
+}
+
+func (*ExperimentEventValue_IntValue) isExperimentEventValue_Value() {}
+
+func (*ExperimentEventValue_BoolValue) isExperimentEventValue_Value() {}
+
+func (*ExperimentEventValue_EnumValue) isExperimentEventValue_Value() {}
+
+type CreateExperimentEventRequest struct {
+	state           protoimpl.MessageState `protogen:"open.v1"`
+	ExperimentEvent *ExperimentEvent       `protobuf:"bytes,1,opt,name=experiment_event,json=experimentEvent,proto3" json:"experiment_event,omitempty"`
+	unknownFields   protoimpl.UnknownFields
+	sizeCache       protoimpl.SizeCache
+}
+
+func (x *CreateExperimentEventRequest) Reset() {
+	*x = CreateExperimentEventRequest{}
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[10]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *CreateExperimentEventRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*CreateExperimentEventRequest) ProtoMessage() {}
+
+func (x *CreateExperimentEventRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[10]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use CreateExperimentEventRequest.ProtoReflect.Descriptor instead.
+func (*CreateExperimentEventRequest) Descriptor() ([]byte, []int) {
 	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{10}
+}
+
+func (x *CreateExperimentEventRequest) GetExperimentEvent() *ExperimentEvent {
+	if x != nil {
+		return x.ExperimentEvent
+	}
+	return nil
+}
+
+type CreateExperimentEventResponse struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// The event as sent to analytics, with its arm.
+	ExperimentEvent *ExperimentEvent `protobuf:"bytes,1,opt,name=experiment_event,json=experimentEvent,proto3" json:"experiment_event,omitempty"`
+	unknownFields   protoimpl.UnknownFields
+	sizeCache       protoimpl.SizeCache
+}
+
+func (x *CreateExperimentEventResponse) Reset() {
+	*x = CreateExperimentEventResponse{}
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[11]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *CreateExperimentEventResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*CreateExperimentEventResponse) ProtoMessage() {}
+
+func (x *CreateExperimentEventResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[11]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use CreateExperimentEventResponse.ProtoReflect.Descriptor instead.
+func (*CreateExperimentEventResponse) Descriptor() ([]byte, []int) {
+	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{11}
+}
+
+func (x *CreateExperimentEventResponse) GetExperimentEvent() *ExperimentEvent {
+	if x != nil {
+		return x.ExperimentEvent
+	}
+	return nil
 }
 
 type GetSnapshotRidByUserMessageIdRequest struct {
@@ -1101,7 +1513,7 @@ type GetSnapshotRidByUserMessageIdRequest struct {
 
 func (x *GetSnapshotRidByUserMessageIdRequest) Reset() {
 	*x = GetSnapshotRidByUserMessageIdRequest{}
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[11]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[12]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1113,7 +1525,7 @@ func (x *GetSnapshotRidByUserMessageIdRequest) String() string {
 func (*GetSnapshotRidByUserMessageIdRequest) ProtoMessage() {}
 
 func (x *GetSnapshotRidByUserMessageIdRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[11]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[12]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1126,7 +1538,7 @@ func (x *GetSnapshotRidByUserMessageIdRequest) ProtoReflect() protoreflect.Messa
 
 // Deprecated: Use GetSnapshotRidByUserMessageIdRequest.ProtoReflect.Descriptor instead.
 func (*GetSnapshotRidByUserMessageIdRequest) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{11}
+	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{12}
 }
 
 func (x *GetSnapshotRidByUserMessageIdRequest) GetConversationRid() string {
@@ -1159,7 +1571,7 @@ type GetSnapshotRidByUserMessageIdResponse struct {
 
 func (x *GetSnapshotRidByUserMessageIdResponse) Reset() {
 	*x = GetSnapshotRidByUserMessageIdResponse{}
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[12]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[13]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1171,7 +1583,7 @@ func (x *GetSnapshotRidByUserMessageIdResponse) String() string {
 func (*GetSnapshotRidByUserMessageIdResponse) ProtoMessage() {}
 
 func (x *GetSnapshotRidByUserMessageIdResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[12]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[13]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1184,7 +1596,7 @@ func (x *GetSnapshotRidByUserMessageIdResponse) ProtoReflect() protoreflect.Mess
 
 // Deprecated: Use GetSnapshotRidByUserMessageIdResponse.ProtoReflect.Descriptor instead.
 func (*GetSnapshotRidByUserMessageIdResponse) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{12}
+	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{13}
 }
 
 func (x *GetSnapshotRidByUserMessageIdResponse) GetRestorePoint() isGetSnapshotRidByUserMessageIdResponse_RestorePoint {
@@ -1239,7 +1651,7 @@ type ReadOnlyMode struct {
 
 func (x *ReadOnlyMode) Reset() {
 	*x = ReadOnlyMode{}
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[13]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[14]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1251,7 +1663,7 @@ func (x *ReadOnlyMode) String() string {
 func (*ReadOnlyMode) ProtoMessage() {}
 
 func (x *ReadOnlyMode) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[13]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[14]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1264,7 +1676,7 @@ func (x *ReadOnlyMode) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ReadOnlyMode.ProtoReflect.Descriptor instead.
 func (*ReadOnlyMode) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{13}
+	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{14}
 }
 
 // EditMode configures edit mode where all tools are available
@@ -1278,7 +1690,7 @@ type EditMode struct {
 
 func (x *EditMode) Reset() {
 	*x = EditMode{}
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[14]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[15]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1290,7 +1702,7 @@ func (x *EditMode) String() string {
 func (*EditMode) ProtoMessage() {}
 
 func (x *EditMode) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[14]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[15]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1303,7 +1715,7 @@ func (x *EditMode) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use EditMode.ProtoReflect.Descriptor instead.
 func (*EditMode) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{14}
+	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{15}
 }
 
 func (x *EditMode) GetAutoAccept() bool {
@@ -1327,7 +1739,7 @@ type ConversationMode struct {
 
 func (x *ConversationMode) Reset() {
 	*x = ConversationMode{}
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[15]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[16]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1339,7 +1751,7 @@ func (x *ConversationMode) String() string {
 func (*ConversationMode) ProtoMessage() {}
 
 func (x *ConversationMode) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[15]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[16]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1352,7 +1764,7 @@ func (x *ConversationMode) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ConversationMode.ProtoReflect.Descriptor instead.
 func (*ConversationMode) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{15}
+	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{16}
 }
 
 func (x *ConversationMode) GetMode() isConversationMode_Mode {
@@ -1412,7 +1824,7 @@ type ToolApprovalResult struct {
 
 func (x *ToolApprovalResult) Reset() {
 	*x = ToolApprovalResult{}
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[16]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[17]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1424,7 +1836,7 @@ func (x *ToolApprovalResult) String() string {
 func (*ToolApprovalResult) ProtoMessage() {}
 
 func (x *ToolApprovalResult) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[16]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[17]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1437,7 +1849,7 @@ func (x *ToolApprovalResult) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ToolApprovalResult.ProtoReflect.Descriptor instead.
 func (*ToolApprovalResult) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{16}
+	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{17}
 }
 
 func (x *ToolApprovalResult) GetToolCallId() string {
@@ -1499,7 +1911,7 @@ type ToolApprovedResponse struct {
 
 func (x *ToolApprovedResponse) Reset() {
 	*x = ToolApprovedResponse{}
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[17]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[18]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1511,7 +1923,7 @@ func (x *ToolApprovedResponse) String() string {
 func (*ToolApprovedResponse) ProtoMessage() {}
 
 func (x *ToolApprovedResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[17]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[18]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1524,7 +1936,7 @@ func (x *ToolApprovedResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ToolApprovedResponse.ProtoReflect.Descriptor instead.
 func (*ToolApprovedResponse) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{17}
+	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{18}
 }
 
 func (x *ToolApprovedResponse) GetOverrideArgs() string {
@@ -1543,7 +1955,7 @@ type ToolDeniedResponse struct {
 
 func (x *ToolDeniedResponse) Reset() {
 	*x = ToolDeniedResponse{}
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[18]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[19]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1555,7 +1967,7 @@ func (x *ToolDeniedResponse) String() string {
 func (*ToolDeniedResponse) ProtoMessage() {}
 
 func (x *ToolDeniedResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[18]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[19]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1568,7 +1980,7 @@ func (x *ToolDeniedResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ToolDeniedResponse.ProtoReflect.Descriptor instead.
 func (*ToolDeniedResponse) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{18}
+	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{19}
 }
 
 func (x *ToolDeniedResponse) GetDenialReason() string {
@@ -1587,7 +1999,7 @@ type RetryRequest struct {
 
 func (x *RetryRequest) Reset() {
 	*x = RetryRequest{}
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[19]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[20]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1599,7 +2011,7 @@ func (x *RetryRequest) String() string {
 func (*RetryRequest) ProtoMessage() {}
 
 func (x *RetryRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[19]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[20]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1612,14 +2024,16 @@ func (x *RetryRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use RetryRequest.ProtoReflect.Descriptor instead.
 func (*RetryRequest) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{19}
+	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{20}
 }
 
 // UserPromptRequest contains a new user message
 type UserPromptRequest struct {
 	state   protoimpl.MessageState `protogen:"open.v1"`
 	Message *UserModelMessage      `protobuf:"bytes,1,opt,name=message,proto3" json:"message,omitempty"`
-	// Optional: image files to provide to the agent
+	// Deprecated: rejected. Send images as image parts in message.text.
+	//
+	// Deprecated: Marked as deprecated in nominal/protos/ai/v1/ai_agent.proto.
 	Images        []*ImagePart `protobuf:"bytes,2,rep,name=images,proto3" json:"images,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -1627,7 +2041,7 @@ type UserPromptRequest struct {
 
 func (x *UserPromptRequest) Reset() {
 	*x = UserPromptRequest{}
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[20]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[21]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1639,7 +2053,7 @@ func (x *UserPromptRequest) String() string {
 func (*UserPromptRequest) ProtoMessage() {}
 
 func (x *UserPromptRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[20]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[21]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1652,7 +2066,7 @@ func (x *UserPromptRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UserPromptRequest.ProtoReflect.Descriptor instead.
 func (*UserPromptRequest) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{20}
+	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{21}
 }
 
 func (x *UserPromptRequest) GetMessage() *UserModelMessage {
@@ -1662,6 +2076,7 @@ func (x *UserPromptRequest) GetMessage() *UserModelMessage {
 	return nil
 }
 
+// Deprecated: Marked as deprecated in nominal/protos/ai/v1/ai_agent.proto.
 func (x *UserPromptRequest) GetImages() []*ImagePart {
 	if x != nil {
 		return x.Images
@@ -1679,7 +2094,7 @@ type ToolApprovalRequest struct {
 
 func (x *ToolApprovalRequest) Reset() {
 	*x = ToolApprovalRequest{}
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[21]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[22]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1691,7 +2106,7 @@ func (x *ToolApprovalRequest) String() string {
 func (*ToolApprovalRequest) ProtoMessage() {}
 
 func (x *ToolApprovalRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[21]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[22]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1704,7 +2119,7 @@ func (x *ToolApprovalRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ToolApprovalRequest.ProtoReflect.Descriptor instead.
 func (*ToolApprovalRequest) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{21}
+	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{22}
 }
 
 func (x *ToolApprovalRequest) GetToolApprovals() []*ToolApprovalResult {
@@ -1726,7 +2141,7 @@ type UserQuestionAnswer struct {
 
 func (x *UserQuestionAnswer) Reset() {
 	*x = UserQuestionAnswer{}
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[22]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[23]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1738,7 +2153,7 @@ func (x *UserQuestionAnswer) String() string {
 func (*UserQuestionAnswer) ProtoMessage() {}
 
 func (x *UserQuestionAnswer) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[22]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[23]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1751,7 +2166,7 @@ func (x *UserQuestionAnswer) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UserQuestionAnswer.ProtoReflect.Descriptor instead.
 func (*UserQuestionAnswer) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{22}
+	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{23}
 }
 
 func (x *UserQuestionAnswer) GetQuestionIndex() uint32 {
@@ -1783,7 +2198,7 @@ type UserQuestionDeclined struct {
 
 func (x *UserQuestionDeclined) Reset() {
 	*x = UserQuestionDeclined{}
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[23]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[24]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1795,7 +2210,7 @@ func (x *UserQuestionDeclined) String() string {
 func (*UserQuestionDeclined) ProtoMessage() {}
 
 func (x *UserQuestionDeclined) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[23]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[24]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1808,7 +2223,7 @@ func (x *UserQuestionDeclined) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UserQuestionDeclined.ProtoReflect.Descriptor instead.
 func (*UserQuestionDeclined) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{23}
+	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{24}
 }
 
 // Supplies one answer for a pending client-handled ask_user_question call.
@@ -1828,7 +2243,7 @@ type UserQuestionResponseRequest struct {
 
 func (x *UserQuestionResponseRequest) Reset() {
 	*x = UserQuestionResponseRequest{}
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[24]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[25]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1840,7 +2255,7 @@ func (x *UserQuestionResponseRequest) String() string {
 func (*UserQuestionResponseRequest) ProtoMessage() {}
 
 func (x *UserQuestionResponseRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[24]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[25]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1853,7 +2268,7 @@ func (x *UserQuestionResponseRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UserQuestionResponseRequest.ProtoReflect.Descriptor instead.
 func (*UserQuestionResponseRequest) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{24}
+	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{25}
 }
 
 func (x *UserQuestionResponseRequest) GetToolCallId() string {
@@ -1927,7 +2342,7 @@ type StreamChatRequest struct {
 	//
 	// Deprecated: Marked as deprecated in nominal/protos/ai/v1/ai_agent.proto.
 	Message *UserModelMessage `protobuf:"bytes,2,opt,name=message,proto3" json:"message,omitempty"`
-	// DEPRECATED: use request_type.user_prompt.images instead
+	// DEPRECATED: use image parts in request_type.user_prompt.message.text instead
 	//
 	// Deprecated: Marked as deprecated in nominal/protos/ai/v1/ai_agent.proto.
 	Images []*ImagePart `protobuf:"bytes,3,rep,name=images,proto3" json:"images,omitempty"`
@@ -1943,30 +2358,33 @@ type StreamChatRequest struct {
 	//	*StreamChatRequest_UserPrompt
 	//	*StreamChatRequest_ToolApproval
 	//	*StreamChatRequest_UserQuestionResponse
-	RequestType isStreamChatRequest_RequestType `protobuf_oneof:"request_type"`
-	// Context-specific fields based on the oneofKind.
-	//
-	// Types that are valid to be assigned to Context:
-	//
-	//	*StreamChatRequest_Workbook
-	//	*StreamChatRequest_Global
-	//	*StreamChatRequest_Checklist
-	//	*StreamChatRequest_Template
-	Context            isStreamChatRequest_Context `protobuf_oneof:"context"`
-	DetachOnDisconnect bool                        `protobuf:"varint,13,opt,name=detach_on_disconnect,json=detachOnDisconnect,proto3" json:"detach_on_disconnect,omitempty"`
+	RequestType        isStreamChatRequest_RequestType `protobuf_oneof:"request_type"`
+	DetachOnDisconnect bool                            `protobuf:"varint,13,opt,name=detach_on_disconnect,json=detachOnDisconnect,proto3" json:"detach_on_disconnect,omitempty"`
 	// When true, this call must not admit or start a new turn. The server authorizes the
 	// conversation and subscribes to its active durable run, if any; otherwise it returns
 	// Finish immediately. Clients use this for refresh and conversation-restore probes.
 	ReattachOnly bool `protobuf:"varint,14,opt,name=reattach_only,json=reattachOnly,proto3" json:"reattach_only,omitempty"`
 	// Optional internal-only model selection. Omitted preserves existing cohort/default routing.
 	ModelSelection *ModelSelection `protobuf:"bytes,15,opt,name=model_selection,json=modelSelection,proto3,oneof" json:"model_selection,omitempty"`
-	unknownFields  protoimpl.UnknownFields
-	sizeCache      protoimpl.SizeCache
+	// The page the user is on when the turn starts. Omitted outside the web app.
+	PageContext *PageContext `protobuf:"bytes,16,opt,name=page_context,json=pageContext,proto3,oneof" json:"page_context,omitempty"`
+	// With reattach_only, resume the active durable run's events right after this offset (a
+	// previous response's stream_offset) instead of at the start of its current segment, so a
+	// client whose stream dropped mid-turn continues without replaying what it already shows. If
+	// the run's stream no longer holds the next offset, the response ends without finish and the
+	// client falls back to waiting for the finished turn.
+	ResumeAfterOffset *int64 `protobuf:"varint,17,opt,name=resume_after_offset,json=resumeAfterOffset,proto3,oneof" json:"resume_after_offset,omitempty"`
+	// With resume_after_offset, the stream_epoch of the response that offset came from. A run's
+	// stream restarts its offsets when its store restarts; a different epoch means the offset names
+	// another incarnation, so the response ends without finish as for a missing offset.
+	ResumeEpoch   *string `protobuf:"bytes,18,opt,name=resume_epoch,json=resumeEpoch,proto3,oneof" json:"resume_epoch,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
 }
 
 func (x *StreamChatRequest) Reset() {
 	*x = StreamChatRequest{}
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[25]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[26]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1978,7 +2396,7 @@ func (x *StreamChatRequest) String() string {
 func (*StreamChatRequest) ProtoMessage() {}
 
 func (x *StreamChatRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[25]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[26]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1991,7 +2409,7 @@ func (x *StreamChatRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use StreamChatRequest.ProtoReflect.Descriptor instead.
 func (*StreamChatRequest) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{25}
+	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{26}
 }
 
 func (x *StreamChatRequest) GetConversationRid() string {
@@ -2068,49 +2486,6 @@ func (x *StreamChatRequest) GetUserQuestionResponse() *UserQuestionResponseReque
 	return nil
 }
 
-func (x *StreamChatRequest) GetContext() isStreamChatRequest_Context {
-	if x != nil {
-		return x.Context
-	}
-	return nil
-}
-
-func (x *StreamChatRequest) GetWorkbook() *WorkbookContext {
-	if x != nil {
-		if x, ok := x.Context.(*StreamChatRequest_Workbook); ok {
-			return x.Workbook
-		}
-	}
-	return nil
-}
-
-func (x *StreamChatRequest) GetGlobal() *GlobalContext {
-	if x != nil {
-		if x, ok := x.Context.(*StreamChatRequest_Global); ok {
-			return x.Global
-		}
-	}
-	return nil
-}
-
-func (x *StreamChatRequest) GetChecklist() *ChecklistContext {
-	if x != nil {
-		if x, ok := x.Context.(*StreamChatRequest_Checklist); ok {
-			return x.Checklist
-		}
-	}
-	return nil
-}
-
-func (x *StreamChatRequest) GetTemplate() *TemplateContext {
-	if x != nil {
-		if x, ok := x.Context.(*StreamChatRequest_Template); ok {
-			return x.Template
-		}
-	}
-	return nil
-}
-
 func (x *StreamChatRequest) GetDetachOnDisconnect() bool {
 	if x != nil {
 		return x.DetachOnDisconnect
@@ -2130,6 +2505,27 @@ func (x *StreamChatRequest) GetModelSelection() *ModelSelection {
 		return x.ModelSelection
 	}
 	return nil
+}
+
+func (x *StreamChatRequest) GetPageContext() *PageContext {
+	if x != nil {
+		return x.PageContext
+	}
+	return nil
+}
+
+func (x *StreamChatRequest) GetResumeAfterOffset() int64 {
+	if x != nil && x.ResumeAfterOffset != nil {
+		return *x.ResumeAfterOffset
+	}
+	return 0
+}
+
+func (x *StreamChatRequest) GetResumeEpoch() string {
+	if x != nil && x.ResumeEpoch != nil {
+		return *x.ResumeEpoch
+	}
+	return ""
 }
 
 type isStreamChatRequest_RequestType interface {
@@ -2160,33 +2556,334 @@ func (*StreamChatRequest_ToolApproval) isStreamChatRequest_RequestType() {}
 
 func (*StreamChatRequest_UserQuestionResponse) isStreamChatRequest_RequestType() {}
 
-type isStreamChatRequest_Context interface {
-	isStreamChatRequest_Context()
+// Where the user is in the web app when the turn starts. Client-authoritative.
+type ComputeFunctionEditorContext struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	WorkbookRid   string                 `protobuf:"bytes,1,opt,name=workbook_rid,json=workbookRid,proto3" json:"workbook_rid,omitempty"`
+	Name          string                 `protobuf:"bytes,2,opt,name=name,proto3" json:"name,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
 }
 
-type StreamChatRequest_Workbook struct {
-	Workbook *WorkbookContext `protobuf:"bytes,4,opt,name=workbook,proto3,oneof"`
+func (x *ComputeFunctionEditorContext) Reset() {
+	*x = ComputeFunctionEditorContext{}
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[27]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
 }
 
-type StreamChatRequest_Global struct {
-	Global *GlobalContext `protobuf:"bytes,5,opt,name=global,proto3,oneof"`
+func (x *ComputeFunctionEditorContext) String() string {
+	return protoimpl.X.MessageStringOf(x)
 }
 
-type StreamChatRequest_Checklist struct {
-	Checklist *ChecklistContext `protobuf:"bytes,10,opt,name=checklist,proto3,oneof"`
+func (*ComputeFunctionEditorContext) ProtoMessage() {}
+
+func (x *ComputeFunctionEditorContext) ProtoReflect() protoreflect.Message {
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[27]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
 }
 
-type StreamChatRequest_Template struct {
-	Template *TemplateContext `protobuf:"bytes,11,opt,name=template,proto3,oneof"`
+// Deprecated: Use ComputeFunctionEditorContext.ProtoReflect.Descriptor instead.
+func (*ComputeFunctionEditorContext) Descriptor() ([]byte, []int) {
+	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{27}
 }
 
-func (*StreamChatRequest_Workbook) isStreamChatRequest_Context() {}
+func (x *ComputeFunctionEditorContext) GetWorkbookRid() string {
+	if x != nil {
+		return x.WorkbookRid
+	}
+	return ""
+}
 
-func (*StreamChatRequest_Global) isStreamChatRequest_Context() {}
+func (x *ComputeFunctionEditorContext) GetName() string {
+	if x != nil {
+		return x.Name
+	}
+	return ""
+}
 
-func (*StreamChatRequest_Checklist) isStreamChatRequest_Context() {}
+// Thin context for the SQL editor in this browser tab. SQL is read through tools.
+type SqlEditorContext struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	ActiveTabId   string                 `protobuf:"bytes,1,opt,name=active_tab_id,json=activeTabId,proto3" json:"active_tab_id,omitempty"`
+	EditorId      string                 `protobuf:"bytes,2,opt,name=editor_id,json=editorId,proto3" json:"editor_id,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
 
-func (*StreamChatRequest_Template) isStreamChatRequest_Context() {}
+func (x *SqlEditorContext) Reset() {
+	*x = SqlEditorContext{}
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[28]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *SqlEditorContext) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*SqlEditorContext) ProtoMessage() {}
+
+func (x *SqlEditorContext) ProtoReflect() protoreflect.Message {
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[28]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use SqlEditorContext.ProtoReflect.Descriptor instead.
+func (*SqlEditorContext) Descriptor() ([]byte, []int) {
+	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{28}
+}
+
+func (x *SqlEditorContext) GetActiveTabId() string {
+	if x != nil {
+		return x.ActiveTabId
+	}
+	return ""
+}
+
+func (x *SqlEditorContext) GetEditorId() string {
+	if x != nil {
+		return x.EditorId
+	}
+	return ""
+}
+
+// The draft of primary_rid open in the editor. The rid type of primary_rid gives the draft's kind.
+type DraftEditorContext struct {
+	state      protoimpl.MessageState `protogen:"open.v1"`
+	BranchName string                 `protobuf:"bytes,1,opt,name=branch_name,json=branchName,proto3" json:"branch_name,omitempty"`
+	// The asset or run the draft is evaluated against.
+	ReferenceRid  string `protobuf:"bytes,2,opt,name=reference_rid,json=referenceRid,proto3" json:"reference_rid,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *DraftEditorContext) Reset() {
+	*x = DraftEditorContext{}
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[29]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *DraftEditorContext) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*DraftEditorContext) ProtoMessage() {}
+
+func (x *DraftEditorContext) ProtoReflect() protoreflect.Message {
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[29]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use DraftEditorContext.ProtoReflect.Descriptor instead.
+func (*DraftEditorContext) Descriptor() ([]byte, []int) {
+	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{29}
+}
+
+func (x *DraftEditorContext) GetBranchName() string {
+	if x != nil {
+		return x.BranchName
+	}
+	return ""
+}
+
+func (x *DraftEditorContext) GetReferenceRid() string {
+	if x != nil {
+		return x.ReferenceRid
+	}
+	return ""
+}
+
+// The workbook view on screen in this browser tab. Present only while primary_rid is a workbook.
+type WorkbookViewContext struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// The tab the user has open.
+	ActiveTabId string `protobuf:"bytes,1,opt,name=active_tab_id,json=activeTabId,proto3" json:"active_tab_id,omitempty"`
+	// The time window the open tab shows, which can differ from the saved range.
+	VisibleStart  *timestamppb.Timestamp `protobuf:"bytes,2,opt,name=visible_start,json=visibleStart,proto3" json:"visible_start,omitempty"`
+	VisibleEnd    *timestamppb.Timestamp `protobuf:"bytes,3,opt,name=visible_end,json=visibleEnd,proto3" json:"visible_end,omitempty"`
+	TimeRangeType TimeRangeType          `protobuf:"varint,4,opt,name=time_range_type,json=timeRangeType,proto3,enum=nominal.ai.v1.TimeRangeType" json:"time_range_type,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *WorkbookViewContext) Reset() {
+	*x = WorkbookViewContext{}
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[30]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *WorkbookViewContext) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*WorkbookViewContext) ProtoMessage() {}
+
+func (x *WorkbookViewContext) ProtoReflect() protoreflect.Message {
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[30]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use WorkbookViewContext.ProtoReflect.Descriptor instead.
+func (*WorkbookViewContext) Descriptor() ([]byte, []int) {
+	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{30}
+}
+
+func (x *WorkbookViewContext) GetActiveTabId() string {
+	if x != nil {
+		return x.ActiveTabId
+	}
+	return ""
+}
+
+func (x *WorkbookViewContext) GetVisibleStart() *timestamppb.Timestamp {
+	if x != nil {
+		return x.VisibleStart
+	}
+	return nil
+}
+
+func (x *WorkbookViewContext) GetVisibleEnd() *timestamppb.Timestamp {
+	if x != nil {
+		return x.VisibleEnd
+	}
+	return nil
+}
+
+func (x *WorkbookViewContext) GetTimeRangeType() TimeRangeType {
+	if x != nil {
+		return x.TimeRangeType
+	}
+	return TimeRangeType_TIME_RANGE_TYPE_UNSPECIFIED
+}
+
+type PageContext struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Path of the current page (no query string, no origin).
+	Url string `protobuf:"bytes,1,opt,name=url,proto3" json:"url,omitempty"`
+	// The resource the page is about, when the route names one.
+	PrimaryRid *string `protobuf:"bytes,2,opt,name=primary_rid,json=primaryRid,proto3,oneof" json:"primary_rid,omitempty"`
+	// Present only while the compute function editor is open in this browser tab.
+	ComputeFunctionEditor *ComputeFunctionEditorContext `protobuf:"bytes,4,opt,name=compute_function_editor,json=computeFunctionEditor,proto3" json:"compute_function_editor,omitempty"`
+	SqlEditor             *SqlEditorContext             `protobuf:"bytes,5,opt,name=sql_editor,json=sqlEditor,proto3" json:"sql_editor,omitempty"`
+	// Present only while a checklist or template draft of primary_rid is open.
+	DraftEditor *DraftEditorContext `protobuf:"bytes,6,opt,name=draft_editor,json=draftEditor,proto3" json:"draft_editor,omitempty"`
+	// Present only while primary_rid is a workbook open in this browser tab.
+	WorkbookView *WorkbookViewContext `protobuf:"bytes,7,opt,name=workbook_view,json=workbookView,proto3" json:"workbook_view,omitempty"`
+	// Other rids rendered on the page.
+	InViewRids    []string `protobuf:"bytes,3,rep,name=in_view_rids,json=inViewRids,proto3" json:"in_view_rids,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *PageContext) Reset() {
+	*x = PageContext{}
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[31]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *PageContext) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*PageContext) ProtoMessage() {}
+
+func (x *PageContext) ProtoReflect() protoreflect.Message {
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[31]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use PageContext.ProtoReflect.Descriptor instead.
+func (*PageContext) Descriptor() ([]byte, []int) {
+	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{31}
+}
+
+func (x *PageContext) GetUrl() string {
+	if x != nil {
+		return x.Url
+	}
+	return ""
+}
+
+func (x *PageContext) GetPrimaryRid() string {
+	if x != nil && x.PrimaryRid != nil {
+		return *x.PrimaryRid
+	}
+	return ""
+}
+
+func (x *PageContext) GetComputeFunctionEditor() *ComputeFunctionEditorContext {
+	if x != nil {
+		return x.ComputeFunctionEditor
+	}
+	return nil
+}
+
+func (x *PageContext) GetSqlEditor() *SqlEditorContext {
+	if x != nil {
+		return x.SqlEditor
+	}
+	return nil
+}
+
+func (x *PageContext) GetDraftEditor() *DraftEditorContext {
+	if x != nil {
+		return x.DraftEditor
+	}
+	return nil
+}
+
+func (x *PageContext) GetWorkbookView() *WorkbookViewContext {
+	if x != nil {
+		return x.WorkbookView
+	}
+	return nil
+}
+
+func (x *PageContext) GetInViewRids() []string {
+	if x != nil {
+		return x.InViewRids
+	}
+	return nil
+}
 
 // A backend-selected internal Analyst model configuration. It never carries a provider,
 // endpoint, API key, or other connection settings.
@@ -2210,7 +2907,7 @@ type ModelSelection struct {
 
 func (x *ModelSelection) Reset() {
 	*x = ModelSelection{}
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[26]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[32]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2222,7 +2919,7 @@ func (x *ModelSelection) String() string {
 func (*ModelSelection) ProtoMessage() {}
 
 func (x *ModelSelection) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[26]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[32]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2235,7 +2932,7 @@ func (x *ModelSelection) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ModelSelection.ProtoReflect.Descriptor instead.
 func (*ModelSelection) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{26}
+	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{32}
 }
 
 func (x *ModelSelection) GetModelId() string {
@@ -2278,7 +2975,7 @@ type ThinkingEffortOption struct {
 
 func (x *ThinkingEffortOption) Reset() {
 	*x = ThinkingEffortOption{}
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[27]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[33]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2290,7 +2987,7 @@ func (x *ThinkingEffortOption) String() string {
 func (*ThinkingEffortOption) ProtoMessage() {}
 
 func (x *ThinkingEffortOption) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[27]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[33]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2303,7 +3000,7 @@ func (x *ThinkingEffortOption) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ThinkingEffortOption.ProtoReflect.Descriptor instead.
 func (*ThinkingEffortOption) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{27}
+	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{33}
 }
 
 func (x *ThinkingEffortOption) GetEffort() string {
@@ -2357,7 +3054,7 @@ type ModelOption struct {
 
 func (x *ModelOption) Reset() {
 	*x = ModelOption{}
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[28]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[34]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2369,7 +3066,7 @@ func (x *ModelOption) String() string {
 func (*ModelOption) ProtoMessage() {}
 
 func (x *ModelOption) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[28]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[34]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2382,7 +3079,7 @@ func (x *ModelOption) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ModelOption.ProtoReflect.Descriptor instead.
 func (*ModelOption) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{28}
+	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{34}
 }
 
 func (x *ModelOption) GetModelId() string {
@@ -2484,7 +3181,7 @@ type ListModelsRequest struct {
 
 func (x *ListModelsRequest) Reset() {
 	*x = ListModelsRequest{}
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[29]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[35]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2496,7 +3193,7 @@ func (x *ListModelsRequest) String() string {
 func (*ListModelsRequest) ProtoMessage() {}
 
 func (x *ListModelsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[29]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[35]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2509,7 +3206,7 @@ func (x *ListModelsRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListModelsRequest.ProtoReflect.Descriptor instead.
 func (*ListModelsRequest) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{29}
+	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{35}
 }
 
 type ListModelsResponse struct {
@@ -2523,7 +3220,7 @@ type ListModelsResponse struct {
 
 func (x *ListModelsResponse) Reset() {
 	*x = ListModelsResponse{}
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[30]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[36]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2535,7 +3232,7 @@ func (x *ListModelsResponse) String() string {
 func (*ListModelsResponse) ProtoMessage() {}
 
 func (x *ListModelsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[30]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[36]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2548,389 +3245,12 @@ func (x *ListModelsResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListModelsResponse.ProtoReflect.Descriptor instead.
 func (*ListModelsResponse) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{30}
+	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{36}
 }
 
 func (x *ListModelsResponse) GetModels() []*ModelOption {
 	if x != nil {
 		return x.Models
-	}
-	return nil
-}
-
-// WorkbookContext contains workbook-specific context fields
-type WorkbookContext struct {
-	state protoimpl.MessageState `protogen:"open.v1"`
-	// RID of the workbook to use for context
-	WorkbookRid string `protobuf:"bytes,1,opt,name=workbook_rid,json=workbookRid,proto3" json:"workbook_rid,omitempty"`
-	// The user's presence in the workbook
-	//
-	// Deprecated: Marked as deprecated in nominal/protos/ai/v1/ai_agent.proto.
-	UserPresence *WorkbookUserPresence `protobuf:"bytes,2,opt,name=user_presence,json=userPresence,proto3,oneof" json:"user_presence,omitempty"`
-	ActiveTabId  *string               `protobuf:"bytes,3,opt,name=active_tab_id,json=activeTabId,proto3,oneof" json:"active_tab_id,omitempty"`
-	// The absolute time range visible in the requesting workbook view.
-	VisibleTimeRange *TimeRange `protobuf:"bytes,5,opt,name=visible_time_range,json=visibleTimeRange,proto3,oneof" json:"visible_time_range,omitempty"`
-	unknownFields    protoimpl.UnknownFields
-	sizeCache        protoimpl.SizeCache
-}
-
-func (x *WorkbookContext) Reset() {
-	*x = WorkbookContext{}
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[31]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *WorkbookContext) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*WorkbookContext) ProtoMessage() {}
-
-func (x *WorkbookContext) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[31]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use WorkbookContext.ProtoReflect.Descriptor instead.
-func (*WorkbookContext) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{31}
-}
-
-func (x *WorkbookContext) GetWorkbookRid() string {
-	if x != nil {
-		return x.WorkbookRid
-	}
-	return ""
-}
-
-// Deprecated: Marked as deprecated in nominal/protos/ai/v1/ai_agent.proto.
-func (x *WorkbookContext) GetUserPresence() *WorkbookUserPresence {
-	if x != nil {
-		return x.UserPresence
-	}
-	return nil
-}
-
-func (x *WorkbookContext) GetActiveTabId() string {
-	if x != nil && x.ActiveTabId != nil {
-		return *x.ActiveTabId
-	}
-	return ""
-}
-
-func (x *WorkbookContext) GetVisibleTimeRange() *TimeRange {
-	if x != nil {
-		return x.VisibleTimeRange
-	}
-	return nil
-}
-
-// ChecklistContext for use when the agent is being messaged in the context of a
-// checklist currently being edited
-type ChecklistContext struct {
-	state protoimpl.MessageState `protogen:"open.v1"`
-	// RID of the checklist being edited
-	ChecklistRid string `protobuf:"bytes,1,opt,name=checklist_rid,json=checklistRid,proto3" json:"checklist_rid,omitempty"`
-	// Name of the branch that this edit is being done on
-	// This is equivalent to the 'draft name' for a check being edited in the UI
-	BranchName string `protobuf:"bytes,2,opt,name=branch_name,json=branchName,proto3" json:"branch_name,omitempty"`
-	// A checklist opened in edit mode will always have some resource by which it
-	// is referencing for viewing. It can either be an asset or a run
-	//
-	// Types that are valid to be assigned to ReferenceRid:
-	//
-	//	*ChecklistContext_Asset
-	//	*ChecklistContext_Run
-	ReferenceRid  isChecklistContext_ReferenceRid `protobuf_oneof:"reference_rid"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
-}
-
-func (x *ChecklistContext) Reset() {
-	*x = ChecklistContext{}
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[32]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *ChecklistContext) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*ChecklistContext) ProtoMessage() {}
-
-func (x *ChecklistContext) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[32]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use ChecklistContext.ProtoReflect.Descriptor instead.
-func (*ChecklistContext) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{32}
-}
-
-func (x *ChecklistContext) GetChecklistRid() string {
-	if x != nil {
-		return x.ChecklistRid
-	}
-	return ""
-}
-
-func (x *ChecklistContext) GetBranchName() string {
-	if x != nil {
-		return x.BranchName
-	}
-	return ""
-}
-
-func (x *ChecklistContext) GetReferenceRid() isChecklistContext_ReferenceRid {
-	if x != nil {
-		return x.ReferenceRid
-	}
-	return nil
-}
-
-func (x *ChecklistContext) GetAsset() string {
-	if x != nil {
-		if x, ok := x.ReferenceRid.(*ChecklistContext_Asset); ok {
-			return x.Asset
-		}
-	}
-	return ""
-}
-
-func (x *ChecklistContext) GetRun() string {
-	if x != nil {
-		if x, ok := x.ReferenceRid.(*ChecklistContext_Run); ok {
-			return x.Run
-		}
-	}
-	return ""
-}
-
-type isChecklistContext_ReferenceRid interface {
-	isChecklistContext_ReferenceRid()
-}
-
-type ChecklistContext_Asset struct {
-	Asset string `protobuf:"bytes,3,opt,name=asset,proto3,oneof"`
-}
-
-type ChecklistContext_Run struct {
-	Run string `protobuf:"bytes,4,opt,name=run,proto3,oneof"`
-}
-
-func (*ChecklistContext_Asset) isChecklistContext_ReferenceRid() {}
-
-func (*ChecklistContext_Run) isChecklistContext_ReferenceRid() {}
-
-// TemplateContext for use when the agent is being messaged in the context of a
-// template currently being edited.
-// This provides the agent with the same toolset as the workbook tools
-type TemplateContext struct {
-	state protoimpl.MessageState `protogen:"open.v1"`
-	// RID of template being edited
-	TemplateRid string `protobuf:"bytes,1,opt,name=template_rid,json=templateRid,proto3" json:"template_rid,omitempty"`
-	// Name of the branch this edit is being done on
-	BranchName string `protobuf:"bytes,2,opt,name=branch_name,json=branchName,proto3" json:"branch_name,omitempty"`
-	// Defines the datascope in view in the editor
-	//
-	// Types that are valid to be assigned to ReferenceRid:
-	//
-	//	*TemplateContext_Asset
-	//	*TemplateContext_Run
-	ReferenceRid  isTemplateContext_ReferenceRid `protobuf_oneof:"reference_rid"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
-}
-
-func (x *TemplateContext) Reset() {
-	*x = TemplateContext{}
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[33]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *TemplateContext) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*TemplateContext) ProtoMessage() {}
-
-func (x *TemplateContext) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[33]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use TemplateContext.ProtoReflect.Descriptor instead.
-func (*TemplateContext) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{33}
-}
-
-func (x *TemplateContext) GetTemplateRid() string {
-	if x != nil {
-		return x.TemplateRid
-	}
-	return ""
-}
-
-func (x *TemplateContext) GetBranchName() string {
-	if x != nil {
-		return x.BranchName
-	}
-	return ""
-}
-
-func (x *TemplateContext) GetReferenceRid() isTemplateContext_ReferenceRid {
-	if x != nil {
-		return x.ReferenceRid
-	}
-	return nil
-}
-
-func (x *TemplateContext) GetAsset() string {
-	if x != nil {
-		if x, ok := x.ReferenceRid.(*TemplateContext_Asset); ok {
-			return x.Asset
-		}
-	}
-	return ""
-}
-
-func (x *TemplateContext) GetRun() string {
-	if x != nil {
-		if x, ok := x.ReferenceRid.(*TemplateContext_Run); ok {
-			return x.Run
-		}
-	}
-	return ""
-}
-
-type isTemplateContext_ReferenceRid interface {
-	isTemplateContext_ReferenceRid()
-}
-
-type TemplateContext_Asset struct {
-	Asset string `protobuf:"bytes,3,opt,name=asset,proto3,oneof"`
-}
-
-type TemplateContext_Run struct {
-	Run string `protobuf:"bytes,4,opt,name=run,proto3,oneof"`
-}
-
-func (*TemplateContext_Asset) isTemplateContext_ReferenceRid() {}
-
-func (*TemplateContext_Run) isTemplateContext_ReferenceRid() {}
-
-// DefaultContext (no context)
-type GlobalContext struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
-}
-
-func (x *GlobalContext) Reset() {
-	*x = GlobalContext{}
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[34]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *GlobalContext) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*GlobalContext) ProtoMessage() {}
-
-func (x *GlobalContext) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[34]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use GlobalContext.ProtoReflect.Descriptor instead.
-func (*GlobalContext) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{34}
-}
-
-// WorkbookUserPresence contains the user's presence in the workbook
-// which is used to describe what the user is viewing at the time of the message.
-type WorkbookUserPresence struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	TabIndex      int32                  `protobuf:"varint,1,opt,name=tab_index,json=tabIndex,proto3" json:"tab_index,omitempty"`
-	Range         *TimeRange             `protobuf:"bytes,2,opt,name=range,proto3" json:"range,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
-}
-
-func (x *WorkbookUserPresence) Reset() {
-	*x = WorkbookUserPresence{}
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[35]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *WorkbookUserPresence) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*WorkbookUserPresence) ProtoMessage() {}
-
-func (x *WorkbookUserPresence) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[35]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use WorkbookUserPresence.ProtoReflect.Descriptor instead.
-func (*WorkbookUserPresence) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{35}
-}
-
-func (x *WorkbookUserPresence) GetTabIndex() int32 {
-	if x != nil {
-		return x.TabIndex
-	}
-	return 0
-}
-
-func (x *WorkbookUserPresence) GetRange() *TimeRange {
-	if x != nil {
-		return x.Range
 	}
 	return nil
 }
@@ -2960,7 +3280,7 @@ type CreateConversationRequest struct {
 
 func (x *CreateConversationRequest) Reset() {
 	*x = CreateConversationRequest{}
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[36]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[37]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2972,7 +3292,7 @@ func (x *CreateConversationRequest) String() string {
 func (*CreateConversationRequest) ProtoMessage() {}
 
 func (x *CreateConversationRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[36]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[37]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2985,7 +3305,7 @@ func (x *CreateConversationRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CreateConversationRequest.ProtoReflect.Descriptor instead.
 func (*CreateConversationRequest) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{36}
+	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{37}
 }
 
 func (x *CreateConversationRequest) GetTitle() string {
@@ -3047,7 +3367,7 @@ type CreateConversationResponse struct {
 
 func (x *CreateConversationResponse) Reset() {
 	*x = CreateConversationResponse{}
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[37]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[38]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3059,7 +3379,7 @@ func (x *CreateConversationResponse) String() string {
 func (*CreateConversationResponse) ProtoMessage() {}
 
 func (x *CreateConversationResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[37]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[38]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3072,7 +3392,7 @@ func (x *CreateConversationResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CreateConversationResponse.ProtoReflect.Descriptor instead.
 func (*CreateConversationResponse) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{37}
+	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{38}
 }
 
 func (x *CreateConversationResponse) GetNewConversationRid() string {
@@ -3094,7 +3414,7 @@ type UpdateConversationMetadataRequest struct {
 
 func (x *UpdateConversationMetadataRequest) Reset() {
 	*x = UpdateConversationMetadataRequest{}
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[38]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[39]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3106,7 +3426,7 @@ func (x *UpdateConversationMetadataRequest) String() string {
 func (*UpdateConversationMetadataRequest) ProtoMessage() {}
 
 func (x *UpdateConversationMetadataRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[38]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[39]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3119,7 +3439,7 @@ func (x *UpdateConversationMetadataRequest) ProtoReflect() protoreflect.Message 
 
 // Deprecated: Use UpdateConversationMetadataRequest.ProtoReflect.Descriptor instead.
 func (*UpdateConversationMetadataRequest) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{38}
+	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{39}
 }
 
 func (x *UpdateConversationMetadataRequest) GetTitle() string {
@@ -3151,7 +3471,7 @@ type UpdateConversationMetadataResponse struct {
 
 func (x *UpdateConversationMetadataResponse) Reset() {
 	*x = UpdateConversationMetadataResponse{}
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[39]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[40]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3163,7 +3483,7 @@ func (x *UpdateConversationMetadataResponse) String() string {
 func (*UpdateConversationMetadataResponse) ProtoMessage() {}
 
 func (x *UpdateConversationMetadataResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[39]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[40]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3176,7 +3496,7 @@ func (x *UpdateConversationMetadataResponse) ProtoReflect() protoreflect.Message
 
 // Deprecated: Use UpdateConversationMetadataResponse.ProtoReflect.Descriptor instead.
 func (*UpdateConversationMetadataResponse) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{39}
+	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{40}
 }
 
 type DeleteConversationRequest struct {
@@ -3188,7 +3508,7 @@ type DeleteConversationRequest struct {
 
 func (x *DeleteConversationRequest) Reset() {
 	*x = DeleteConversationRequest{}
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[40]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[41]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3200,7 +3520,7 @@ func (x *DeleteConversationRequest) String() string {
 func (*DeleteConversationRequest) ProtoMessage() {}
 
 func (x *DeleteConversationRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[40]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[41]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3213,7 +3533,7 @@ func (x *DeleteConversationRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DeleteConversationRequest.ProtoReflect.Descriptor instead.
 func (*DeleteConversationRequest) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{40}
+	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{41}
 }
 
 func (x *DeleteConversationRequest) GetConversationRid() string {
@@ -3231,7 +3551,7 @@ type DeleteConversationResponse struct {
 
 func (x *DeleteConversationResponse) Reset() {
 	*x = DeleteConversationResponse{}
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[41]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[42]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3243,7 +3563,7 @@ func (x *DeleteConversationResponse) String() string {
 func (*DeleteConversationResponse) ProtoMessage() {}
 
 func (x *DeleteConversationResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[41]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[42]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3256,7 +3576,7 @@ func (x *DeleteConversationResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DeleteConversationResponse.ProtoReflect.Descriptor instead.
 func (*DeleteConversationResponse) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{41}
+	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{42}
 }
 
 type ArchiveConversationRequest struct {
@@ -3268,7 +3588,7 @@ type ArchiveConversationRequest struct {
 
 func (x *ArchiveConversationRequest) Reset() {
 	*x = ArchiveConversationRequest{}
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[42]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[43]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3280,7 +3600,7 @@ func (x *ArchiveConversationRequest) String() string {
 func (*ArchiveConversationRequest) ProtoMessage() {}
 
 func (x *ArchiveConversationRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[42]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[43]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3293,7 +3613,7 @@ func (x *ArchiveConversationRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ArchiveConversationRequest.ProtoReflect.Descriptor instead.
 func (*ArchiveConversationRequest) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{42}
+	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{43}
 }
 
 func (x *ArchiveConversationRequest) GetConversationRid() string {
@@ -3312,7 +3632,7 @@ type ArchiveConversationResponse struct {
 
 func (x *ArchiveConversationResponse) Reset() {
 	*x = ArchiveConversationResponse{}
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[43]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[44]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3324,7 +3644,7 @@ func (x *ArchiveConversationResponse) String() string {
 func (*ArchiveConversationResponse) ProtoMessage() {}
 
 func (x *ArchiveConversationResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[43]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[44]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3337,7 +3657,7 @@ func (x *ArchiveConversationResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ArchiveConversationResponse.ProtoReflect.Descriptor instead.
 func (*ArchiveConversationResponse) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{43}
+	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{44}
 }
 
 func (x *ArchiveConversationResponse) GetConversation() *ConversationMetadata {
@@ -3356,7 +3676,7 @@ type UnarchiveConversationRequest struct {
 
 func (x *UnarchiveConversationRequest) Reset() {
 	*x = UnarchiveConversationRequest{}
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[44]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[45]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3368,7 +3688,7 @@ func (x *UnarchiveConversationRequest) String() string {
 func (*UnarchiveConversationRequest) ProtoMessage() {}
 
 func (x *UnarchiveConversationRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[44]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[45]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3381,7 +3701,7 @@ func (x *UnarchiveConversationRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UnarchiveConversationRequest.ProtoReflect.Descriptor instead.
 func (*UnarchiveConversationRequest) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{44}
+	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{45}
 }
 
 func (x *UnarchiveConversationRequest) GetConversationRid() string {
@@ -3400,7 +3720,7 @@ type UnarchiveConversationResponse struct {
 
 func (x *UnarchiveConversationResponse) Reset() {
 	*x = UnarchiveConversationResponse{}
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[45]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[46]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3412,7 +3732,7 @@ func (x *UnarchiveConversationResponse) String() string {
 func (*UnarchiveConversationResponse) ProtoMessage() {}
 
 func (x *UnarchiveConversationResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[45]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[46]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3425,7 +3745,7 @@ func (x *UnarchiveConversationResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UnarchiveConversationResponse.ProtoReflect.Descriptor instead.
 func (*UnarchiveConversationResponse) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{45}
+	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{46}
 }
 
 func (x *UnarchiveConversationResponse) GetConversation() *ConversationMetadata {
@@ -3448,7 +3768,7 @@ type GetConversationRequest struct {
 
 func (x *GetConversationRequest) Reset() {
 	*x = GetConversationRequest{}
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[46]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[47]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3460,7 +3780,7 @@ func (x *GetConversationRequest) String() string {
 func (*GetConversationRequest) ProtoMessage() {}
 
 func (x *GetConversationRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[46]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[47]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3473,7 +3793,7 @@ func (x *GetConversationRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetConversationRequest.ProtoReflect.Descriptor instead.
 func (*GetConversationRequest) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{46}
+	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{47}
 }
 
 func (x *GetConversationRequest) GetConversationRid() string {
@@ -3508,7 +3828,7 @@ type CompactConversationRequest struct {
 
 func (x *CompactConversationRequest) Reset() {
 	*x = CompactConversationRequest{}
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[47]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[48]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3520,7 +3840,7 @@ func (x *CompactConversationRequest) String() string {
 func (*CompactConversationRequest) ProtoMessage() {}
 
 func (x *CompactConversationRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[47]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[48]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3533,7 +3853,7 @@ func (x *CompactConversationRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CompactConversationRequest.ProtoReflect.Descriptor instead.
 func (*CompactConversationRequest) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{47}
+	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{48}
 }
 
 func (x *CompactConversationRequest) GetConversationRid() string {
@@ -3553,7 +3873,7 @@ type CompactConversationResponse struct {
 
 func (x *CompactConversationResponse) Reset() {
 	*x = CompactConversationResponse{}
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[48]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[49]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3565,7 +3885,7 @@ func (x *CompactConversationResponse) String() string {
 func (*CompactConversationResponse) ProtoMessage() {}
 
 func (x *CompactConversationResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[48]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[49]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3578,7 +3898,7 @@ func (x *CompactConversationResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CompactConversationResponse.ProtoReflect.Descriptor instead.
 func (*CompactConversationResponse) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{48}
+	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{49}
 }
 
 func (x *CompactConversationResponse) GetContext() *ContextStatus {
@@ -3619,7 +3939,7 @@ type ModelMessageWithId struct {
 
 func (x *ModelMessageWithId) Reset() {
 	*x = ModelMessageWithId{}
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[49]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[50]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3631,7 +3951,7 @@ func (x *ModelMessageWithId) String() string {
 func (*ModelMessageWithId) ProtoMessage() {}
 
 func (x *ModelMessageWithId) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[49]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[50]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3644,7 +3964,7 @@ func (x *ModelMessageWithId) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ModelMessageWithId.ProtoReflect.Descriptor instead.
 func (*ModelMessageWithId) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{49}
+	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{50}
 }
 
 func (x *ModelMessageWithId) GetContent() isModelMessageWithId_Content {
@@ -3789,7 +4109,7 @@ type GetConversationResponse struct {
 
 func (x *GetConversationResponse) Reset() {
 	*x = GetConversationResponse{}
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[50]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[51]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3801,7 +4121,7 @@ func (x *GetConversationResponse) String() string {
 func (*GetConversationResponse) ProtoMessage() {}
 
 func (x *GetConversationResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[50]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[51]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3814,7 +4134,7 @@ func (x *GetConversationResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetConversationResponse.ProtoReflect.Descriptor instead.
 func (*GetConversationResponse) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{50}
+	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{51}
 }
 
 func (x *GetConversationResponse) GetOrderedMessages() []*ModelMessageWithId {
@@ -3840,7 +4160,7 @@ type GetConversationMetadataRequest struct {
 
 func (x *GetConversationMetadataRequest) Reset() {
 	*x = GetConversationMetadataRequest{}
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[51]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[52]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3852,7 +4172,7 @@ func (x *GetConversationMetadataRequest) String() string {
 func (*GetConversationMetadataRequest) ProtoMessage() {}
 
 func (x *GetConversationMetadataRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[51]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[52]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3865,7 +4185,7 @@ func (x *GetConversationMetadataRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetConversationMetadataRequest.ProtoReflect.Descriptor instead.
 func (*GetConversationMetadataRequest) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{51}
+	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{52}
 }
 
 func (x *GetConversationMetadataRequest) GetConversationRid() string {
@@ -3885,7 +4205,7 @@ type GetConversationMetadataResponse struct {
 
 func (x *GetConversationMetadataResponse) Reset() {
 	*x = GetConversationMetadataResponse{}
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[52]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[53]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3897,7 +4217,7 @@ func (x *GetConversationMetadataResponse) String() string {
 func (*GetConversationMetadataResponse) ProtoMessage() {}
 
 func (x *GetConversationMetadataResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[52]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[53]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3910,7 +4230,7 @@ func (x *GetConversationMetadataResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetConversationMetadataResponse.ProtoReflect.Descriptor instead.
 func (*GetConversationMetadataResponse) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{52}
+	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{53}
 }
 
 func (x *GetConversationMetadataResponse) GetConversationMetadata() *ConversationMetadata {
@@ -3940,7 +4260,7 @@ type ActiveAgentRun struct {
 
 func (x *ActiveAgentRun) Reset() {
 	*x = ActiveAgentRun{}
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[53]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[54]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3952,7 +4272,7 @@ func (x *ActiveAgentRun) String() string {
 func (*ActiveAgentRun) ProtoMessage() {}
 
 func (x *ActiveAgentRun) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[53]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[54]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3965,7 +4285,7 @@ func (x *ActiveAgentRun) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ActiveAgentRun.ProtoReflect.Descriptor instead.
 func (*ActiveAgentRun) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{53}
+	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{54}
 }
 
 func (x *ActiveAgentRun) GetAgentRunId() string {
@@ -4000,7 +4320,7 @@ type GetConversationMessagesRequest struct {
 
 func (x *GetConversationMessagesRequest) Reset() {
 	*x = GetConversationMessagesRequest{}
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[54]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[55]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4012,7 +4332,7 @@ func (x *GetConversationMessagesRequest) String() string {
 func (*GetConversationMessagesRequest) ProtoMessage() {}
 
 func (x *GetConversationMessagesRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[54]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[55]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4025,7 +4345,7 @@ func (x *GetConversationMessagesRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetConversationMessagesRequest.ProtoReflect.Descriptor instead.
 func (*GetConversationMessagesRequest) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{54}
+	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{55}
 }
 
 func (x *GetConversationMessagesRequest) GetConversationRid() string {
@@ -4059,7 +4379,7 @@ type GetConversationMessagesResponse struct {
 
 func (x *GetConversationMessagesResponse) Reset() {
 	*x = GetConversationMessagesResponse{}
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[55]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[56]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4071,7 +4391,7 @@ func (x *GetConversationMessagesResponse) String() string {
 func (*GetConversationMessagesResponse) ProtoMessage() {}
 
 func (x *GetConversationMessagesResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[55]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[56]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4084,7 +4404,7 @@ func (x *GetConversationMessagesResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetConversationMessagesResponse.ProtoReflect.Descriptor instead.
 func (*GetConversationMessagesResponse) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{55}
+	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{56}
 }
 
 func (x *GetConversationMessagesResponse) GetOrderedMessages() []*ModelMessageWithId {
@@ -4119,7 +4439,7 @@ type ListConversationsRequest struct {
 
 func (x *ListConversationsRequest) Reset() {
 	*x = ListConversationsRequest{}
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[56]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[57]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4131,7 +4451,7 @@ func (x *ListConversationsRequest) String() string {
 func (*ListConversationsRequest) ProtoMessage() {}
 
 func (x *ListConversationsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[56]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[57]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4144,7 +4464,7 @@ func (x *ListConversationsRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListConversationsRequest.ProtoReflect.Descriptor instead.
 func (*ListConversationsRequest) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{56}
+	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{57}
 }
 
 func (x *ListConversationsRequest) GetWorkspaceRid() string {
@@ -4195,7 +4515,7 @@ type ConversationResource struct {
 
 func (x *ConversationResource) Reset() {
 	*x = ConversationResource{}
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[57]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[58]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4207,7 +4527,7 @@ func (x *ConversationResource) String() string {
 func (*ConversationResource) ProtoMessage() {}
 
 func (x *ConversationResource) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[57]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[58]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4220,7 +4540,7 @@ func (x *ConversationResource) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ConversationResource.ProtoReflect.Descriptor instead.
 func (*ConversationResource) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{57}
+	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{58}
 }
 
 func (x *ConversationResource) GetRid() string {
@@ -4243,7 +4563,7 @@ type UpdateConversationResourcesRequest struct {
 
 func (x *UpdateConversationResourcesRequest) Reset() {
 	*x = UpdateConversationResourcesRequest{}
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[58]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[59]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4255,7 +4575,7 @@ func (x *UpdateConversationResourcesRequest) String() string {
 func (*UpdateConversationResourcesRequest) ProtoMessage() {}
 
 func (x *UpdateConversationResourcesRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[58]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[59]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4268,7 +4588,7 @@ func (x *UpdateConversationResourcesRequest) ProtoReflect() protoreflect.Message
 
 // Deprecated: Use UpdateConversationResourcesRequest.ProtoReflect.Descriptor instead.
 func (*UpdateConversationResourcesRequest) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{58}
+	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{59}
 }
 
 func (x *UpdateConversationResourcesRequest) GetConversationRid() string {
@@ -4303,7 +4623,7 @@ type UpdateConversationResourcesResponse struct {
 
 func (x *UpdateConversationResourcesResponse) Reset() {
 	*x = UpdateConversationResourcesResponse{}
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[59]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[60]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4315,7 +4635,7 @@ func (x *UpdateConversationResourcesResponse) String() string {
 func (*UpdateConversationResourcesResponse) ProtoMessage() {}
 
 func (x *UpdateConversationResourcesResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[59]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[60]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4328,7 +4648,7 @@ func (x *UpdateConversationResourcesResponse) ProtoReflect() protoreflect.Messag
 
 // Deprecated: Use UpdateConversationResourcesResponse.ProtoReflect.Descriptor instead.
 func (*UpdateConversationResourcesResponse) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{59}
+	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{60}
 }
 
 func (x *UpdateConversationResourcesResponse) GetResources() []*ConversationResource {
@@ -4361,7 +4681,7 @@ type ConversationMetadata struct {
 
 func (x *ConversationMetadata) Reset() {
 	*x = ConversationMetadata{}
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[60]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[61]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4373,7 +4693,7 @@ func (x *ConversationMetadata) String() string {
 func (*ConversationMetadata) ProtoMessage() {}
 
 func (x *ConversationMetadata) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[60]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[61]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4386,7 +4706,7 @@ func (x *ConversationMetadata) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ConversationMetadata.ProtoReflect.Descriptor instead.
 func (*ConversationMetadata) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{60}
+	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{61}
 }
 
 func (x *ConversationMetadata) GetConversationRid() string {
@@ -4471,7 +4791,7 @@ type ListConversationsResponse struct {
 
 func (x *ListConversationsResponse) Reset() {
 	*x = ListConversationsResponse{}
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[61]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[62]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4483,7 +4803,7 @@ func (x *ListConversationsResponse) String() string {
 func (*ListConversationsResponse) ProtoMessage() {}
 
 func (x *ListConversationsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[61]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[62]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4496,7 +4816,7 @@ func (x *ListConversationsResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListConversationsResponse.ProtoReflect.Descriptor instead.
 func (*ListConversationsResponse) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{61}
+	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{62}
 }
 
 func (x *ListConversationsResponse) GetConversations() []*ConversationMetadata {
@@ -4525,7 +4845,7 @@ type BatchGetConversationActiveRunsRequest struct {
 
 func (x *BatchGetConversationActiveRunsRequest) Reset() {
 	*x = BatchGetConversationActiveRunsRequest{}
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[62]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[63]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4537,7 +4857,7 @@ func (x *BatchGetConversationActiveRunsRequest) String() string {
 func (*BatchGetConversationActiveRunsRequest) ProtoMessage() {}
 
 func (x *BatchGetConversationActiveRunsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[62]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[63]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4550,7 +4870,7 @@ func (x *BatchGetConversationActiveRunsRequest) ProtoReflect() protoreflect.Mess
 
 // Deprecated: Use BatchGetConversationActiveRunsRequest.ProtoReflect.Descriptor instead.
 func (*BatchGetConversationActiveRunsRequest) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{62}
+	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{63}
 }
 
 func (x *BatchGetConversationActiveRunsRequest) GetWorkspaceRid() string {
@@ -4577,7 +4897,7 @@ type BatchGetConversationActiveRunsResponse struct {
 
 func (x *BatchGetConversationActiveRunsResponse) Reset() {
 	*x = BatchGetConversationActiveRunsResponse{}
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[63]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[64]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4589,7 +4909,7 @@ func (x *BatchGetConversationActiveRunsResponse) String() string {
 func (*BatchGetConversationActiveRunsResponse) ProtoMessage() {}
 
 func (x *BatchGetConversationActiveRunsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[63]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[64]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4602,7 +4922,7 @@ func (x *BatchGetConversationActiveRunsResponse) ProtoReflect() protoreflect.Mes
 
 // Deprecated: Use BatchGetConversationActiveRunsResponse.ProtoReflect.Descriptor instead.
 func (*BatchGetConversationActiveRunsResponse) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{63}
+	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{64}
 }
 
 func (x *BatchGetConversationActiveRunsResponse) GetActiveRuns() []*ConversationActiveRun {
@@ -4622,7 +4942,7 @@ type ConversationActiveRun struct {
 
 func (x *ConversationActiveRun) Reset() {
 	*x = ConversationActiveRun{}
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[64]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[65]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4634,7 +4954,7 @@ func (x *ConversationActiveRun) String() string {
 func (*ConversationActiveRun) ProtoMessage() {}
 
 func (x *ConversationActiveRun) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[64]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[65]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4647,7 +4967,7 @@ func (x *ConversationActiveRun) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ConversationActiveRun.ProtoReflect.Descriptor instead.
 func (*ConversationActiveRun) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{64}
+	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{65}
 }
 
 func (x *ConversationActiveRun) GetConversationRid() string {
@@ -4664,29 +4984,31 @@ func (x *ConversationActiveRun) GetActiveRun() *ActiveAgentRun {
 	return nil
 }
 
-type TimeRange struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	RangeStart    *Timestamp             `protobuf:"bytes,1,opt,name=range_start,json=rangeStart,proto3" json:"range_start,omitempty"`
-	RangeEnd      *Timestamp             `protobuf:"bytes,2,opt,name=range_end,json=rangeEnd,proto3" json:"range_end,omitempty"`
+type BatchGetConversationSandboxesRequest struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Maximum 100 IDs, each 1–256 characters. Empty input returns no entries; duplicate IDs produce one entry.
+	ConversationRids []string `protobuf:"bytes,1,rep,name=conversation_rids,json=conversationRids,proto3" json:"conversation_rids,omitempty"`
+	// Only conversations the caller owns in this workspace are reported.
+	WorkspaceRid  string `protobuf:"bytes,2,opt,name=workspace_rid,json=workspaceRid,proto3" json:"workspace_rid,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
-func (x *TimeRange) Reset() {
-	*x = TimeRange{}
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[65]
+func (x *BatchGetConversationSandboxesRequest) Reset() {
+	*x = BatchGetConversationSandboxesRequest{}
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[66]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
 
-func (x *TimeRange) String() string {
+func (x *BatchGetConversationSandboxesRequest) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*TimeRange) ProtoMessage() {}
+func (*BatchGetConversationSandboxesRequest) ProtoMessage() {}
 
-func (x *TimeRange) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[65]
+func (x *BatchGetConversationSandboxesRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[66]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4697,23 +5019,208 @@ func (x *TimeRange) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use TimeRange.ProtoReflect.Descriptor instead.
-func (*TimeRange) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{65}
+// Deprecated: Use BatchGetConversationSandboxesRequest.ProtoReflect.Descriptor instead.
+func (*BatchGetConversationSandboxesRequest) Descriptor() ([]byte, []int) {
+	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{66}
 }
 
-func (x *TimeRange) GetRangeStart() *Timestamp {
+func (x *BatchGetConversationSandboxesRequest) GetConversationRids() []string {
 	if x != nil {
-		return x.RangeStart
+		return x.ConversationRids
 	}
 	return nil
 }
 
-func (x *TimeRange) GetRangeEnd() *Timestamp {
+func (x *BatchGetConversationSandboxesRequest) GetWorkspaceRid() string {
 	if x != nil {
-		return x.RangeEnd
+		return x.WorkspaceRid
+	}
+	return ""
+}
+
+// Conversations without a sandbox, and missing or inaccessible conversations, are omitted.
+type BatchGetConversationSandboxesResponse struct {
+	state                 protoimpl.MessageState `protogen:"open.v1"`
+	ConversationSandboxes []*ConversationSandbox `protobuf:"bytes,1,rep,name=conversation_sandboxes,json=conversationSandboxes,proto3" json:"conversation_sandboxes,omitempty"`
+	unknownFields         protoimpl.UnknownFields
+	sizeCache             protoimpl.SizeCache
+}
+
+func (x *BatchGetConversationSandboxesResponse) Reset() {
+	*x = BatchGetConversationSandboxesResponse{}
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[67]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *BatchGetConversationSandboxesResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*BatchGetConversationSandboxesResponse) ProtoMessage() {}
+
+func (x *BatchGetConversationSandboxesResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[67]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use BatchGetConversationSandboxesResponse.ProtoReflect.Descriptor instead.
+func (*BatchGetConversationSandboxesResponse) Descriptor() ([]byte, []int) {
+	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{67}
+}
+
+func (x *BatchGetConversationSandboxesResponse) GetConversationSandboxes() []*ConversationSandbox {
+	if x != nil {
+		return x.ConversationSandboxes
 	}
 	return nil
+}
+
+type ResumeConversationSandboxRequest struct {
+	state           protoimpl.MessageState `protogen:"open.v1"`
+	WorkspaceRid    string                 `protobuf:"bytes,1,opt,name=workspace_rid,json=workspaceRid,proto3" json:"workspace_rid,omitempty"`
+	ConversationRid string                 `protobuf:"bytes,2,opt,name=conversation_rid,json=conversationRid,proto3" json:"conversation_rid,omitempty"`
+	unknownFields   protoimpl.UnknownFields
+	sizeCache       protoimpl.SizeCache
+}
+
+func (x *ResumeConversationSandboxRequest) Reset() {
+	*x = ResumeConversationSandboxRequest{}
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[68]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ResumeConversationSandboxRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ResumeConversationSandboxRequest) ProtoMessage() {}
+
+func (x *ResumeConversationSandboxRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[68]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ResumeConversationSandboxRequest.ProtoReflect.Descriptor instead.
+func (*ResumeConversationSandboxRequest) Descriptor() ([]byte, []int) {
+	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{68}
+}
+
+func (x *ResumeConversationSandboxRequest) GetWorkspaceRid() string {
+	if x != nil {
+		return x.WorkspaceRid
+	}
+	return ""
+}
+
+func (x *ResumeConversationSandboxRequest) GetConversationRid() string {
+	if x != nil {
+		return x.ConversationRid
+	}
+	return ""
+}
+
+type ResumeConversationSandboxResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ResumeConversationSandboxResponse) Reset() {
+	*x = ResumeConversationSandboxResponse{}
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[69]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ResumeConversationSandboxResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ResumeConversationSandboxResponse) ProtoMessage() {}
+
+func (x *ResumeConversationSandboxResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[69]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ResumeConversationSandboxResponse.ProtoReflect.Descriptor instead.
+func (*ResumeConversationSandboxResponse) Descriptor() ([]byte, []int) {
+	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{69}
+}
+
+type ConversationSandbox struct {
+	state           protoimpl.MessageState    `protogen:"open.v1"`
+	ConversationRid string                    `protobuf:"bytes,1,opt,name=conversation_rid,json=conversationRid,proto3" json:"conversation_rid,omitempty"`
+	Status          ConversationSandboxStatus `protobuf:"varint,2,opt,name=status,proto3,enum=nominal.ai.v1.ConversationSandboxStatus" json:"status,omitempty"`
+	unknownFields   protoimpl.UnknownFields
+	sizeCache       protoimpl.SizeCache
+}
+
+func (x *ConversationSandbox) Reset() {
+	*x = ConversationSandbox{}
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[70]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ConversationSandbox) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ConversationSandbox) ProtoMessage() {}
+
+func (x *ConversationSandbox) ProtoReflect() protoreflect.Message {
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[70]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ConversationSandbox.ProtoReflect.Descriptor instead.
+func (*ConversationSandbox) Descriptor() ([]byte, []int) {
+	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{70}
+}
+
+func (x *ConversationSandbox) GetConversationRid() string {
+	if x != nil {
+		return x.ConversationRid
+	}
+	return ""
+}
+
+func (x *ConversationSandbox) GetStatus() ConversationSandboxStatus {
+	if x != nil {
+		return x.Status
+	}
+	return ConversationSandboxStatus_CONVERSATION_SANDBOX_STATUS_UNSPECIFIED
 }
 
 type Timestamp struct {
@@ -4726,7 +5233,7 @@ type Timestamp struct {
 
 func (x *Timestamp) Reset() {
 	*x = Timestamp{}
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[66]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[71]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4738,7 +5245,7 @@ func (x *Timestamp) String() string {
 func (*Timestamp) ProtoMessage() {}
 
 func (x *Timestamp) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[66]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[71]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4751,7 +5258,7 @@ func (x *Timestamp) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Timestamp.ProtoReflect.Descriptor instead.
 func (*Timestamp) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{66}
+	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{71}
 }
 
 func (x *Timestamp) GetSeconds() int32 {
@@ -4783,7 +5290,7 @@ type ModelMessage struct {
 
 func (x *ModelMessage) Reset() {
 	*x = ModelMessage{}
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[67]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[72]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4795,7 +5302,7 @@ func (x *ModelMessage) String() string {
 func (*ModelMessage) ProtoMessage() {}
 
 func (x *ModelMessage) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[67]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[72]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4808,7 +5315,7 @@ func (x *ModelMessage) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ModelMessage.ProtoReflect.Descriptor instead.
 func (*ModelMessage) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{67}
+	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{72}
 }
 
 func (x *ModelMessage) GetKind() isModelMessage_Kind {
@@ -4862,7 +5369,7 @@ type UserModelMessage struct {
 
 func (x *UserModelMessage) Reset() {
 	*x = UserModelMessage{}
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[68]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[73]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4874,7 +5381,7 @@ func (x *UserModelMessage) String() string {
 func (*UserModelMessage) ProtoMessage() {}
 
 func (x *UserModelMessage) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[68]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[73]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4887,7 +5394,7 @@ func (x *UserModelMessage) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UserModelMessage.ProtoReflect.Descriptor instead.
 func (*UserModelMessage) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{68}
+	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{73}
 }
 
 func (x *UserModelMessage) GetText() []*UserContentPart {
@@ -4907,7 +5414,7 @@ type AssistantModelMessage struct {
 
 func (x *AssistantModelMessage) Reset() {
 	*x = AssistantModelMessage{}
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[69]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[74]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4919,7 +5426,7 @@ func (x *AssistantModelMessage) String() string {
 func (*AssistantModelMessage) ProtoMessage() {}
 
 func (x *AssistantModelMessage) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[69]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[74]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4932,7 +5439,7 @@ func (x *AssistantModelMessage) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use AssistantModelMessage.ProtoReflect.Descriptor instead.
 func (*AssistantModelMessage) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{69}
+	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{74}
 }
 
 func (x *AssistantModelMessage) GetContentParts() []*AssistantContentPart {
@@ -4948,6 +5455,7 @@ type UserContentPart struct {
 	//
 	//	*UserContentPart_Text
 	//	*UserContentPart_Image
+	//	*UserContentPart_Attachment
 	Part          isUserContentPart_Part `protobuf_oneof:"part"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -4955,7 +5463,7 @@ type UserContentPart struct {
 
 func (x *UserContentPart) Reset() {
 	*x = UserContentPart{}
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[70]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[75]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4967,7 +5475,7 @@ func (x *UserContentPart) String() string {
 func (*UserContentPart) ProtoMessage() {}
 
 func (x *UserContentPart) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[70]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[75]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4980,7 +5488,7 @@ func (x *UserContentPart) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UserContentPart.ProtoReflect.Descriptor instead.
 func (*UserContentPart) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{70}
+	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{75}
 }
 
 func (x *UserContentPart) GetPart() isUserContentPart_Part {
@@ -5008,6 +5516,15 @@ func (x *UserContentPart) GetImage() *ImagePart {
 	return nil
 }
 
+func (x *UserContentPart) GetAttachment() *AttachmentPart {
+	if x != nil {
+		if x, ok := x.Part.(*UserContentPart_Attachment); ok {
+			return x.Attachment
+		}
+	}
+	return nil
+}
+
 type isUserContentPart_Part interface {
 	isUserContentPart_Part()
 }
@@ -5020,9 +5537,15 @@ type UserContentPart_Image struct {
 	Image *ImagePart `protobuf:"bytes,2,opt,name=image,proto3,oneof"`
 }
 
+type UserContentPart_Attachment struct {
+	Attachment *AttachmentPart `protobuf:"bytes,3,opt,name=attachment,proto3,oneof"`
+}
+
 func (*UserContentPart_Text) isUserContentPart_Part() {}
 
 func (*UserContentPart_Image) isUserContentPart_Part() {}
+
+func (*UserContentPart_Attachment) isUserContentPart_Part() {}
 
 // Content part for assistant messages: can be text, reasoning, or mutation.
 type AssistantContentPart struct {
@@ -5038,7 +5561,7 @@ type AssistantContentPart struct {
 
 func (x *AssistantContentPart) Reset() {
 	*x = AssistantContentPart{}
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[71]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[76]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5050,7 +5573,7 @@ func (x *AssistantContentPart) String() string {
 func (*AssistantContentPart) ProtoMessage() {}
 
 func (x *AssistantContentPart) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[71]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[76]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5063,7 +5586,7 @@ func (x *AssistantContentPart) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use AssistantContentPart.ProtoReflect.Descriptor instead.
 func (*AssistantContentPart) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{71}
+	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{76}
 }
 
 func (x *AssistantContentPart) GetPart() isAssistantContentPart_Part {
@@ -5117,7 +5640,7 @@ type TextPart struct {
 
 func (x *TextPart) Reset() {
 	*x = TextPart{}
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[72]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[77]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5129,7 +5652,7 @@ func (x *TextPart) String() string {
 func (*TextPart) ProtoMessage() {}
 
 func (x *TextPart) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[72]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[77]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5142,7 +5665,7 @@ func (x *TextPart) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use TextPart.ProtoReflect.Descriptor instead.
 func (*TextPart) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{72}
+	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{77}
 }
 
 func (x *TextPart) GetText() string {
@@ -5159,13 +5682,15 @@ type ImagePart struct {
 	MediaType string `protobuf:"bytes,2,opt,name=media_type,json=mediaType,proto3" json:"media_type,omitempty"`
 	// Attachment RID for image content stored in S3
 	AttachmentRid string `protobuf:"bytes,4,opt,name=attachment_rid,json=attachmentRid,proto3" json:"attachment_rid,omitempty"`
+	// Optional display name of the uploaded file, returned with conversation history
+	Filename      string `protobuf:"bytes,5,opt,name=filename,proto3" json:"filename,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
 func (x *ImagePart) Reset() {
 	*x = ImagePart{}
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[73]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[78]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5177,7 +5702,7 @@ func (x *ImagePart) String() string {
 func (*ImagePart) ProtoMessage() {}
 
 func (x *ImagePart) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[73]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[78]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5190,7 +5715,7 @@ func (x *ImagePart) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ImagePart.ProtoReflect.Descriptor instead.
 func (*ImagePart) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{73}
+	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{78}
 }
 
 func (x *ImagePart) GetMediaType() string {
@@ -5207,6 +5732,67 @@ func (x *ImagePart) GetAttachmentRid() string {
 	return ""
 }
 
+func (x *ImagePart) GetFilename() string {
+	if x != nil {
+		return x.Filename
+	}
+	return ""
+}
+
+// User-supplied file stored in the authenticated attachment service.
+// Content is made available in the conversation sandbox, rather than sent inline to the model.
+type AttachmentPart struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	AttachmentRid string                 `protobuf:"bytes,1,opt,name=attachment_rid,json=attachmentRid,proto3" json:"attachment_rid,omitempty"`
+	MediaType     string                 `protobuf:"bytes,2,opt,name=media_type,json=mediaType,proto3" json:"media_type,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *AttachmentPart) Reset() {
+	*x = AttachmentPart{}
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[79]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *AttachmentPart) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*AttachmentPart) ProtoMessage() {}
+
+func (x *AttachmentPart) ProtoReflect() protoreflect.Message {
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[79]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use AttachmentPart.ProtoReflect.Descriptor instead.
+func (*AttachmentPart) Descriptor() ([]byte, []int) {
+	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{79}
+}
+
+func (x *AttachmentPart) GetAttachmentRid() string {
+	if x != nil {
+		return x.AttachmentRid
+	}
+	return ""
+}
+
+func (x *AttachmentPart) GetMediaType() string {
+	if x != nil {
+		return x.MediaType
+	}
+	return ""
+}
+
 // Reasoning part for assistant messages.
 type ReasoningPart struct {
 	state     protoimpl.MessageState `protogen:"open.v1"`
@@ -5219,7 +5805,7 @@ type ReasoningPart struct {
 
 func (x *ReasoningPart) Reset() {
 	*x = ReasoningPart{}
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[74]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[80]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5231,7 +5817,7 @@ func (x *ReasoningPart) String() string {
 func (*ReasoningPart) ProtoMessage() {}
 
 func (x *ReasoningPart) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[74]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[80]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5244,7 +5830,7 @@ func (x *ReasoningPart) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ReasoningPart.ProtoReflect.Descriptor instead.
 func (*ReasoningPart) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{74}
+	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{80}
 }
 
 func (x *ReasoningPart) GetReasoning() string {
@@ -5281,14 +5867,25 @@ type StreamChatResponse struct {
 	//	*StreamChatResponse_ClientDirective
 	//	*StreamChatResponse_CompactionNotice
 	//	*StreamChatResponse_StreamReset
-	Response      isStreamChatResponse_Response `protobuf_oneof:"response"`
+	//	*StreamChatResponse_SteeringMessage
+	//	*StreamChatResponse_ShouldKnowOffer
+	//	*StreamChatResponse_ToolCallProgress
+	Response isStreamChatResponse_Response `protobuf_oneof:"response"`
+	// This event's position in its durable run's event stream. Pass it back as
+	// StreamChatRequest.resume_after_offset to resume after it. Unset on events that are not from a
+	// run's stream, such as finish.
+	StreamOffset *int64 `protobuf:"varint,18,opt,name=stream_offset,json=streamOffset,proto3,oneof" json:"stream_offset,omitempty"`
+	// The incarnation of the run's event stream that stream_offset belongs to. Pass it back as
+	// StreamChatRequest.resume_epoch with resume_after_offset. Unset when the stream has no
+	// incarnations (a Workflow Stream) and on events without stream_offset.
+	StreamEpoch   *string `protobuf:"bytes,19,opt,name=stream_epoch,json=streamEpoch,proto3,oneof" json:"stream_epoch,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
 func (x *StreamChatResponse) Reset() {
 	*x = StreamChatResponse{}
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[75]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[81]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5300,7 +5897,7 @@ func (x *StreamChatResponse) String() string {
 func (*StreamChatResponse) ProtoMessage() {}
 
 func (x *StreamChatResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[75]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[81]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5313,7 +5910,7 @@ func (x *StreamChatResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use StreamChatResponse.ProtoReflect.Descriptor instead.
 func (*StreamChatResponse) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{75}
+	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{81}
 }
 
 func (x *StreamChatResponse) GetResponse() isStreamChatResponse_Response {
@@ -5458,6 +6055,47 @@ func (x *StreamChatResponse) GetStreamReset() *StreamReset {
 	return nil
 }
 
+func (x *StreamChatResponse) GetSteeringMessage() *SteeringMessage {
+	if x != nil {
+		if x, ok := x.Response.(*StreamChatResponse_SteeringMessage); ok {
+			return x.SteeringMessage
+		}
+	}
+	return nil
+}
+
+func (x *StreamChatResponse) GetShouldKnowOffer() *ShouldKnowOffer {
+	if x != nil {
+		if x, ok := x.Response.(*StreamChatResponse_ShouldKnowOffer); ok {
+			return x.ShouldKnowOffer
+		}
+	}
+	return nil
+}
+
+func (x *StreamChatResponse) GetToolCallProgress() *ToolCallProgress {
+	if x != nil {
+		if x, ok := x.Response.(*StreamChatResponse_ToolCallProgress); ok {
+			return x.ToolCallProgress
+		}
+	}
+	return nil
+}
+
+func (x *StreamChatResponse) GetStreamOffset() int64 {
+	if x != nil && x.StreamOffset != nil {
+		return *x.StreamOffset
+	}
+	return 0
+}
+
+func (x *StreamChatResponse) GetStreamEpoch() string {
+	if x != nil && x.StreamEpoch != nil {
+		return *x.StreamEpoch
+	}
+	return ""
+}
+
 type isStreamChatResponse_Response interface {
 	isStreamChatResponse_Response()
 }
@@ -5522,6 +6160,18 @@ type StreamChatResponse_StreamReset struct {
 	StreamReset *StreamReset `protobuf:"bytes,16,opt,name=stream_reset,json=streamReset,proto3,oneof"`
 }
 
+type StreamChatResponse_SteeringMessage struct {
+	SteeringMessage *SteeringMessage `protobuf:"bytes,17,opt,name=steering_message,json=steeringMessage,proto3,oneof"`
+}
+
+type StreamChatResponse_ShouldKnowOffer struct {
+	ShouldKnowOffer *ShouldKnowOffer `protobuf:"bytes,20,opt,name=should_know_offer,json=shouldKnowOffer,proto3,oneof"`
+}
+
+type StreamChatResponse_ToolCallProgress struct {
+	ToolCallProgress *ToolCallProgress `protobuf:"bytes,21,opt,name=tool_call_progress,json=toolCallProgress,proto3,oneof"`
+}
+
 func (*StreamChatResponse_Finish) isStreamChatResponse_Response() {}
 
 func (*StreamChatResponse_Error) isStreamChatResponse_Response() {}
@@ -5552,6 +6202,198 @@ func (*StreamChatResponse_CompactionNotice) isStreamChatResponse_Response() {}
 
 func (*StreamChatResponse_StreamReset) isStreamChatResponse_Response() {}
 
+func (*StreamChatResponse_SteeringMessage) isStreamChatResponse_Response() {}
+
+func (*StreamChatResponse_ShouldKnowOffer) isStreamChatResponse_Response() {}
+
+func (*StreamChatResponse_ToolCallProgress) isStreamChatResponse_Response() {}
+
+// The current status of a running tool call, sent by the host while the call waits on something the model did not
+// choose, such as sandbox compute starting. An empty status clears it once the wait ends, and a later
+// ToolActionConfirmation for the call supersedes it. Not persisted: a reload shows the call's own status.
+type ToolCallProgress struct {
+	state      protoimpl.MessageState `protogen:"open.v1"`
+	ToolCallId string                 `protobuf:"bytes,1,opt,name=tool_call_id,json=toolCallId,proto3" json:"tool_call_id,omitempty"`
+	// A 2 to 8 word phrase, such as "Starting sandbox". Empty: show the call's own status again.
+	Status        string `protobuf:"bytes,2,opt,name=status,proto3" json:"status,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ToolCallProgress) Reset() {
+	*x = ToolCallProgress{}
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[82]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ToolCallProgress) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ToolCallProgress) ProtoMessage() {}
+
+func (x *ToolCallProgress) ProtoReflect() protoreflect.Message {
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[82]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ToolCallProgress.ProtoReflect.Descriptor instead.
+func (*ToolCallProgress) Descriptor() ([]byte, []int) {
+	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{82}
+}
+
+func (x *ToolCallProgress) GetToolCallId() string {
+	if x != nil {
+		return x.ToolCallId
+	}
+	return ""
+}
+
+func (x *ToolCallProgress) GetStatus() string {
+	if x != nil {
+		return x.Status
+	}
+	return ""
+}
+
+// A SteerAgentRun message the run handed to the model. It arrives before any content of the
+// model request that carries it. Persisted history shows it as a user message inside the turn.
+type SteeringMessage struct {
+	state           protoimpl.MessageState `protogen:"open.v1"`
+	ClientMessageId string                 `protobuf:"bytes,1,opt,name=client_message_id,json=clientMessageId,proto3" json:"client_message_id,omitempty"`
+	Text            string                 `protobuf:"bytes,2,opt,name=text,proto3" json:"text,omitempty"`
+	unknownFields   protoimpl.UnknownFields
+	sizeCache       protoimpl.SizeCache
+}
+
+func (x *SteeringMessage) Reset() {
+	*x = SteeringMessage{}
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[83]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *SteeringMessage) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*SteeringMessage) ProtoMessage() {}
+
+func (x *SteeringMessage) ProtoReflect() protoreflect.Message {
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[83]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use SteeringMessage.ProtoReflect.Descriptor instead.
+func (*SteeringMessage) Descriptor() ([]byte, []int) {
+	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{83}
+}
+
+func (x *SteeringMessage) GetClientMessageId() string {
+	if x != nil {
+		return x.ClientMessageId
+	}
+	return ""
+}
+
+func (x *SteeringMessage) GetText() string {
+	if x != nil {
+		return x.Text
+	}
+	return ""
+}
+
+// A side model read the run so far and found one thing the person would likely miss, such as a
+// tradeoff the agent made or a result that may be off. At most one per run, at any point in the
+// stream (including inside an open step); it is not part of the transcript and is not persisted
+// in history. Show it apart from the messages and report the person's answer with
+// AnswerShouldKnowOffer.
+type ShouldKnowOffer struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// UUID. AnswerShouldKnowOfferRequest.offer_id.
+	Id  string        `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
+	Tag ShouldKnowTag `protobuf:"varint,2,opt,name=tag,proto3,enum=nominal.ai.v1.ShouldKnowTag" json:"tag,omitempty"`
+	// One plain-language sentence for the collapsed card.
+	Line string `protobuf:"bytes,3,opt,name=line,proto3" json:"line,omitempty"`
+	// Markdown: a bold title line, then a short explanation.
+	ExplanationMarkdown string `protobuf:"bytes,4,opt,name=explanation_markdown,json=explanationMarkdown,proto3" json:"explanation_markdown,omitempty"`
+	unknownFields       protoimpl.UnknownFields
+	sizeCache           protoimpl.SizeCache
+}
+
+func (x *ShouldKnowOffer) Reset() {
+	*x = ShouldKnowOffer{}
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[84]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ShouldKnowOffer) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ShouldKnowOffer) ProtoMessage() {}
+
+func (x *ShouldKnowOffer) ProtoReflect() protoreflect.Message {
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[84]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ShouldKnowOffer.ProtoReflect.Descriptor instead.
+func (*ShouldKnowOffer) Descriptor() ([]byte, []int) {
+	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{84}
+}
+
+func (x *ShouldKnowOffer) GetId() string {
+	if x != nil {
+		return x.Id
+	}
+	return ""
+}
+
+func (x *ShouldKnowOffer) GetTag() ShouldKnowTag {
+	if x != nil {
+		return x.Tag
+	}
+	return ShouldKnowTag_SHOULD_KNOW_TAG_UNSPECIFIED
+}
+
+func (x *ShouldKnowOffer) GetLine() string {
+	if x != nil {
+		return x.Line
+	}
+	return ""
+}
+
+func (x *ShouldKnowOffer) GetExplanationMarkdown() string {
+	if x != nil {
+		return x.ExplanationMarkdown
+	}
+	return ""
+}
+
 // The producer is restarting a step after a model-request retry: whatever the failed attempt
 // streamed for that step is superseded. Discard the currently open step (a StepStart with no
 // matching StepEnd) and everything rendered inside it; the retried step's own StepStart
@@ -5566,7 +6408,7 @@ type StreamReset struct {
 
 func (x *StreamReset) Reset() {
 	*x = StreamReset{}
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[76]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[85]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5578,7 +6420,7 @@ func (x *StreamReset) String() string {
 func (*StreamReset) ProtoMessage() {}
 
 func (x *StreamReset) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[76]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[85]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5591,7 +6433,7 @@ func (x *StreamReset) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use StreamReset.ProtoReflect.Descriptor instead.
 func (*StreamReset) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{76}
+	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{85}
 }
 
 // Indicates that a model request within the agent run is starting: emitted when the
@@ -5607,7 +6449,7 @@ type StepStart struct {
 
 func (x *StepStart) Reset() {
 	*x = StepStart{}
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[77]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[86]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5619,7 +6461,7 @@ func (x *StepStart) String() string {
 func (*StepStart) ProtoMessage() {}
 
 func (x *StepStart) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[77]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[86]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5632,7 +6474,7 @@ func (x *StepStart) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use StepStart.ProtoReflect.Descriptor instead.
 func (*StepStart) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{77}
+	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{86}
 }
 
 // Closes the model-response portion of a step: emitted when handling of the step's
@@ -5647,7 +6489,7 @@ type StepEnd struct {
 
 func (x *StepEnd) Reset() {
 	*x = StepEnd{}
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[78]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[87]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5659,7 +6501,7 @@ func (x *StepEnd) String() string {
 func (*StepEnd) ProtoMessage() {}
 
 func (x *StepEnd) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[78]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[87]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5672,7 +6514,7 @@ func (x *StepEnd) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use StepEnd.ProtoReflect.Descriptor instead.
 func (*StepEnd) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{78}
+	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{87}
 }
 
 // Emitted once whenever StreamChat automatically compacted the conversation (pre-turn or
@@ -5690,7 +6532,7 @@ type CompactionNotice struct {
 
 func (x *CompactionNotice) Reset() {
 	*x = CompactionNotice{}
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[79]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[88]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5702,7 +6544,7 @@ func (x *CompactionNotice) String() string {
 func (*CompactionNotice) ProtoMessage() {}
 
 func (x *CompactionNotice) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[79]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[88]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5715,7 +6557,7 @@ func (x *CompactionNotice) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CompactionNotice.ProtoReflect.Descriptor instead.
 func (*CompactionNotice) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{79}
+	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{88}
 }
 
 func (x *CompactionNotice) GetTokensBefore() int32 {
@@ -5753,7 +6595,7 @@ type ToolCallDescription struct {
 
 func (x *ToolCallDescription) Reset() {
 	*x = ToolCallDescription{}
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[80]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[89]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5765,7 +6607,7 @@ func (x *ToolCallDescription) String() string {
 func (*ToolCallDescription) ProtoMessage() {}
 
 func (x *ToolCallDescription) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[80]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[89]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5778,7 +6620,7 @@ func (x *ToolCallDescription) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ToolCallDescription.ProtoReflect.Descriptor instead.
 func (*ToolCallDescription) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{80}
+	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{89}
 }
 
 func (x *ToolCallDescription) GetToolCallId() string {
@@ -5822,7 +6664,7 @@ type UserQuestionCall struct {
 
 func (x *UserQuestionCall) Reset() {
 	*x = UserQuestionCall{}
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[81]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[90]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5834,7 +6676,7 @@ func (x *UserQuestionCall) String() string {
 func (*UserQuestionCall) ProtoMessage() {}
 
 func (x *UserQuestionCall) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[81]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[90]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5847,7 +6689,7 @@ func (x *UserQuestionCall) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UserQuestionCall.ProtoReflect.Descriptor instead.
 func (*UserQuestionCall) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{81}
+	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{90}
 }
 
 func (x *UserQuestionCall) GetToolCall() *ToolCallDescription {
@@ -5909,7 +6751,7 @@ type Finish struct {
 
 func (x *Finish) Reset() {
 	*x = Finish{}
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[82]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[91]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5921,7 +6763,7 @@ func (x *Finish) String() string {
 func (*Finish) ProtoMessage() {}
 
 func (x *Finish) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[82]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[91]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5934,7 +6776,7 @@ func (x *Finish) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Finish.ProtoReflect.Descriptor instead.
 func (*Finish) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{82}
+	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{91}
 }
 
 func (x *Finish) GetOrderedMessageIds() []string {
@@ -5996,7 +6838,7 @@ type Error struct {
 
 func (x *Error) Reset() {
 	*x = Error{}
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[83]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[92]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -6008,7 +6850,7 @@ func (x *Error) String() string {
 func (*Error) ProtoMessage() {}
 
 func (x *Error) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[83]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[92]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -6021,7 +6863,7 @@ func (x *Error) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Error.ProtoReflect.Descriptor instead.
 func (*Error) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{83}
+	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{92}
 }
 
 func (x *Error) GetMessage() string {
@@ -6043,7 +6885,7 @@ type TextStart struct {
 
 func (x *TextStart) Reset() {
 	*x = TextStart{}
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[84]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[93]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -6055,7 +6897,7 @@ func (x *TextStart) String() string {
 func (*TextStart) ProtoMessage() {}
 
 func (x *TextStart) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[84]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[93]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -6068,7 +6910,7 @@ func (x *TextStart) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use TextStart.ProtoReflect.Descriptor instead.
 func (*TextStart) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{84}
+	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{93}
 }
 
 func (x *TextStart) GetId() string {
@@ -6090,7 +6932,7 @@ type TextDelta struct {
 
 func (x *TextDelta) Reset() {
 	*x = TextDelta{}
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[85]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[94]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -6102,7 +6944,7 @@ func (x *TextDelta) String() string {
 func (*TextDelta) ProtoMessage() {}
 
 func (x *TextDelta) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[85]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[94]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -6115,7 +6957,7 @@ func (x *TextDelta) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use TextDelta.ProtoReflect.Descriptor instead.
 func (*TextDelta) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{85}
+	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{94}
 }
 
 func (x *TextDelta) GetId() string {
@@ -6142,7 +6984,7 @@ type TextEnd struct {
 
 func (x *TextEnd) Reset() {
 	*x = TextEnd{}
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[86]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[95]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -6154,7 +6996,7 @@ func (x *TextEnd) String() string {
 func (*TextEnd) ProtoMessage() {}
 
 func (x *TextEnd) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[86]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[95]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -6167,7 +7009,7 @@ func (x *TextEnd) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use TextEnd.ProtoReflect.Descriptor instead.
 func (*TextEnd) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{86}
+	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{95}
 }
 
 func (x *TextEnd) GetId() string {
@@ -6187,7 +7029,7 @@ type ReasoningStart struct {
 
 func (x *ReasoningStart) Reset() {
 	*x = ReasoningStart{}
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[87]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[96]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -6199,7 +7041,7 @@ func (x *ReasoningStart) String() string {
 func (*ReasoningStart) ProtoMessage() {}
 
 func (x *ReasoningStart) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[87]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[96]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -6212,7 +7054,7 @@ func (x *ReasoningStart) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ReasoningStart.ProtoReflect.Descriptor instead.
 func (*ReasoningStart) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{87}
+	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{96}
 }
 
 func (x *ReasoningStart) GetId() string {
@@ -6234,7 +7076,7 @@ type ReasoningDelta struct {
 
 func (x *ReasoningDelta) Reset() {
 	*x = ReasoningDelta{}
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[88]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[97]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -6246,7 +7088,7 @@ func (x *ReasoningDelta) String() string {
 func (*ReasoningDelta) ProtoMessage() {}
 
 func (x *ReasoningDelta) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[88]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[97]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -6259,7 +7101,7 @@ func (x *ReasoningDelta) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ReasoningDelta.ProtoReflect.Descriptor instead.
 func (*ReasoningDelta) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{88}
+	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{97}
 }
 
 func (x *ReasoningDelta) GetId() string {
@@ -6288,7 +7130,7 @@ type ReasoningEnd struct {
 
 func (x *ReasoningEnd) Reset() {
 	*x = ReasoningEnd{}
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[89]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[98]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -6300,7 +7142,7 @@ func (x *ReasoningEnd) String() string {
 func (*ReasoningEnd) ProtoMessage() {}
 
 func (x *ReasoningEnd) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[89]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[98]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -6313,7 +7155,7 @@ func (x *ReasoningEnd) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ReasoningEnd.ProtoReflect.Descriptor instead.
 func (*ReasoningEnd) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{89}
+	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{98}
 }
 
 func (x *ReasoningEnd) GetId() string {
@@ -6355,7 +7197,7 @@ type ToolAction struct {
 
 func (x *ToolAction) Reset() {
 	*x = ToolAction{}
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[90]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[99]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -6367,7 +7209,7 @@ func (x *ToolAction) String() string {
 func (*ToolAction) ProtoMessage() {}
 
 func (x *ToolAction) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[90]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[99]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -6380,7 +7222,7 @@ func (x *ToolAction) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ToolAction.ProtoReflect.Descriptor instead.
 func (*ToolAction) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{90}
+	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{99}
 }
 
 func (x *ToolAction) GetToolActionVerb() string {
@@ -6439,7 +7281,7 @@ type ToolActionConfirmation struct {
 
 func (x *ToolActionConfirmation) Reset() {
 	*x = ToolActionConfirmation{}
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[91]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[100]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -6451,7 +7293,7 @@ func (x *ToolActionConfirmation) String() string {
 func (*ToolActionConfirmation) ProtoMessage() {}
 
 func (x *ToolActionConfirmation) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[91]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[100]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -6464,7 +7306,7 @@ func (x *ToolActionConfirmation) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ToolActionConfirmation.ProtoReflect.Descriptor instead.
 func (*ToolActionConfirmation) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{91}
+	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{100}
 }
 
 func (x *ToolActionConfirmation) GetId() string {
@@ -6525,13 +7367,15 @@ func (*ToolActionConfirmation_Failure) isToolActionConfirmation_Outcome() {}
 type ToolActionSuccess struct {
 	state              protoimpl.MessageState `protogen:"open.v1"`
 	ToolSuccessMessage string                 `protobuf:"bytes,1,opt,name=tool_success_message,json=toolSuccessMessage,proto3" json:"tool_success_message,omitempty"`
-	unknownFields      protoimpl.UnknownFields
-	sizeCache          protoimpl.SizeCache
+	// Typed outputs of a sandbox Python cell that ended in this call. For display only: the model never sees them.
+	CodeCell      *CodeCellOutputs `protobuf:"bytes,2,opt,name=code_cell,json=codeCell,proto3,oneof" json:"code_cell,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
 }
 
 func (x *ToolActionSuccess) Reset() {
 	*x = ToolActionSuccess{}
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[92]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[101]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -6543,7 +7387,7 @@ func (x *ToolActionSuccess) String() string {
 func (*ToolActionSuccess) ProtoMessage() {}
 
 func (x *ToolActionSuccess) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[92]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[101]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -6556,7 +7400,7 @@ func (x *ToolActionSuccess) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ToolActionSuccess.ProtoReflect.Descriptor instead.
 func (*ToolActionSuccess) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{92}
+	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{101}
 }
 
 func (x *ToolActionSuccess) GetToolSuccessMessage() string {
@@ -6565,6 +7409,244 @@ func (x *ToolActionSuccess) GetToolSuccessMessage() string {
 	}
 	return ""
 }
+
+func (x *ToolActionSuccess) GetCodeCell() *CodeCellOutputs {
+	if x != nil {
+		return x.CodeCell
+	}
+	return nil
+}
+
+type CodeCellOutputs struct {
+	state   protoimpl.MessageState `protogen:"open.v1"`
+	Outputs []*CodeCellOutput      `protobuf:"bytes,1,rep,name=outputs,proto3" json:"outputs,omitempty"`
+	// Set when outputs stop before the cell's last output.
+	Truncated bool `protobuf:"varint,2,opt,name=truncated,proto3" json:"truncated,omitempty"`
+	// Files the job's code showed to the user, in the order it showed them.
+	Files         []*CodeCellFile `protobuf:"bytes,3,rep,name=files,proto3" json:"files,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *CodeCellOutputs) Reset() {
+	*x = CodeCellOutputs{}
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[102]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *CodeCellOutputs) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*CodeCellOutputs) ProtoMessage() {}
+
+func (x *CodeCellOutputs) ProtoReflect() protoreflect.Message {
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[102]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use CodeCellOutputs.ProtoReflect.Descriptor instead.
+func (*CodeCellOutputs) Descriptor() ([]byte, []int) {
+	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{102}
+}
+
+func (x *CodeCellOutputs) GetOutputs() []*CodeCellOutput {
+	if x != nil {
+		return x.Outputs
+	}
+	return nil
+}
+
+func (x *CodeCellOutputs) GetTruncated() bool {
+	if x != nil {
+		return x.Truncated
+	}
+	return false
+}
+
+func (x *CodeCellOutputs) GetFiles() []*CodeCellFile {
+	if x != nil {
+		return x.Files
+	}
+	return nil
+}
+
+// A file sandbox code showed to the user, saved as a Nominal attachment.
+type CodeCellFile struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	AttachmentRid string                 `protobuf:"bytes,1,opt,name=attachment_rid,json=attachmentRid,proto3" json:"attachment_rid,omitempty"`
+	// The file's media type, such as image/png or application/pdf.
+	MediaType     string `protobuf:"bytes,2,opt,name=media_type,json=mediaType,proto3" json:"media_type,omitempty"`
+	Name          string `protobuf:"bytes,3,opt,name=name,proto3" json:"name,omitempty"`
+	SizeBytes     uint64 `protobuf:"varint,4,opt,name=size_bytes,json=sizeBytes,proto3" json:"size_bytes,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *CodeCellFile) Reset() {
+	*x = CodeCellFile{}
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[103]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *CodeCellFile) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*CodeCellFile) ProtoMessage() {}
+
+func (x *CodeCellFile) ProtoReflect() protoreflect.Message {
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[103]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use CodeCellFile.ProtoReflect.Descriptor instead.
+func (*CodeCellFile) Descriptor() ([]byte, []int) {
+	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{103}
+}
+
+func (x *CodeCellFile) GetAttachmentRid() string {
+	if x != nil {
+		return x.AttachmentRid
+	}
+	return ""
+}
+
+func (x *CodeCellFile) GetMediaType() string {
+	if x != nil {
+		return x.MediaType
+	}
+	return ""
+}
+
+func (x *CodeCellFile) GetName() string {
+	if x != nil {
+		return x.Name
+	}
+	return ""
+}
+
+func (x *CodeCellFile) GetSizeBytes() uint64 {
+	if x != nil {
+		return x.SizeBytes
+	}
+	return 0
+}
+
+// One output of a Python cell, in the order the kernel produced it.
+type CodeCellOutput struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Types that are valid to be assigned to Output:
+	//
+	//	*CodeCellOutput_Stream_
+	//	*CodeCellOutput_Data_
+	//	*CodeCellOutput_Error_
+	Output        isCodeCellOutput_Output `protobuf_oneof:"output"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *CodeCellOutput) Reset() {
+	*x = CodeCellOutput{}
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[104]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *CodeCellOutput) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*CodeCellOutput) ProtoMessage() {}
+
+func (x *CodeCellOutput) ProtoReflect() protoreflect.Message {
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[104]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use CodeCellOutput.ProtoReflect.Descriptor instead.
+func (*CodeCellOutput) Descriptor() ([]byte, []int) {
+	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{104}
+}
+
+func (x *CodeCellOutput) GetOutput() isCodeCellOutput_Output {
+	if x != nil {
+		return x.Output
+	}
+	return nil
+}
+
+func (x *CodeCellOutput) GetStream() *CodeCellOutput_Stream {
+	if x != nil {
+		if x, ok := x.Output.(*CodeCellOutput_Stream_); ok {
+			return x.Stream
+		}
+	}
+	return nil
+}
+
+func (x *CodeCellOutput) GetData() *CodeCellOutput_Data {
+	if x != nil {
+		if x, ok := x.Output.(*CodeCellOutput_Data_); ok {
+			return x.Data
+		}
+	}
+	return nil
+}
+
+func (x *CodeCellOutput) GetError() *CodeCellOutput_Error {
+	if x != nil {
+		if x, ok := x.Output.(*CodeCellOutput_Error_); ok {
+			return x.Error
+		}
+	}
+	return nil
+}
+
+type isCodeCellOutput_Output interface {
+	isCodeCellOutput_Output()
+}
+
+type CodeCellOutput_Stream_ struct {
+	Stream *CodeCellOutput_Stream `protobuf:"bytes,1,opt,name=stream,proto3,oneof"`
+}
+
+type CodeCellOutput_Data_ struct {
+	Data *CodeCellOutput_Data `protobuf:"bytes,2,opt,name=data,proto3,oneof"`
+}
+
+type CodeCellOutput_Error_ struct {
+	Error *CodeCellOutput_Error `protobuf:"bytes,3,opt,name=error,proto3,oneof"`
+}
+
+func (*CodeCellOutput_Stream_) isCodeCellOutput_Output() {}
+
+func (*CodeCellOutput_Data_) isCodeCellOutput_Output() {}
+
+func (*CodeCellOutput_Error_) isCodeCellOutput_Output() {}
 
 type ToolActionFailure struct {
 	state            protoimpl.MessageState `protogen:"open.v1"`
@@ -6575,7 +7657,7 @@ type ToolActionFailure struct {
 
 func (x *ToolActionFailure) Reset() {
 	*x = ToolActionFailure{}
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[93]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[105]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -6587,7 +7669,7 @@ func (x *ToolActionFailure) String() string {
 func (*ToolActionFailure) ProtoMessage() {}
 
 func (x *ToolActionFailure) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[93]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[105]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -6600,7 +7682,7 @@ func (x *ToolActionFailure) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ToolActionFailure.ProtoReflect.Descriptor instead.
 func (*ToolActionFailure) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{93}
+	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{105}
 }
 
 func (x *ToolActionFailure) GetToolErrorMessage() string {
@@ -6630,7 +7712,7 @@ type ClientDirective struct {
 
 func (x *ClientDirective) Reset() {
 	*x = ClientDirective{}
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[94]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[106]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -6642,7 +7724,7 @@ func (x *ClientDirective) String() string {
 func (*ClientDirective) ProtoMessage() {}
 
 func (x *ClientDirective) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[94]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[106]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -6655,7 +7737,7 @@ func (x *ClientDirective) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ClientDirective.ProtoReflect.Descriptor instead.
 func (*ClientDirective) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{94}
+	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{106}
 }
 
 func (x *ClientDirective) GetVersion() isClientDirective_Version {
@@ -6686,12 +7768,14 @@ func (*ClientDirective_V1) isClientDirective_Version() {}
 
 type ClientDirectiveV1 struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
-	// tool_call_id of the tool call that produced this directive
+	// Unique per directive; prefixed by the producing tool_call_id.
 	Id string `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
 	// Types that are valid to be assigned to Kind:
 	//
 	//	*ClientDirectiveV1_ResourceEdited
 	//	*ClientDirectiveV1_SetTimeRange
+	//	*ClientDirectiveV1_ResourceChanged
+	//	*ClientDirectiveV1_SandboxStatus
 	Kind          isClientDirectiveV1_Kind `protobuf_oneof:"kind"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -6699,7 +7783,7 @@ type ClientDirectiveV1 struct {
 
 func (x *ClientDirectiveV1) Reset() {
 	*x = ClientDirectiveV1{}
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[95]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[107]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -6711,7 +7795,7 @@ func (x *ClientDirectiveV1) String() string {
 func (*ClientDirectiveV1) ProtoMessage() {}
 
 func (x *ClientDirectiveV1) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[95]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[107]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -6724,7 +7808,7 @@ func (x *ClientDirectiveV1) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ClientDirectiveV1.ProtoReflect.Descriptor instead.
 func (*ClientDirectiveV1) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{95}
+	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{107}
 }
 
 func (x *ClientDirectiveV1) GetId() string {
@@ -6759,6 +7843,24 @@ func (x *ClientDirectiveV1) GetSetTimeRange() *SetTimeRangeDirective {
 	return nil
 }
 
+func (x *ClientDirectiveV1) GetResourceChanged() *ResourceChangedDirective {
+	if x != nil {
+		if x, ok := x.Kind.(*ClientDirectiveV1_ResourceChanged); ok {
+			return x.ResourceChanged
+		}
+	}
+	return nil
+}
+
+func (x *ClientDirectiveV1) GetSandboxStatus() *SandboxStatusDirective {
+	if x != nil {
+		if x, ok := x.Kind.(*ClientDirectiveV1_SandboxStatus); ok {
+			return x.SandboxStatus
+		}
+	}
+	return nil
+}
+
 type isClientDirectiveV1_Kind interface {
 	isClientDirectiveV1_Kind()
 }
@@ -6771,12 +7873,78 @@ type ClientDirectiveV1_SetTimeRange struct {
 	SetTimeRange *SetTimeRangeDirective `protobuf:"bytes,3,opt,name=set_time_range,json=setTimeRange,proto3,oneof"`
 }
 
+type ClientDirectiveV1_ResourceChanged struct {
+	ResourceChanged *ResourceChangedDirective `protobuf:"bytes,4,opt,name=resource_changed,json=resourceChanged,proto3,oneof"`
+}
+
+type ClientDirectiveV1_SandboxStatus struct {
+	SandboxStatus *SandboxStatusDirective `protobuf:"bytes,5,opt,name=sandbox_status,json=sandboxStatus,proto3,oneof"`
+}
+
 func (*ClientDirectiveV1_ResourceEdited) isClientDirectiveV1_Kind() {}
 
 func (*ClientDirectiveV1_SetTimeRange) isClientDirectiveV1_Kind() {}
 
+func (*ClientDirectiveV1_ResourceChanged) isClientDirectiveV1_Kind() {}
+
+func (*ClientDirectiveV1_SandboxStatus) isClientDirectiveV1_Kind() {}
+
+// The conversation's sandbox status changed during a run, as BatchGetConversationSandboxes would now report it.
+type SandboxStatusDirective struct {
+	state           protoimpl.MessageState    `protogen:"open.v1"`
+	ConversationRid string                    `protobuf:"bytes,1,opt,name=conversation_rid,json=conversationRid,proto3" json:"conversation_rid,omitempty"`
+	Status          ConversationSandboxStatus `protobuf:"varint,2,opt,name=status,proto3,enum=nominal.ai.v1.ConversationSandboxStatus" json:"status,omitempty"`
+	unknownFields   protoimpl.UnknownFields
+	sizeCache       protoimpl.SizeCache
+}
+
+func (x *SandboxStatusDirective) Reset() {
+	*x = SandboxStatusDirective{}
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[108]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *SandboxStatusDirective) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*SandboxStatusDirective) ProtoMessage() {}
+
+func (x *SandboxStatusDirective) ProtoReflect() protoreflect.Message {
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[108]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use SandboxStatusDirective.ProtoReflect.Descriptor instead.
+func (*SandboxStatusDirective) Descriptor() ([]byte, []int) {
+	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{108}
+}
+
+func (x *SandboxStatusDirective) GetConversationRid() string {
+	if x != nil {
+		return x.ConversationRid
+	}
+	return ""
+}
+
+func (x *SandboxStatusDirective) GetStatus() ConversationSandboxStatus {
+	if x != nil {
+		return x.Status
+	}
+	return ConversationSandboxStatus_CONVERSATION_SANDBOX_STATUS_UNSPECIFIED
+}
+
 // The agent edited a branch-versioned resource (checklist/template) outside the
 // client's local editor store; the owning editor should refetch and remount.
+// New producers should prefer ResourceChangedDirective.
 type ResourceEditedDirective struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Types that are valid to be assigned to Resource:
@@ -6791,7 +7959,7 @@ type ResourceEditedDirective struct {
 
 func (x *ResourceEditedDirective) Reset() {
 	*x = ResourceEditedDirective{}
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[96]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[109]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -6803,7 +7971,7 @@ func (x *ResourceEditedDirective) String() string {
 func (*ResourceEditedDirective) ProtoMessage() {}
 
 func (x *ResourceEditedDirective) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[96]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[109]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -6816,7 +7984,7 @@ func (x *ResourceEditedDirective) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ResourceEditedDirective.ProtoReflect.Descriptor instead.
 func (*ResourceEditedDirective) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{96}
+	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{109}
 }
 
 func (x *ResourceEditedDirective) GetResource() isResourceEditedDirective_Resource {
@@ -6891,7 +8059,7 @@ type ChecklistEdited struct {
 
 func (x *ChecklistEdited) Reset() {
 	*x = ChecklistEdited{}
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[97]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[110]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -6903,7 +8071,7 @@ func (x *ChecklistEdited) String() string {
 func (*ChecklistEdited) ProtoMessage() {}
 
 func (x *ChecklistEdited) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[97]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[110]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -6916,7 +8084,7 @@ func (x *ChecklistEdited) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ChecklistEdited.ProtoReflect.Descriptor instead.
 func (*ChecklistEdited) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{97}
+	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{110}
 }
 
 func (x *ChecklistEdited) GetChecklistRid() string {
@@ -6967,7 +8135,7 @@ type TemplateEdited struct {
 
 func (x *TemplateEdited) Reset() {
 	*x = TemplateEdited{}
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[98]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[111]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -6979,7 +8147,7 @@ func (x *TemplateEdited) String() string {
 func (*TemplateEdited) ProtoMessage() {}
 
 func (x *TemplateEdited) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[98]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[111]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -6992,7 +8160,7 @@ func (x *TemplateEdited) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use TemplateEdited.ProtoReflect.Descriptor instead.
 func (*TemplateEdited) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{98}
+	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{111}
 }
 
 func (x *TemplateEdited) GetTemplateRid() string {
@@ -7035,7 +8203,7 @@ type WorkbookEdited struct {
 
 func (x *WorkbookEdited) Reset() {
 	*x = WorkbookEdited{}
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[99]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[112]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -7047,7 +8215,7 @@ func (x *WorkbookEdited) String() string {
 func (*WorkbookEdited) ProtoMessage() {}
 
 func (x *WorkbookEdited) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[99]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[112]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -7060,7 +8228,7 @@ func (x *WorkbookEdited) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use WorkbookEdited.ProtoReflect.Descriptor instead.
 func (*WorkbookEdited) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{99}
+	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{112}
 }
 
 func (x *WorkbookEdited) GetWorkbookRid() string {
@@ -7068,6 +8236,91 @@ func (x *WorkbookEdited) GetWorkbookRid() string {
 		return x.WorkbookRid
 	}
 	return ""
+}
+
+// A resource was created, updated, or archived by a tool call. The tool that made
+// the change reports it, so the target is the resource the tool actually touched
+// rather than the page the user happened to have open. Clients refresh whatever
+// they show for the resource.
+type ResourceChangedDirective struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// RID of the resource that changed.
+	ResourceRid string             `protobuf:"bytes,1,opt,name=resource_rid,json=resourceRid,proto3" json:"resource_rid,omitempty"`
+	Change      ResourceChangeType `protobuf:"varint,2,opt,name=change,proto3,enum=nominal.ai.v1.ResourceChangeType" json:"change,omitempty"`
+	// Only for branch-versioned resources (checklist/template): the branch the change landed on.
+	BranchName *string `protobuf:"bytes,3,opt,name=branch_name,json=branchName,proto3,oneof" json:"branch_name,omitempty"`
+	// Only for branch-versioned resources: the commit the change produced.
+	CommitId *string `protobuf:"bytes,4,opt,name=commit_id,json=commitId,proto3,oneof" json:"commit_id,omitempty"`
+	// RIDs of other resources whose pages display this one (for example the run for
+	// a checklist execution or an event), so those pages can refresh too.
+	RelatedRids   []string `protobuf:"bytes,5,rep,name=related_rids,json=relatedRids,proto3" json:"related_rids,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ResourceChangedDirective) Reset() {
+	*x = ResourceChangedDirective{}
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[113]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ResourceChangedDirective) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ResourceChangedDirective) ProtoMessage() {}
+
+func (x *ResourceChangedDirective) ProtoReflect() protoreflect.Message {
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[113]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ResourceChangedDirective.ProtoReflect.Descriptor instead.
+func (*ResourceChangedDirective) Descriptor() ([]byte, []int) {
+	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{113}
+}
+
+func (x *ResourceChangedDirective) GetResourceRid() string {
+	if x != nil {
+		return x.ResourceRid
+	}
+	return ""
+}
+
+func (x *ResourceChangedDirective) GetChange() ResourceChangeType {
+	if x != nil {
+		return x.Change
+	}
+	return ResourceChangeType_RESOURCE_CHANGE_TYPE_UNSPECIFIED
+}
+
+func (x *ResourceChangedDirective) GetBranchName() string {
+	if x != nil && x.BranchName != nil {
+		return *x.BranchName
+	}
+	return ""
+}
+
+func (x *ResourceChangedDirective) GetCommitId() string {
+	if x != nil && x.CommitId != nil {
+		return *x.CommitId
+	}
+	return ""
+}
+
+func (x *ResourceChangedDirective) GetRelatedRids() []string {
+	if x != nil {
+		return x.RelatedRids
+	}
+	return nil
 }
 
 // Set the requesting user's visible workbook time range, live. Transient and
@@ -7085,7 +8338,7 @@ type SetTimeRangeDirective struct {
 
 func (x *SetTimeRangeDirective) Reset() {
 	*x = SetTimeRangeDirective{}
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[100]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[114]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -7097,7 +8350,7 @@ func (x *SetTimeRangeDirective) String() string {
 func (*SetTimeRangeDirective) ProtoMessage() {}
 
 func (x *SetTimeRangeDirective) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[100]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[114]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -7110,7 +8363,7 @@ func (x *SetTimeRangeDirective) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SetTimeRangeDirective.ProtoReflect.Descriptor instead.
 func (*SetTimeRangeDirective) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{100}
+	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{114}
 }
 
 func (x *SetTimeRangeDirective) GetWorkbookRid() string {
@@ -7159,7 +8412,7 @@ type ResourceMarkup struct {
 
 func (x *ResourceMarkup) Reset() {
 	*x = ResourceMarkup{}
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[101]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[115]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -7171,7 +8424,7 @@ func (x *ResourceMarkup) String() string {
 func (*ResourceMarkup) ProtoMessage() {}
 
 func (x *ResourceMarkup) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[101]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[115]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -7184,7 +8437,7 @@ func (x *ResourceMarkup) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ResourceMarkup.ProtoReflect.Descriptor instead.
 func (*ResourceMarkup) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{101}
+	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{115}
 }
 
 func (x *ResourceMarkup) GetKind() isResourceMarkup_Kind {
@@ -7241,7 +8494,7 @@ type RidResourceMarkup struct {
 
 func (x *RidResourceMarkup) Reset() {
 	*x = RidResourceMarkup{}
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[102]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[116]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -7253,7 +8506,7 @@ func (x *RidResourceMarkup) String() string {
 func (*RidResourceMarkup) ProtoMessage() {}
 
 func (x *RidResourceMarkup) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[102]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[116]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -7266,7 +8519,7 @@ func (x *RidResourceMarkup) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use RidResourceMarkup.ProtoReflect.Descriptor instead.
 func (*RidResourceMarkup) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{102}
+	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{116}
 }
 
 func (x *RidResourceMarkup) GetRid() string {
@@ -7294,7 +8547,7 @@ type RidListResourceMarkup struct {
 
 func (x *RidListResourceMarkup) Reset() {
 	*x = RidListResourceMarkup{}
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[103]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[117]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -7306,7 +8559,7 @@ func (x *RidListResourceMarkup) String() string {
 func (*RidListResourceMarkup) ProtoMessage() {}
 
 func (x *RidListResourceMarkup) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[103]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[117]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -7319,7 +8572,7 @@ func (x *RidListResourceMarkup) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use RidListResourceMarkup.ProtoReflect.Descriptor instead.
 func (*RidListResourceMarkup) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{103}
+	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{117}
 }
 
 func (x *RidListResourceMarkup) GetRids() []string {
@@ -7349,7 +8602,7 @@ type ContextStatus struct {
 
 func (x *ContextStatus) Reset() {
 	*x = ContextStatus{}
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[104]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[118]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -7361,7 +8614,7 @@ func (x *ContextStatus) String() string {
 func (*ContextStatus) ProtoMessage() {}
 
 func (x *ContextStatus) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[104]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[118]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -7374,7 +8627,7 @@ func (x *ContextStatus) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ContextStatus.ProtoReflect.Descriptor instead.
 func (*ContextStatus) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{104}
+	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{118}
 }
 
 func (x *ContextStatus) GetCurrTokenCount() int32 {
@@ -7410,7 +8663,7 @@ type ComputeProvenanceV1 struct {
 
 func (x *ComputeProvenanceV1) Reset() {
 	*x = ComputeProvenanceV1{}
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[105]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[119]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -7422,7 +8675,7 @@ func (x *ComputeProvenanceV1) String() string {
 func (*ComputeProvenanceV1) ProtoMessage() {}
 
 func (x *ComputeProvenanceV1) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[105]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[119]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -7435,7 +8688,7 @@ func (x *ComputeProvenanceV1) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ComputeProvenanceV1.ProtoReflect.Descriptor instead.
 func (*ComputeProvenanceV1) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{105}
+	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{119}
 }
 
 func (x *ComputeProvenanceV1) GetComputeRequestJson() string {
@@ -7466,42 +8719,1238 @@ func (x *ComputeProvenanceV1) GetOutputType() ComputeOutputType {
 	return ComputeOutputType_COMPUTE_OUTPUT_TYPE_UNSPECIFIED
 }
 
+// Metadata returned by a nominal-mcp tool whose result holds several observations,
+// such as a channel search that summarizes every channel it lists.
+//
+// Not an RPC message: it arrives under the `io.nominal/compute-provenance-list-v1`
+// key of MCP `_meta` rather than crossing the gRPC surface.
+type ComputeProvenanceListV1 struct {
+	state         protoimpl.MessageState      `protogen:"open.v1"`
+	Entries       []*ComputeProvenanceEntryV1 `protobuf:"bytes,1,rep,name=entries,proto3" json:"entries,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ComputeProvenanceListV1) Reset() {
+	*x = ComputeProvenanceListV1{}
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[120]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ComputeProvenanceListV1) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ComputeProvenanceListV1) ProtoMessage() {}
+
+func (x *ComputeProvenanceListV1) ProtoReflect() protoreflect.Message {
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[120]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ComputeProvenanceListV1.ProtoReflect.Descriptor instead.
+func (*ComputeProvenanceListV1) Descriptor() ([]byte, []int) {
+	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{120}
+}
+
+func (x *ComputeProvenanceListV1) GetEntries() []*ComputeProvenanceEntryV1 {
+	if x != nil {
+		return x.Entries
+	}
+	return nil
+}
+
+// One compute request, and the parts of a tool's result that it produced.
+type ComputeProvenanceEntryV1 struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// RFC 6901 JSON Pointers to the parts of the result this provenance is for.
+	Pointers      []string             `protobuf:"bytes,1,rep,name=pointers,proto3" json:"pointers,omitempty"`
+	Provenance    *ComputeProvenanceV1 `protobuf:"bytes,2,opt,name=provenance,proto3" json:"provenance,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ComputeProvenanceEntryV1) Reset() {
+	*x = ComputeProvenanceEntryV1{}
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[121]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ComputeProvenanceEntryV1) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ComputeProvenanceEntryV1) ProtoMessage() {}
+
+func (x *ComputeProvenanceEntryV1) ProtoReflect() protoreflect.Message {
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[121]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ComputeProvenanceEntryV1.ProtoReflect.Descriptor instead.
+func (*ComputeProvenanceEntryV1) Descriptor() ([]byte, []int) {
+	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{121}
+}
+
+func (x *ComputeProvenanceEntryV1) GetPointers() []string {
+	if x != nil {
+		return x.Pointers
+	}
+	return nil
+}
+
+func (x *ComputeProvenanceEntryV1) GetProvenance() *ComputeProvenanceV1 {
+	if x != nil {
+		return x.Provenance
+	}
+	return nil
+}
+
+// A source the assistant drew on in this conversation, such as telemetry it
+// queried. When a response makes a claim based on a source, it references the
+// citation by `ref`, so clients can show which statements are backed by which
+// data and link back to it.
+type Citation struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Short identifier for the citation. Unique within a given conversation.
+	Ref string `protobuf:"bytes,1,opt,name=ref,proto3" json:"ref,omitempty"`
+	// Human-readable description of the source.
+	Label string `protobuf:"bytes,2,opt,name=label,proto3" json:"label,omitempty"`
+	// When the source was observed. It may have changed since this time.
+	RetrievedAt *timestamppb.Timestamp `protobuf:"bytes,3,opt,name=retrieved_at,json=retrievedAt,proto3" json:"retrieved_at,omitempty"`
+	// This citation's position among the conversation's citations, ordered by first mention.
+	Number *uint32 `protobuf:"varint,5,opt,name=number,proto3,oneof" json:"number,omitempty"`
+	// Types that are valid to be assigned to Payload:
+	//
+	//	*Citation_Telemetry
+	//	*Citation_File
+	//	*Citation_CodeExecution
+	//	*Citation_UserMessage
+	Payload       isCitation_Payload `protobuf_oneof:"payload"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *Citation) Reset() {
+	*x = Citation{}
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[122]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *Citation) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*Citation) ProtoMessage() {}
+
+func (x *Citation) ProtoReflect() protoreflect.Message {
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[122]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use Citation.ProtoReflect.Descriptor instead.
+func (*Citation) Descriptor() ([]byte, []int) {
+	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{122}
+}
+
+func (x *Citation) GetRef() string {
+	if x != nil {
+		return x.Ref
+	}
+	return ""
+}
+
+func (x *Citation) GetLabel() string {
+	if x != nil {
+		return x.Label
+	}
+	return ""
+}
+
+func (x *Citation) GetRetrievedAt() *timestamppb.Timestamp {
+	if x != nil {
+		return x.RetrievedAt
+	}
+	return nil
+}
+
+func (x *Citation) GetNumber() uint32 {
+	if x != nil && x.Number != nil {
+		return *x.Number
+	}
+	return 0
+}
+
+func (x *Citation) GetPayload() isCitation_Payload {
+	if x != nil {
+		return x.Payload
+	}
+	return nil
+}
+
+func (x *Citation) GetTelemetry() *TelemetryCitation {
+	if x != nil {
+		if x, ok := x.Payload.(*Citation_Telemetry); ok {
+			return x.Telemetry
+		}
+	}
+	return nil
+}
+
+func (x *Citation) GetFile() *DriveFileCitation {
+	if x != nil {
+		if x, ok := x.Payload.(*Citation_File); ok {
+			return x.File
+		}
+	}
+	return nil
+}
+
+func (x *Citation) GetCodeExecution() *CodeExecutionCitation {
+	if x != nil {
+		if x, ok := x.Payload.(*Citation_CodeExecution); ok {
+			return x.CodeExecution
+		}
+	}
+	return nil
+}
+
+func (x *Citation) GetUserMessage() *UserMessageCitation {
+	if x != nil {
+		if x, ok := x.Payload.(*Citation_UserMessage); ok {
+			return x.UserMessage
+		}
+	}
+	return nil
+}
+
+type isCitation_Payload interface {
+	isCitation_Payload()
+}
+
+type Citation_Telemetry struct {
+	Telemetry *TelemetryCitation `protobuf:"bytes,4,opt,name=telemetry,proto3,oneof"`
+}
+
+type Citation_File struct {
+	File *DriveFileCitation `protobuf:"bytes,6,opt,name=file,proto3,oneof"`
+}
+
+type Citation_CodeExecution struct {
+	CodeExecution *CodeExecutionCitation `protobuf:"bytes,7,opt,name=code_execution,json=codeExecution,proto3,oneof"`
+}
+
+type Citation_UserMessage struct {
+	UserMessage *UserMessageCitation `protobuf:"bytes,8,opt,name=user_message,json=userMessage,proto3,oneof"`
+}
+
+func (*Citation_Telemetry) isCitation_Payload() {}
+
+func (*Citation_File) isCitation_Payload() {}
+
+func (*Citation_CodeExecution) isCitation_Payload() {}
+
+func (*Citation_UserMessage) isCitation_Payload() {}
+
+// A cited message the user sent.
+type UserMessageCitation struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// The message, as returned in `ModelMessageWithId.message_id`.
+	MessageId     string `protobuf:"bytes,1,opt,name=message_id,json=messageId,proto3" json:"message_id,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *UserMessageCitation) Reset() {
+	*x = UserMessageCitation{}
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[123]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *UserMessageCitation) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*UserMessageCitation) ProtoMessage() {}
+
+func (x *UserMessageCitation) ProtoReflect() protoreflect.Message {
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[123]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use UserMessageCitation.ProtoReflect.Descriptor instead.
+func (*UserMessageCitation) Descriptor() ([]byte, []int) {
+	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{123}
+}
+
+func (x *UserMessageCitation) GetMessageId() string {
+	if x != nil {
+		return x.MessageId
+	}
+	return ""
+}
+
+// A cited run of a Python script.
+type CodeExecutionCitation struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	Code  string                 `protobuf:"bytes,1,opt,name=code,proto3" json:"code,omitempty"`
+	// The printed output as the assistant saw it. At most 4 KiB, cut in the
+	// middle when the execution printed more.
+	Output string `protobuf:"bytes,2,opt,name=output,proto3" json:"output,omitempty"`
+	// The error the execution ended with, as the assistant saw it. At most 4 KiB.
+	Error *string `protobuf:"bytes,3,opt,name=error,proto3,oneof" json:"error,omitempty"`
+	// The host calls the execution made, in call order.
+	Calls []*CodeExecutionCall `protobuf:"bytes,4,rep,name=calls,proto3" json:"calls,omitempty"`
+	// Calls the execution made beyond those listed in `calls`.
+	OmittedCalls  uint32 `protobuf:"varint,5,opt,name=omitted_calls,json=omittedCalls,proto3" json:"omitted_calls,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *CodeExecutionCitation) Reset() {
+	*x = CodeExecutionCitation{}
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[124]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *CodeExecutionCitation) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*CodeExecutionCitation) ProtoMessage() {}
+
+func (x *CodeExecutionCitation) ProtoReflect() protoreflect.Message {
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[124]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use CodeExecutionCitation.ProtoReflect.Descriptor instead.
+func (*CodeExecutionCitation) Descriptor() ([]byte, []int) {
+	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{124}
+}
+
+func (x *CodeExecutionCitation) GetCode() string {
+	if x != nil {
+		return x.Code
+	}
+	return ""
+}
+
+func (x *CodeExecutionCitation) GetOutput() string {
+	if x != nil {
+		return x.Output
+	}
+	return ""
+}
+
+func (x *CodeExecutionCitation) GetError() string {
+	if x != nil && x.Error != nil {
+		return *x.Error
+	}
+	return ""
+}
+
+func (x *CodeExecutionCitation) GetCalls() []*CodeExecutionCall {
+	if x != nil {
+		return x.Calls
+	}
+	return nil
+}
+
+func (x *CodeExecutionCitation) GetOmittedCalls() uint32 {
+	if x != nil {
+		return x.OmittedCalls
+	}
+	return 0
+}
+
+// One host call a cited Python execution made.
+type CodeExecutionCall struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// The host method, such as an Analyst tool or a public API route. At most
+	// 512 characters, cut short when the code named a longer one.
+	Method string `protobuf:"bytes,1,opt,name=method,proto3" json:"method,omitempty"`
+	// The call's arguments as JSON, with credentials redacted. Absent when they
+	// exceeded 4 KiB.
+	ArgumentsJson *string                  `protobuf:"bytes,2,opt,name=arguments_json,json=argumentsJson,proto3,oneof" json:"arguments_json,omitempty"`
+	Outcome       CodeExecutionCallOutcome `protobuf:"varint,3,opt,name=outcome,proto3,enum=nominal.ai.v1.CodeExecutionCallOutcome" json:"outcome,omitempty"`
+	// A snake_case code such as `broker_call_limit` or `read_only_mutation`, among others.
+	ErrorCode *string `protobuf:"bytes,4,opt,name=error_code,json=errorCode,proto3,oneof" json:"error_code,omitempty"`
+	// What a successful call read, when it reported structured sources.
+	Sources       []*CodeExecutionSource `protobuf:"bytes,5,rep,name=sources,proto3" json:"sources,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *CodeExecutionCall) Reset() {
+	*x = CodeExecutionCall{}
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[125]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *CodeExecutionCall) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*CodeExecutionCall) ProtoMessage() {}
+
+func (x *CodeExecutionCall) ProtoReflect() protoreflect.Message {
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[125]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use CodeExecutionCall.ProtoReflect.Descriptor instead.
+func (*CodeExecutionCall) Descriptor() ([]byte, []int) {
+	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{125}
+}
+
+func (x *CodeExecutionCall) GetMethod() string {
+	if x != nil {
+		return x.Method
+	}
+	return ""
+}
+
+func (x *CodeExecutionCall) GetArgumentsJson() string {
+	if x != nil && x.ArgumentsJson != nil {
+		return *x.ArgumentsJson
+	}
+	return ""
+}
+
+func (x *CodeExecutionCall) GetOutcome() CodeExecutionCallOutcome {
+	if x != nil {
+		return x.Outcome
+	}
+	return CodeExecutionCallOutcome_CODE_EXECUTION_CALL_OUTCOME_UNSPECIFIED
+}
+
+func (x *CodeExecutionCall) GetErrorCode() string {
+	if x != nil && x.ErrorCode != nil {
+		return *x.ErrorCode
+	}
+	return ""
+}
+
+func (x *CodeExecutionCall) GetSources() []*CodeExecutionSource {
+	if x != nil {
+		return x.Sources
+	}
+	return nil
+}
+
+// A structured source one call of a cited Python execution read.
+type CodeExecutionSource struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Human-readable description of the source.
+	Label string `protobuf:"bytes,1,opt,name=label,proto3" json:"label,omitempty"`
+	// Types that are valid to be assigned to Source:
+	//
+	//	*CodeExecutionSource_Telemetry
+	//	*CodeExecutionSource_File
+	Source        isCodeExecutionSource_Source `protobuf_oneof:"source"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *CodeExecutionSource) Reset() {
+	*x = CodeExecutionSource{}
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[126]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *CodeExecutionSource) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*CodeExecutionSource) ProtoMessage() {}
+
+func (x *CodeExecutionSource) ProtoReflect() protoreflect.Message {
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[126]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use CodeExecutionSource.ProtoReflect.Descriptor instead.
+func (*CodeExecutionSource) Descriptor() ([]byte, []int) {
+	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{126}
+}
+
+func (x *CodeExecutionSource) GetLabel() string {
+	if x != nil {
+		return x.Label
+	}
+	return ""
+}
+
+func (x *CodeExecutionSource) GetSource() isCodeExecutionSource_Source {
+	if x != nil {
+		return x.Source
+	}
+	return nil
+}
+
+func (x *CodeExecutionSource) GetTelemetry() *TelemetryCitation {
+	if x != nil {
+		if x, ok := x.Source.(*CodeExecutionSource_Telemetry); ok {
+			return x.Telemetry
+		}
+	}
+	return nil
+}
+
+func (x *CodeExecutionSource) GetFile() *DriveFileCitation {
+	if x != nil {
+		if x, ok := x.Source.(*CodeExecutionSource_File); ok {
+			return x.File
+		}
+	}
+	return nil
+}
+
+type isCodeExecutionSource_Source interface {
+	isCodeExecutionSource_Source()
+}
+
+type CodeExecutionSource_Telemetry struct {
+	Telemetry *TelemetryCitation `protobuf:"bytes,2,opt,name=telemetry,proto3,oneof"`
+}
+
+type CodeExecutionSource_File struct {
+	File *DriveFileCitation `protobuf:"bytes,3,opt,name=file,proto3,oneof"`
+}
+
+func (*CodeExecutionSource_Telemetry) isCodeExecutionSource_Source() {}
+
+func (*CodeExecutionSource_File) isCodeExecutionSource_Source() {}
+
+// A cited telemetry observation. Carries the inputs needed to replay the request.
+type TelemetryCitation struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Types that are valid to be assigned to Version:
+	//
+	//	*TelemetryCitation_V1
+	Version       isTelemetryCitation_Version `protobuf_oneof:"version"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *TelemetryCitation) Reset() {
+	*x = TelemetryCitation{}
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[127]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *TelemetryCitation) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*TelemetryCitation) ProtoMessage() {}
+
+func (x *TelemetryCitation) ProtoReflect() protoreflect.Message {
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[127]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use TelemetryCitation.ProtoReflect.Descriptor instead.
+func (*TelemetryCitation) Descriptor() ([]byte, []int) {
+	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{127}
+}
+
+func (x *TelemetryCitation) GetVersion() isTelemetryCitation_Version {
+	if x != nil {
+		return x.Version
+	}
+	return nil
+}
+
+func (x *TelemetryCitation) GetV1() *ComputeProvenanceV1 {
+	if x != nil {
+		if x, ok := x.Version.(*TelemetryCitation_V1); ok {
+			return x.V1
+		}
+	}
+	return nil
+}
+
+type isTelemetryCitation_Version interface {
+	isTelemetryCitation_Version()
+}
+
+type TelemetryCitation_V1 struct {
+	V1 *ComputeProvenanceV1 `protobuf:"bytes,1,opt,name=v1,proto3,oneof"`
+}
+
+func (*TelemetryCitation_V1) isTelemetryCitation_Version() {}
+
+// A cited read of a File Store file.
+type DriveFileCitation struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// The revision that was read. It may not exist anymore.
+	FileRevisionRid string                  `protobuf:"bytes,1,opt,name=file_revision_rid,json=fileRevisionRid,proto3" json:"file_revision_rid,omitempty"`
+	FileIdentity    *v1.LogicalFileIdentity `protobuf:"bytes,2,opt,name=file_identity,json=fileIdentity,proto3" json:"file_identity,omitempty"`
+	DriveRid        string                  `protobuf:"bytes,3,opt,name=drive_rid,json=driveRid,proto3" json:"drive_rid,omitempty"`
+	// Size of the whole revision in bytes.
+	TotalSizeBytes uint64 `protobuf:"varint,4,opt,name=total_size_bytes,json=totalSizeBytes,proto3" json:"total_size_bytes,omitempty"`
+	// What kind of file was read, with the locators specific to that kind.
+	//
+	// Types that are valid to be assigned to Kind:
+	//
+	//	*DriveFileCitation_Text
+	//	*DriveFileCitation_Pdf
+	Kind          isDriveFileCitation_Kind `protobuf_oneof:"kind"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *DriveFileCitation) Reset() {
+	*x = DriveFileCitation{}
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[128]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *DriveFileCitation) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*DriveFileCitation) ProtoMessage() {}
+
+func (x *DriveFileCitation) ProtoReflect() protoreflect.Message {
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[128]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use DriveFileCitation.ProtoReflect.Descriptor instead.
+func (*DriveFileCitation) Descriptor() ([]byte, []int) {
+	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{128}
+}
+
+func (x *DriveFileCitation) GetFileRevisionRid() string {
+	if x != nil {
+		return x.FileRevisionRid
+	}
+	return ""
+}
+
+func (x *DriveFileCitation) GetFileIdentity() *v1.LogicalFileIdentity {
+	if x != nil {
+		return x.FileIdentity
+	}
+	return nil
+}
+
+func (x *DriveFileCitation) GetDriveRid() string {
+	if x != nil {
+		return x.DriveRid
+	}
+	return ""
+}
+
+func (x *DriveFileCitation) GetTotalSizeBytes() uint64 {
+	if x != nil {
+		return x.TotalSizeBytes
+	}
+	return 0
+}
+
+func (x *DriveFileCitation) GetKind() isDriveFileCitation_Kind {
+	if x != nil {
+		return x.Kind
+	}
+	return nil
+}
+
+func (x *DriveFileCitation) GetText() *TextFileCitation {
+	if x != nil {
+		if x, ok := x.Kind.(*DriveFileCitation_Text); ok {
+			return x.Text
+		}
+	}
+	return nil
+}
+
+func (x *DriveFileCitation) GetPdf() *PdfFileCitation {
+	if x != nil {
+		if x, ok := x.Kind.(*DriveFileCitation_Pdf); ok {
+			return x.Pdf
+		}
+	}
+	return nil
+}
+
+type isDriveFileCitation_Kind interface {
+	isDriveFileCitation_Kind()
+}
+
+type DriveFileCitation_Text struct {
+	Text *TextFileCitation `protobuf:"bytes,5,opt,name=text,proto3,oneof"`
+}
+
+type DriveFileCitation_Pdf struct {
+	Pdf *PdfFileCitation `protobuf:"bytes,6,opt,name=pdf,proto3,oneof"`
+}
+
+func (*DriveFileCitation_Text) isDriveFileCitation_Kind() {}
+
+func (*DriveFileCitation_Pdf) isDriveFileCitation_Kind() {}
+
+// A read of a text file.
+type TextFileCitation struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Absent when the whole revision was read.
+	ByteRange     *ByteRange `protobuf:"bytes,1,opt,name=byte_range,json=byteRange,proto3,oneof" json:"byte_range,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *TextFileCitation) Reset() {
+	*x = TextFileCitation{}
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[129]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *TextFileCitation) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*TextFileCitation) ProtoMessage() {}
+
+func (x *TextFileCitation) ProtoReflect() protoreflect.Message {
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[129]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use TextFileCitation.ProtoReflect.Descriptor instead.
+func (*TextFileCitation) Descriptor() ([]byte, []int) {
+	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{129}
+}
+
+func (x *TextFileCitation) GetByteRange() *ByteRange {
+	if x != nil {
+		return x.ByteRange
+	}
+	return nil
+}
+
+// A read of a PDF, located by pages.
+type PdfFileCitation struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// The first page that was read, counting from one.
+	FirstPage uint32 `protobuf:"varint,1,opt,name=first_page,json=firstPage,proto3" json:"first_page,omitempty"`
+	// Number of pages read, starting at `first_page`.
+	PageCount uint32 `protobuf:"varint,2,opt,name=page_count,json=pageCount,proto3" json:"page_count,omitempty"`
+	// Number of pages in the whole revision.
+	TotalPageCount uint32 `protobuf:"varint,3,opt,name=total_page_count,json=totalPageCount,proto3" json:"total_page_count,omitempty"`
+	unknownFields  protoimpl.UnknownFields
+	sizeCache      protoimpl.SizeCache
+}
+
+func (x *PdfFileCitation) Reset() {
+	*x = PdfFileCitation{}
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[130]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *PdfFileCitation) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*PdfFileCitation) ProtoMessage() {}
+
+func (x *PdfFileCitation) ProtoReflect() protoreflect.Message {
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[130]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use PdfFileCitation.ProtoReflect.Descriptor instead.
+func (*PdfFileCitation) Descriptor() ([]byte, []int) {
+	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{130}
+}
+
+func (x *PdfFileCitation) GetFirstPage() uint32 {
+	if x != nil {
+		return x.FirstPage
+	}
+	return 0
+}
+
+func (x *PdfFileCitation) GetPageCount() uint32 {
+	if x != nil {
+		return x.PageCount
+	}
+	return 0
+}
+
+func (x *PdfFileCitation) GetTotalPageCount() uint32 {
+	if x != nil {
+		return x.TotalPageCount
+	}
+	return 0
+}
+
+// `length` bytes starting at `offset`, which counts from zero.
+type ByteRange struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Offset        uint64                 `protobuf:"varint,1,opt,name=offset,proto3" json:"offset,omitempty"`
+	Length        uint64                 `protobuf:"varint,2,opt,name=length,proto3" json:"length,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ByteRange) Reset() {
+	*x = ByteRange{}
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[131]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ByteRange) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ByteRange) ProtoMessage() {}
+
+func (x *ByteRange) ProtoReflect() protoreflect.Message {
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[131]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ByteRange.ProtoReflect.Descriptor instead.
+func (*ByteRange) Descriptor() ([]byte, []int) {
+	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{131}
+}
+
+func (x *ByteRange) GetOffset() uint64 {
+	if x != nil {
+		return x.Offset
+	}
+	return 0
+}
+
+func (x *ByteRange) GetLength() uint64 {
+	if x != nil {
+		return x.Length
+	}
+	return 0
+}
+
+// Resolves citation refs within one conversation.
+type BatchGetCitationsRequest struct {
+	state           protoimpl.MessageState `protogen:"open.v1"`
+	ConversationRid string                 `protobuf:"bytes,1,opt,name=conversation_rid,json=conversationRid,proto3" json:"conversation_rid,omitempty"`
+	Refs            []string               `protobuf:"bytes,2,rep,name=refs,proto3" json:"refs,omitempty"`
+	unknownFields   protoimpl.UnknownFields
+	sizeCache       protoimpl.SizeCache
+}
+
+func (x *BatchGetCitationsRequest) Reset() {
+	*x = BatchGetCitationsRequest{}
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[132]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *BatchGetCitationsRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*BatchGetCitationsRequest) ProtoMessage() {}
+
+func (x *BatchGetCitationsRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[132]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use BatchGetCitationsRequest.ProtoReflect.Descriptor instead.
+func (*BatchGetCitationsRequest) Descriptor() ([]byte, []int) {
+	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{132}
+}
+
+func (x *BatchGetCitationsRequest) GetConversationRid() string {
+	if x != nil {
+		return x.ConversationRid
+	}
+	return ""
+}
+
+func (x *BatchGetCitationsRequest) GetRefs() []string {
+	if x != nil {
+		return x.Refs
+	}
+	return nil
+}
+
+type BatchGetCitationsResponse struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Refs that resolved.
+	Citations []*Citation `protobuf:"bytes,1,rep,name=citations,proto3" json:"citations,omitempty"`
+	// Refs that failed to resolve.
+	Errors        []*GetCitationResponseError `protobuf:"bytes,2,rep,name=errors,proto3" json:"errors,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *BatchGetCitationsResponse) Reset() {
+	*x = BatchGetCitationsResponse{}
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[133]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *BatchGetCitationsResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*BatchGetCitationsResponse) ProtoMessage() {}
+
+func (x *BatchGetCitationsResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[133]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use BatchGetCitationsResponse.ProtoReflect.Descriptor instead.
+func (*BatchGetCitationsResponse) Descriptor() ([]byte, []int) {
+	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{133}
+}
+
+func (x *BatchGetCitationsResponse) GetCitations() []*Citation {
+	if x != nil {
+		return x.Citations
+	}
+	return nil
+}
+
+func (x *BatchGetCitationsResponse) GetErrors() []*GetCitationResponseError {
+	if x != nil {
+		return x.Errors
+	}
+	return nil
+}
+
+type GetCitationResponseError struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// The ref that didn't resolve.
+	Ref string `protobuf:"bytes,1,opt,name=ref,proto3" json:"ref,omitempty"`
+	// Always REASON_NOT_FOUND today.
+	Reason        GetCitationResponseError_Reason `protobuf:"varint,2,opt,name=reason,proto3,enum=nominal.ai.v1.GetCitationResponseError_Reason" json:"reason,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GetCitationResponseError) Reset() {
+	*x = GetCitationResponseError{}
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[134]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetCitationResponseError) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetCitationResponseError) ProtoMessage() {}
+
+func (x *GetCitationResponseError) ProtoReflect() protoreflect.Message {
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[134]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetCitationResponseError.ProtoReflect.Descriptor instead.
+func (*GetCitationResponseError) Descriptor() ([]byte, []int) {
+	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{134}
+}
+
+func (x *GetCitationResponseError) GetRef() string {
+	if x != nil {
+		return x.Ref
+	}
+	return ""
+}
+
+func (x *GetCitationResponseError) GetReason() GetCitationResponseError_Reason {
+	if x != nil {
+		return x.Reason
+	}
+	return GetCitationResponseError_REASON_UNSPECIFIED
+}
+
+type CodeCellOutput_Stream struct {
+	state         protoimpl.MessageState    `protogen:"open.v1"`
+	Name          CodeCellOutput_StreamName `protobuf:"varint,1,opt,name=name,proto3,enum=nominal.ai.v1.CodeCellOutput_StreamName" json:"name,omitempty"`
+	Text          string                    `protobuf:"bytes,2,opt,name=text,proto3" json:"text,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *CodeCellOutput_Stream) Reset() {
+	*x = CodeCellOutput_Stream{}
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[136]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *CodeCellOutput_Stream) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*CodeCellOutput_Stream) ProtoMessage() {}
+
+func (x *CodeCellOutput_Stream) ProtoReflect() protoreflect.Message {
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[136]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use CodeCellOutput_Stream.ProtoReflect.Descriptor instead.
+func (*CodeCellOutput_Stream) Descriptor() ([]byte, []int) {
+	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{104, 0}
+}
+
+func (x *CodeCellOutput_Stream) GetName() CodeCellOutput_StreamName {
+	if x != nil {
+		return x.Name
+	}
+	return CodeCellOutput_STREAM_NAME_UNSPECIFIED
+}
+
+func (x *CodeCellOutput_Stream) GetText() string {
+	if x != nil {
+		return x.Text
+	}
+	return ""
+}
+
+// The text/plain form of an expression result or a display.
+type CodeCellOutput_Data struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	TextPlain     string                 `protobuf:"bytes,1,opt,name=text_plain,json=textPlain,proto3" json:"text_plain,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *CodeCellOutput_Data) Reset() {
+	*x = CodeCellOutput_Data{}
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[137]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *CodeCellOutput_Data) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*CodeCellOutput_Data) ProtoMessage() {}
+
+func (x *CodeCellOutput_Data) ProtoReflect() protoreflect.Message {
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[137]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use CodeCellOutput_Data.ProtoReflect.Descriptor instead.
+func (*CodeCellOutput_Data) Descriptor() ([]byte, []int) {
+	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{104, 1}
+}
+
+func (x *CodeCellOutput_Data) GetTextPlain() string {
+	if x != nil {
+		return x.TextPlain
+	}
+	return ""
+}
+
+type CodeCellOutput_Error struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Ename         string                 `protobuf:"bytes,1,opt,name=ename,proto3" json:"ename,omitempty"`
+	Evalue        string                 `protobuf:"bytes,2,opt,name=evalue,proto3" json:"evalue,omitempty"`
+	Traceback     []string               `protobuf:"bytes,3,rep,name=traceback,proto3" json:"traceback,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *CodeCellOutput_Error) Reset() {
+	*x = CodeCellOutput_Error{}
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[138]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *CodeCellOutput_Error) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*CodeCellOutput_Error) ProtoMessage() {}
+
+func (x *CodeCellOutput_Error) ProtoReflect() protoreflect.Message {
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[138]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use CodeCellOutput_Error.ProtoReflect.Descriptor instead.
+func (*CodeCellOutput_Error) Descriptor() ([]byte, []int) {
+	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{104, 2}
+}
+
+func (x *CodeCellOutput_Error) GetEname() string {
+	if x != nil {
+		return x.Ename
+	}
+	return ""
+}
+
+func (x *CodeCellOutput_Error) GetEvalue() string {
+	if x != nil {
+		return x.Evalue
+	}
+	return ""
+}
+
+func (x *CodeCellOutput_Error) GetTraceback() []string {
+	if x != nil {
+		return x.Traceback
+	}
+	return nil
+}
+
 var File_nominal_protos_ai_v1_ai_agent_proto protoreflect.FileDescriptor
 
 const file_nominal_protos_ai_v1_ai_agent_proto_rawDesc = "" +
 	"\n" +
-	"#nominal/protos/ai/v1/ai_agent.proto\x12\rnominal.ai.v1\x1a\x1bbuf/validate/validate.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a!nominal/protos/gen/v1/alias.proto\"\xf6\x02\n" +
-	"\rQueuedMessage\x12\x0e\n" +
-	"\x02id\x18\x01 \x01(\tR\x02id\x12V\n" +
-	"\x10conversation_rid\x18\x02 \x01(\tB+\x9a\xb2\x1a'\n" +
-	"%io.nominal.api.rids.AiConversationRidR\x0fconversationRid\x12*\n" +
-	"\x11client_message_id\x18\x03 \x01(\tR\x0fclientMessageId\x12:\n" +
-	"\amessage\x18\x04 \x01(\v2 .nominal.ai.v1.StreamChatRequestR\amessage\x127\n" +
-	"\x05state\x18\x05 \x01(\x0e2!.nominal.ai.v1.QueuedMessageStateR\x05state\x12!\n" +
-	"\ffailure_code\x18\x06 \x01(\tR\vfailureCode\x129\n" +
-	"\n" +
-	"created_at\x18\a \x01(\v2\x1a.google.protobuf.TimestampR\tcreatedAt\"\xdc\x01\n" +
-	"\x1aCreateQueuedMessageRequest\x12V\n" +
-	"\x10conversation_rid\x18\x01 \x01(\tB+\x9a\xb2\x1a'\n" +
-	"%io.nominal.api.rids.AiConversationRidR\x0fconversationRid\x12*\n" +
-	"\x11client_message_id\x18\x02 \x01(\tR\x0fclientMessageId\x12:\n" +
-	"\amessage\x18\x03 \x01(\v2 .nominal.ai.v1.StreamChatRequestR\amessage\"b\n" +
-	"\x1bCreateQueuedMessageResponse\x12C\n" +
-	"\x0equeued_message\x18\x01 \x01(\v2\x1c.nominal.ai.v1.QueuedMessageR\rqueuedMessage\"\xaf\x01\n" +
-	"\x19ListQueuedMessagesRequest\x12V\n" +
-	"\x10conversation_rid\x18\x01 \x01(\tB+\x9a\xb2\x1a'\n" +
-	"%io.nominal.api.rids.AiConversationRidR\x0fconversationRid\x12\x1b\n" +
-	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
-	"\n" +
-	"page_token\x18\x03 \x01(\tR\tpageToken\"\x8b\x01\n" +
-	"\x1aListQueuedMessagesResponse\x12E\n" +
-	"\x0fqueued_messages\x18\x01 \x03(\v2\x1c.nominal.ai.v1.QueuedMessageR\x0equeuedMessages\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xa0\x01\n" +
-	"\x1aDeleteQueuedMessageRequest\x12V\n" +
-	"\x10conversation_rid\x18\x01 \x01(\tB+\x9a\xb2\x1a'\n" +
-	"%io.nominal.api.rids.AiConversationRidR\x0fconversationRid\x12*\n" +
-	"\x11queued_message_id\x18\x02 \x01(\tR\x0fqueuedMessageId\"\x1d\n" +
-	"\x1bDeleteQueuedMessageResponse\"\x92\x02\n" +
+	"#nominal/protos/ai/v1/ai_agent.proto\x12\rnominal.ai.v1\x1a\x1bbuf/validate/validate.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a-nominal/protos/file_store/v1/file_store.proto\x1a!nominal/protos/gen/v1/alias.proto\"\x92\x02\n" +
 	"\x1cSubmitMessageFeedbackRequest\x12V\n" +
 	"\x10conversation_rid\x18\x01 \x01(\tB+\x9a\xb2\x1a'\n" +
 	"%io.nominal.api.rids.AiConversationRidR\x0fconversationRid\x12\x1d\n" +
@@ -7519,7 +9968,46 @@ const file_nominal_protos_ai_v1_ai_agent_proto_rawDesc = "" +
 	"%io.nominal.api.rids.AiConversationRidR\x0fconversationRid\x12*\n" +
 	"\fagent_run_id\x18\x02 \x01(\tB\b\xbaH\x05r\x03\xb0\x01\x01R\n" +
 	"agentRunId\"\x18\n" +
-	"\x16CancelAgentRunResponse\"\x9d\x01\n" +
+	"\x16CancelAgentRunResponse\"\xd4\x02\n" +
+	"\x14SteerAgentRunRequest\x12\xb5\x01\n" +
+	"\x10conversation_rid\x18\x01 \x01(\tB\x89\x01\xbaH[rY\x10\x01\x18\x80\x022R^ri[.][a-z][a-z0-9-]*[.]([a-z0-9][a-z0-9-]*)?[.][a-z][a-z0-9-]*[.][a-zA-Z0-9._-]+$\x9a\xb2\x1a'\n" +
+	"%io.nominal.api.rids.AiConversationRidR\x0fconversationRid\x12-\n" +
+	"\fagent_run_id\x18\x02 \x01(\tB\v\xbaH\b\xd8\x01\x01r\x03\xb0\x01\x01R\n" +
+	"agentRunId\x124\n" +
+	"\x11client_message_id\x18\x03 \x01(\tB\b\xbaH\x05r\x03\xb0\x01\x01R\x0fclientMessageId\x12\x1f\n" +
+	"\x04text\x18\x04 \x01(\tB\v\xbaH\br\x06\x10\x01\x18\x80\x80\x02R\x04text\"\x17\n" +
+	"\x15SteerAgentRunResponse\"\x88\x01\n" +
+	"\x1cAnswerShouldKnowOfferRequest\x12#\n" +
+	"\boffer_id\x18\x01 \x01(\tB\b\xbaH\x05r\x03\xb0\x01\x01R\aofferId\x12C\n" +
+	"\x06answer\x18\x02 \x01(\x0e2\x1f.nominal.ai.v1.ShouldKnowAnswerB\n" +
+	"\xbaH\a\x82\x01\x04\x10\x01 \x00R\x06answer\"\x1f\n" +
+	"\x1dAnswerShouldKnowOfferResponse\"\x9b\x03\n" +
+	"\x0fExperimentEvent\x12<\n" +
+	"\n" +
+	"experiment\x18\x01 \x01(\tB\x1c\xbaH\x19r\x17\x10\x01\x18@2\x11^[a-z][a-z0-9_]*$R\n" +
+	"experiment\x124\n" +
+	"\x06action\x18\x02 \x01(\tB\x1c\xbaH\x19r\x17\x10\x01\x18@2\x11^[a-z][a-z0-9_]*$R\x06action\x12)\n" +
+	"\n" +
+	"subject_id\x18\x03 \x01(\tB\n" +
+	"\xbaH\ar\x05\x10\x01\x18\x80\x01R\tsubjectId\x12s\n" +
+	"\n" +
+	"properties\x18\x04 \x03(\v2..nominal.ai.v1.ExperimentEvent.PropertiesEntryB#\xbaH \x9a\x01\x1d\x10\x10\"\x19r\x17\x18@2\x13^[a-z][a-zA-Z0-9]*$R\n" +
+	"properties\x12\x10\n" +
+	"\x03arm\x18\x05 \x01(\tR\x03arm\x1ab\n" +
+	"\x0fPropertiesEntry\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\tR\x03key\x129\n" +
+	"\x05value\x18\x02 \x01(\v2#.nominal.ai.v1.ExperimentEventValueR\x05value:\x028\x01\"\x90\x01\n" +
+	"\x14ExperimentEventValue\x12\x1d\n" +
+	"\tint_value\x18\x01 \x01(\x03H\x00R\bintValue\x12\x1f\n" +
+	"\n" +
+	"bool_value\x18\x02 \x01(\bH\x00R\tboolValue\x12(\n" +
+	"\n" +
+	"enum_value\x18\x03 \x01(\tB\a\xbaH\x04r\x02\x18@H\x00R\tenumValueB\x0e\n" +
+	"\x05value\x12\x05\xbaH\x02\b\x01\"q\n" +
+	"\x1cCreateExperimentEventRequest\x12Q\n" +
+	"\x10experiment_event\x18\x01 \x01(\v2\x1e.nominal.ai.v1.ExperimentEventB\x06\xbaH\x03\xc8\x01\x01R\x0fexperimentEvent\"j\n" +
+	"\x1dCreateExperimentEventResponse\x12I\n" +
+	"\x10experiment_event\x18\x01 \x01(\v2\x1e.nominal.ai.v1.ExperimentEventR\x0fexperimentEvent\"\x9d\x01\n" +
 	"$GetSnapshotRidByUserMessageIdRequest\x12V\n" +
 	"\x10conversation_rid\x18\x01 \x01(\tB+\x9a\xb2\x1a'\n" +
 	"%io.nominal.api.rids.AiConversationRidR\x0fconversationRid\x12\x1d\n" +
@@ -7551,10 +10039,10 @@ const file_nominal_protos_ai_v1_ai_agent_proto_rawDesc = "" +
 	"\x0e_override_args\"9\n" +
 	"\x12ToolDeniedResponse\x12#\n" +
 	"\rdenial_reason\x18\x02 \x01(\tR\fdenialReason\"\x0e\n" +
-	"\fRetryRequest\"\x80\x01\n" +
+	"\fRetryRequest\"\x84\x01\n" +
 	"\x11UserPromptRequest\x129\n" +
-	"\amessage\x18\x01 \x01(\v2\x1f.nominal.ai.v1.UserModelMessageR\amessage\x120\n" +
-	"\x06images\x18\x02 \x03(\v2\x18.nominal.ai.v1.ImagePartR\x06images\"_\n" +
+	"\amessage\x18\x01 \x01(\v2\x1f.nominal.ai.v1.UserModelMessageR\amessage\x124\n" +
+	"\x06images\x18\x02 \x03(\v2\x18.nominal.ai.v1.ImagePartB\x02\x18\x01R\x06images\"_\n" +
 	"\x13ToolApprovalRequest\x12H\n" +
 	"\x0etool_approvals\x18\x01 \x03(\v2!.nominal.ai.v1.ToolApprovalResultR\rtoolApprovals\"\xb5\x01\n" +
 	"\x12UserQuestionAnswer\x12%\n" +
@@ -7572,7 +10060,7 @@ const file_nominal_protos_ai_v1_ai_agent_proto_rawDesc = "" +
 	"\aversion\x18\x03 \x01(\x04R\aversion\x12?\n" +
 	"\banswered\x18\x04 \x01(\v2!.nominal.ai.v1.UserQuestionAnswerH\x00R\banswered\x12A\n" +
 	"\bdeclined\x18\x05 \x01(\v2#.nominal.ai.v1.UserQuestionDeclinedH\x00R\bdeclinedB\x11\n" +
-	"\bresponse\x12\x05\xbaH\x02\b\x01\"\x9f\b\n" +
+	"\bresponse\x12\x05\xbaH\x02\b\x01\"\xc2\b\n" +
 	"\x11StreamChatRequest\x12V\n" +
 	"\x10conversation_rid\x18\x01 \x01(\tB+\x9a\xb2\x1a'\n" +
 	"%io.nominal.api.rids.AiConversationRidR\x0fconversationRid\x12=\n" +
@@ -7583,18 +10071,55 @@ const file_nominal_protos_ai_v1_ai_agent_proto_rawDesc = "" +
 	"\vuser_prompt\x18\b \x01(\v2 .nominal.ai.v1.UserPromptRequestH\x00R\n" +
 	"userPrompt\x12I\n" +
 	"\rtool_approval\x18\t \x01(\v2\".nominal.ai.v1.ToolApprovalRequestH\x00R\ftoolApproval\x12b\n" +
-	"\x16user_question_response\x18\f \x01(\v2*.nominal.ai.v1.UserQuestionResponseRequestH\x00R\x14userQuestionResponse\x12<\n" +
-	"\bworkbook\x18\x04 \x01(\v2\x1e.nominal.ai.v1.WorkbookContextH\x01R\bworkbook\x126\n" +
-	"\x06global\x18\x05 \x01(\v2\x1c.nominal.ai.v1.GlobalContextH\x01R\x06global\x12?\n" +
-	"\tchecklist\x18\n" +
-	" \x01(\v2\x1f.nominal.ai.v1.ChecklistContextH\x01R\tchecklist\x12<\n" +
-	"\btemplate\x18\v \x01(\v2\x1e.nominal.ai.v1.TemplateContextH\x01R\btemplate\x120\n" +
+	"\x16user_question_response\x18\f \x01(\v2*.nominal.ai.v1.UserQuestionResponseRequestH\x00R\x14userQuestionResponse\x120\n" +
 	"\x14detach_on_disconnect\x18\r \x01(\bR\x12detachOnDisconnect\x12#\n" +
 	"\rreattach_only\x18\x0e \x01(\bR\freattachOnly\x12K\n" +
-	"\x0fmodel_selection\x18\x0f \x01(\v2\x1d.nominal.ai.v1.ModelSelectionH\x02R\x0emodelSelection\x88\x01\x01B\x0e\n" +
-	"\frequest_typeB\t\n" +
-	"\acontextB\x12\n" +
-	"\x10_model_selection\"\x9c\x02\n" +
+	"\x0fmodel_selection\x18\x0f \x01(\v2\x1d.nominal.ai.v1.ModelSelectionH\x01R\x0emodelSelection\x88\x01\x01\x12B\n" +
+	"\fpage_context\x18\x10 \x01(\v2\x1a.nominal.ai.v1.PageContextH\x02R\vpageContext\x88\x01\x01\x12<\n" +
+	"\x13resume_after_offset\x18\x11 \x01(\x03B\a\xbaH\x04\"\x02(\x00H\x03R\x11resumeAfterOffset\x88\x01\x01\x12&\n" +
+	"\fresume_epoch\x18\x12 \x01(\tH\x04R\vresumeEpoch\x88\x01\x01B\x0e\n" +
+	"\frequest_typeB\x12\n" +
+	"\x10_model_selectionB\x0f\n" +
+	"\r_page_contextB\x16\n" +
+	"\x14_resume_after_offsetB\x0f\n" +
+	"\r_resume_epochJ\x04\b\x04\x10\x05J\x04\b\x05\x10\x06J\x04\b\n" +
+	"\x10\vJ\x04\b\v\x10\fR\bworkbookR\x06globalR\tchecklistR\btemplate\"\x96\x01\n" +
+	"\x1cComputeFunctionEditorContext\x12X\n" +
+	"\fworkbook_rid\x18\x01 \x01(\tB5\xbaH\ar\x05\x10\x01\x18\x80\x02\x9a\xb2\x1a'\n" +
+	"%io.nominal.scout.rids.api.NotebookRidR\vworkbookRid\x12\x1c\n" +
+	"\x04name\x18\x02 \x01(\tB\b\xbaH\x05r\x03\x18\xc8\x01R\x04name\"k\n" +
+	"\x10SqlEditorContext\x12.\n" +
+	"\ractive_tab_id\x18\x01 \x01(\tB\n" +
+	"\xbaH\ar\x05\x10\x01\x18\x80\x01R\vactiveTabId\x12'\n" +
+	"\teditor_id\x18\x02 \x01(\tB\n" +
+	"\xbaH\ar\x05\x10\x01\x18\x80\x01R\beditorId\"\xf0\x01\n" +
+	"\x12DraftEditorContext\x12+\n" +
+	"\vbranch_name\x18\x01 \x01(\tB\n" +
+	"\xbaH\ar\x05\x10\x01\x18\x80\x02R\n" +
+	"branchName\x12\xac\x01\n" +
+	"\rreference_rid\x18\x02 \x01(\tB\x86\x01\xbaH[rY\x10\x01\x18\x80\x022R^ri[.][a-z][a-z0-9-]*[.]([a-z0-9][a-z0-9-]*)?[.][a-z][a-z0-9-]*[.][a-zA-Z0-9._-]+$\x9a\xb2\x1a$\n" +
+	"\"com.palantir.ri.ResourceIdentifierR\freferenceRid\"\x99\x02\n" +
+	"\x13WorkbookViewContext\x12.\n" +
+	"\ractive_tab_id\x18\x01 \x01(\tB\n" +
+	"\xbaH\ar\x05\x10\x01\x18\x80\x01R\vactiveTabId\x12G\n" +
+	"\rvisible_start\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x06\xbaH\x03\xc8\x01\x01R\fvisibleStart\x12C\n" +
+	"\vvisible_end\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x06\xbaH\x03\xc8\x01\x01R\n" +
+	"visibleEnd\x12D\n" +
+	"\x0ftime_range_type\x18\x04 \x01(\x0e2\x1c.nominal.ai.v1.TimeRangeTypeR\rtimeRangeType\"\xd0\x05\n" +
+	"\vPageContext\x12\x1a\n" +
+	"\x03url\x18\x01 \x01(\tB\b\xbaH\x05r\x03\x18\x80\x10R\x03url\x12\xad\x01\n" +
+	"\vprimary_rid\x18\x02 \x01(\tB\x86\x01\xbaH[rY\x10\x01\x18\x80\x022R^ri[.][a-z][a-z0-9-]*[.]([a-z0-9][a-z0-9-]*)?[.][a-z][a-z0-9-]*[.][a-zA-Z0-9._-]+$\x9a\xb2\x1a$\n" +
+	"\"com.palantir.ri.ResourceIdentifierH\x00R\n" +
+	"primaryRid\x88\x01\x01\x12c\n" +
+	"\x17compute_function_editor\x18\x04 \x01(\v2+.nominal.ai.v1.ComputeFunctionEditorContextR\x15computeFunctionEditor\x12>\n" +
+	"\n" +
+	"sql_editor\x18\x05 \x01(\v2\x1f.nominal.ai.v1.SqlEditorContextR\tsqlEditor\x12D\n" +
+	"\fdraft_editor\x18\x06 \x01(\v2!.nominal.ai.v1.DraftEditorContextR\vdraftEditor\x12G\n" +
+	"\rworkbook_view\x18\a \x01(\v2\".nominal.ai.v1.WorkbookViewContextR\fworkbookView\x12\xb0\x01\n" +
+	"\fin_view_rids\x18\x03 \x03(\tB\x8d\x01\xbaHb\x92\x01_\x102\"[rY\x10\x01\x18\x80\x022R^ri[.][a-z][a-z0-9-]*[.]([a-z0-9][a-z0-9-]*)?[.][a-z][a-z0-9-]*[.][a-zA-Z0-9._-]+$\x9a\xb2\x1a$\n" +
+	"\"com.palantir.ri.ResourceIdentifierR\n" +
+	"inViewRidsB\x0e\n" +
+	"\f_primary_rid\"\x9c\x02\n" +
 	"\x0eModelSelection\x12%\n" +
 	"\bmodel_id\x18\x01 \x01(\tB\n" +
 	"\xbaH\ar\x05\x10\x01\x18\x80\x02R\amodelId\x125\n" +
@@ -7625,36 +10150,7 @@ const file_nominal_protos_ai_v1_ai_agent_proto_rawDesc = "" +
 	"\x18_default_thinking_effort\"\x13\n" +
 	"\x11ListModelsRequest\"H\n" +
 	"\x12ListModelsResponse\x122\n" +
-	"\x06models\x18\x01 \x03(\v2\x1a.nominal.ai.v1.ModelOptionR\x06models\"\xe5\x02\n" +
-	"\x0fWorkbookContext\x12N\n" +
-	"\fworkbook_rid\x18\x01 \x01(\tB+\x9a\xb2\x1a'\n" +
-	"%io.nominal.scout.rids.api.NotebookRidR\vworkbookRid\x12Q\n" +
-	"\ruser_presence\x18\x02 \x01(\v2#.nominal.ai.v1.WorkbookUserPresenceB\x02\x18\x01H\x00R\fuserPresence\x88\x01\x01\x12'\n" +
-	"\ractive_tab_id\x18\x03 \x01(\tH\x01R\vactiveTabId\x88\x01\x01\x12K\n" +
-	"\x12visible_time_range\x18\x05 \x01(\v2\x18.nominal.ai.v1.TimeRangeH\x02R\x10visibleTimeRange\x88\x01\x01B\x10\n" +
-	"\x0e_user_presenceB\x10\n" +
-	"\x0e_active_tab_idB\x15\n" +
-	"\x13_visible_time_range\"\xc3\x01\n" +
-	"\x10ChecklistContext\x12Q\n" +
-	"\rchecklist_rid\x18\x01 \x01(\tB,\x9a\xb2\x1a(\n" +
-	"&io.nominal.scout.rids.api.ChecklistRidR\fchecklistRid\x12\x1f\n" +
-	"\vbranch_name\x18\x02 \x01(\tR\n" +
-	"branchName\x12\x16\n" +
-	"\x05asset\x18\x03 \x01(\tH\x00R\x05asset\x12\x12\n" +
-	"\x03run\x18\x04 \x01(\tH\x00R\x03runB\x0f\n" +
-	"\rreference_rid\"\xbf\x01\n" +
-	"\x0fTemplateContext\x12N\n" +
-	"\ftemplate_rid\x18\x01 \x01(\tB+\x9a\xb2\x1a'\n" +
-	"%io.nominal.scout.rids.api.TemplateRidR\vtemplateRid\x12\x1f\n" +
-	"\vbranch_name\x18\x02 \x01(\tR\n" +
-	"branchName\x12\x16\n" +
-	"\x05asset\x18\x03 \x01(\tH\x00R\x05asset\x12\x12\n" +
-	"\x03run\x18\x04 \x01(\tH\x00R\x03runB\x0f\n" +
-	"\rreference_rid\"\x0f\n" +
-	"\rGlobalContext\"c\n" +
-	"\x14WorkbookUserPresence\x12\x1b\n" +
-	"\ttab_index\x18\x01 \x01(\x05R\btabIndex\x12.\n" +
-	"\x05range\x18\x02 \x01(\v2\x18.nominal.ai.v1.TimeRangeR\x05range\"\xd6\x04\n" +
+	"\x06models\x18\x01 \x03(\v2\x1a.nominal.ai.v1.ModelOptionR\x06models\"\xd6\x04\n" +
 	"\x19CreateConversationRequest\x12\x14\n" +
 	"\x05title\x18\x01 \x01(\tR\x05title\x12K\n" +
 	"\rworkspace_rid\x18\x02 \x01(\tB&\x9a\xb2\x1a\"\n" +
@@ -7814,11 +10310,24 @@ const file_nominal_protos_ai_v1_ai_agent_proto_rawDesc = "" +
 	"\x10conversation_rid\x18\x01 \x01(\tB+\x9a\xb2\x1a'\n" +
 	"%io.nominal.api.rids.AiConversationRidR\x0fconversationRid\x12<\n" +
 	"\n" +
-	"active_run\x18\x02 \x01(\v2\x1d.nominal.ai.v1.ActiveAgentRunR\tactiveRun\"}\n" +
-	"\tTimeRange\x129\n" +
-	"\vrange_start\x18\x01 \x01(\v2\x18.nominal.ai.v1.TimestampR\n" +
-	"rangeStart\x125\n" +
-	"\trange_end\x18\x02 \x01(\v2\x18.nominal.ai.v1.TimestampR\brangeEnd\"G\n" +
+	"active_run\x18\x02 \x01(\v2\x1d.nominal.ai.v1.ActiveAgentRunR\tactiveRun\"\xde\x01\n" +
+	"$BatchGetConversationSandboxesRequest\x12i\n" +
+	"\x11conversation_rids\x18\x01 \x03(\tB<\xbaH\x0e\x92\x01\v\x10d\"\ar\x05\x10\x01\x18\x80\x02\x9a\xb2\x1a'\n" +
+	"%io.nominal.api.rids.AiConversationRidR\x10conversationRids\x12K\n" +
+	"\rworkspace_rid\x18\x02 \x01(\tB&\x9a\xb2\x1a\"\n" +
+	" io.nominal.api.rids.WorkspaceRidR\fworkspaceRid\"\x82\x01\n" +
+	"%BatchGetConversationSandboxesResponse\x12Y\n" +
+	"\x16conversation_sandboxes\x18\x01 \x03(\v2\".nominal.ai.v1.ConversationSandboxR\x15conversationSandboxes\"\xd1\x01\n" +
+	" ResumeConversationSandboxRequest\x12K\n" +
+	"\rworkspace_rid\x18\x01 \x01(\tB&\x9a\xb2\x1a\"\n" +
+	" io.nominal.api.rids.WorkspaceRidR\fworkspaceRid\x12`\n" +
+	"\x10conversation_rid\x18\x02 \x01(\tB5\xbaH\ar\x05\x10\x01\x18\x80\x02\x9a\xb2\x1a'\n" +
+	"%io.nominal.api.rids.AiConversationRidR\x0fconversationRid\"#\n" +
+	"!ResumeConversationSandboxResponse\"\xaf\x01\n" +
+	"\x13ConversationSandbox\x12V\n" +
+	"\x10conversation_rid\x18\x01 \x01(\tB+\x9a\xb2\x1a'\n" +
+	"%io.nominal.api.rids.AiConversationRidR\x0fconversationRid\x12@\n" +
+	"\x06status\x18\x02 \x01(\x0e2(.nominal.ai.v1.ConversationSandboxStatusR\x06status\"G\n" +
 	"\tTimestamp\x12\x18\n" +
 	"\aseconds\x18\x01 \x01(\x05R\aseconds\x12 \n" +
 	"\vnanoseconds\x18\x02 \x01(\x05R\vnanoseconds\"\x93\x01\n" +
@@ -7829,27 +10338,37 @@ const file_nominal_protos_ai_v1_ai_agent_proto_rawDesc = "" +
 	"\x10UserModelMessage\x122\n" +
 	"\x04text\x18\x01 \x03(\v2\x1e.nominal.ai.v1.UserContentPartR\x04text\"a\n" +
 	"\x15AssistantModelMessage\x12H\n" +
-	"\rcontent_parts\x18\x01 \x03(\v2#.nominal.ai.v1.AssistantContentPartR\fcontentParts\"z\n" +
+	"\rcontent_parts\x18\x01 \x03(\v2#.nominal.ai.v1.AssistantContentPartR\fcontentParts\"\xbb\x01\n" +
 	"\x0fUserContentPart\x12-\n" +
 	"\x04text\x18\x01 \x01(\v2\x17.nominal.ai.v1.TextPartH\x00R\x04text\x120\n" +
-	"\x05image\x18\x02 \x01(\v2\x18.nominal.ai.v1.ImagePartH\x00R\x05imageB\x06\n" +
+	"\x05image\x18\x02 \x01(\v2\x18.nominal.ai.v1.ImagePartH\x00R\x05image\x12?\n" +
+	"\n" +
+	"attachment\x18\x03 \x01(\v2\x1d.nominal.ai.v1.AttachmentPartH\x00R\n" +
+	"attachmentB\x06\n" +
 	"\x04part\"\x8b\x01\n" +
 	"\x14AssistantContentPart\x12-\n" +
 	"\x04text\x18\x01 \x01(\v2\x17.nominal.ai.v1.TextPartH\x00R\x04text\x12<\n" +
 	"\treasoning\x18\x02 \x01(\v2\x1c.nominal.ai.v1.ReasoningPartH\x00R\treasoningB\x06\n" +
 	"\x04part\"\x1e\n" +
 	"\bTextPart\x12\x12\n" +
-	"\x04text\x18\x01 \x01(\tR\x04text\"z\n" +
+	"\x04text\x18\x01 \x01(\tR\x04text\"\x96\x01\n" +
 	"\tImagePart\x12\x1d\n" +
 	"\n" +
 	"media_type\x18\x02 \x01(\tR\tmediaType\x12N\n" +
 	"\x0eattachment_rid\x18\x04 \x01(\tB'\x9a\xb2\x1a#\n" +
-	"!io.nominal.api.rids.AttachmentRidR\rattachmentRid\"`\n" +
+	"!io.nominal.api.rids.AttachmentRidR\rattachmentRid\x12\x1a\n" +
+	"\bfilename\x18\x05 \x01(\tR\bfilename\"\x7f\n" +
+	"\x0eAttachmentPart\x12N\n" +
+	"\x0eattachment_rid\x18\x01 \x01(\tB'\x9a\xb2\x1a#\n" +
+	"!io.nominal.api.rids.AttachmentRidR\rattachmentRid\x12\x1d\n" +
+	"\n" +
+	"media_type\x18\x02 \x01(\tR\tmediaType\"`\n" +
 	"\rReasoningPart\x12\x1c\n" +
 	"\treasoning\x18\x01 \x01(\tR\treasoning\x12\"\n" +
 	"\n" +
 	"duration_s\x18\x02 \x01(\x01H\x00R\tdurationS\x88\x01\x01B\r\n" +
-	"\v_duration_s\"\xf7\a\n" +
+	"\v_duration_s\"\xd8\n" +
+	"\n" +
 	"\x12StreamChatResponse\x12/\n" +
 	"\x06finish\x18\x01 \x01(\v2\x15.nominal.ai.v1.FinishH\x00R\x06finish\x12,\n" +
 	"\x05error\x18\x02 \x01(\v2\x14.nominal.ai.v1.ErrorH\x00R\x05error\x129\n" +
@@ -7870,10 +10389,29 @@ const file_nominal_protos_ai_v1_ai_agent_proto_rawDesc = "" +
 	"\bstep_end\x18\r \x01(\v2\x16.nominal.ai.v1.StepEndH\x00R\astepEnd\x12K\n" +
 	"\x10client_directive\x18\x0e \x01(\v2\x1e.nominal.ai.v1.ClientDirectiveH\x00R\x0fclientDirective\x12N\n" +
 	"\x11compaction_notice\x18\x0f \x01(\v2\x1f.nominal.ai.v1.CompactionNoticeH\x00R\x10compactionNotice\x12?\n" +
-	"\fstream_reset\x18\x10 \x01(\v2\x1a.nominal.ai.v1.StreamResetH\x00R\vstreamResetB\n" +
+	"\fstream_reset\x18\x10 \x01(\v2\x1a.nominal.ai.v1.StreamResetH\x00R\vstreamReset\x12K\n" +
+	"\x10steering_message\x18\x11 \x01(\v2\x1e.nominal.ai.v1.SteeringMessageH\x00R\x0fsteeringMessage\x12L\n" +
+	"\x11should_know_offer\x18\x14 \x01(\v2\x1e.nominal.ai.v1.ShouldKnowOfferH\x00R\x0fshouldKnowOffer\x12O\n" +
+	"\x12tool_call_progress\x18\x15 \x01(\v2\x1f.nominal.ai.v1.ToolCallProgressH\x00R\x10toolCallProgress\x12(\n" +
+	"\rstream_offset\x18\x12 \x01(\x03H\x01R\fstreamOffset\x88\x01\x01\x12&\n" +
+	"\fstream_epoch\x18\x13 \x01(\tH\x02R\vstreamEpoch\x88\x01\x01B\n" +
 	"\n" +
-	"\bresponseJ\x04\b\t\x10\n" +
-	"\"\r\n" +
+	"\bresponseB\x10\n" +
+	"\x0e_stream_offsetB\x0f\n" +
+	"\r_stream_epochJ\x04\b\t\x10\n" +
+	"\"_\n" +
+	"\x10ToolCallProgress\x12*\n" +
+	"\ftool_call_id\x18\x01 \x01(\tB\b\xbaH\x05r\x03\x18\x80\x02R\n" +
+	"toolCallId\x12\x1f\n" +
+	"\x06status\x18\x02 \x01(\tB\a\xbaH\x04r\x02\x18@R\x06status\"Q\n" +
+	"\x0fSteeringMessage\x12*\n" +
+	"\x11client_message_id\x18\x01 \x01(\tR\x0fclientMessageId\x12\x12\n" +
+	"\x04text\x18\x02 \x01(\tR\x04text\"\x98\x01\n" +
+	"\x0fShouldKnowOffer\x12\x0e\n" +
+	"\x02id\x18\x01 \x01(\tR\x02id\x12.\n" +
+	"\x03tag\x18\x02 \x01(\x0e2\x1c.nominal.ai.v1.ShouldKnowTagR\x03tag\x12\x12\n" +
+	"\x04line\x18\x03 \x01(\tR\x04line\x121\n" +
+	"\x14explanation_markdown\x18\x04 \x01(\tR\x13explanationMarkdown\"\r\n" +
 	"\vStreamReset\"\v\n" +
 	"\tStepStart\"\t\n" +
 	"\aStepEnd\"\x89\x02\n" +
@@ -7946,19 +10484,60 @@ const file_nominal_protos_ai_v1_ai_agent_proto_rawDesc = "" +
 	"\n" +
 	"duration_s\x18\x04 \x01(\x01H\x01R\tdurationS\x88\x01\x01B\t\n" +
 	"\aoutcomeB\r\n" +
-	"\v_duration_s\"E\n" +
+	"\v_duration_s\"\x95\x01\n" +
 	"\x11ToolActionSuccess\x120\n" +
-	"\x14tool_success_message\x18\x01 \x01(\tR\x12toolSuccessMessage\"A\n" +
+	"\x14tool_success_message\x18\x01 \x01(\tR\x12toolSuccessMessage\x12@\n" +
+	"\tcode_cell\x18\x02 \x01(\v2\x1e.nominal.ai.v1.CodeCellOutputsH\x00R\bcodeCell\x88\x01\x01B\f\n" +
+	"\n" +
+	"_code_cell\"\x9b\x01\n" +
+	"\x0fCodeCellOutputs\x127\n" +
+	"\aoutputs\x18\x01 \x03(\v2\x1d.nominal.ai.v1.CodeCellOutputR\aoutputs\x12\x1c\n" +
+	"\ttruncated\x18\x02 \x01(\bR\ttruncated\x121\n" +
+	"\x05files\x18\x03 \x03(\v2\x1b.nominal.ai.v1.CodeCellFileR\x05files\"\xb0\x01\n" +
+	"\fCodeCellFile\x12N\n" +
+	"\x0eattachment_rid\x18\x01 \x01(\tB'\x9a\xb2\x1a#\n" +
+	"!io.nominal.api.rids.AttachmentRidR\rattachmentRid\x12\x1d\n" +
+	"\n" +
+	"media_type\x18\x02 \x01(\tR\tmediaType\x12\x12\n" +
+	"\x04name\x18\x03 \x01(\tR\x04name\x12\x1d\n" +
+	"\n" +
+	"size_bytes\x18\x04 \x01(\x04R\tsizeBytes\"\x84\x04\n" +
+	"\x0eCodeCellOutput\x12>\n" +
+	"\x06stream\x18\x01 \x01(\v2$.nominal.ai.v1.CodeCellOutput.StreamH\x00R\x06stream\x128\n" +
+	"\x04data\x18\x02 \x01(\v2\".nominal.ai.v1.CodeCellOutput.DataH\x00R\x04data\x12;\n" +
+	"\x05error\x18\x03 \x01(\v2#.nominal.ai.v1.CodeCellOutput.ErrorH\x00R\x05error\x1aZ\n" +
+	"\x06Stream\x12<\n" +
+	"\x04name\x18\x01 \x01(\x0e2(.nominal.ai.v1.CodeCellOutput.StreamNameR\x04name\x12\x12\n" +
+	"\x04text\x18\x02 \x01(\tR\x04text\x1a%\n" +
+	"\x04Data\x12\x1d\n" +
+	"\n" +
+	"text_plain\x18\x01 \x01(\tR\ttextPlain\x1aS\n" +
+	"\x05Error\x12\x14\n" +
+	"\x05ename\x18\x01 \x01(\tR\x05ename\x12\x16\n" +
+	"\x06evalue\x18\x02 \x01(\tR\x06evalue\x12\x1c\n" +
+	"\ttraceback\x18\x03 \x03(\tR\ttraceback\"Y\n" +
+	"\n" +
+	"StreamName\x12\x1b\n" +
+	"\x17STREAM_NAME_UNSPECIFIED\x10\x00\x12\x16\n" +
+	"\x12STREAM_NAME_STDOUT\x10\x01\x12\x16\n" +
+	"\x12STREAM_NAME_STDERR\x10\x02B\b\n" +
+	"\x06output\"A\n" +
 	"\x11ToolActionFailure\x12,\n" +
 	"\x12tool_error_message\x18\x01 \x01(\tR\x10toolErrorMessage\"P\n" +
 	"\x0fClientDirective\x122\n" +
 	"\x02v1\x18\x01 \x01(\v2 .nominal.ai.v1.ClientDirectiveV1H\x00R\x02v1B\t\n" +
-	"\aversion\"\xcc\x01\n" +
+	"\aversion\"\xf2\x02\n" +
 	"\x11ClientDirectiveV1\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12Q\n" +
 	"\x0fresource_edited\x18\x02 \x01(\v2&.nominal.ai.v1.ResourceEditedDirectiveH\x00R\x0eresourceEdited\x12L\n" +
-	"\x0eset_time_range\x18\x03 \x01(\v2$.nominal.ai.v1.SetTimeRangeDirectiveH\x00R\fsetTimeRangeB\x06\n" +
-	"\x04kind\"\xdf\x01\n" +
+	"\x0eset_time_range\x18\x03 \x01(\v2$.nominal.ai.v1.SetTimeRangeDirectiveH\x00R\fsetTimeRange\x12T\n" +
+	"\x10resource_changed\x18\x04 \x01(\v2'.nominal.ai.v1.ResourceChangedDirectiveH\x00R\x0fresourceChanged\x12N\n" +
+	"\x0esandbox_status\x18\x05 \x01(\v2%.nominal.ai.v1.SandboxStatusDirectiveH\x00R\rsandboxStatusB\x06\n" +
+	"\x04kind\"\xb2\x01\n" +
+	"\x16SandboxStatusDirective\x12V\n" +
+	"\x10conversation_rid\x18\x01 \x01(\tB+\x9a\xb2\x1a'\n" +
+	"%io.nominal.api.rids.AiConversationRidR\x0fconversationRid\x12@\n" +
+	"\x06status\x18\x02 \x01(\x0e2(.nominal.ai.v1.ConversationSandboxStatusR\x06status\"\xdf\x01\n" +
 	"\x17ResourceEditedDirective\x12>\n" +
 	"\tchecklist\x18\x01 \x01(\v2\x1e.nominal.ai.v1.ChecklistEditedH\x00R\tchecklist\x12;\n" +
 	"\btemplate\x18\x02 \x01(\v2\x1d.nominal.ai.v1.TemplateEditedH\x00R\btemplate\x12;\n" +
@@ -7989,7 +10568,17 @@ const file_nominal_protos_ai_v1_ai_agent_proto_rawDesc = "" +
 	"\r_committed_at\"`\n" +
 	"\x0eWorkbookEdited\x12N\n" +
 	"\fworkbook_rid\x18\x01 \x01(\tB+\x9a\xb2\x1a'\n" +
-	"%io.nominal.scout.rids.api.NotebookRidR\vworkbookRid\"\x8d\x02\n" +
+	"%io.nominal.scout.rids.api.NotebookRidR\vworkbookRid\"\x91\x03\n" +
+	"\x18ResourceChangedDirective\x12i\n" +
+	"\fresource_rid\x18\x01 \x01(\tBF\xaa\xb2\x1aBCarries RIDs of any resource type, so no single RID alias applies.R\vresourceRid\x129\n" +
+	"\x06change\x18\x02 \x01(\x0e2!.nominal.ai.v1.ResourceChangeTypeR\x06change\x12$\n" +
+	"\vbranch_name\x18\x03 \x01(\tH\x00R\n" +
+	"branchName\x88\x01\x01\x12 \n" +
+	"\tcommit_id\x18\x04 \x01(\tH\x01R\bcommitId\x88\x01\x01\x12i\n" +
+	"\frelated_rids\x18\x05 \x03(\tBF\xaa\xb2\x1aBCarries RIDs of any resource type, so no single RID alias applies.R\vrelatedRidsB\x0e\n" +
+	"\f_branch_nameB\f\n" +
+	"\n" +
+	"_commit_id\"\x8d\x02\n" +
 	"\x15SetTimeRangeDirective\x12N\n" +
 	"\fworkbook_rid\x18\x01 \x01(\tB+\x9a\xb2\x1a'\n" +
 	"%io.nominal.scout.rids.api.NotebookRidR\vworkbookRid\x120\n" +
@@ -8019,20 +10608,120 @@ const file_nominal_protos_ai_v1_ai_agent_proto_rawDesc = "" +
 	"\x04code\x18\x03 \x01(\tH\x00R\x04code\x88\x01\x01\x12A\n" +
 	"\voutput_type\x18\x04 \x01(\x0e2 .nominal.ai.v1.ComputeOutputTypeR\n" +
 	"outputTypeB\a\n" +
-	"\x05_code*\xa2\x01\n" +
-	"\x12QueuedMessageState\x12$\n" +
-	" QUEUED_MESSAGE_STATE_UNSPECIFIED\x10\x00\x12\x1f\n" +
-	"\x1bQUEUED_MESSAGE_STATE_QUEUED\x10\x01\x12$\n" +
-	" QUEUED_MESSAGE_STATE_DISPATCHING\x10\x02\x12\x1f\n" +
-	"\x1bQUEUED_MESSAGE_STATE_FAILED\x10\x03*i\n" +
+	"\x05_code\"i\n" +
+	"\x17ComputeProvenanceListV1\x12N\n" +
+	"\aentries\x18\x01 \x03(\v2'.nominal.ai.v1.ComputeProvenanceEntryV1B\v\xbaH\b\x92\x01\x05\b\x01\x10\x80\bR\aentries\"\x98\x01\n" +
+	"\x18ComputeProvenanceEntryV1\x120\n" +
+	"\bpointers\x18\x01 \x03(\tB\x14\xbaH\x11\x92\x01\x0e\b\x01\x10\x80\b\"\ar\x05\x10\x01\x18\x80\x04R\bpointers\x12J\n" +
+	"\n" +
+	"provenance\x18\x02 \x01(\v2\".nominal.ai.v1.ComputeProvenanceV1B\x06\xbaH\x03\xc8\x01\x01R\n" +
+	"provenance\"\xb6\x03\n" +
+	"\bCitation\x12\x10\n" +
+	"\x03ref\x18\x01 \x01(\tR\x03ref\x12\x14\n" +
+	"\x05label\x18\x02 \x01(\tR\x05label\x12=\n" +
+	"\fretrieved_at\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampR\vretrievedAt\x12\x1b\n" +
+	"\x06number\x18\x05 \x01(\rH\x01R\x06number\x88\x01\x01\x12@\n" +
+	"\ttelemetry\x18\x04 \x01(\v2 .nominal.ai.v1.TelemetryCitationH\x00R\ttelemetry\x126\n" +
+	"\x04file\x18\x06 \x01(\v2 .nominal.ai.v1.DriveFileCitationH\x00R\x04file\x12M\n" +
+	"\x0ecode_execution\x18\a \x01(\v2$.nominal.ai.v1.CodeExecutionCitationH\x00R\rcodeExecution\x12G\n" +
+	"\fuser_message\x18\b \x01(\v2\".nominal.ai.v1.UserMessageCitationH\x00R\vuserMessageB\t\n" +
+	"\apayloadB\t\n" +
+	"\a_number\"4\n" +
+	"\x13UserMessageCitation\x12\x1d\n" +
+	"\n" +
+	"message_id\x18\x01 \x01(\tR\tmessageId\"\xc5\x01\n" +
+	"\x15CodeExecutionCitation\x12\x12\n" +
+	"\x04code\x18\x01 \x01(\tR\x04code\x12\x16\n" +
+	"\x06output\x18\x02 \x01(\tR\x06output\x12\x19\n" +
+	"\x05error\x18\x03 \x01(\tH\x00R\x05error\x88\x01\x01\x126\n" +
+	"\x05calls\x18\x04 \x03(\v2 .nominal.ai.v1.CodeExecutionCallR\x05calls\x12#\n" +
+	"\romitted_calls\x18\x05 \x01(\rR\fomittedCallsB\b\n" +
+	"\x06_error\"\x9e\x02\n" +
+	"\x11CodeExecutionCall\x12\x16\n" +
+	"\x06method\x18\x01 \x01(\tR\x06method\x12*\n" +
+	"\x0earguments_json\x18\x02 \x01(\tH\x00R\rargumentsJson\x88\x01\x01\x12A\n" +
+	"\aoutcome\x18\x03 \x01(\x0e2'.nominal.ai.v1.CodeExecutionCallOutcomeR\aoutcome\x12\"\n" +
+	"\n" +
+	"error_code\x18\x04 \x01(\tH\x01R\terrorCode\x88\x01\x01\x12<\n" +
+	"\asources\x18\x05 \x03(\v2\".nominal.ai.v1.CodeExecutionSourceR\asourcesB\x11\n" +
+	"\x0f_arguments_jsonB\r\n" +
+	"\v_error_code\"\xaf\x01\n" +
+	"\x13CodeExecutionSource\x12\x14\n" +
+	"\x05label\x18\x01 \x01(\tR\x05label\x12@\n" +
+	"\ttelemetry\x18\x02 \x01(\v2 .nominal.ai.v1.TelemetryCitationH\x00R\ttelemetry\x126\n" +
+	"\x04file\x18\x03 \x01(\v2 .nominal.ai.v1.DriveFileCitationH\x00R\x04fileB\b\n" +
+	"\x06source\"T\n" +
+	"\x11TelemetryCitation\x124\n" +
+	"\x02v1\x18\x01 \x01(\v2\".nominal.ai.v1.ComputeProvenanceV1H\x00R\x02v1B\t\n" +
+	"\aversion\"\x9e\x03\n" +
+	"\x11DriveFileCitation\x12Z\n" +
+	"\x11file_revision_rid\x18\x01 \x01(\tB.\x9a\xb2\x1a*\n" +
+	"(io.nominal.api.rids.DriveFileRevisionRidR\x0ffileRevisionRid\x12O\n" +
+	"\rfile_identity\x18\x02 \x01(\v2*.nominal.file_store.v1.LogicalFileIdentityR\ffileIdentity\x12?\n" +
+	"\tdrive_rid\x18\x03 \x01(\tB\"\x9a\xb2\x1a\x1e\n" +
+	"\x1cio.nominal.api.rids.DriveRidR\bdriveRid\x12(\n" +
+	"\x10total_size_bytes\x18\x04 \x01(\x04R\x0etotalSizeBytes\x125\n" +
+	"\x04text\x18\x05 \x01(\v2\x1f.nominal.ai.v1.TextFileCitationH\x00R\x04text\x122\n" +
+	"\x03pdf\x18\x06 \x01(\v2\x1e.nominal.ai.v1.PdfFileCitationH\x00R\x03pdfB\x06\n" +
+	"\x04kind\"_\n" +
+	"\x10TextFileCitation\x12<\n" +
+	"\n" +
+	"byte_range\x18\x01 \x01(\v2\x18.nominal.ai.v1.ByteRangeH\x00R\tbyteRange\x88\x01\x01B\r\n" +
+	"\v_byte_range\"\x8b\x01\n" +
+	"\x0fPdfFileCitation\x12\x1d\n" +
+	"\n" +
+	"first_page\x18\x01 \x01(\rR\tfirstPage\x12&\n" +
+	"\n" +
+	"page_count\x18\x02 \x01(\rB\a\xbaH\x04*\x02 \x00R\tpageCount\x121\n" +
+	"\x10total_page_count\x18\x03 \x01(\rB\a\xbaH\x04*\x02 \x00R\x0etotalPageCount\";\n" +
+	"\tByteRange\x12\x16\n" +
+	"\x06offset\x18\x01 \x01(\x04R\x06offset\x12\x16\n" +
+	"\x06length\x18\x02 \x01(\x04R\x06length\"\x98\x01\n" +
+	"\x18BatchGetCitationsRequest\x12V\n" +
+	"\x10conversation_rid\x18\x01 \x01(\tB+\x9a\xb2\x1a'\n" +
+	"%io.nominal.api.rids.AiConversationRidR\x0fconversationRid\x12$\n" +
+	"\x04refs\x18\x02 \x03(\tB\x10\xbaH\r\x92\x01\n" +
+	"\x10d\"\x06r\x04\x10\x01\x18@R\x04refs\"\x93\x01\n" +
+	"\x19BatchGetCitationsResponse\x125\n" +
+	"\tcitations\x18\x01 \x03(\v2\x17.nominal.ai.v1.CitationR\tcitations\x12?\n" +
+	"\x06errors\x18\x02 \x03(\v2'.nominal.ai.v1.GetCitationResponseErrorR\x06errors\"\xac\x01\n" +
+	"\x18GetCitationResponseError\x12\x10\n" +
+	"\x03ref\x18\x01 \x01(\tR\x03ref\x12F\n" +
+	"\x06reason\x18\x02 \x01(\x0e2..nominal.ai.v1.GetCitationResponseError.ReasonR\x06reason\"6\n" +
+	"\x06Reason\x12\x16\n" +
+	"\x12REASON_UNSPECIFIED\x10\x00\x12\x14\n" +
+	"\x10REASON_NOT_FOUND\x10\x01*i\n" +
 	"\fFeedbackVote\x12\x1d\n" +
 	"\x19FEEDBACK_VOTE_UNSPECIFIED\x10\x00\x12\x1b\n" +
 	"\x17FEEDBACK_VOTE_THUMBS_UP\x10\x01\x12\x1d\n" +
-	"\x19FEEDBACK_VOTE_THUMBS_DOWN\x10\x02*\x8c\x01\n" +
+	"\x19FEEDBACK_VOTE_THUMBS_DOWN\x10\x02*\xb6\x03\n" +
+	"\x10ShouldKnowAnswer\x12\"\n" +
+	"\x1eSHOULD_KNOW_ANSWER_UNSPECIFIED\x10\x00\x12!\n" +
+	"\x1dSHOULD_KNOW_ANSWER_LEARN_MORE\x10\x01\x12\x1e\n" +
+	"\x1aSHOULD_KNOW_ANSWER_KNEW_IT\x10\x02\x12\x1e\n" +
+	"\x1aSHOULD_KNOW_ANSWER_NOT_NOW\x10\x03\x12!\n" +
+	"\x1dSHOULD_KNOW_ANSWER_UNDERSTOOD\x10\x04\x12\x1b\n" +
+	"\x17SHOULD_KNOW_ANSWER_CHAT\x10\x05\x12 \n" +
+	"\x1cSHOULD_KNOW_ANSWER_DISMISSED\x10\x06\x12\x1e\n" +
+	"\x1aSHOULD_KNOW_ANSWER_HELPFUL\x10\a\x12#\n" +
+	"\x1fSHOULD_KNOW_ANSWER_NOT_RELEVANT\x10\b\x12%\n" +
+	"!SHOULD_KNOW_ANSWER_NOT_UNDERSTOOD\x10\t\x12%\n" +
+	"!SHOULD_KNOW_ANSWER_IGNORED_SUBMIT\x10\n" +
+	"\x12&\n" +
+	"\"SHOULD_KNOW_ANSWER_IGNORED_TIMEOUT\x10\v*\x8c\x01\n" +
 	"\x15AgentRunExecutionMode\x12(\n" +
 	"$AGENT_RUN_EXECUTION_MODE_UNSPECIFIED\x10\x00\x12#\n" +
 	"\x1fAGENT_RUN_EXECUTION_MODE_INLINE\x10\x01\x12$\n" +
-	" AGENT_RUN_EXECUTION_MODE_DURABLE\x10\x02*\x96\x01\n" +
+	" AGENT_RUN_EXECUTION_MODE_DURABLE\x10\x02*\xc1\x01\n" +
+	"\x19ConversationSandboxStatus\x12+\n" +
+	"'CONVERSATION_SANDBOX_STATUS_UNSPECIFIED\x10\x00\x12'\n" +
+	"#CONVERSATION_SANDBOX_STATUS_RUNNING\x10\x01\x12$\n" +
+	" CONVERSATION_SANDBOX_STATUS_IDLE\x10\x02\x12(\n" +
+	"$CONVERSATION_SANDBOX_STATUS_RESUMING\x10\x03*s\n" +
+	"\rShouldKnowTag\x12\x1f\n" +
+	"\x1bSHOULD_KNOW_TAG_UNSPECIFIED\x10\x00\x12#\n" +
+	"\x1fSHOULD_KNOW_TAG_YOU_SHOULD_KNOW\x10\x01\x12\x1c\n" +
+	"\x18SHOULD_KNOW_TAG_HEADS_UP\x10\x02*\x96\x01\n" +
 	"\x0eToolCallStatus\x12 \n" +
 	"\x1cTOOL_CALL_STATUS_UNSPECIFIED\x10\x00\x12\x1d\n" +
 	"\x19TOOL_CALL_STATUS_APPROVED\x10\x01\x12\x1b\n" +
@@ -8042,7 +10731,12 @@ const file_nominal_protos_ai_v1_ai_agent_proto_rawDesc = "" +
 	"\x1fUSER_QUESTION_STATE_UNSPECIFIED\x10\x00\x12\x1f\n" +
 	"\x1bUSER_QUESTION_STATE_PENDING\x10\x01\x12 \n" +
 	"\x1cUSER_QUESTION_STATE_ANSWERED\x10\x02\x12 \n" +
-	"\x1cUSER_QUESTION_STATE_DECLINED\x10\x03*l\n" +
+	"\x1cUSER_QUESTION_STATE_DECLINED\x10\x03*\xa1\x01\n" +
+	"\x12ResourceChangeType\x12$\n" +
+	" RESOURCE_CHANGE_TYPE_UNSPECIFIED\x10\x00\x12 \n" +
+	"\x1cRESOURCE_CHANGE_TYPE_CREATED\x10\x01\x12 \n" +
+	"\x1cRESOURCE_CHANGE_TYPE_UPDATED\x10\x02\x12!\n" +
+	"\x1dRESOURCE_CHANGE_TYPE_ARCHIVED\x10\x03*l\n" +
 	"\rTimeRangeType\x12\x1f\n" +
 	"\x1bTIME_RANGE_TYPE_UNSPECIFIED\x10\x00\x12\x1c\n" +
 	"\x18TIME_RANGE_TYPE_ABSOLUTE\x10\x01\x12\x1c\n" +
@@ -8071,7 +10765,12 @@ const file_nominal_protos_ai_v1_ai_agent_proto_rawDesc = "" +
 	"-COMPUTE_OUTPUT_TYPE_BUCKETED_FREQUENCY_DOMAIN\x10\x13\x12/\n" +
 	"+COMPUTE_OUTPUT_TYPE_NUMERIC_RANGE_AGGREGATE\x10\x14\x12!\n" +
 	"\x1dCOMPUTE_OUTPUT_TYPE_CURVE_FIT\x10\x15\x12 \n" +
-	"\x1cCOMPUTE_OUTPUT_TYPE_CURVE_V2\x10\x162\xe3\x11\n" +
+	"\x1cCOMPUTE_OUTPUT_TYPE_CURVE_V2\x10\x16*\xc2\x01\n" +
+	"\x18CodeExecutionCallOutcome\x12+\n" +
+	"'CODE_EXECUTION_CALL_OUTCOME_UNSPECIFIED\x10\x00\x12)\n" +
+	"%CODE_EXECUTION_CALL_OUTCOME_SUCCEEDED\x10\x01\x12&\n" +
+	"\"CODE_EXECUTION_CALL_OUTCOME_FAILED\x10\x02\x12&\n" +
+	"\"CODE_EXECUTION_CALL_OUTCOME_DENIED\x10\x032\xd5\x14\n" +
 	"\x0eAIAgentService\x12Q\n" +
 	"\n" +
 	"ListModels\x12 .nominal.ai.v1.ListModelsRequest\x1a!.nominal.ai.v1.ListModelsResponse\x12S\n" +
@@ -8081,7 +10780,9 @@ const file_nominal_protos_ai_v1_ai_agent_proto_rawDesc = "" +
 	"\x17GetConversationMetadata\x12-.nominal.ai.v1.GetConversationMetadataRequest\x1a..nominal.ai.v1.GetConversationMetadataResponse\x12x\n" +
 	"\x17GetConversationMessages\x12-.nominal.ai.v1.GetConversationMessagesRequest\x1a..nominal.ai.v1.GetConversationMessagesResponse\x12f\n" +
 	"\x11ListConversations\x12'.nominal.ai.v1.ListConversationsRequest\x1a(.nominal.ai.v1.ListConversationsResponse\x12\x8d\x01\n" +
-	"\x1eBatchGetConversationActiveRuns\x124.nominal.ai.v1.BatchGetConversationActiveRunsRequest\x1a5.nominal.ai.v1.BatchGetConversationActiveRunsResponse\x12i\n" +
+	"\x1eBatchGetConversationActiveRuns\x124.nominal.ai.v1.BatchGetConversationActiveRunsRequest\x1a5.nominal.ai.v1.BatchGetConversationActiveRunsResponse\x12\x8a\x01\n" +
+	"\x1dBatchGetConversationSandboxes\x123.nominal.ai.v1.BatchGetConversationSandboxesRequest\x1a4.nominal.ai.v1.BatchGetConversationSandboxesResponse\x12~\n" +
+	"\x19ResumeConversationSandbox\x12/.nominal.ai.v1.ResumeConversationSandboxRequest\x1a0.nominal.ai.v1.ResumeConversationSandboxResponse\x12i\n" +
 	"\x12CreateConversation\x12(.nominal.ai.v1.CreateConversationRequest\x1a).nominal.ai.v1.CreateConversationResponse\x12\x81\x01\n" +
 	"\x1aUpdateConversationMetadata\x120.nominal.ai.v1.UpdateConversationMetadataRequest\x1a1.nominal.ai.v1.UpdateConversationMetadataResponse\x12i\n" +
 	"\x12DeleteConversation\x12(.nominal.ai.v1.DeleteConversationRequest\x1a).nominal.ai.v1.DeleteConversationResponse\x12l\n" +
@@ -8090,11 +10791,12 @@ const file_nominal_protos_ai_v1_ai_agent_proto_rawDesc = "" +
 	"\x1dGetSnapshotRidByUserMessageId\x123.nominal.ai.v1.GetSnapshotRidByUserMessageIdRequest\x1a4.nominal.ai.v1.GetSnapshotRidByUserMessageIdResponse\x12l\n" +
 	"\x13CompactConversation\x12).nominal.ai.v1.CompactConversationRequest\x1a*.nominal.ai.v1.CompactConversationResponse\x12r\n" +
 	"\x15SubmitMessageFeedback\x12+.nominal.ai.v1.SubmitMessageFeedbackRequest\x1a,.nominal.ai.v1.SubmitMessageFeedbackResponse\x12\x84\x01\n" +
-	"\x1bUpdateConversationResources\x121.nominal.ai.v1.UpdateConversationResourcesRequest\x1a2.nominal.ai.v1.UpdateConversationResourcesResponse\x12l\n" +
-	"\x13CreateQueuedMessage\x12).nominal.ai.v1.CreateQueuedMessageRequest\x1a*.nominal.ai.v1.CreateQueuedMessageResponse\x12i\n" +
-	"\x12ListQueuedMessages\x12(.nominal.ai.v1.ListQueuedMessagesRequest\x1a).nominal.ai.v1.ListQueuedMessagesResponse\x12l\n" +
-	"\x13DeleteQueuedMessage\x12).nominal.ai.v1.DeleteQueuedMessageRequest\x1a*.nominal.ai.v1.DeleteQueuedMessageResponse\x12]\n" +
-	"\x0eCancelAgentRun\x12$.nominal.ai.v1.CancelAgentRunRequest\x1a%.nominal.ai.v1.CancelAgentRunResponseB\xbe\x01\n" +
+	"\x1bUpdateConversationResources\x121.nominal.ai.v1.UpdateConversationResourcesRequest\x1a2.nominal.ai.v1.UpdateConversationResourcesResponse\x12]\n" +
+	"\x0eCancelAgentRun\x12$.nominal.ai.v1.CancelAgentRunRequest\x1a%.nominal.ai.v1.CancelAgentRunResponse\x12Z\n" +
+	"\rSteerAgentRun\x12#.nominal.ai.v1.SteerAgentRunRequest\x1a$.nominal.ai.v1.SteerAgentRunResponse\x12f\n" +
+	"\x11BatchGetCitations\x12'.nominal.ai.v1.BatchGetCitationsRequest\x1a(.nominal.ai.v1.BatchGetCitationsResponse\x12r\n" +
+	"\x15AnswerShouldKnowOffer\x12+.nominal.ai.v1.AnswerShouldKnowOfferRequest\x1a,.nominal.ai.v1.AnswerShouldKnowOfferResponse\x12r\n" +
+	"\x15CreateExperimentEvent\x12+.nominal.ai.v1.CreateExperimentEventRequest\x1a,.nominal.ai.v1.CreateExperimentEventResponseB\xbe\x01\n" +
 	"\x11com.nominal.ai.v1B\fAiAgentProtoP\x01ZEgithub.com/nominal-io/nominal-api-protos-go/nominal/protos/ai/v1;aiv1\xa2\x02\x03NAX\xaa\x02\rNominal.Ai.V1\xca\x02\rNominal\\Ai\\V1\xe2\x02\x19Nominal\\Ai\\V1\\GPBMetadata\xea\x02\x0fNominal::Ai::V1b\x06proto3"
 
 var (
@@ -8109,284 +10811,366 @@ func file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP() []byte {
 	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescData
 }
 
-var file_nominal_protos_ai_v1_ai_agent_proto_enumTypes = make([]protoimpl.EnumInfo, 8)
-var file_nominal_protos_ai_v1_ai_agent_proto_msgTypes = make([]protoimpl.MessageInfo, 106)
+var file_nominal_protos_ai_v1_ai_agent_proto_enumTypes = make([]protoimpl.EnumInfo, 14)
+var file_nominal_protos_ai_v1_ai_agent_proto_msgTypes = make([]protoimpl.MessageInfo, 139)
 var file_nominal_protos_ai_v1_ai_agent_proto_goTypes = []any{
-	(QueuedMessageState)(0),                        // 0: nominal.ai.v1.QueuedMessageState
-	(FeedbackVote)(0),                              // 1: nominal.ai.v1.FeedbackVote
+	(FeedbackVote)(0),                              // 0: nominal.ai.v1.FeedbackVote
+	(ShouldKnowAnswer)(0),                          // 1: nominal.ai.v1.ShouldKnowAnswer
 	(AgentRunExecutionMode)(0),                     // 2: nominal.ai.v1.AgentRunExecutionMode
-	(ToolCallStatus)(0),                            // 3: nominal.ai.v1.ToolCallStatus
-	(UserQuestionState)(0),                         // 4: nominal.ai.v1.UserQuestionState
-	(TimeRangeType)(0),                             // 5: nominal.ai.v1.TimeRangeType
-	(ComputeOutputType)(0),                         // 6: nominal.ai.v1.ComputeOutputType
-	(CompactionNotice_Trigger)(0),                  // 7: nominal.ai.v1.CompactionNotice.Trigger
-	(*QueuedMessage)(nil),                          // 8: nominal.ai.v1.QueuedMessage
-	(*CreateQueuedMessageRequest)(nil),             // 9: nominal.ai.v1.CreateQueuedMessageRequest
-	(*CreateQueuedMessageResponse)(nil),            // 10: nominal.ai.v1.CreateQueuedMessageResponse
-	(*ListQueuedMessagesRequest)(nil),              // 11: nominal.ai.v1.ListQueuedMessagesRequest
-	(*ListQueuedMessagesResponse)(nil),             // 12: nominal.ai.v1.ListQueuedMessagesResponse
-	(*DeleteQueuedMessageRequest)(nil),             // 13: nominal.ai.v1.DeleteQueuedMessageRequest
-	(*DeleteQueuedMessageResponse)(nil),            // 14: nominal.ai.v1.DeleteQueuedMessageResponse
-	(*SubmitMessageFeedbackRequest)(nil),           // 15: nominal.ai.v1.SubmitMessageFeedbackRequest
-	(*SubmitMessageFeedbackResponse)(nil),          // 16: nominal.ai.v1.SubmitMessageFeedbackResponse
-	(*CancelAgentRunRequest)(nil),                  // 17: nominal.ai.v1.CancelAgentRunRequest
-	(*CancelAgentRunResponse)(nil),                 // 18: nominal.ai.v1.CancelAgentRunResponse
-	(*GetSnapshotRidByUserMessageIdRequest)(nil),   // 19: nominal.ai.v1.GetSnapshotRidByUserMessageIdRequest
-	(*GetSnapshotRidByUserMessageIdResponse)(nil),  // 20: nominal.ai.v1.GetSnapshotRidByUserMessageIdResponse
-	(*ReadOnlyMode)(nil),                           // 21: nominal.ai.v1.ReadOnlyMode
-	(*EditMode)(nil),                               // 22: nominal.ai.v1.EditMode
-	(*ConversationMode)(nil),                       // 23: nominal.ai.v1.ConversationMode
-	(*ToolApprovalResult)(nil),                     // 24: nominal.ai.v1.ToolApprovalResult
-	(*ToolApprovedResponse)(nil),                   // 25: nominal.ai.v1.ToolApprovedResponse
-	(*ToolDeniedResponse)(nil),                     // 26: nominal.ai.v1.ToolDeniedResponse
-	(*RetryRequest)(nil),                           // 27: nominal.ai.v1.RetryRequest
-	(*UserPromptRequest)(nil),                      // 28: nominal.ai.v1.UserPromptRequest
-	(*ToolApprovalRequest)(nil),                    // 29: nominal.ai.v1.ToolApprovalRequest
-	(*UserQuestionAnswer)(nil),                     // 30: nominal.ai.v1.UserQuestionAnswer
-	(*UserQuestionDeclined)(nil),                   // 31: nominal.ai.v1.UserQuestionDeclined
-	(*UserQuestionResponseRequest)(nil),            // 32: nominal.ai.v1.UserQuestionResponseRequest
-	(*StreamChatRequest)(nil),                      // 33: nominal.ai.v1.StreamChatRequest
-	(*ModelSelection)(nil),                         // 34: nominal.ai.v1.ModelSelection
-	(*ThinkingEffortOption)(nil),                   // 35: nominal.ai.v1.ThinkingEffortOption
-	(*ModelOption)(nil),                            // 36: nominal.ai.v1.ModelOption
-	(*ListModelsRequest)(nil),                      // 37: nominal.ai.v1.ListModelsRequest
-	(*ListModelsResponse)(nil),                     // 38: nominal.ai.v1.ListModelsResponse
-	(*WorkbookContext)(nil),                        // 39: nominal.ai.v1.WorkbookContext
-	(*ChecklistContext)(nil),                       // 40: nominal.ai.v1.ChecklistContext
-	(*TemplateContext)(nil),                        // 41: nominal.ai.v1.TemplateContext
-	(*GlobalContext)(nil),                          // 42: nominal.ai.v1.GlobalContext
-	(*WorkbookUserPresence)(nil),                   // 43: nominal.ai.v1.WorkbookUserPresence
-	(*CreateConversationRequest)(nil),              // 44: nominal.ai.v1.CreateConversationRequest
-	(*CreateConversationResponse)(nil),             // 45: nominal.ai.v1.CreateConversationResponse
-	(*UpdateConversationMetadataRequest)(nil),      // 46: nominal.ai.v1.UpdateConversationMetadataRequest
-	(*UpdateConversationMetadataResponse)(nil),     // 47: nominal.ai.v1.UpdateConversationMetadataResponse
-	(*DeleteConversationRequest)(nil),              // 48: nominal.ai.v1.DeleteConversationRequest
-	(*DeleteConversationResponse)(nil),             // 49: nominal.ai.v1.DeleteConversationResponse
-	(*ArchiveConversationRequest)(nil),             // 50: nominal.ai.v1.ArchiveConversationRequest
-	(*ArchiveConversationResponse)(nil),            // 51: nominal.ai.v1.ArchiveConversationResponse
-	(*UnarchiveConversationRequest)(nil),           // 52: nominal.ai.v1.UnarchiveConversationRequest
-	(*UnarchiveConversationResponse)(nil),          // 53: nominal.ai.v1.UnarchiveConversationResponse
-	(*GetConversationRequest)(nil),                 // 54: nominal.ai.v1.GetConversationRequest
-	(*CompactConversationRequest)(nil),             // 55: nominal.ai.v1.CompactConversationRequest
-	(*CompactConversationResponse)(nil),            // 56: nominal.ai.v1.CompactConversationResponse
-	(*ModelMessageWithId)(nil),                     // 57: nominal.ai.v1.ModelMessageWithId
-	(*GetConversationResponse)(nil),                // 58: nominal.ai.v1.GetConversationResponse
-	(*GetConversationMetadataRequest)(nil),         // 59: nominal.ai.v1.GetConversationMetadataRequest
-	(*GetConversationMetadataResponse)(nil),        // 60: nominal.ai.v1.GetConversationMetadataResponse
-	(*ActiveAgentRun)(nil),                         // 61: nominal.ai.v1.ActiveAgentRun
-	(*GetConversationMessagesRequest)(nil),         // 62: nominal.ai.v1.GetConversationMessagesRequest
-	(*GetConversationMessagesResponse)(nil),        // 63: nominal.ai.v1.GetConversationMessagesResponse
-	(*ListConversationsRequest)(nil),               // 64: nominal.ai.v1.ListConversationsRequest
-	(*ConversationResource)(nil),                   // 65: nominal.ai.v1.ConversationResource
-	(*UpdateConversationResourcesRequest)(nil),     // 66: nominal.ai.v1.UpdateConversationResourcesRequest
-	(*UpdateConversationResourcesResponse)(nil),    // 67: nominal.ai.v1.UpdateConversationResourcesResponse
-	(*ConversationMetadata)(nil),                   // 68: nominal.ai.v1.ConversationMetadata
-	(*ListConversationsResponse)(nil),              // 69: nominal.ai.v1.ListConversationsResponse
-	(*BatchGetConversationActiveRunsRequest)(nil),  // 70: nominal.ai.v1.BatchGetConversationActiveRunsRequest
-	(*BatchGetConversationActiveRunsResponse)(nil), // 71: nominal.ai.v1.BatchGetConversationActiveRunsResponse
-	(*ConversationActiveRun)(nil),                  // 72: nominal.ai.v1.ConversationActiveRun
-	(*TimeRange)(nil),                              // 73: nominal.ai.v1.TimeRange
-	(*Timestamp)(nil),                              // 74: nominal.ai.v1.Timestamp
-	(*ModelMessage)(nil),                           // 75: nominal.ai.v1.ModelMessage
-	(*UserModelMessage)(nil),                       // 76: nominal.ai.v1.UserModelMessage
-	(*AssistantModelMessage)(nil),                  // 77: nominal.ai.v1.AssistantModelMessage
-	(*UserContentPart)(nil),                        // 78: nominal.ai.v1.UserContentPart
-	(*AssistantContentPart)(nil),                   // 79: nominal.ai.v1.AssistantContentPart
-	(*TextPart)(nil),                               // 80: nominal.ai.v1.TextPart
-	(*ImagePart)(nil),                              // 81: nominal.ai.v1.ImagePart
-	(*ReasoningPart)(nil),                          // 82: nominal.ai.v1.ReasoningPart
-	(*StreamChatResponse)(nil),                     // 83: nominal.ai.v1.StreamChatResponse
-	(*StreamReset)(nil),                            // 84: nominal.ai.v1.StreamReset
-	(*StepStart)(nil),                              // 85: nominal.ai.v1.StepStart
-	(*StepEnd)(nil),                                // 86: nominal.ai.v1.StepEnd
-	(*CompactionNotice)(nil),                       // 87: nominal.ai.v1.CompactionNotice
-	(*ToolCallDescription)(nil),                    // 88: nominal.ai.v1.ToolCallDescription
-	(*UserQuestionCall)(nil),                       // 89: nominal.ai.v1.UserQuestionCall
-	(*Finish)(nil),                                 // 90: nominal.ai.v1.Finish
-	(*Error)(nil),                                  // 91: nominal.ai.v1.Error
-	(*TextStart)(nil),                              // 92: nominal.ai.v1.TextStart
-	(*TextDelta)(nil),                              // 93: nominal.ai.v1.TextDelta
-	(*TextEnd)(nil),                                // 94: nominal.ai.v1.TextEnd
-	(*ReasoningStart)(nil),                         // 95: nominal.ai.v1.ReasoningStart
-	(*ReasoningDelta)(nil),                         // 96: nominal.ai.v1.ReasoningDelta
-	(*ReasoningEnd)(nil),                           // 97: nominal.ai.v1.ReasoningEnd
-	(*ToolAction)(nil),                             // 98: nominal.ai.v1.ToolAction
-	(*ToolActionConfirmation)(nil),                 // 99: nominal.ai.v1.ToolActionConfirmation
-	(*ToolActionSuccess)(nil),                      // 100: nominal.ai.v1.ToolActionSuccess
-	(*ToolActionFailure)(nil),                      // 101: nominal.ai.v1.ToolActionFailure
-	(*ClientDirective)(nil),                        // 102: nominal.ai.v1.ClientDirective
-	(*ClientDirectiveV1)(nil),                      // 103: nominal.ai.v1.ClientDirectiveV1
-	(*ResourceEditedDirective)(nil),                // 104: nominal.ai.v1.ResourceEditedDirective
-	(*ChecklistEdited)(nil),                        // 105: nominal.ai.v1.ChecklistEdited
-	(*TemplateEdited)(nil),                         // 106: nominal.ai.v1.TemplateEdited
-	(*WorkbookEdited)(nil),                         // 107: nominal.ai.v1.WorkbookEdited
-	(*SetTimeRangeDirective)(nil),                  // 108: nominal.ai.v1.SetTimeRangeDirective
-	(*ResourceMarkup)(nil),                         // 109: nominal.ai.v1.ResourceMarkup
-	(*RidResourceMarkup)(nil),                      // 110: nominal.ai.v1.RidResourceMarkup
-	(*RidListResourceMarkup)(nil),                  // 111: nominal.ai.v1.RidListResourceMarkup
-	(*ContextStatus)(nil),                          // 112: nominal.ai.v1.ContextStatus
-	(*ComputeProvenanceV1)(nil),                    // 113: nominal.ai.v1.ComputeProvenanceV1
-	(*timestamppb.Timestamp)(nil),                  // 114: google.protobuf.Timestamp
+	(ConversationSandboxStatus)(0),                 // 3: nominal.ai.v1.ConversationSandboxStatus
+	(ShouldKnowTag)(0),                             // 4: nominal.ai.v1.ShouldKnowTag
+	(ToolCallStatus)(0),                            // 5: nominal.ai.v1.ToolCallStatus
+	(UserQuestionState)(0),                         // 6: nominal.ai.v1.UserQuestionState
+	(ResourceChangeType)(0),                        // 7: nominal.ai.v1.ResourceChangeType
+	(TimeRangeType)(0),                             // 8: nominal.ai.v1.TimeRangeType
+	(ComputeOutputType)(0),                         // 9: nominal.ai.v1.ComputeOutputType
+	(CodeExecutionCallOutcome)(0),                  // 10: nominal.ai.v1.CodeExecutionCallOutcome
+	(CompactionNotice_Trigger)(0),                  // 11: nominal.ai.v1.CompactionNotice.Trigger
+	(CodeCellOutput_StreamName)(0),                 // 12: nominal.ai.v1.CodeCellOutput.StreamName
+	(GetCitationResponseError_Reason)(0),           // 13: nominal.ai.v1.GetCitationResponseError.Reason
+	(*SubmitMessageFeedbackRequest)(nil),           // 14: nominal.ai.v1.SubmitMessageFeedbackRequest
+	(*SubmitMessageFeedbackResponse)(nil),          // 15: nominal.ai.v1.SubmitMessageFeedbackResponse
+	(*CancelAgentRunRequest)(nil),                  // 16: nominal.ai.v1.CancelAgentRunRequest
+	(*CancelAgentRunResponse)(nil),                 // 17: nominal.ai.v1.CancelAgentRunResponse
+	(*SteerAgentRunRequest)(nil),                   // 18: nominal.ai.v1.SteerAgentRunRequest
+	(*SteerAgentRunResponse)(nil),                  // 19: nominal.ai.v1.SteerAgentRunResponse
+	(*AnswerShouldKnowOfferRequest)(nil),           // 20: nominal.ai.v1.AnswerShouldKnowOfferRequest
+	(*AnswerShouldKnowOfferResponse)(nil),          // 21: nominal.ai.v1.AnswerShouldKnowOfferResponse
+	(*ExperimentEvent)(nil),                        // 22: nominal.ai.v1.ExperimentEvent
+	(*ExperimentEventValue)(nil),                   // 23: nominal.ai.v1.ExperimentEventValue
+	(*CreateExperimentEventRequest)(nil),           // 24: nominal.ai.v1.CreateExperimentEventRequest
+	(*CreateExperimentEventResponse)(nil),          // 25: nominal.ai.v1.CreateExperimentEventResponse
+	(*GetSnapshotRidByUserMessageIdRequest)(nil),   // 26: nominal.ai.v1.GetSnapshotRidByUserMessageIdRequest
+	(*GetSnapshotRidByUserMessageIdResponse)(nil),  // 27: nominal.ai.v1.GetSnapshotRidByUserMessageIdResponse
+	(*ReadOnlyMode)(nil),                           // 28: nominal.ai.v1.ReadOnlyMode
+	(*EditMode)(nil),                               // 29: nominal.ai.v1.EditMode
+	(*ConversationMode)(nil),                       // 30: nominal.ai.v1.ConversationMode
+	(*ToolApprovalResult)(nil),                     // 31: nominal.ai.v1.ToolApprovalResult
+	(*ToolApprovedResponse)(nil),                   // 32: nominal.ai.v1.ToolApprovedResponse
+	(*ToolDeniedResponse)(nil),                     // 33: nominal.ai.v1.ToolDeniedResponse
+	(*RetryRequest)(nil),                           // 34: nominal.ai.v1.RetryRequest
+	(*UserPromptRequest)(nil),                      // 35: nominal.ai.v1.UserPromptRequest
+	(*ToolApprovalRequest)(nil),                    // 36: nominal.ai.v1.ToolApprovalRequest
+	(*UserQuestionAnswer)(nil),                     // 37: nominal.ai.v1.UserQuestionAnswer
+	(*UserQuestionDeclined)(nil),                   // 38: nominal.ai.v1.UserQuestionDeclined
+	(*UserQuestionResponseRequest)(nil),            // 39: nominal.ai.v1.UserQuestionResponseRequest
+	(*StreamChatRequest)(nil),                      // 40: nominal.ai.v1.StreamChatRequest
+	(*ComputeFunctionEditorContext)(nil),           // 41: nominal.ai.v1.ComputeFunctionEditorContext
+	(*SqlEditorContext)(nil),                       // 42: nominal.ai.v1.SqlEditorContext
+	(*DraftEditorContext)(nil),                     // 43: nominal.ai.v1.DraftEditorContext
+	(*WorkbookViewContext)(nil),                    // 44: nominal.ai.v1.WorkbookViewContext
+	(*PageContext)(nil),                            // 45: nominal.ai.v1.PageContext
+	(*ModelSelection)(nil),                         // 46: nominal.ai.v1.ModelSelection
+	(*ThinkingEffortOption)(nil),                   // 47: nominal.ai.v1.ThinkingEffortOption
+	(*ModelOption)(nil),                            // 48: nominal.ai.v1.ModelOption
+	(*ListModelsRequest)(nil),                      // 49: nominal.ai.v1.ListModelsRequest
+	(*ListModelsResponse)(nil),                     // 50: nominal.ai.v1.ListModelsResponse
+	(*CreateConversationRequest)(nil),              // 51: nominal.ai.v1.CreateConversationRequest
+	(*CreateConversationResponse)(nil),             // 52: nominal.ai.v1.CreateConversationResponse
+	(*UpdateConversationMetadataRequest)(nil),      // 53: nominal.ai.v1.UpdateConversationMetadataRequest
+	(*UpdateConversationMetadataResponse)(nil),     // 54: nominal.ai.v1.UpdateConversationMetadataResponse
+	(*DeleteConversationRequest)(nil),              // 55: nominal.ai.v1.DeleteConversationRequest
+	(*DeleteConversationResponse)(nil),             // 56: nominal.ai.v1.DeleteConversationResponse
+	(*ArchiveConversationRequest)(nil),             // 57: nominal.ai.v1.ArchiveConversationRequest
+	(*ArchiveConversationResponse)(nil),            // 58: nominal.ai.v1.ArchiveConversationResponse
+	(*UnarchiveConversationRequest)(nil),           // 59: nominal.ai.v1.UnarchiveConversationRequest
+	(*UnarchiveConversationResponse)(nil),          // 60: nominal.ai.v1.UnarchiveConversationResponse
+	(*GetConversationRequest)(nil),                 // 61: nominal.ai.v1.GetConversationRequest
+	(*CompactConversationRequest)(nil),             // 62: nominal.ai.v1.CompactConversationRequest
+	(*CompactConversationResponse)(nil),            // 63: nominal.ai.v1.CompactConversationResponse
+	(*ModelMessageWithId)(nil),                     // 64: nominal.ai.v1.ModelMessageWithId
+	(*GetConversationResponse)(nil),                // 65: nominal.ai.v1.GetConversationResponse
+	(*GetConversationMetadataRequest)(nil),         // 66: nominal.ai.v1.GetConversationMetadataRequest
+	(*GetConversationMetadataResponse)(nil),        // 67: nominal.ai.v1.GetConversationMetadataResponse
+	(*ActiveAgentRun)(nil),                         // 68: nominal.ai.v1.ActiveAgentRun
+	(*GetConversationMessagesRequest)(nil),         // 69: nominal.ai.v1.GetConversationMessagesRequest
+	(*GetConversationMessagesResponse)(nil),        // 70: nominal.ai.v1.GetConversationMessagesResponse
+	(*ListConversationsRequest)(nil),               // 71: nominal.ai.v1.ListConversationsRequest
+	(*ConversationResource)(nil),                   // 72: nominal.ai.v1.ConversationResource
+	(*UpdateConversationResourcesRequest)(nil),     // 73: nominal.ai.v1.UpdateConversationResourcesRequest
+	(*UpdateConversationResourcesResponse)(nil),    // 74: nominal.ai.v1.UpdateConversationResourcesResponse
+	(*ConversationMetadata)(nil),                   // 75: nominal.ai.v1.ConversationMetadata
+	(*ListConversationsResponse)(nil),              // 76: nominal.ai.v1.ListConversationsResponse
+	(*BatchGetConversationActiveRunsRequest)(nil),  // 77: nominal.ai.v1.BatchGetConversationActiveRunsRequest
+	(*BatchGetConversationActiveRunsResponse)(nil), // 78: nominal.ai.v1.BatchGetConversationActiveRunsResponse
+	(*ConversationActiveRun)(nil),                  // 79: nominal.ai.v1.ConversationActiveRun
+	(*BatchGetConversationSandboxesRequest)(nil),   // 80: nominal.ai.v1.BatchGetConversationSandboxesRequest
+	(*BatchGetConversationSandboxesResponse)(nil),  // 81: nominal.ai.v1.BatchGetConversationSandboxesResponse
+	(*ResumeConversationSandboxRequest)(nil),       // 82: nominal.ai.v1.ResumeConversationSandboxRequest
+	(*ResumeConversationSandboxResponse)(nil),      // 83: nominal.ai.v1.ResumeConversationSandboxResponse
+	(*ConversationSandbox)(nil),                    // 84: nominal.ai.v1.ConversationSandbox
+	(*Timestamp)(nil),                              // 85: nominal.ai.v1.Timestamp
+	(*ModelMessage)(nil),                           // 86: nominal.ai.v1.ModelMessage
+	(*UserModelMessage)(nil),                       // 87: nominal.ai.v1.UserModelMessage
+	(*AssistantModelMessage)(nil),                  // 88: nominal.ai.v1.AssistantModelMessage
+	(*UserContentPart)(nil),                        // 89: nominal.ai.v1.UserContentPart
+	(*AssistantContentPart)(nil),                   // 90: nominal.ai.v1.AssistantContentPart
+	(*TextPart)(nil),                               // 91: nominal.ai.v1.TextPart
+	(*ImagePart)(nil),                              // 92: nominal.ai.v1.ImagePart
+	(*AttachmentPart)(nil),                         // 93: nominal.ai.v1.AttachmentPart
+	(*ReasoningPart)(nil),                          // 94: nominal.ai.v1.ReasoningPart
+	(*StreamChatResponse)(nil),                     // 95: nominal.ai.v1.StreamChatResponse
+	(*ToolCallProgress)(nil),                       // 96: nominal.ai.v1.ToolCallProgress
+	(*SteeringMessage)(nil),                        // 97: nominal.ai.v1.SteeringMessage
+	(*ShouldKnowOffer)(nil),                        // 98: nominal.ai.v1.ShouldKnowOffer
+	(*StreamReset)(nil),                            // 99: nominal.ai.v1.StreamReset
+	(*StepStart)(nil),                              // 100: nominal.ai.v1.StepStart
+	(*StepEnd)(nil),                                // 101: nominal.ai.v1.StepEnd
+	(*CompactionNotice)(nil),                       // 102: nominal.ai.v1.CompactionNotice
+	(*ToolCallDescription)(nil),                    // 103: nominal.ai.v1.ToolCallDescription
+	(*UserQuestionCall)(nil),                       // 104: nominal.ai.v1.UserQuestionCall
+	(*Finish)(nil),                                 // 105: nominal.ai.v1.Finish
+	(*Error)(nil),                                  // 106: nominal.ai.v1.Error
+	(*TextStart)(nil),                              // 107: nominal.ai.v1.TextStart
+	(*TextDelta)(nil),                              // 108: nominal.ai.v1.TextDelta
+	(*TextEnd)(nil),                                // 109: nominal.ai.v1.TextEnd
+	(*ReasoningStart)(nil),                         // 110: nominal.ai.v1.ReasoningStart
+	(*ReasoningDelta)(nil),                         // 111: nominal.ai.v1.ReasoningDelta
+	(*ReasoningEnd)(nil),                           // 112: nominal.ai.v1.ReasoningEnd
+	(*ToolAction)(nil),                             // 113: nominal.ai.v1.ToolAction
+	(*ToolActionConfirmation)(nil),                 // 114: nominal.ai.v1.ToolActionConfirmation
+	(*ToolActionSuccess)(nil),                      // 115: nominal.ai.v1.ToolActionSuccess
+	(*CodeCellOutputs)(nil),                        // 116: nominal.ai.v1.CodeCellOutputs
+	(*CodeCellFile)(nil),                           // 117: nominal.ai.v1.CodeCellFile
+	(*CodeCellOutput)(nil),                         // 118: nominal.ai.v1.CodeCellOutput
+	(*ToolActionFailure)(nil),                      // 119: nominal.ai.v1.ToolActionFailure
+	(*ClientDirective)(nil),                        // 120: nominal.ai.v1.ClientDirective
+	(*ClientDirectiveV1)(nil),                      // 121: nominal.ai.v1.ClientDirectiveV1
+	(*SandboxStatusDirective)(nil),                 // 122: nominal.ai.v1.SandboxStatusDirective
+	(*ResourceEditedDirective)(nil),                // 123: nominal.ai.v1.ResourceEditedDirective
+	(*ChecklistEdited)(nil),                        // 124: nominal.ai.v1.ChecklistEdited
+	(*TemplateEdited)(nil),                         // 125: nominal.ai.v1.TemplateEdited
+	(*WorkbookEdited)(nil),                         // 126: nominal.ai.v1.WorkbookEdited
+	(*ResourceChangedDirective)(nil),               // 127: nominal.ai.v1.ResourceChangedDirective
+	(*SetTimeRangeDirective)(nil),                  // 128: nominal.ai.v1.SetTimeRangeDirective
+	(*ResourceMarkup)(nil),                         // 129: nominal.ai.v1.ResourceMarkup
+	(*RidResourceMarkup)(nil),                      // 130: nominal.ai.v1.RidResourceMarkup
+	(*RidListResourceMarkup)(nil),                  // 131: nominal.ai.v1.RidListResourceMarkup
+	(*ContextStatus)(nil),                          // 132: nominal.ai.v1.ContextStatus
+	(*ComputeProvenanceV1)(nil),                    // 133: nominal.ai.v1.ComputeProvenanceV1
+	(*ComputeProvenanceListV1)(nil),                // 134: nominal.ai.v1.ComputeProvenanceListV1
+	(*ComputeProvenanceEntryV1)(nil),               // 135: nominal.ai.v1.ComputeProvenanceEntryV1
+	(*Citation)(nil),                               // 136: nominal.ai.v1.Citation
+	(*UserMessageCitation)(nil),                    // 137: nominal.ai.v1.UserMessageCitation
+	(*CodeExecutionCitation)(nil),                  // 138: nominal.ai.v1.CodeExecutionCitation
+	(*CodeExecutionCall)(nil),                      // 139: nominal.ai.v1.CodeExecutionCall
+	(*CodeExecutionSource)(nil),                    // 140: nominal.ai.v1.CodeExecutionSource
+	(*TelemetryCitation)(nil),                      // 141: nominal.ai.v1.TelemetryCitation
+	(*DriveFileCitation)(nil),                      // 142: nominal.ai.v1.DriveFileCitation
+	(*TextFileCitation)(nil),                       // 143: nominal.ai.v1.TextFileCitation
+	(*PdfFileCitation)(nil),                        // 144: nominal.ai.v1.PdfFileCitation
+	(*ByteRange)(nil),                              // 145: nominal.ai.v1.ByteRange
+	(*BatchGetCitationsRequest)(nil),               // 146: nominal.ai.v1.BatchGetCitationsRequest
+	(*BatchGetCitationsResponse)(nil),              // 147: nominal.ai.v1.BatchGetCitationsResponse
+	(*GetCitationResponseError)(nil),               // 148: nominal.ai.v1.GetCitationResponseError
+	nil,                                            // 149: nominal.ai.v1.ExperimentEvent.PropertiesEntry
+	(*CodeCellOutput_Stream)(nil),                  // 150: nominal.ai.v1.CodeCellOutput.Stream
+	(*CodeCellOutput_Data)(nil),                    // 151: nominal.ai.v1.CodeCellOutput.Data
+	(*CodeCellOutput_Error)(nil),                   // 152: nominal.ai.v1.CodeCellOutput.Error
+	(*timestamppb.Timestamp)(nil),                  // 153: google.protobuf.Timestamp
+	(*v1.LogicalFileIdentity)(nil),                 // 154: nominal.file_store.v1.LogicalFileIdentity
 }
 var file_nominal_protos_ai_v1_ai_agent_proto_depIdxs = []int32{
-	33,  // 0: nominal.ai.v1.QueuedMessage.message:type_name -> nominal.ai.v1.StreamChatRequest
-	0,   // 1: nominal.ai.v1.QueuedMessage.state:type_name -> nominal.ai.v1.QueuedMessageState
-	114, // 2: nominal.ai.v1.QueuedMessage.created_at:type_name -> google.protobuf.Timestamp
-	33,  // 3: nominal.ai.v1.CreateQueuedMessageRequest.message:type_name -> nominal.ai.v1.StreamChatRequest
-	8,   // 4: nominal.ai.v1.CreateQueuedMessageResponse.queued_message:type_name -> nominal.ai.v1.QueuedMessage
-	8,   // 5: nominal.ai.v1.ListQueuedMessagesResponse.queued_messages:type_name -> nominal.ai.v1.QueuedMessage
-	1,   // 6: nominal.ai.v1.SubmitMessageFeedbackRequest.vote:type_name -> nominal.ai.v1.FeedbackVote
-	21,  // 7: nominal.ai.v1.ConversationMode.read_only:type_name -> nominal.ai.v1.ReadOnlyMode
-	22,  // 8: nominal.ai.v1.ConversationMode.edit:type_name -> nominal.ai.v1.EditMode
-	25,  // 9: nominal.ai.v1.ToolApprovalResult.approved:type_name -> nominal.ai.v1.ToolApprovedResponse
-	26,  // 10: nominal.ai.v1.ToolApprovalResult.denied:type_name -> nominal.ai.v1.ToolDeniedResponse
-	76,  // 11: nominal.ai.v1.UserPromptRequest.message:type_name -> nominal.ai.v1.UserModelMessage
-	81,  // 12: nominal.ai.v1.UserPromptRequest.images:type_name -> nominal.ai.v1.ImagePart
-	24,  // 13: nominal.ai.v1.ToolApprovalRequest.tool_approvals:type_name -> nominal.ai.v1.ToolApprovalResult
-	30,  // 14: nominal.ai.v1.UserQuestionResponseRequest.answered:type_name -> nominal.ai.v1.UserQuestionAnswer
-	31,  // 15: nominal.ai.v1.UserQuestionResponseRequest.declined:type_name -> nominal.ai.v1.UserQuestionDeclined
-	76,  // 16: nominal.ai.v1.StreamChatRequest.message:type_name -> nominal.ai.v1.UserModelMessage
-	81,  // 17: nominal.ai.v1.StreamChatRequest.images:type_name -> nominal.ai.v1.ImagePart
-	24,  // 18: nominal.ai.v1.StreamChatRequest.tool_approvals:type_name -> nominal.ai.v1.ToolApprovalResult
-	27,  // 19: nominal.ai.v1.StreamChatRequest.retry:type_name -> nominal.ai.v1.RetryRequest
-	28,  // 20: nominal.ai.v1.StreamChatRequest.user_prompt:type_name -> nominal.ai.v1.UserPromptRequest
-	29,  // 21: nominal.ai.v1.StreamChatRequest.tool_approval:type_name -> nominal.ai.v1.ToolApprovalRequest
-	32,  // 22: nominal.ai.v1.StreamChatRequest.user_question_response:type_name -> nominal.ai.v1.UserQuestionResponseRequest
-	39,  // 23: nominal.ai.v1.StreamChatRequest.workbook:type_name -> nominal.ai.v1.WorkbookContext
-	42,  // 24: nominal.ai.v1.StreamChatRequest.global:type_name -> nominal.ai.v1.GlobalContext
-	40,  // 25: nominal.ai.v1.StreamChatRequest.checklist:type_name -> nominal.ai.v1.ChecklistContext
-	41,  // 26: nominal.ai.v1.StreamChatRequest.template:type_name -> nominal.ai.v1.TemplateContext
-	34,  // 27: nominal.ai.v1.StreamChatRequest.model_selection:type_name -> nominal.ai.v1.ModelSelection
-	35,  // 28: nominal.ai.v1.ModelOption.thinking_effort_options:type_name -> nominal.ai.v1.ThinkingEffortOption
-	36,  // 29: nominal.ai.v1.ListModelsResponse.models:type_name -> nominal.ai.v1.ModelOption
-	43,  // 30: nominal.ai.v1.WorkbookContext.user_presence:type_name -> nominal.ai.v1.WorkbookUserPresence
-	73,  // 31: nominal.ai.v1.WorkbookContext.visible_time_range:type_name -> nominal.ai.v1.TimeRange
-	73,  // 32: nominal.ai.v1.WorkbookUserPresence.range:type_name -> nominal.ai.v1.TimeRange
-	23,  // 33: nominal.ai.v1.CreateConversationRequest.conversation_mode:type_name -> nominal.ai.v1.ConversationMode
-	65,  // 34: nominal.ai.v1.CreateConversationRequest.resources:type_name -> nominal.ai.v1.ConversationResource
-	23,  // 35: nominal.ai.v1.UpdateConversationMetadataRequest.conversation_mode:type_name -> nominal.ai.v1.ConversationMode
-	68,  // 36: nominal.ai.v1.ArchiveConversationResponse.conversation:type_name -> nominal.ai.v1.ConversationMetadata
-	68,  // 37: nominal.ai.v1.UnarchiveConversationResponse.conversation:type_name -> nominal.ai.v1.ConversationMetadata
-	112, // 38: nominal.ai.v1.CompactConversationResponse.context:type_name -> nominal.ai.v1.ContextStatus
-	75,  // 39: nominal.ai.v1.ModelMessageWithId.message:type_name -> nominal.ai.v1.ModelMessage
-	98,  // 40: nominal.ai.v1.ModelMessageWithId.tool_action:type_name -> nominal.ai.v1.ToolAction
-	99,  // 41: nominal.ai.v1.ModelMessageWithId.tool_action_confirmation:type_name -> nominal.ai.v1.ToolActionConfirmation
-	88,  // 42: nominal.ai.v1.ModelMessageWithId.tool_approval_requests:type_name -> nominal.ai.v1.ToolCallDescription
-	89,  // 43: nominal.ai.v1.ModelMessageWithId.user_question_calls:type_name -> nominal.ai.v1.UserQuestionCall
-	114, // 44: nominal.ai.v1.ModelMessageWithId.created_at:type_name -> google.protobuf.Timestamp
-	57,  // 45: nominal.ai.v1.GetConversationResponse.ordered_messages:type_name -> nominal.ai.v1.ModelMessageWithId
-	68,  // 46: nominal.ai.v1.GetConversationResponse.conversation_metadata:type_name -> nominal.ai.v1.ConversationMetadata
-	68,  // 47: nominal.ai.v1.GetConversationMetadataResponse.conversation_metadata:type_name -> nominal.ai.v1.ConversationMetadata
-	61,  // 48: nominal.ai.v1.GetConversationMetadataResponse.active_run:type_name -> nominal.ai.v1.ActiveAgentRun
-	114, // 49: nominal.ai.v1.ActiveAgentRun.started_at:type_name -> google.protobuf.Timestamp
-	2,   // 50: nominal.ai.v1.ActiveAgentRun.execution_mode:type_name -> nominal.ai.v1.AgentRunExecutionMode
-	57,  // 51: nominal.ai.v1.GetConversationMessagesResponse.ordered_messages:type_name -> nominal.ai.v1.ModelMessageWithId
-	65,  // 52: nominal.ai.v1.UpdateConversationResourcesResponse.resources:type_name -> nominal.ai.v1.ConversationResource
-	114, // 53: nominal.ai.v1.ConversationMetadata.created_at:type_name -> google.protobuf.Timestamp
-	114, // 54: nominal.ai.v1.ConversationMetadata.last_updated_at:type_name -> google.protobuf.Timestamp
-	23,  // 55: nominal.ai.v1.ConversationMetadata.mode:type_name -> nominal.ai.v1.ConversationMode
-	112, // 56: nominal.ai.v1.ConversationMetadata.current_context:type_name -> nominal.ai.v1.ContextStatus
-	65,  // 57: nominal.ai.v1.ConversationMetadata.resources:type_name -> nominal.ai.v1.ConversationResource
-	61,  // 58: nominal.ai.v1.ConversationMetadata.active_run:type_name -> nominal.ai.v1.ActiveAgentRun
-	114, // 59: nominal.ai.v1.ConversationMetadata.archived_at:type_name -> google.protobuf.Timestamp
-	68,  // 60: nominal.ai.v1.ListConversationsResponse.conversations:type_name -> nominal.ai.v1.ConversationMetadata
-	72,  // 61: nominal.ai.v1.BatchGetConversationActiveRunsResponse.active_runs:type_name -> nominal.ai.v1.ConversationActiveRun
-	61,  // 62: nominal.ai.v1.ConversationActiveRun.active_run:type_name -> nominal.ai.v1.ActiveAgentRun
-	74,  // 63: nominal.ai.v1.TimeRange.range_start:type_name -> nominal.ai.v1.Timestamp
-	74,  // 64: nominal.ai.v1.TimeRange.range_end:type_name -> nominal.ai.v1.Timestamp
-	76,  // 65: nominal.ai.v1.ModelMessage.user:type_name -> nominal.ai.v1.UserModelMessage
-	77,  // 66: nominal.ai.v1.ModelMessage.assistant:type_name -> nominal.ai.v1.AssistantModelMessage
-	78,  // 67: nominal.ai.v1.UserModelMessage.text:type_name -> nominal.ai.v1.UserContentPart
-	79,  // 68: nominal.ai.v1.AssistantModelMessage.content_parts:type_name -> nominal.ai.v1.AssistantContentPart
-	80,  // 69: nominal.ai.v1.UserContentPart.text:type_name -> nominal.ai.v1.TextPart
-	81,  // 70: nominal.ai.v1.UserContentPart.image:type_name -> nominal.ai.v1.ImagePart
-	80,  // 71: nominal.ai.v1.AssistantContentPart.text:type_name -> nominal.ai.v1.TextPart
-	82,  // 72: nominal.ai.v1.AssistantContentPart.reasoning:type_name -> nominal.ai.v1.ReasoningPart
-	90,  // 73: nominal.ai.v1.StreamChatResponse.finish:type_name -> nominal.ai.v1.Finish
-	91,  // 74: nominal.ai.v1.StreamChatResponse.error:type_name -> nominal.ai.v1.Error
-	92,  // 75: nominal.ai.v1.StreamChatResponse.text_start:type_name -> nominal.ai.v1.TextStart
-	93,  // 76: nominal.ai.v1.StreamChatResponse.text_delta:type_name -> nominal.ai.v1.TextDelta
-	94,  // 77: nominal.ai.v1.StreamChatResponse.text_end:type_name -> nominal.ai.v1.TextEnd
-	95,  // 78: nominal.ai.v1.StreamChatResponse.reasoning_start:type_name -> nominal.ai.v1.ReasoningStart
-	96,  // 79: nominal.ai.v1.StreamChatResponse.reasoning_delta:type_name -> nominal.ai.v1.ReasoningDelta
-	97,  // 80: nominal.ai.v1.StreamChatResponse.reasoning_end:type_name -> nominal.ai.v1.ReasoningEnd
-	98,  // 81: nominal.ai.v1.StreamChatResponse.tool_action:type_name -> nominal.ai.v1.ToolAction
-	99,  // 82: nominal.ai.v1.StreamChatResponse.tool_action_confirmation:type_name -> nominal.ai.v1.ToolActionConfirmation
-	85,  // 83: nominal.ai.v1.StreamChatResponse.step_start:type_name -> nominal.ai.v1.StepStart
-	86,  // 84: nominal.ai.v1.StreamChatResponse.step_end:type_name -> nominal.ai.v1.StepEnd
-	102, // 85: nominal.ai.v1.StreamChatResponse.client_directive:type_name -> nominal.ai.v1.ClientDirective
-	87,  // 86: nominal.ai.v1.StreamChatResponse.compaction_notice:type_name -> nominal.ai.v1.CompactionNotice
-	84,  // 87: nominal.ai.v1.StreamChatResponse.stream_reset:type_name -> nominal.ai.v1.StreamReset
-	7,   // 88: nominal.ai.v1.CompactionNotice.trigger:type_name -> nominal.ai.v1.CompactionNotice.Trigger
-	3,   // 89: nominal.ai.v1.ToolCallDescription.status:type_name -> nominal.ai.v1.ToolCallStatus
-	88,  // 90: nominal.ai.v1.UserQuestionCall.tool_call:type_name -> nominal.ai.v1.ToolCallDescription
-	30,  // 91: nominal.ai.v1.UserQuestionCall.answers:type_name -> nominal.ai.v1.UserQuestionAnswer
-	4,   // 92: nominal.ai.v1.UserQuestionCall.state:type_name -> nominal.ai.v1.UserQuestionState
-	88,  // 93: nominal.ai.v1.Finish.tool_approval_requests:type_name -> nominal.ai.v1.ToolCallDescription
-	112, // 94: nominal.ai.v1.Finish.updated_context:type_name -> nominal.ai.v1.ContextStatus
-	89,  // 95: nominal.ai.v1.Finish.user_question_calls:type_name -> nominal.ai.v1.UserQuestionCall
-	88,  // 96: nominal.ai.v1.ToolAction.tool_call_description:type_name -> nominal.ai.v1.ToolCallDescription
-	100, // 97: nominal.ai.v1.ToolActionConfirmation.success:type_name -> nominal.ai.v1.ToolActionSuccess
-	101, // 98: nominal.ai.v1.ToolActionConfirmation.failure:type_name -> nominal.ai.v1.ToolActionFailure
-	103, // 99: nominal.ai.v1.ClientDirective.v1:type_name -> nominal.ai.v1.ClientDirectiveV1
-	104, // 100: nominal.ai.v1.ClientDirectiveV1.resource_edited:type_name -> nominal.ai.v1.ResourceEditedDirective
-	108, // 101: nominal.ai.v1.ClientDirectiveV1.set_time_range:type_name -> nominal.ai.v1.SetTimeRangeDirective
-	105, // 102: nominal.ai.v1.ResourceEditedDirective.checklist:type_name -> nominal.ai.v1.ChecklistEdited
-	106, // 103: nominal.ai.v1.ResourceEditedDirective.template:type_name -> nominal.ai.v1.TemplateEdited
-	107, // 104: nominal.ai.v1.ResourceEditedDirective.workbook:type_name -> nominal.ai.v1.WorkbookEdited
-	114, // 105: nominal.ai.v1.ChecklistEdited.committed_at:type_name -> google.protobuf.Timestamp
-	114, // 106: nominal.ai.v1.TemplateEdited.committed_at:type_name -> google.protobuf.Timestamp
-	114, // 107: nominal.ai.v1.SetTimeRangeDirective.start:type_name -> google.protobuf.Timestamp
-	114, // 108: nominal.ai.v1.SetTimeRangeDirective.end:type_name -> google.protobuf.Timestamp
-	5,   // 109: nominal.ai.v1.SetTimeRangeDirective.time_range_type:type_name -> nominal.ai.v1.TimeRangeType
-	110, // 110: nominal.ai.v1.ResourceMarkup.rid:type_name -> nominal.ai.v1.RidResourceMarkup
-	111, // 111: nominal.ai.v1.ResourceMarkup.rid_list:type_name -> nominal.ai.v1.RidListResourceMarkup
-	6,   // 112: nominal.ai.v1.ComputeProvenanceV1.output_type:type_name -> nominal.ai.v1.ComputeOutputType
-	37,  // 113: nominal.ai.v1.AIAgentService.ListModels:input_type -> nominal.ai.v1.ListModelsRequest
-	33,  // 114: nominal.ai.v1.AIAgentService.StreamChat:input_type -> nominal.ai.v1.StreamChatRequest
-	54,  // 115: nominal.ai.v1.AIAgentService.GetConversation:input_type -> nominal.ai.v1.GetConversationRequest
-	59,  // 116: nominal.ai.v1.AIAgentService.GetConversationMetadata:input_type -> nominal.ai.v1.GetConversationMetadataRequest
-	62,  // 117: nominal.ai.v1.AIAgentService.GetConversationMessages:input_type -> nominal.ai.v1.GetConversationMessagesRequest
-	64,  // 118: nominal.ai.v1.AIAgentService.ListConversations:input_type -> nominal.ai.v1.ListConversationsRequest
-	70,  // 119: nominal.ai.v1.AIAgentService.BatchGetConversationActiveRuns:input_type -> nominal.ai.v1.BatchGetConversationActiveRunsRequest
-	44,  // 120: nominal.ai.v1.AIAgentService.CreateConversation:input_type -> nominal.ai.v1.CreateConversationRequest
-	46,  // 121: nominal.ai.v1.AIAgentService.UpdateConversationMetadata:input_type -> nominal.ai.v1.UpdateConversationMetadataRequest
-	48,  // 122: nominal.ai.v1.AIAgentService.DeleteConversation:input_type -> nominal.ai.v1.DeleteConversationRequest
-	50,  // 123: nominal.ai.v1.AIAgentService.ArchiveConversation:input_type -> nominal.ai.v1.ArchiveConversationRequest
-	52,  // 124: nominal.ai.v1.AIAgentService.UnarchiveConversation:input_type -> nominal.ai.v1.UnarchiveConversationRequest
-	19,  // 125: nominal.ai.v1.AIAgentService.GetSnapshotRidByUserMessageId:input_type -> nominal.ai.v1.GetSnapshotRidByUserMessageIdRequest
-	55,  // 126: nominal.ai.v1.AIAgentService.CompactConversation:input_type -> nominal.ai.v1.CompactConversationRequest
-	15,  // 127: nominal.ai.v1.AIAgentService.SubmitMessageFeedback:input_type -> nominal.ai.v1.SubmitMessageFeedbackRequest
-	66,  // 128: nominal.ai.v1.AIAgentService.UpdateConversationResources:input_type -> nominal.ai.v1.UpdateConversationResourcesRequest
-	9,   // 129: nominal.ai.v1.AIAgentService.CreateQueuedMessage:input_type -> nominal.ai.v1.CreateQueuedMessageRequest
-	11,  // 130: nominal.ai.v1.AIAgentService.ListQueuedMessages:input_type -> nominal.ai.v1.ListQueuedMessagesRequest
-	13,  // 131: nominal.ai.v1.AIAgentService.DeleteQueuedMessage:input_type -> nominal.ai.v1.DeleteQueuedMessageRequest
-	17,  // 132: nominal.ai.v1.AIAgentService.CancelAgentRun:input_type -> nominal.ai.v1.CancelAgentRunRequest
-	38,  // 133: nominal.ai.v1.AIAgentService.ListModels:output_type -> nominal.ai.v1.ListModelsResponse
-	83,  // 134: nominal.ai.v1.AIAgentService.StreamChat:output_type -> nominal.ai.v1.StreamChatResponse
-	58,  // 135: nominal.ai.v1.AIAgentService.GetConversation:output_type -> nominal.ai.v1.GetConversationResponse
-	60,  // 136: nominal.ai.v1.AIAgentService.GetConversationMetadata:output_type -> nominal.ai.v1.GetConversationMetadataResponse
-	63,  // 137: nominal.ai.v1.AIAgentService.GetConversationMessages:output_type -> nominal.ai.v1.GetConversationMessagesResponse
-	69,  // 138: nominal.ai.v1.AIAgentService.ListConversations:output_type -> nominal.ai.v1.ListConversationsResponse
-	71,  // 139: nominal.ai.v1.AIAgentService.BatchGetConversationActiveRuns:output_type -> nominal.ai.v1.BatchGetConversationActiveRunsResponse
-	45,  // 140: nominal.ai.v1.AIAgentService.CreateConversation:output_type -> nominal.ai.v1.CreateConversationResponse
-	47,  // 141: nominal.ai.v1.AIAgentService.UpdateConversationMetadata:output_type -> nominal.ai.v1.UpdateConversationMetadataResponse
-	49,  // 142: nominal.ai.v1.AIAgentService.DeleteConversation:output_type -> nominal.ai.v1.DeleteConversationResponse
-	51,  // 143: nominal.ai.v1.AIAgentService.ArchiveConversation:output_type -> nominal.ai.v1.ArchiveConversationResponse
-	53,  // 144: nominal.ai.v1.AIAgentService.UnarchiveConversation:output_type -> nominal.ai.v1.UnarchiveConversationResponse
-	20,  // 145: nominal.ai.v1.AIAgentService.GetSnapshotRidByUserMessageId:output_type -> nominal.ai.v1.GetSnapshotRidByUserMessageIdResponse
-	56,  // 146: nominal.ai.v1.AIAgentService.CompactConversation:output_type -> nominal.ai.v1.CompactConversationResponse
-	16,  // 147: nominal.ai.v1.AIAgentService.SubmitMessageFeedback:output_type -> nominal.ai.v1.SubmitMessageFeedbackResponse
-	67,  // 148: nominal.ai.v1.AIAgentService.UpdateConversationResources:output_type -> nominal.ai.v1.UpdateConversationResourcesResponse
-	10,  // 149: nominal.ai.v1.AIAgentService.CreateQueuedMessage:output_type -> nominal.ai.v1.CreateQueuedMessageResponse
-	12,  // 150: nominal.ai.v1.AIAgentService.ListQueuedMessages:output_type -> nominal.ai.v1.ListQueuedMessagesResponse
-	14,  // 151: nominal.ai.v1.AIAgentService.DeleteQueuedMessage:output_type -> nominal.ai.v1.DeleteQueuedMessageResponse
-	18,  // 152: nominal.ai.v1.AIAgentService.CancelAgentRun:output_type -> nominal.ai.v1.CancelAgentRunResponse
-	133, // [133:153] is the sub-list for method output_type
-	113, // [113:133] is the sub-list for method input_type
-	113, // [113:113] is the sub-list for extension type_name
-	113, // [113:113] is the sub-list for extension extendee
-	0,   // [0:113] is the sub-list for field type_name
+	0,   // 0: nominal.ai.v1.SubmitMessageFeedbackRequest.vote:type_name -> nominal.ai.v1.FeedbackVote
+	1,   // 1: nominal.ai.v1.AnswerShouldKnowOfferRequest.answer:type_name -> nominal.ai.v1.ShouldKnowAnswer
+	149, // 2: nominal.ai.v1.ExperimentEvent.properties:type_name -> nominal.ai.v1.ExperimentEvent.PropertiesEntry
+	22,  // 3: nominal.ai.v1.CreateExperimentEventRequest.experiment_event:type_name -> nominal.ai.v1.ExperimentEvent
+	22,  // 4: nominal.ai.v1.CreateExperimentEventResponse.experiment_event:type_name -> nominal.ai.v1.ExperimentEvent
+	28,  // 5: nominal.ai.v1.ConversationMode.read_only:type_name -> nominal.ai.v1.ReadOnlyMode
+	29,  // 6: nominal.ai.v1.ConversationMode.edit:type_name -> nominal.ai.v1.EditMode
+	32,  // 7: nominal.ai.v1.ToolApprovalResult.approved:type_name -> nominal.ai.v1.ToolApprovedResponse
+	33,  // 8: nominal.ai.v1.ToolApprovalResult.denied:type_name -> nominal.ai.v1.ToolDeniedResponse
+	87,  // 9: nominal.ai.v1.UserPromptRequest.message:type_name -> nominal.ai.v1.UserModelMessage
+	92,  // 10: nominal.ai.v1.UserPromptRequest.images:type_name -> nominal.ai.v1.ImagePart
+	31,  // 11: nominal.ai.v1.ToolApprovalRequest.tool_approvals:type_name -> nominal.ai.v1.ToolApprovalResult
+	37,  // 12: nominal.ai.v1.UserQuestionResponseRequest.answered:type_name -> nominal.ai.v1.UserQuestionAnswer
+	38,  // 13: nominal.ai.v1.UserQuestionResponseRequest.declined:type_name -> nominal.ai.v1.UserQuestionDeclined
+	87,  // 14: nominal.ai.v1.StreamChatRequest.message:type_name -> nominal.ai.v1.UserModelMessage
+	92,  // 15: nominal.ai.v1.StreamChatRequest.images:type_name -> nominal.ai.v1.ImagePart
+	31,  // 16: nominal.ai.v1.StreamChatRequest.tool_approvals:type_name -> nominal.ai.v1.ToolApprovalResult
+	34,  // 17: nominal.ai.v1.StreamChatRequest.retry:type_name -> nominal.ai.v1.RetryRequest
+	35,  // 18: nominal.ai.v1.StreamChatRequest.user_prompt:type_name -> nominal.ai.v1.UserPromptRequest
+	36,  // 19: nominal.ai.v1.StreamChatRequest.tool_approval:type_name -> nominal.ai.v1.ToolApprovalRequest
+	39,  // 20: nominal.ai.v1.StreamChatRequest.user_question_response:type_name -> nominal.ai.v1.UserQuestionResponseRequest
+	46,  // 21: nominal.ai.v1.StreamChatRequest.model_selection:type_name -> nominal.ai.v1.ModelSelection
+	45,  // 22: nominal.ai.v1.StreamChatRequest.page_context:type_name -> nominal.ai.v1.PageContext
+	153, // 23: nominal.ai.v1.WorkbookViewContext.visible_start:type_name -> google.protobuf.Timestamp
+	153, // 24: nominal.ai.v1.WorkbookViewContext.visible_end:type_name -> google.protobuf.Timestamp
+	8,   // 25: nominal.ai.v1.WorkbookViewContext.time_range_type:type_name -> nominal.ai.v1.TimeRangeType
+	41,  // 26: nominal.ai.v1.PageContext.compute_function_editor:type_name -> nominal.ai.v1.ComputeFunctionEditorContext
+	42,  // 27: nominal.ai.v1.PageContext.sql_editor:type_name -> nominal.ai.v1.SqlEditorContext
+	43,  // 28: nominal.ai.v1.PageContext.draft_editor:type_name -> nominal.ai.v1.DraftEditorContext
+	44,  // 29: nominal.ai.v1.PageContext.workbook_view:type_name -> nominal.ai.v1.WorkbookViewContext
+	47,  // 30: nominal.ai.v1.ModelOption.thinking_effort_options:type_name -> nominal.ai.v1.ThinkingEffortOption
+	48,  // 31: nominal.ai.v1.ListModelsResponse.models:type_name -> nominal.ai.v1.ModelOption
+	30,  // 32: nominal.ai.v1.CreateConversationRequest.conversation_mode:type_name -> nominal.ai.v1.ConversationMode
+	72,  // 33: nominal.ai.v1.CreateConversationRequest.resources:type_name -> nominal.ai.v1.ConversationResource
+	30,  // 34: nominal.ai.v1.UpdateConversationMetadataRequest.conversation_mode:type_name -> nominal.ai.v1.ConversationMode
+	75,  // 35: nominal.ai.v1.ArchiveConversationResponse.conversation:type_name -> nominal.ai.v1.ConversationMetadata
+	75,  // 36: nominal.ai.v1.UnarchiveConversationResponse.conversation:type_name -> nominal.ai.v1.ConversationMetadata
+	132, // 37: nominal.ai.v1.CompactConversationResponse.context:type_name -> nominal.ai.v1.ContextStatus
+	86,  // 38: nominal.ai.v1.ModelMessageWithId.message:type_name -> nominal.ai.v1.ModelMessage
+	113, // 39: nominal.ai.v1.ModelMessageWithId.tool_action:type_name -> nominal.ai.v1.ToolAction
+	114, // 40: nominal.ai.v1.ModelMessageWithId.tool_action_confirmation:type_name -> nominal.ai.v1.ToolActionConfirmation
+	103, // 41: nominal.ai.v1.ModelMessageWithId.tool_approval_requests:type_name -> nominal.ai.v1.ToolCallDescription
+	104, // 42: nominal.ai.v1.ModelMessageWithId.user_question_calls:type_name -> nominal.ai.v1.UserQuestionCall
+	153, // 43: nominal.ai.v1.ModelMessageWithId.created_at:type_name -> google.protobuf.Timestamp
+	64,  // 44: nominal.ai.v1.GetConversationResponse.ordered_messages:type_name -> nominal.ai.v1.ModelMessageWithId
+	75,  // 45: nominal.ai.v1.GetConversationResponse.conversation_metadata:type_name -> nominal.ai.v1.ConversationMetadata
+	75,  // 46: nominal.ai.v1.GetConversationMetadataResponse.conversation_metadata:type_name -> nominal.ai.v1.ConversationMetadata
+	68,  // 47: nominal.ai.v1.GetConversationMetadataResponse.active_run:type_name -> nominal.ai.v1.ActiveAgentRun
+	153, // 48: nominal.ai.v1.ActiveAgentRun.started_at:type_name -> google.protobuf.Timestamp
+	2,   // 49: nominal.ai.v1.ActiveAgentRun.execution_mode:type_name -> nominal.ai.v1.AgentRunExecutionMode
+	64,  // 50: nominal.ai.v1.GetConversationMessagesResponse.ordered_messages:type_name -> nominal.ai.v1.ModelMessageWithId
+	72,  // 51: nominal.ai.v1.UpdateConversationResourcesResponse.resources:type_name -> nominal.ai.v1.ConversationResource
+	153, // 52: nominal.ai.v1.ConversationMetadata.created_at:type_name -> google.protobuf.Timestamp
+	153, // 53: nominal.ai.v1.ConversationMetadata.last_updated_at:type_name -> google.protobuf.Timestamp
+	30,  // 54: nominal.ai.v1.ConversationMetadata.mode:type_name -> nominal.ai.v1.ConversationMode
+	132, // 55: nominal.ai.v1.ConversationMetadata.current_context:type_name -> nominal.ai.v1.ContextStatus
+	72,  // 56: nominal.ai.v1.ConversationMetadata.resources:type_name -> nominal.ai.v1.ConversationResource
+	68,  // 57: nominal.ai.v1.ConversationMetadata.active_run:type_name -> nominal.ai.v1.ActiveAgentRun
+	153, // 58: nominal.ai.v1.ConversationMetadata.archived_at:type_name -> google.protobuf.Timestamp
+	75,  // 59: nominal.ai.v1.ListConversationsResponse.conversations:type_name -> nominal.ai.v1.ConversationMetadata
+	79,  // 60: nominal.ai.v1.BatchGetConversationActiveRunsResponse.active_runs:type_name -> nominal.ai.v1.ConversationActiveRun
+	68,  // 61: nominal.ai.v1.ConversationActiveRun.active_run:type_name -> nominal.ai.v1.ActiveAgentRun
+	84,  // 62: nominal.ai.v1.BatchGetConversationSandboxesResponse.conversation_sandboxes:type_name -> nominal.ai.v1.ConversationSandbox
+	3,   // 63: nominal.ai.v1.ConversationSandbox.status:type_name -> nominal.ai.v1.ConversationSandboxStatus
+	87,  // 64: nominal.ai.v1.ModelMessage.user:type_name -> nominal.ai.v1.UserModelMessage
+	88,  // 65: nominal.ai.v1.ModelMessage.assistant:type_name -> nominal.ai.v1.AssistantModelMessage
+	89,  // 66: nominal.ai.v1.UserModelMessage.text:type_name -> nominal.ai.v1.UserContentPart
+	90,  // 67: nominal.ai.v1.AssistantModelMessage.content_parts:type_name -> nominal.ai.v1.AssistantContentPart
+	91,  // 68: nominal.ai.v1.UserContentPart.text:type_name -> nominal.ai.v1.TextPart
+	92,  // 69: nominal.ai.v1.UserContentPart.image:type_name -> nominal.ai.v1.ImagePart
+	93,  // 70: nominal.ai.v1.UserContentPart.attachment:type_name -> nominal.ai.v1.AttachmentPart
+	91,  // 71: nominal.ai.v1.AssistantContentPart.text:type_name -> nominal.ai.v1.TextPart
+	94,  // 72: nominal.ai.v1.AssistantContentPart.reasoning:type_name -> nominal.ai.v1.ReasoningPart
+	105, // 73: nominal.ai.v1.StreamChatResponse.finish:type_name -> nominal.ai.v1.Finish
+	106, // 74: nominal.ai.v1.StreamChatResponse.error:type_name -> nominal.ai.v1.Error
+	107, // 75: nominal.ai.v1.StreamChatResponse.text_start:type_name -> nominal.ai.v1.TextStart
+	108, // 76: nominal.ai.v1.StreamChatResponse.text_delta:type_name -> nominal.ai.v1.TextDelta
+	109, // 77: nominal.ai.v1.StreamChatResponse.text_end:type_name -> nominal.ai.v1.TextEnd
+	110, // 78: nominal.ai.v1.StreamChatResponse.reasoning_start:type_name -> nominal.ai.v1.ReasoningStart
+	111, // 79: nominal.ai.v1.StreamChatResponse.reasoning_delta:type_name -> nominal.ai.v1.ReasoningDelta
+	112, // 80: nominal.ai.v1.StreamChatResponse.reasoning_end:type_name -> nominal.ai.v1.ReasoningEnd
+	113, // 81: nominal.ai.v1.StreamChatResponse.tool_action:type_name -> nominal.ai.v1.ToolAction
+	114, // 82: nominal.ai.v1.StreamChatResponse.tool_action_confirmation:type_name -> nominal.ai.v1.ToolActionConfirmation
+	100, // 83: nominal.ai.v1.StreamChatResponse.step_start:type_name -> nominal.ai.v1.StepStart
+	101, // 84: nominal.ai.v1.StreamChatResponse.step_end:type_name -> nominal.ai.v1.StepEnd
+	120, // 85: nominal.ai.v1.StreamChatResponse.client_directive:type_name -> nominal.ai.v1.ClientDirective
+	102, // 86: nominal.ai.v1.StreamChatResponse.compaction_notice:type_name -> nominal.ai.v1.CompactionNotice
+	99,  // 87: nominal.ai.v1.StreamChatResponse.stream_reset:type_name -> nominal.ai.v1.StreamReset
+	97,  // 88: nominal.ai.v1.StreamChatResponse.steering_message:type_name -> nominal.ai.v1.SteeringMessage
+	98,  // 89: nominal.ai.v1.StreamChatResponse.should_know_offer:type_name -> nominal.ai.v1.ShouldKnowOffer
+	96,  // 90: nominal.ai.v1.StreamChatResponse.tool_call_progress:type_name -> nominal.ai.v1.ToolCallProgress
+	4,   // 91: nominal.ai.v1.ShouldKnowOffer.tag:type_name -> nominal.ai.v1.ShouldKnowTag
+	11,  // 92: nominal.ai.v1.CompactionNotice.trigger:type_name -> nominal.ai.v1.CompactionNotice.Trigger
+	5,   // 93: nominal.ai.v1.ToolCallDescription.status:type_name -> nominal.ai.v1.ToolCallStatus
+	103, // 94: nominal.ai.v1.UserQuestionCall.tool_call:type_name -> nominal.ai.v1.ToolCallDescription
+	37,  // 95: nominal.ai.v1.UserQuestionCall.answers:type_name -> nominal.ai.v1.UserQuestionAnswer
+	6,   // 96: nominal.ai.v1.UserQuestionCall.state:type_name -> nominal.ai.v1.UserQuestionState
+	103, // 97: nominal.ai.v1.Finish.tool_approval_requests:type_name -> nominal.ai.v1.ToolCallDescription
+	132, // 98: nominal.ai.v1.Finish.updated_context:type_name -> nominal.ai.v1.ContextStatus
+	104, // 99: nominal.ai.v1.Finish.user_question_calls:type_name -> nominal.ai.v1.UserQuestionCall
+	103, // 100: nominal.ai.v1.ToolAction.tool_call_description:type_name -> nominal.ai.v1.ToolCallDescription
+	115, // 101: nominal.ai.v1.ToolActionConfirmation.success:type_name -> nominal.ai.v1.ToolActionSuccess
+	119, // 102: nominal.ai.v1.ToolActionConfirmation.failure:type_name -> nominal.ai.v1.ToolActionFailure
+	116, // 103: nominal.ai.v1.ToolActionSuccess.code_cell:type_name -> nominal.ai.v1.CodeCellOutputs
+	118, // 104: nominal.ai.v1.CodeCellOutputs.outputs:type_name -> nominal.ai.v1.CodeCellOutput
+	117, // 105: nominal.ai.v1.CodeCellOutputs.files:type_name -> nominal.ai.v1.CodeCellFile
+	150, // 106: nominal.ai.v1.CodeCellOutput.stream:type_name -> nominal.ai.v1.CodeCellOutput.Stream
+	151, // 107: nominal.ai.v1.CodeCellOutput.data:type_name -> nominal.ai.v1.CodeCellOutput.Data
+	152, // 108: nominal.ai.v1.CodeCellOutput.error:type_name -> nominal.ai.v1.CodeCellOutput.Error
+	121, // 109: nominal.ai.v1.ClientDirective.v1:type_name -> nominal.ai.v1.ClientDirectiveV1
+	123, // 110: nominal.ai.v1.ClientDirectiveV1.resource_edited:type_name -> nominal.ai.v1.ResourceEditedDirective
+	128, // 111: nominal.ai.v1.ClientDirectiveV1.set_time_range:type_name -> nominal.ai.v1.SetTimeRangeDirective
+	127, // 112: nominal.ai.v1.ClientDirectiveV1.resource_changed:type_name -> nominal.ai.v1.ResourceChangedDirective
+	122, // 113: nominal.ai.v1.ClientDirectiveV1.sandbox_status:type_name -> nominal.ai.v1.SandboxStatusDirective
+	3,   // 114: nominal.ai.v1.SandboxStatusDirective.status:type_name -> nominal.ai.v1.ConversationSandboxStatus
+	124, // 115: nominal.ai.v1.ResourceEditedDirective.checklist:type_name -> nominal.ai.v1.ChecklistEdited
+	125, // 116: nominal.ai.v1.ResourceEditedDirective.template:type_name -> nominal.ai.v1.TemplateEdited
+	126, // 117: nominal.ai.v1.ResourceEditedDirective.workbook:type_name -> nominal.ai.v1.WorkbookEdited
+	153, // 118: nominal.ai.v1.ChecklistEdited.committed_at:type_name -> google.protobuf.Timestamp
+	153, // 119: nominal.ai.v1.TemplateEdited.committed_at:type_name -> google.protobuf.Timestamp
+	7,   // 120: nominal.ai.v1.ResourceChangedDirective.change:type_name -> nominal.ai.v1.ResourceChangeType
+	153, // 121: nominal.ai.v1.SetTimeRangeDirective.start:type_name -> google.protobuf.Timestamp
+	153, // 122: nominal.ai.v1.SetTimeRangeDirective.end:type_name -> google.protobuf.Timestamp
+	8,   // 123: nominal.ai.v1.SetTimeRangeDirective.time_range_type:type_name -> nominal.ai.v1.TimeRangeType
+	130, // 124: nominal.ai.v1.ResourceMarkup.rid:type_name -> nominal.ai.v1.RidResourceMarkup
+	131, // 125: nominal.ai.v1.ResourceMarkup.rid_list:type_name -> nominal.ai.v1.RidListResourceMarkup
+	9,   // 126: nominal.ai.v1.ComputeProvenanceV1.output_type:type_name -> nominal.ai.v1.ComputeOutputType
+	135, // 127: nominal.ai.v1.ComputeProvenanceListV1.entries:type_name -> nominal.ai.v1.ComputeProvenanceEntryV1
+	133, // 128: nominal.ai.v1.ComputeProvenanceEntryV1.provenance:type_name -> nominal.ai.v1.ComputeProvenanceV1
+	153, // 129: nominal.ai.v1.Citation.retrieved_at:type_name -> google.protobuf.Timestamp
+	141, // 130: nominal.ai.v1.Citation.telemetry:type_name -> nominal.ai.v1.TelemetryCitation
+	142, // 131: nominal.ai.v1.Citation.file:type_name -> nominal.ai.v1.DriveFileCitation
+	138, // 132: nominal.ai.v1.Citation.code_execution:type_name -> nominal.ai.v1.CodeExecutionCitation
+	137, // 133: nominal.ai.v1.Citation.user_message:type_name -> nominal.ai.v1.UserMessageCitation
+	139, // 134: nominal.ai.v1.CodeExecutionCitation.calls:type_name -> nominal.ai.v1.CodeExecutionCall
+	10,  // 135: nominal.ai.v1.CodeExecutionCall.outcome:type_name -> nominal.ai.v1.CodeExecutionCallOutcome
+	140, // 136: nominal.ai.v1.CodeExecutionCall.sources:type_name -> nominal.ai.v1.CodeExecutionSource
+	141, // 137: nominal.ai.v1.CodeExecutionSource.telemetry:type_name -> nominal.ai.v1.TelemetryCitation
+	142, // 138: nominal.ai.v1.CodeExecutionSource.file:type_name -> nominal.ai.v1.DriveFileCitation
+	133, // 139: nominal.ai.v1.TelemetryCitation.v1:type_name -> nominal.ai.v1.ComputeProvenanceV1
+	154, // 140: nominal.ai.v1.DriveFileCitation.file_identity:type_name -> nominal.file_store.v1.LogicalFileIdentity
+	143, // 141: nominal.ai.v1.DriveFileCitation.text:type_name -> nominal.ai.v1.TextFileCitation
+	144, // 142: nominal.ai.v1.DriveFileCitation.pdf:type_name -> nominal.ai.v1.PdfFileCitation
+	145, // 143: nominal.ai.v1.TextFileCitation.byte_range:type_name -> nominal.ai.v1.ByteRange
+	136, // 144: nominal.ai.v1.BatchGetCitationsResponse.citations:type_name -> nominal.ai.v1.Citation
+	148, // 145: nominal.ai.v1.BatchGetCitationsResponse.errors:type_name -> nominal.ai.v1.GetCitationResponseError
+	13,  // 146: nominal.ai.v1.GetCitationResponseError.reason:type_name -> nominal.ai.v1.GetCitationResponseError.Reason
+	23,  // 147: nominal.ai.v1.ExperimentEvent.PropertiesEntry.value:type_name -> nominal.ai.v1.ExperimentEventValue
+	12,  // 148: nominal.ai.v1.CodeCellOutput.Stream.name:type_name -> nominal.ai.v1.CodeCellOutput.StreamName
+	49,  // 149: nominal.ai.v1.AIAgentService.ListModels:input_type -> nominal.ai.v1.ListModelsRequest
+	40,  // 150: nominal.ai.v1.AIAgentService.StreamChat:input_type -> nominal.ai.v1.StreamChatRequest
+	61,  // 151: nominal.ai.v1.AIAgentService.GetConversation:input_type -> nominal.ai.v1.GetConversationRequest
+	66,  // 152: nominal.ai.v1.AIAgentService.GetConversationMetadata:input_type -> nominal.ai.v1.GetConversationMetadataRequest
+	69,  // 153: nominal.ai.v1.AIAgentService.GetConversationMessages:input_type -> nominal.ai.v1.GetConversationMessagesRequest
+	71,  // 154: nominal.ai.v1.AIAgentService.ListConversations:input_type -> nominal.ai.v1.ListConversationsRequest
+	77,  // 155: nominal.ai.v1.AIAgentService.BatchGetConversationActiveRuns:input_type -> nominal.ai.v1.BatchGetConversationActiveRunsRequest
+	80,  // 156: nominal.ai.v1.AIAgentService.BatchGetConversationSandboxes:input_type -> nominal.ai.v1.BatchGetConversationSandboxesRequest
+	82,  // 157: nominal.ai.v1.AIAgentService.ResumeConversationSandbox:input_type -> nominal.ai.v1.ResumeConversationSandboxRequest
+	51,  // 158: nominal.ai.v1.AIAgentService.CreateConversation:input_type -> nominal.ai.v1.CreateConversationRequest
+	53,  // 159: nominal.ai.v1.AIAgentService.UpdateConversationMetadata:input_type -> nominal.ai.v1.UpdateConversationMetadataRequest
+	55,  // 160: nominal.ai.v1.AIAgentService.DeleteConversation:input_type -> nominal.ai.v1.DeleteConversationRequest
+	57,  // 161: nominal.ai.v1.AIAgentService.ArchiveConversation:input_type -> nominal.ai.v1.ArchiveConversationRequest
+	59,  // 162: nominal.ai.v1.AIAgentService.UnarchiveConversation:input_type -> nominal.ai.v1.UnarchiveConversationRequest
+	26,  // 163: nominal.ai.v1.AIAgentService.GetSnapshotRidByUserMessageId:input_type -> nominal.ai.v1.GetSnapshotRidByUserMessageIdRequest
+	62,  // 164: nominal.ai.v1.AIAgentService.CompactConversation:input_type -> nominal.ai.v1.CompactConversationRequest
+	14,  // 165: nominal.ai.v1.AIAgentService.SubmitMessageFeedback:input_type -> nominal.ai.v1.SubmitMessageFeedbackRequest
+	73,  // 166: nominal.ai.v1.AIAgentService.UpdateConversationResources:input_type -> nominal.ai.v1.UpdateConversationResourcesRequest
+	16,  // 167: nominal.ai.v1.AIAgentService.CancelAgentRun:input_type -> nominal.ai.v1.CancelAgentRunRequest
+	18,  // 168: nominal.ai.v1.AIAgentService.SteerAgentRun:input_type -> nominal.ai.v1.SteerAgentRunRequest
+	146, // 169: nominal.ai.v1.AIAgentService.BatchGetCitations:input_type -> nominal.ai.v1.BatchGetCitationsRequest
+	20,  // 170: nominal.ai.v1.AIAgentService.AnswerShouldKnowOffer:input_type -> nominal.ai.v1.AnswerShouldKnowOfferRequest
+	24,  // 171: nominal.ai.v1.AIAgentService.CreateExperimentEvent:input_type -> nominal.ai.v1.CreateExperimentEventRequest
+	50,  // 172: nominal.ai.v1.AIAgentService.ListModels:output_type -> nominal.ai.v1.ListModelsResponse
+	95,  // 173: nominal.ai.v1.AIAgentService.StreamChat:output_type -> nominal.ai.v1.StreamChatResponse
+	65,  // 174: nominal.ai.v1.AIAgentService.GetConversation:output_type -> nominal.ai.v1.GetConversationResponse
+	67,  // 175: nominal.ai.v1.AIAgentService.GetConversationMetadata:output_type -> nominal.ai.v1.GetConversationMetadataResponse
+	70,  // 176: nominal.ai.v1.AIAgentService.GetConversationMessages:output_type -> nominal.ai.v1.GetConversationMessagesResponse
+	76,  // 177: nominal.ai.v1.AIAgentService.ListConversations:output_type -> nominal.ai.v1.ListConversationsResponse
+	78,  // 178: nominal.ai.v1.AIAgentService.BatchGetConversationActiveRuns:output_type -> nominal.ai.v1.BatchGetConversationActiveRunsResponse
+	81,  // 179: nominal.ai.v1.AIAgentService.BatchGetConversationSandboxes:output_type -> nominal.ai.v1.BatchGetConversationSandboxesResponse
+	83,  // 180: nominal.ai.v1.AIAgentService.ResumeConversationSandbox:output_type -> nominal.ai.v1.ResumeConversationSandboxResponse
+	52,  // 181: nominal.ai.v1.AIAgentService.CreateConversation:output_type -> nominal.ai.v1.CreateConversationResponse
+	54,  // 182: nominal.ai.v1.AIAgentService.UpdateConversationMetadata:output_type -> nominal.ai.v1.UpdateConversationMetadataResponse
+	56,  // 183: nominal.ai.v1.AIAgentService.DeleteConversation:output_type -> nominal.ai.v1.DeleteConversationResponse
+	58,  // 184: nominal.ai.v1.AIAgentService.ArchiveConversation:output_type -> nominal.ai.v1.ArchiveConversationResponse
+	60,  // 185: nominal.ai.v1.AIAgentService.UnarchiveConversation:output_type -> nominal.ai.v1.UnarchiveConversationResponse
+	27,  // 186: nominal.ai.v1.AIAgentService.GetSnapshotRidByUserMessageId:output_type -> nominal.ai.v1.GetSnapshotRidByUserMessageIdResponse
+	63,  // 187: nominal.ai.v1.AIAgentService.CompactConversation:output_type -> nominal.ai.v1.CompactConversationResponse
+	15,  // 188: nominal.ai.v1.AIAgentService.SubmitMessageFeedback:output_type -> nominal.ai.v1.SubmitMessageFeedbackResponse
+	74,  // 189: nominal.ai.v1.AIAgentService.UpdateConversationResources:output_type -> nominal.ai.v1.UpdateConversationResourcesResponse
+	17,  // 190: nominal.ai.v1.AIAgentService.CancelAgentRun:output_type -> nominal.ai.v1.CancelAgentRunResponse
+	19,  // 191: nominal.ai.v1.AIAgentService.SteerAgentRun:output_type -> nominal.ai.v1.SteerAgentRunResponse
+	147, // 192: nominal.ai.v1.AIAgentService.BatchGetCitations:output_type -> nominal.ai.v1.BatchGetCitationsResponse
+	21,  // 193: nominal.ai.v1.AIAgentService.AnswerShouldKnowOffer:output_type -> nominal.ai.v1.AnswerShouldKnowOfferResponse
+	25,  // 194: nominal.ai.v1.AIAgentService.CreateExperimentEvent:output_type -> nominal.ai.v1.CreateExperimentEventResponse
+	172, // [172:195] is the sub-list for method output_type
+	149, // [149:172] is the sub-list for method input_type
+	149, // [149:149] is the sub-list for extension type_name
+	149, // [149:149] is the sub-list for extension extendee
+	0,   // [0:149] is the sub-list for field type_name
 }
 
 func init() { file_nominal_protos_ai_v1_ai_agent_proto_init() }
@@ -8394,77 +11178,71 @@ func file_nominal_protos_ai_v1_ai_agent_proto_init() {
 	if File_nominal_protos_ai_v1_ai_agent_proto != nil {
 		return
 	}
-	file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[7].OneofWrappers = []any{}
-	file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[12].OneofWrappers = []any{
+	file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[0].OneofWrappers = []any{}
+	file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[9].OneofWrappers = []any{
+		(*ExperimentEventValue_IntValue)(nil),
+		(*ExperimentEventValue_BoolValue)(nil),
+		(*ExperimentEventValue_EnumValue)(nil),
+	}
+	file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[13].OneofWrappers = []any{
 		(*GetSnapshotRidByUserMessageIdResponse_SnapshotRid)(nil),
 		(*GetSnapshotRidByUserMessageIdResponse_CommitId)(nil),
 	}
-	file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[14].OneofWrappers = []any{}
-	file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[15].OneofWrappers = []any{
+	file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[15].OneofWrappers = []any{}
+	file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[16].OneofWrappers = []any{
 		(*ConversationMode_ReadOnly)(nil),
 		(*ConversationMode_Edit)(nil),
 	}
-	file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[16].OneofWrappers = []any{
+	file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[17].OneofWrappers = []any{
 		(*ToolApprovalResult_Approved)(nil),
 		(*ToolApprovalResult_Denied)(nil),
 	}
-	file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[17].OneofWrappers = []any{}
-	file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[22].OneofWrappers = []any{}
-	file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[24].OneofWrappers = []any{
+	file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[18].OneofWrappers = []any{}
+	file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[23].OneofWrappers = []any{}
+	file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[25].OneofWrappers = []any{
 		(*UserQuestionResponseRequest_Answered)(nil),
 		(*UserQuestionResponseRequest_Declined)(nil),
 	}
-	file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[25].OneofWrappers = []any{
+	file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[26].OneofWrappers = []any{
 		(*StreamChatRequest_Retry)(nil),
 		(*StreamChatRequest_UserPrompt)(nil),
 		(*StreamChatRequest_ToolApproval)(nil),
 		(*StreamChatRequest_UserQuestionResponse)(nil),
-		(*StreamChatRequest_Workbook)(nil),
-		(*StreamChatRequest_Global)(nil),
-		(*StreamChatRequest_Checklist)(nil),
-		(*StreamChatRequest_Template)(nil),
 	}
-	file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[26].OneofWrappers = []any{}
-	file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[28].OneofWrappers = []any{}
 	file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[31].OneofWrappers = []any{}
-	file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[32].OneofWrappers = []any{
-		(*ChecklistContext_Asset)(nil),
-		(*ChecklistContext_Run)(nil),
-	}
-	file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[33].OneofWrappers = []any{
-		(*TemplateContext_Asset)(nil),
-		(*TemplateContext_Run)(nil),
-	}
-	file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[36].OneofWrappers = []any{}
-	file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[38].OneofWrappers = []any{}
-	file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[46].OneofWrappers = []any{}
-	file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[49].OneofWrappers = []any{
+	file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[32].OneofWrappers = []any{}
+	file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[34].OneofWrappers = []any{}
+	file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[37].OneofWrappers = []any{}
+	file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[39].OneofWrappers = []any{}
+	file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[47].OneofWrappers = []any{}
+	file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[50].OneofWrappers = []any{
 		(*ModelMessageWithId_Message)(nil),
 		(*ModelMessageWithId_ToolAction)(nil),
 		(*ModelMessageWithId_ToolActionConfirmation)(nil),
 		(*ModelMessageWithId_SnapshotRid)(nil),
 		(*ModelMessageWithId_CommitId)(nil),
 	}
-	file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[52].OneofWrappers = []any{}
-	file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[54].OneofWrappers = []any{}
+	file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[53].OneofWrappers = []any{}
 	file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[55].OneofWrappers = []any{}
 	file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[56].OneofWrappers = []any{}
-	file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[60].OneofWrappers = []any{}
+	file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[57].OneofWrappers = []any{}
 	file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[61].OneofWrappers = []any{}
-	file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[67].OneofWrappers = []any{
+	file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[62].OneofWrappers = []any{}
+	file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[72].OneofWrappers = []any{
 		(*ModelMessage_User)(nil),
 		(*ModelMessage_Assistant)(nil),
 	}
-	file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[70].OneofWrappers = []any{
+	file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[75].OneofWrappers = []any{
 		(*UserContentPart_Text)(nil),
 		(*UserContentPart_Image)(nil),
+		(*UserContentPart_Attachment)(nil),
 	}
-	file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[71].OneofWrappers = []any{
+	file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[76].OneofWrappers = []any{
 		(*AssistantContentPart_Text)(nil),
 		(*AssistantContentPart_Reasoning)(nil),
 	}
-	file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[74].OneofWrappers = []any{}
-	file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[75].OneofWrappers = []any{
+	file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[80].OneofWrappers = []any{}
+	file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[81].OneofWrappers = []any{
 		(*StreamChatResponse_Finish)(nil),
 		(*StreamChatResponse_Error)(nil),
 		(*StreamChatResponse_TextStart)(nil),
@@ -8480,41 +11258,73 @@ func file_nominal_protos_ai_v1_ai_agent_proto_init() {
 		(*StreamChatResponse_ClientDirective)(nil),
 		(*StreamChatResponse_CompactionNotice)(nil),
 		(*StreamChatResponse_StreamReset)(nil),
+		(*StreamChatResponse_SteeringMessage)(nil),
+		(*StreamChatResponse_ShouldKnowOffer)(nil),
+		(*StreamChatResponse_ToolCallProgress)(nil),
 	}
-	file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[82].OneofWrappers = []any{}
-	file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[90].OneofWrappers = []any{}
-	file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[91].OneofWrappers = []any{
+	file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[91].OneofWrappers = []any{}
+	file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[99].OneofWrappers = []any{}
+	file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[100].OneofWrappers = []any{
 		(*ToolActionConfirmation_Success)(nil),
 		(*ToolActionConfirmation_Failure)(nil),
 	}
-	file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[94].OneofWrappers = []any{
+	file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[101].OneofWrappers = []any{}
+	file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[104].OneofWrappers = []any{
+		(*CodeCellOutput_Stream_)(nil),
+		(*CodeCellOutput_Data_)(nil),
+		(*CodeCellOutput_Error_)(nil),
+	}
+	file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[106].OneofWrappers = []any{
 		(*ClientDirective_V1)(nil),
 	}
-	file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[95].OneofWrappers = []any{
+	file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[107].OneofWrappers = []any{
 		(*ClientDirectiveV1_ResourceEdited)(nil),
 		(*ClientDirectiveV1_SetTimeRange)(nil),
+		(*ClientDirectiveV1_ResourceChanged)(nil),
+		(*ClientDirectiveV1_SandboxStatus)(nil),
 	}
-	file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[96].OneofWrappers = []any{
+	file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[109].OneofWrappers = []any{
 		(*ResourceEditedDirective_Checklist)(nil),
 		(*ResourceEditedDirective_Template)(nil),
 		(*ResourceEditedDirective_Workbook)(nil),
 	}
-	file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[97].OneofWrappers = []any{}
-	file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[98].OneofWrappers = []any{}
-	file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[101].OneofWrappers = []any{
+	file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[110].OneofWrappers = []any{}
+	file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[111].OneofWrappers = []any{}
+	file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[113].OneofWrappers = []any{}
+	file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[115].OneofWrappers = []any{
 		(*ResourceMarkup_Rid)(nil),
 		(*ResourceMarkup_RidList)(nil),
 	}
-	file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[102].OneofWrappers = []any{}
-	file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[103].OneofWrappers = []any{}
-	file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[105].OneofWrappers = []any{}
+	file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[116].OneofWrappers = []any{}
+	file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[117].OneofWrappers = []any{}
+	file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[119].OneofWrappers = []any{}
+	file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[122].OneofWrappers = []any{
+		(*Citation_Telemetry)(nil),
+		(*Citation_File)(nil),
+		(*Citation_CodeExecution)(nil),
+		(*Citation_UserMessage)(nil),
+	}
+	file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[124].OneofWrappers = []any{}
+	file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[125].OneofWrappers = []any{}
+	file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[126].OneofWrappers = []any{
+		(*CodeExecutionSource_Telemetry)(nil),
+		(*CodeExecutionSource_File)(nil),
+	}
+	file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[127].OneofWrappers = []any{
+		(*TelemetryCitation_V1)(nil),
+	}
+	file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[128].OneofWrappers = []any{
+		(*DriveFileCitation_Text)(nil),
+		(*DriveFileCitation_Pdf)(nil),
+	}
+	file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[129].OneofWrappers = []any{}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_nominal_protos_ai_v1_ai_agent_proto_rawDesc), len(file_nominal_protos_ai_v1_ai_agent_proto_rawDesc)),
-			NumEnums:      8,
-			NumMessages:   106,
+			NumEnums:      14,
+			NumMessages:   139,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

@@ -38,6 +38,7 @@ package runv1
 
 import (
 	_ "buf.build/gen/go/bufbuild/protovalidate/protocolbuffers/go/buf/validate"
+	_ "github.com/nominal-io/nominal-api-protos-go/nominal/protos/authz/v1"
 	_ "github.com/nominal-io/nominal-api-protos-go/nominal/protos/gen/v1"
 	types "github.com/nominal-io/nominal-api-protos-go/nominal/protos/types"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
@@ -230,7 +231,9 @@ func (Operator) EnumDescriptor() ([]byte, []int) {
 	return file_nominal_protos_run_v1_run_service_proto_rawDescGZIP(), []int{2}
 }
 
-// Whether the run is locked, preventing any changes from being made.
+// Whether the run is locked against retention-driven deletion. A locked run's assets and data sources cannot
+// change, but its metadata and bounds can. Narrowing a locked run's bounds requires permission to delete data from
+// its datasets.
 type LockStatus int32
 
 const (
@@ -2649,6 +2652,51 @@ func (x *DatasetRidsFilter) GetDatasetRids() []string {
 	return nil
 }
 
+// Returns runs with at least one asset of any of the provided types. An empty list matches all runs.
+type AssetTypesFilter struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	AssetTypes    []string               `protobuf:"bytes,1,rep,name=asset_types,json=assetTypes,proto3" json:"asset_types,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *AssetTypesFilter) Reset() {
+	*x = AssetTypesFilter{}
+	mi := &file_nominal_protos_run_v1_run_service_proto_msgTypes[31]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *AssetTypesFilter) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*AssetTypesFilter) ProtoMessage() {}
+
+func (x *AssetTypesFilter) ProtoReflect() protoreflect.Message {
+	mi := &file_nominal_protos_run_v1_run_service_proto_msgTypes[31]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use AssetTypesFilter.ProtoReflect.Descriptor instead.
+func (*AssetTypesFilter) Descriptor() ([]byte, []int) {
+	return file_nominal_protos_run_v1_run_service_proto_rawDescGZIP(), []int{31}
+}
+
+func (x *AssetTypesFilter) GetAssetTypes() []string {
+	if x != nil {
+		return x.AssetTypes
+	}
+	return nil
+}
+
 type CheckAlertStatesFilter struct {
 	state           protoimpl.MessageState `protogen:"open.v1"`
 	CheckAlertState *CheckAlertState       `protobuf:"bytes,1,opt,name=check_alert_state,json=checkAlertState,proto3" json:"check_alert_state,omitempty"`
@@ -2660,7 +2708,7 @@ type CheckAlertStatesFilter struct {
 
 func (x *CheckAlertStatesFilter) Reset() {
 	*x = CheckAlertStatesFilter{}
-	mi := &file_nominal_protos_run_v1_run_service_proto_msgTypes[31]
+	mi := &file_nominal_protos_run_v1_run_service_proto_msgTypes[32]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2672,7 +2720,7 @@ func (x *CheckAlertStatesFilter) String() string {
 func (*CheckAlertStatesFilter) ProtoMessage() {}
 
 func (x *CheckAlertStatesFilter) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_run_v1_run_service_proto_msgTypes[31]
+	mi := &file_nominal_protos_run_v1_run_service_proto_msgTypes[32]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2685,7 +2733,7 @@ func (x *CheckAlertStatesFilter) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CheckAlertStatesFilter.ProtoReflect.Descriptor instead.
 func (*CheckAlertStatesFilter) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_run_v1_run_service_proto_rawDescGZIP(), []int{31}
+	return file_nominal_protos_run_v1_run_service_proto_rawDescGZIP(), []int{32}
 }
 
 func (x *CheckAlertStatesFilter) GetCheckAlertState() *CheckAlertState {
@@ -2719,7 +2767,7 @@ type CustomTimeframeFilter struct {
 
 func (x *CustomTimeframeFilter) Reset() {
 	*x = CustomTimeframeFilter{}
-	mi := &file_nominal_protos_run_v1_run_service_proto_msgTypes[32]
+	mi := &file_nominal_protos_run_v1_run_service_proto_msgTypes[33]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2731,7 +2779,7 @@ func (x *CustomTimeframeFilter) String() string {
 func (*CustomTimeframeFilter) ProtoMessage() {}
 
 func (x *CustomTimeframeFilter) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_run_v1_run_service_proto_msgTypes[32]
+	mi := &file_nominal_protos_run_v1_run_service_proto_msgTypes[33]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2744,7 +2792,7 @@ func (x *CustomTimeframeFilter) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CustomTimeframeFilter.ProtoReflect.Descriptor instead.
 func (*CustomTimeframeFilter) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_run_v1_run_service_proto_rawDescGZIP(), []int{32}
+	return file_nominal_protos_run_v1_run_service_proto_rawDescGZIP(), []int{33}
 }
 
 func (x *CustomTimeframeFilter) GetStartTime() *UtcTimestamp {
@@ -2770,7 +2818,7 @@ type PresetTimeframeFilter struct {
 
 func (x *PresetTimeframeFilter) Reset() {
 	*x = PresetTimeframeFilter{}
-	mi := &file_nominal_protos_run_v1_run_service_proto_msgTypes[33]
+	mi := &file_nominal_protos_run_v1_run_service_proto_msgTypes[34]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2782,7 +2830,7 @@ func (x *PresetTimeframeFilter) String() string {
 func (*PresetTimeframeFilter) ProtoMessage() {}
 
 func (x *PresetTimeframeFilter) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_run_v1_run_service_proto_msgTypes[33]
+	mi := &file_nominal_protos_run_v1_run_service_proto_msgTypes[34]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2795,7 +2843,7 @@ func (x *PresetTimeframeFilter) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use PresetTimeframeFilter.ProtoReflect.Descriptor instead.
 func (*PresetTimeframeFilter) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_run_v1_run_service_proto_rawDescGZIP(), []int{33}
+	return file_nominal_protos_run_v1_run_service_proto_rawDescGZIP(), []int{34}
 }
 
 func (x *PresetTimeframeFilter) GetDuration() PresetTimeframeDuration {
@@ -2818,7 +2866,7 @@ type TimeframeFilter struct {
 
 func (x *TimeframeFilter) Reset() {
 	*x = TimeframeFilter{}
-	mi := &file_nominal_protos_run_v1_run_service_proto_msgTypes[34]
+	mi := &file_nominal_protos_run_v1_run_service_proto_msgTypes[35]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2830,7 +2878,7 @@ func (x *TimeframeFilter) String() string {
 func (*TimeframeFilter) ProtoMessage() {}
 
 func (x *TimeframeFilter) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_run_v1_run_service_proto_msgTypes[34]
+	mi := &file_nominal_protos_run_v1_run_service_proto_msgTypes[35]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2843,7 +2891,7 @@ func (x *TimeframeFilter) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use TimeframeFilter.ProtoReflect.Descriptor instead.
 func (*TimeframeFilter) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_run_v1_run_service_proto_rawDescGZIP(), []int{34}
+	return file_nominal_protos_run_v1_run_service_proto_rawDescGZIP(), []int{35}
 }
 
 func (x *TimeframeFilter) GetTimeframeFilter() isTimeframeFilter_TimeframeFilter {
@@ -2898,7 +2946,7 @@ type TimeRangeFilter struct {
 
 func (x *TimeRangeFilter) Reset() {
 	*x = TimeRangeFilter{}
-	mi := &file_nominal_protos_run_v1_run_service_proto_msgTypes[35]
+	mi := &file_nominal_protos_run_v1_run_service_proto_msgTypes[36]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2910,7 +2958,7 @@ func (x *TimeRangeFilter) String() string {
 func (*TimeRangeFilter) ProtoMessage() {}
 
 func (x *TimeRangeFilter) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_run_v1_run_service_proto_msgTypes[35]
+	mi := &file_nominal_protos_run_v1_run_service_proto_msgTypes[36]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2923,7 +2971,7 @@ func (x *TimeRangeFilter) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use TimeRangeFilter.ProtoReflect.Descriptor instead.
 func (*TimeRangeFilter) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_run_v1_run_service_proto_rawDescGZIP(), []int{35}
+	return file_nominal_protos_run_v1_run_service_proto_rawDescGZIP(), []int{36}
 }
 
 func (x *TimeRangeFilter) GetStart() *UtcTimestamp {
@@ -2976,6 +3024,7 @@ type SearchQuery struct {
 	//	*SearchQuery_LockStatus
 	//	*SearchQuery_DatasetRids
 	//	*SearchQuery_NumericPropertyRange
+	//	*SearchQuery_AssetTypes
 	Query         isSearchQuery_Query `protobuf_oneof:"query"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -2983,7 +3032,7 @@ type SearchQuery struct {
 
 func (x *SearchQuery) Reset() {
 	*x = SearchQuery{}
-	mi := &file_nominal_protos_run_v1_run_service_proto_msgTypes[36]
+	mi := &file_nominal_protos_run_v1_run_service_proto_msgTypes[37]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2995,7 +3044,7 @@ func (x *SearchQuery) String() string {
 func (*SearchQuery) ProtoMessage() {}
 
 func (x *SearchQuery) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_run_v1_run_service_proto_msgTypes[36]
+	mi := &file_nominal_protos_run_v1_run_service_proto_msgTypes[37]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3008,7 +3057,7 @@ func (x *SearchQuery) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SearchQuery.ProtoReflect.Descriptor instead.
 func (*SearchQuery) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_run_v1_run_service_proto_rawDescGZIP(), []int{36}
+	return file_nominal_protos_run_v1_run_service_proto_rawDescGZIP(), []int{37}
 }
 
 func (x *SearchQuery) GetQuery() isSearchQuery_Query {
@@ -3303,6 +3352,15 @@ func (x *SearchQuery) GetNumericPropertyRange() *types.NumericPropertyRangePredi
 	return nil
 }
 
+func (x *SearchQuery) GetAssetTypes() *AssetTypesFilter {
+	if x != nil {
+		if x, ok := x.Query.(*SearchQuery_AssetTypes); ok {
+			return x.AssetTypes
+		}
+	}
+	return nil
+}
+
 type isSearchQuery_Query interface {
 	isSearchQuery_Query()
 }
@@ -3450,14 +3508,19 @@ type SearchQuery_LockStatus struct {
 }
 
 type SearchQuery_DatasetRids struct {
-	// Applied as a post-filter to the page returned by unified search. May be provided directly or within all_of.
-	// Multiple dataset_rids filters are unioned, and a run matches when any requested dataset is in its data scopes.
+	// May be provided directly or within all_of. Multiple dataset_rids filters are unioned, and a run matches when
+	// any requested dataset is in its data scopes.
 	DatasetRids *DatasetRidsFilter `protobuf:"bytes,30,opt,name=dataset_rids,json=datasetRids,proto3,oneof"`
 }
 
 type SearchQuery_NumericPropertyRange struct {
 	// Matches runs using an inclusive numeric property range.
 	NumericPropertyRange *types.NumericPropertyRangePredicate `protobuf:"bytes,31,opt,name=numeric_property_range,json=numericPropertyRange,proto3,oneof"`
+}
+
+type SearchQuery_AssetTypes struct {
+	// May be provided directly or within all_of. A query may contain at most one asset_types filter.
+	AssetTypes *AssetTypesFilter `protobuf:"bytes,32,opt,name=asset_types,json=assetTypes,proto3,oneof"`
 }
 
 func (*SearchQuery_StartTimeInclusive) isSearchQuery_Query() {}
@@ -3522,6 +3585,8 @@ func (*SearchQuery_DatasetRids) isSearchQuery_Query() {}
 
 func (*SearchQuery_NumericPropertyRange) isSearchQuery_Query() {}
 
+func (*SearchQuery_AssetTypes) isSearchQuery_Query() {}
+
 // A list of search queries. Required because a proto oneof arm cannot be `repeated` directly; an empty list is a
 // meaningful value here (an empty conjunction matches everything, an empty disjunction matches nothing), so the
 // message wrapper also preserves that distinction.
@@ -3534,7 +3599,7 @@ type SearchQueryList struct {
 
 func (x *SearchQueryList) Reset() {
 	*x = SearchQueryList{}
-	mi := &file_nominal_protos_run_v1_run_service_proto_msgTypes[37]
+	mi := &file_nominal_protos_run_v1_run_service_proto_msgTypes[38]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3546,7 +3611,7 @@ func (x *SearchQueryList) String() string {
 func (*SearchQueryList) ProtoMessage() {}
 
 func (x *SearchQueryList) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_run_v1_run_service_proto_msgTypes[37]
+	mi := &file_nominal_protos_run_v1_run_service_proto_msgTypes[38]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3559,7 +3624,7 @@ func (x *SearchQueryList) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SearchQueryList.ProtoReflect.Descriptor instead.
 func (*SearchQueryList) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_run_v1_run_service_proto_rawDescGZIP(), []int{37}
+	return file_nominal_protos_run_v1_run_service_proto_rawDescGZIP(), []int{38}
 }
 
 func (x *SearchQueryList) GetQueries() []*SearchQuery {
@@ -3578,7 +3643,7 @@ type SortProperty struct {
 
 func (x *SortProperty) Reset() {
 	*x = SortProperty{}
-	mi := &file_nominal_protos_run_v1_run_service_proto_msgTypes[38]
+	mi := &file_nominal_protos_run_v1_run_service_proto_msgTypes[39]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3590,7 +3655,7 @@ func (x *SortProperty) String() string {
 func (*SortProperty) ProtoMessage() {}
 
 func (x *SortProperty) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_run_v1_run_service_proto_msgTypes[38]
+	mi := &file_nominal_protos_run_v1_run_service_proto_msgTypes[39]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3603,7 +3668,7 @@ func (x *SortProperty) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SortProperty.ProtoReflect.Descriptor instead.
 func (*SortProperty) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_run_v1_run_service_proto_rawDescGZIP(), []int{38}
+	return file_nominal_protos_run_v1_run_service_proto_rawDescGZIP(), []int{39}
 }
 
 func (x *SortProperty) GetName() string {
@@ -3627,7 +3692,7 @@ type SortKey struct {
 
 func (x *SortKey) Reset() {
 	*x = SortKey{}
-	mi := &file_nominal_protos_run_v1_run_service_proto_msgTypes[39]
+	mi := &file_nominal_protos_run_v1_run_service_proto_msgTypes[40]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3639,7 +3704,7 @@ func (x *SortKey) String() string {
 func (*SortKey) ProtoMessage() {}
 
 func (x *SortKey) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_run_v1_run_service_proto_msgTypes[39]
+	mi := &file_nominal_protos_run_v1_run_service_proto_msgTypes[40]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3652,7 +3717,7 @@ func (x *SortKey) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SortKey.ProtoReflect.Descriptor instead.
 func (*SortKey) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_run_v1_run_service_proto_rawDescGZIP(), []int{39}
+	return file_nominal_protos_run_v1_run_service_proto_rawDescGZIP(), []int{40}
 }
 
 func (x *SortKey) GetSortKey() isSortKey_SortKey {
@@ -3723,7 +3788,7 @@ type SortKeyWithDirection struct {
 
 func (x *SortKeyWithDirection) Reset() {
 	*x = SortKeyWithDirection{}
-	mi := &file_nominal_protos_run_v1_run_service_proto_msgTypes[40]
+	mi := &file_nominal_protos_run_v1_run_service_proto_msgTypes[41]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3735,7 +3800,7 @@ func (x *SortKeyWithDirection) String() string {
 func (*SortKeyWithDirection) ProtoMessage() {}
 
 func (x *SortKeyWithDirection) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_run_v1_run_service_proto_msgTypes[40]
+	mi := &file_nominal_protos_run_v1_run_service_proto_msgTypes[41]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3748,7 +3813,7 @@ func (x *SortKeyWithDirection) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SortKeyWithDirection.ProtoReflect.Descriptor instead.
 func (*SortKeyWithDirection) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_run_v1_run_service_proto_rawDescGZIP(), []int{40}
+	return file_nominal_protos_run_v1_run_service_proto_rawDescGZIP(), []int{41}
 }
 
 func (x *SortKeyWithDirection) GetSortKey() *SortKey {
@@ -3765,6 +3830,7 @@ func (x *SortKeyWithDirection) GetIsDescending() bool {
 	return false
 }
 
+// Set sort_key, or the deprecated field. Requests that set neither are rejected with INVALID_ARGUMENT.
 type SortOptions struct {
 	state        protoimpl.MessageState `protogen:"open.v1"`
 	IsDescending bool                   `protobuf:"varint,1,opt,name=is_descending,json=isDescending,proto3" json:"is_descending,omitempty"`
@@ -3783,7 +3849,7 @@ type SortOptions struct {
 
 func (x *SortOptions) Reset() {
 	*x = SortOptions{}
-	mi := &file_nominal_protos_run_v1_run_service_proto_msgTypes[41]
+	mi := &file_nominal_protos_run_v1_run_service_proto_msgTypes[42]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3795,7 +3861,7 @@ func (x *SortOptions) String() string {
 func (*SortOptions) ProtoMessage() {}
 
 func (x *SortOptions) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_run_v1_run_service_proto_msgTypes[41]
+	mi := &file_nominal_protos_run_v1_run_service_proto_msgTypes[42]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3808,7 +3874,7 @@ func (x *SortOptions) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SortOptions.ProtoReflect.Descriptor instead.
 func (*SortOptions) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_run_v1_run_service_proto_rawDescGZIP(), []int{41}
+	return file_nominal_protos_run_v1_run_service_proto_rawDescGZIP(), []int{42}
 }
 
 func (x *SortOptions) GetIsDescending() bool {
@@ -3851,7 +3917,7 @@ type ArchivedStatusSet struct {
 
 func (x *ArchivedStatusSet) Reset() {
 	*x = ArchivedStatusSet{}
-	mi := &file_nominal_protos_run_v1_run_service_proto_msgTypes[42]
+	mi := &file_nominal_protos_run_v1_run_service_proto_msgTypes[43]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3863,7 +3929,7 @@ func (x *ArchivedStatusSet) String() string {
 func (*ArchivedStatusSet) ProtoMessage() {}
 
 func (x *ArchivedStatusSet) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_run_v1_run_service_proto_msgTypes[42]
+	mi := &file_nominal_protos_run_v1_run_service_proto_msgTypes[43]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3876,7 +3942,7 @@ func (x *ArchivedStatusSet) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ArchivedStatusSet.ProtoReflect.Descriptor instead.
 func (*ArchivedStatusSet) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_run_v1_run_service_proto_rawDescGZIP(), []int{42}
+	return file_nominal_protos_run_v1_run_service_proto_rawDescGZIP(), []int{43}
 }
 
 func (x *ArchivedStatusSet) GetArchivedStatuses() []types.ArchivedStatus {
@@ -3895,7 +3961,7 @@ type PropertyMap struct {
 
 func (x *PropertyMap) Reset() {
 	*x = PropertyMap{}
-	mi := &file_nominal_protos_run_v1_run_service_proto_msgTypes[43]
+	mi := &file_nominal_protos_run_v1_run_service_proto_msgTypes[44]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3907,7 +3973,7 @@ func (x *PropertyMap) String() string {
 func (*PropertyMap) ProtoMessage() {}
 
 func (x *PropertyMap) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_run_v1_run_service_proto_msgTypes[43]
+	mi := &file_nominal_protos_run_v1_run_service_proto_msgTypes[44]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3920,7 +3986,7 @@ func (x *PropertyMap) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use PropertyMap.ProtoReflect.Descriptor instead.
 func (*PropertyMap) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_run_v1_run_service_proto_rawDescGZIP(), []int{43}
+	return file_nominal_protos_run_v1_run_service_proto_rawDescGZIP(), []int{44}
 }
 
 func (x *PropertyMap) GetProperties() map[string]string {
@@ -3939,7 +4005,7 @@ type LabelSet struct {
 
 func (x *LabelSet) Reset() {
 	*x = LabelSet{}
-	mi := &file_nominal_protos_run_v1_run_service_proto_msgTypes[44]
+	mi := &file_nominal_protos_run_v1_run_service_proto_msgTypes[45]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3951,7 +4017,7 @@ func (x *LabelSet) String() string {
 func (*LabelSet) ProtoMessage() {}
 
 func (x *LabelSet) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_run_v1_run_service_proto_msgTypes[44]
+	mi := &file_nominal_protos_run_v1_run_service_proto_msgTypes[45]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3964,7 +4030,7 @@ func (x *LabelSet) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use LabelSet.ProtoReflect.Descriptor instead.
 func (*LabelSet) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_run_v1_run_service_proto_rawDescGZIP(), []int{44}
+	return file_nominal_protos_run_v1_run_service_proto_rawDescGZIP(), []int{45}
 }
 
 func (x *LabelSet) GetLabels() []string {
@@ -3983,7 +4049,7 @@ type LinkList struct {
 
 func (x *LinkList) Reset() {
 	*x = LinkList{}
-	mi := &file_nominal_protos_run_v1_run_service_proto_msgTypes[45]
+	mi := &file_nominal_protos_run_v1_run_service_proto_msgTypes[46]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3995,7 +4061,7 @@ func (x *LinkList) String() string {
 func (*LinkList) ProtoMessage() {}
 
 func (x *LinkList) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_run_v1_run_service_proto_msgTypes[45]
+	mi := &file_nominal_protos_run_v1_run_service_proto_msgTypes[46]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4008,7 +4074,7 @@ func (x *LinkList) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use LinkList.ProtoReflect.Descriptor instead.
 func (*LinkList) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_run_v1_run_service_proto_rawDescGZIP(), []int{45}
+	return file_nominal_protos_run_v1_run_service_proto_rawDescGZIP(), []int{46}
 }
 
 func (x *LinkList) GetLinks() []*Link {
@@ -4027,7 +4093,7 @@ type CreateRunDataSourceMap struct {
 
 func (x *CreateRunDataSourceMap) Reset() {
 	*x = CreateRunDataSourceMap{}
-	mi := &file_nominal_protos_run_v1_run_service_proto_msgTypes[46]
+	mi := &file_nominal_protos_run_v1_run_service_proto_msgTypes[47]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4039,7 +4105,7 @@ func (x *CreateRunDataSourceMap) String() string {
 func (*CreateRunDataSourceMap) ProtoMessage() {}
 
 func (x *CreateRunDataSourceMap) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_run_v1_run_service_proto_msgTypes[46]
+	mi := &file_nominal_protos_run_v1_run_service_proto_msgTypes[47]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4052,7 +4118,7 @@ func (x *CreateRunDataSourceMap) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CreateRunDataSourceMap.ProtoReflect.Descriptor instead.
 func (*CreateRunDataSourceMap) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_run_v1_run_service_proto_rawDescGZIP(), []int{46}
+	return file_nominal_protos_run_v1_run_service_proto_rawDescGZIP(), []int{47}
 }
 
 func (x *CreateRunDataSourceMap) GetDataSources() map[string]*CreateRunDataSource {
@@ -4071,7 +4137,7 @@ type AttachmentRidSet struct {
 
 func (x *AttachmentRidSet) Reset() {
 	*x = AttachmentRidSet{}
-	mi := &file_nominal_protos_run_v1_run_service_proto_msgTypes[47]
+	mi := &file_nominal_protos_run_v1_run_service_proto_msgTypes[48]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4083,7 +4149,7 @@ func (x *AttachmentRidSet) String() string {
 func (*AttachmentRidSet) ProtoMessage() {}
 
 func (x *AttachmentRidSet) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_run_v1_run_service_proto_msgTypes[47]
+	mi := &file_nominal_protos_run_v1_run_service_proto_msgTypes[48]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4096,7 +4162,7 @@ func (x *AttachmentRidSet) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use AttachmentRidSet.ProtoReflect.Descriptor instead.
 func (*AttachmentRidSet) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_run_v1_run_service_proto_rawDescGZIP(), []int{47}
+	return file_nominal_protos_run_v1_run_service_proto_rawDescGZIP(), []int{48}
 }
 
 func (x *AttachmentRidSet) GetAttachments() []string {
@@ -4131,7 +4197,7 @@ type CreateRunRequest struct {
 
 func (x *CreateRunRequest) Reset() {
 	*x = CreateRunRequest{}
-	mi := &file_nominal_protos_run_v1_run_service_proto_msgTypes[48]
+	mi := &file_nominal_protos_run_v1_run_service_proto_msgTypes[49]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4143,7 +4209,7 @@ func (x *CreateRunRequest) String() string {
 func (*CreateRunRequest) ProtoMessage() {}
 
 func (x *CreateRunRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_run_v1_run_service_proto_msgTypes[48]
+	mi := &file_nominal_protos_run_v1_run_service_proto_msgTypes[49]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4156,7 +4222,7 @@ func (x *CreateRunRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CreateRunRequest.ProtoReflect.Descriptor instead.
 func (*CreateRunRequest) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_run_v1_run_service_proto_rawDescGZIP(), []int{48}
+	return file_nominal_protos_run_v1_run_service_proto_rawDescGZIP(), []int{49}
 }
 
 func (x *CreateRunRequest) GetTitle() string {
@@ -4266,7 +4332,7 @@ type CreateRunResponse struct {
 
 func (x *CreateRunResponse) Reset() {
 	*x = CreateRunResponse{}
-	mi := &file_nominal_protos_run_v1_run_service_proto_msgTypes[49]
+	mi := &file_nominal_protos_run_v1_run_service_proto_msgTypes[50]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4278,7 +4344,7 @@ func (x *CreateRunResponse) String() string {
 func (*CreateRunResponse) ProtoMessage() {}
 
 func (x *CreateRunResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_run_v1_run_service_proto_msgTypes[49]
+	mi := &file_nominal_protos_run_v1_run_service_proto_msgTypes[50]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4291,7 +4357,7 @@ func (x *CreateRunResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CreateRunResponse.ProtoReflect.Descriptor instead.
 func (*CreateRunResponse) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_run_v1_run_service_proto_rawDescGZIP(), []int{49}
+	return file_nominal_protos_run_v1_run_service_proto_rawDescGZIP(), []int{50}
 }
 
 func (x *CreateRunResponse) GetRun() *Run {
@@ -4332,7 +4398,7 @@ type UpdateRunRequest struct {
 
 func (x *UpdateRunRequest) Reset() {
 	*x = UpdateRunRequest{}
-	mi := &file_nominal_protos_run_v1_run_service_proto_msgTypes[50]
+	mi := &file_nominal_protos_run_v1_run_service_proto_msgTypes[51]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4344,7 +4410,7 @@ func (x *UpdateRunRequest) String() string {
 func (*UpdateRunRequest) ProtoMessage() {}
 
 func (x *UpdateRunRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_run_v1_run_service_proto_msgTypes[50]
+	mi := &file_nominal_protos_run_v1_run_service_proto_msgTypes[51]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4357,7 +4423,7 @@ func (x *UpdateRunRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UpdateRunRequest.ProtoReflect.Descriptor instead.
 func (*UpdateRunRequest) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_run_v1_run_service_proto_rawDescGZIP(), []int{50}
+	return file_nominal_protos_run_v1_run_service_proto_rawDescGZIP(), []int{51}
 }
 
 func (x *UpdateRunRequest) GetRid() string {
@@ -4474,7 +4540,7 @@ type UpdateRunResponse struct {
 
 func (x *UpdateRunResponse) Reset() {
 	*x = UpdateRunResponse{}
-	mi := &file_nominal_protos_run_v1_run_service_proto_msgTypes[51]
+	mi := &file_nominal_protos_run_v1_run_service_proto_msgTypes[52]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4486,7 +4552,7 @@ func (x *UpdateRunResponse) String() string {
 func (*UpdateRunResponse) ProtoMessage() {}
 
 func (x *UpdateRunResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_run_v1_run_service_proto_msgTypes[51]
+	mi := &file_nominal_protos_run_v1_run_service_proto_msgTypes[52]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4499,7 +4565,7 @@ func (x *UpdateRunResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UpdateRunResponse.ProtoReflect.Descriptor instead.
 func (*UpdateRunResponse) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_run_v1_run_service_proto_rawDescGZIP(), []int{51}
+	return file_nominal_protos_run_v1_run_service_proto_rawDescGZIP(), []int{52}
 }
 
 func (x *UpdateRunResponse) GetRun() *Run {
@@ -4520,7 +4586,7 @@ type CreateOrUpdateRunRequest struct {
 
 func (x *CreateOrUpdateRunRequest) Reset() {
 	*x = CreateOrUpdateRunRequest{}
-	mi := &file_nominal_protos_run_v1_run_service_proto_msgTypes[52]
+	mi := &file_nominal_protos_run_v1_run_service_proto_msgTypes[53]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4532,7 +4598,7 @@ func (x *CreateOrUpdateRunRequest) String() string {
 func (*CreateOrUpdateRunRequest) ProtoMessage() {}
 
 func (x *CreateOrUpdateRunRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_run_v1_run_service_proto_msgTypes[52]
+	mi := &file_nominal_protos_run_v1_run_service_proto_msgTypes[53]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4545,7 +4611,7 @@ func (x *CreateOrUpdateRunRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CreateOrUpdateRunRequest.ProtoReflect.Descriptor instead.
 func (*CreateOrUpdateRunRequest) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_run_v1_run_service_proto_rawDescGZIP(), []int{52}
+	return file_nominal_protos_run_v1_run_service_proto_rawDescGZIP(), []int{53}
 }
 
 func (x *CreateOrUpdateRunRequest) GetRunRid() string {
@@ -4571,7 +4637,7 @@ type CreateOrUpdateRunResponse struct {
 
 func (x *CreateOrUpdateRunResponse) Reset() {
 	*x = CreateOrUpdateRunResponse{}
-	mi := &file_nominal_protos_run_v1_run_service_proto_msgTypes[53]
+	mi := &file_nominal_protos_run_v1_run_service_proto_msgTypes[54]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4583,7 +4649,7 @@ func (x *CreateOrUpdateRunResponse) String() string {
 func (*CreateOrUpdateRunResponse) ProtoMessage() {}
 
 func (x *CreateOrUpdateRunResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_run_v1_run_service_proto_msgTypes[53]
+	mi := &file_nominal_protos_run_v1_run_service_proto_msgTypes[54]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4596,7 +4662,7 @@ func (x *CreateOrUpdateRunResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CreateOrUpdateRunResponse.ProtoReflect.Descriptor instead.
 func (*CreateOrUpdateRunResponse) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_run_v1_run_service_proto_rawDescGZIP(), []int{53}
+	return file_nominal_protos_run_v1_run_service_proto_rawDescGZIP(), []int{54}
 }
 
 func (x *CreateOrUpdateRunResponse) GetRun() *Run {
@@ -4616,7 +4682,7 @@ type AddDataSourcesToRunRequest struct {
 
 func (x *AddDataSourcesToRunRequest) Reset() {
 	*x = AddDataSourcesToRunRequest{}
-	mi := &file_nominal_protos_run_v1_run_service_proto_msgTypes[54]
+	mi := &file_nominal_protos_run_v1_run_service_proto_msgTypes[55]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4628,7 +4694,7 @@ func (x *AddDataSourcesToRunRequest) String() string {
 func (*AddDataSourcesToRunRequest) ProtoMessage() {}
 
 func (x *AddDataSourcesToRunRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_run_v1_run_service_proto_msgTypes[54]
+	mi := &file_nominal_protos_run_v1_run_service_proto_msgTypes[55]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4641,7 +4707,7 @@ func (x *AddDataSourcesToRunRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use AddDataSourcesToRunRequest.ProtoReflect.Descriptor instead.
 func (*AddDataSourcesToRunRequest) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_run_v1_run_service_proto_rawDescGZIP(), []int{54}
+	return file_nominal_protos_run_v1_run_service_proto_rawDescGZIP(), []int{55}
 }
 
 func (x *AddDataSourcesToRunRequest) GetRunRid() string {
@@ -4667,7 +4733,7 @@ type AddDataSourcesToRunResponse struct {
 
 func (x *AddDataSourcesToRunResponse) Reset() {
 	*x = AddDataSourcesToRunResponse{}
-	mi := &file_nominal_protos_run_v1_run_service_proto_msgTypes[55]
+	mi := &file_nominal_protos_run_v1_run_service_proto_msgTypes[56]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4679,7 +4745,7 @@ func (x *AddDataSourcesToRunResponse) String() string {
 func (*AddDataSourcesToRunResponse) ProtoMessage() {}
 
 func (x *AddDataSourcesToRunResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_run_v1_run_service_proto_msgTypes[55]
+	mi := &file_nominal_protos_run_v1_run_service_proto_msgTypes[56]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4692,7 +4758,7 @@ func (x *AddDataSourcesToRunResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use AddDataSourcesToRunResponse.ProtoReflect.Descriptor instead.
 func (*AddDataSourcesToRunResponse) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_run_v1_run_service_proto_rawDescGZIP(), []int{55}
+	return file_nominal_protos_run_v1_run_service_proto_rawDescGZIP(), []int{56}
 }
 
 func (x *AddDataSourcesToRunResponse) GetRun() *Run {
@@ -4714,7 +4780,7 @@ type BatchEditRunMetadataRequest struct {
 
 func (x *BatchEditRunMetadataRequest) Reset() {
 	*x = BatchEditRunMetadataRequest{}
-	mi := &file_nominal_protos_run_v1_run_service_proto_msgTypes[56]
+	mi := &file_nominal_protos_run_v1_run_service_proto_msgTypes[57]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4726,7 +4792,7 @@ func (x *BatchEditRunMetadataRequest) String() string {
 func (*BatchEditRunMetadataRequest) ProtoMessage() {}
 
 func (x *BatchEditRunMetadataRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_run_v1_run_service_proto_msgTypes[56]
+	mi := &file_nominal_protos_run_v1_run_service_proto_msgTypes[57]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4739,7 +4805,7 @@ func (x *BatchEditRunMetadataRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use BatchEditRunMetadataRequest.ProtoReflect.Descriptor instead.
 func (*BatchEditRunMetadataRequest) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_run_v1_run_service_proto_rawDescGZIP(), []int{56}
+	return file_nominal_protos_run_v1_run_service_proto_rawDescGZIP(), []int{57}
 }
 
 func (x *BatchEditRunMetadataRequest) GetRunSearchQuery() *SearchQuery {
@@ -4769,7 +4835,7 @@ type BatchEditRunMetadataResponse struct {
 
 func (x *BatchEditRunMetadataResponse) Reset() {
 	*x = BatchEditRunMetadataResponse{}
-	mi := &file_nominal_protos_run_v1_run_service_proto_msgTypes[57]
+	mi := &file_nominal_protos_run_v1_run_service_proto_msgTypes[58]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4781,7 +4847,7 @@ func (x *BatchEditRunMetadataResponse) String() string {
 func (*BatchEditRunMetadataResponse) ProtoMessage() {}
 
 func (x *BatchEditRunMetadataResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_run_v1_run_service_proto_msgTypes[57]
+	mi := &file_nominal_protos_run_v1_run_service_proto_msgTypes[58]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4794,7 +4860,7 @@ func (x *BatchEditRunMetadataResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use BatchEditRunMetadataResponse.ProtoReflect.Descriptor instead.
 func (*BatchEditRunMetadataResponse) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_run_v1_run_service_proto_rawDescGZIP(), []int{57}
+	return file_nominal_protos_run_v1_run_service_proto_rawDescGZIP(), []int{58}
 }
 
 func (x *BatchEditRunMetadataResponse) GetModifiedRunRids() []string {
@@ -4820,7 +4886,7 @@ type GetRunRequest struct {
 
 func (x *GetRunRequest) Reset() {
 	*x = GetRunRequest{}
-	mi := &file_nominal_protos_run_v1_run_service_proto_msgTypes[58]
+	mi := &file_nominal_protos_run_v1_run_service_proto_msgTypes[59]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4832,7 +4898,7 @@ func (x *GetRunRequest) String() string {
 func (*GetRunRequest) ProtoMessage() {}
 
 func (x *GetRunRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_run_v1_run_service_proto_msgTypes[58]
+	mi := &file_nominal_protos_run_v1_run_service_proto_msgTypes[59]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4845,7 +4911,7 @@ func (x *GetRunRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetRunRequest.ProtoReflect.Descriptor instead.
 func (*GetRunRequest) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_run_v1_run_service_proto_rawDescGZIP(), []int{58}
+	return file_nominal_protos_run_v1_run_service_proto_rawDescGZIP(), []int{59}
 }
 
 func (x *GetRunRequest) GetRid() string {
@@ -4864,7 +4930,7 @@ type GetRunResponse struct {
 
 func (x *GetRunResponse) Reset() {
 	*x = GetRunResponse{}
-	mi := &file_nominal_protos_run_v1_run_service_proto_msgTypes[59]
+	mi := &file_nominal_protos_run_v1_run_service_proto_msgTypes[60]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4876,7 +4942,7 @@ func (x *GetRunResponse) String() string {
 func (*GetRunResponse) ProtoMessage() {}
 
 func (x *GetRunResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_run_v1_run_service_proto_msgTypes[59]
+	mi := &file_nominal_protos_run_v1_run_service_proto_msgTypes[60]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4889,7 +4955,7 @@ func (x *GetRunResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetRunResponse.ProtoReflect.Descriptor instead.
 func (*GetRunResponse) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_run_v1_run_service_proto_rawDescGZIP(), []int{59}
+	return file_nominal_protos_run_v1_run_service_proto_rawDescGZIP(), []int{60}
 }
 
 func (x *GetRunResponse) GetRun() *Run {
@@ -4908,7 +4974,7 @@ type GetRunWithDataReviewMetricsRequest struct {
 
 func (x *GetRunWithDataReviewMetricsRequest) Reset() {
 	*x = GetRunWithDataReviewMetricsRequest{}
-	mi := &file_nominal_protos_run_v1_run_service_proto_msgTypes[60]
+	mi := &file_nominal_protos_run_v1_run_service_proto_msgTypes[61]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4920,7 +4986,7 @@ func (x *GetRunWithDataReviewMetricsRequest) String() string {
 func (*GetRunWithDataReviewMetricsRequest) ProtoMessage() {}
 
 func (x *GetRunWithDataReviewMetricsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_run_v1_run_service_proto_msgTypes[60]
+	mi := &file_nominal_protos_run_v1_run_service_proto_msgTypes[61]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4933,7 +4999,7 @@ func (x *GetRunWithDataReviewMetricsRequest) ProtoReflect() protoreflect.Message
 
 // Deprecated: Use GetRunWithDataReviewMetricsRequest.ProtoReflect.Descriptor instead.
 func (*GetRunWithDataReviewMetricsRequest) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_run_v1_run_service_proto_rawDescGZIP(), []int{60}
+	return file_nominal_protos_run_v1_run_service_proto_rawDescGZIP(), []int{61}
 }
 
 func (x *GetRunWithDataReviewMetricsRequest) GetRid() string {
@@ -4952,7 +5018,7 @@ type GetRunWithDataReviewMetricsResponse struct {
 
 func (x *GetRunWithDataReviewMetricsResponse) Reset() {
 	*x = GetRunWithDataReviewMetricsResponse{}
-	mi := &file_nominal_protos_run_v1_run_service_proto_msgTypes[61]
+	mi := &file_nominal_protos_run_v1_run_service_proto_msgTypes[62]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4964,7 +5030,7 @@ func (x *GetRunWithDataReviewMetricsResponse) String() string {
 func (*GetRunWithDataReviewMetricsResponse) ProtoMessage() {}
 
 func (x *GetRunWithDataReviewMetricsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_run_v1_run_service_proto_msgTypes[61]
+	mi := &file_nominal_protos_run_v1_run_service_proto_msgTypes[62]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4977,7 +5043,7 @@ func (x *GetRunWithDataReviewMetricsResponse) ProtoReflect() protoreflect.Messag
 
 // Deprecated: Use GetRunWithDataReviewMetricsResponse.ProtoReflect.Descriptor instead.
 func (*GetRunWithDataReviewMetricsResponse) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_run_v1_run_service_proto_rawDescGZIP(), []int{61}
+	return file_nominal_protos_run_v1_run_service_proto_rawDescGZIP(), []int{62}
 }
 
 func (x *GetRunWithDataReviewMetricsResponse) GetRunWithDataReviewMetrics() *RunWithDataReviewMetrics {
@@ -4996,7 +5062,7 @@ type GetRunWithDataReviewSummaryRequest struct {
 
 func (x *GetRunWithDataReviewSummaryRequest) Reset() {
 	*x = GetRunWithDataReviewSummaryRequest{}
-	mi := &file_nominal_protos_run_v1_run_service_proto_msgTypes[62]
+	mi := &file_nominal_protos_run_v1_run_service_proto_msgTypes[63]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5008,7 +5074,7 @@ func (x *GetRunWithDataReviewSummaryRequest) String() string {
 func (*GetRunWithDataReviewSummaryRequest) ProtoMessage() {}
 
 func (x *GetRunWithDataReviewSummaryRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_run_v1_run_service_proto_msgTypes[62]
+	mi := &file_nominal_protos_run_v1_run_service_proto_msgTypes[63]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5021,7 +5087,7 @@ func (x *GetRunWithDataReviewSummaryRequest) ProtoReflect() protoreflect.Message
 
 // Deprecated: Use GetRunWithDataReviewSummaryRequest.ProtoReflect.Descriptor instead.
 func (*GetRunWithDataReviewSummaryRequest) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_run_v1_run_service_proto_rawDescGZIP(), []int{62}
+	return file_nominal_protos_run_v1_run_service_proto_rawDescGZIP(), []int{63}
 }
 
 func (x *GetRunWithDataReviewSummaryRequest) GetRid() string {
@@ -5040,7 +5106,7 @@ type GetRunWithDataReviewSummaryResponse struct {
 
 func (x *GetRunWithDataReviewSummaryResponse) Reset() {
 	*x = GetRunWithDataReviewSummaryResponse{}
-	mi := &file_nominal_protos_run_v1_run_service_proto_msgTypes[63]
+	mi := &file_nominal_protos_run_v1_run_service_proto_msgTypes[64]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5052,7 +5118,7 @@ func (x *GetRunWithDataReviewSummaryResponse) String() string {
 func (*GetRunWithDataReviewSummaryResponse) ProtoMessage() {}
 
 func (x *GetRunWithDataReviewSummaryResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_run_v1_run_service_proto_msgTypes[63]
+	mi := &file_nominal_protos_run_v1_run_service_proto_msgTypes[64]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5065,7 +5131,7 @@ func (x *GetRunWithDataReviewSummaryResponse) ProtoReflect() protoreflect.Messag
 
 // Deprecated: Use GetRunWithDataReviewSummaryResponse.ProtoReflect.Descriptor instead.
 func (*GetRunWithDataReviewSummaryResponse) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_run_v1_run_service_proto_rawDescGZIP(), []int{63}
+	return file_nominal_protos_run_v1_run_service_proto_rawDescGZIP(), []int{64}
 }
 
 func (x *GetRunWithDataReviewSummaryResponse) GetRunWithDataReviewSummary() *RunWithDataReviewSummary {
@@ -5088,7 +5154,7 @@ type GetRunByIdRequest struct {
 
 func (x *GetRunByIdRequest) Reset() {
 	*x = GetRunByIdRequest{}
-	mi := &file_nominal_protos_run_v1_run_service_proto_msgTypes[64]
+	mi := &file_nominal_protos_run_v1_run_service_proto_msgTypes[65]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5100,7 +5166,7 @@ func (x *GetRunByIdRequest) String() string {
 func (*GetRunByIdRequest) ProtoMessage() {}
 
 func (x *GetRunByIdRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_run_v1_run_service_proto_msgTypes[64]
+	mi := &file_nominal_protos_run_v1_run_service_proto_msgTypes[65]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5113,7 +5179,7 @@ func (x *GetRunByIdRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetRunByIdRequest.ProtoReflect.Descriptor instead.
 func (*GetRunByIdRequest) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_run_v1_run_service_proto_rawDescGZIP(), []int{64}
+	return file_nominal_protos_run_v1_run_service_proto_rawDescGZIP(), []int{65}
 }
 
 func (x *GetRunByIdRequest) GetRunNumber() int64 {
@@ -5146,7 +5212,7 @@ type GetRunByIdResponse struct {
 
 func (x *GetRunByIdResponse) Reset() {
 	*x = GetRunByIdResponse{}
-	mi := &file_nominal_protos_run_v1_run_service_proto_msgTypes[65]
+	mi := &file_nominal_protos_run_v1_run_service_proto_msgTypes[66]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5158,7 +5224,7 @@ func (x *GetRunByIdResponse) String() string {
 func (*GetRunByIdResponse) ProtoMessage() {}
 
 func (x *GetRunByIdResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_run_v1_run_service_proto_msgTypes[65]
+	mi := &file_nominal_protos_run_v1_run_service_proto_msgTypes[66]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5171,7 +5237,7 @@ func (x *GetRunByIdResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetRunByIdResponse.ProtoReflect.Descriptor instead.
 func (*GetRunByIdResponse) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_run_v1_run_service_proto_rawDescGZIP(), []int{65}
+	return file_nominal_protos_run_v1_run_service_proto_rawDescGZIP(), []int{66}
 }
 
 func (x *GetRunByIdResponse) GetRun() *Run {
@@ -5190,7 +5256,7 @@ type GetRunsRequest struct {
 
 func (x *GetRunsRequest) Reset() {
 	*x = GetRunsRequest{}
-	mi := &file_nominal_protos_run_v1_run_service_proto_msgTypes[66]
+	mi := &file_nominal_protos_run_v1_run_service_proto_msgTypes[67]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5202,7 +5268,7 @@ func (x *GetRunsRequest) String() string {
 func (*GetRunsRequest) ProtoMessage() {}
 
 func (x *GetRunsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_run_v1_run_service_proto_msgTypes[66]
+	mi := &file_nominal_protos_run_v1_run_service_proto_msgTypes[67]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5215,7 +5281,7 @@ func (x *GetRunsRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetRunsRequest.ProtoReflect.Descriptor instead.
 func (*GetRunsRequest) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_run_v1_run_service_proto_rawDescGZIP(), []int{66}
+	return file_nominal_protos_run_v1_run_service_proto_rawDescGZIP(), []int{67}
 }
 
 func (x *GetRunsRequest) GetRids() []string {
@@ -5234,7 +5300,7 @@ type GetRunsResponse struct {
 
 func (x *GetRunsResponse) Reset() {
 	*x = GetRunsResponse{}
-	mi := &file_nominal_protos_run_v1_run_service_proto_msgTypes[67]
+	mi := &file_nominal_protos_run_v1_run_service_proto_msgTypes[68]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5246,7 +5312,7 @@ func (x *GetRunsResponse) String() string {
 func (*GetRunsResponse) ProtoMessage() {}
 
 func (x *GetRunsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_run_v1_run_service_proto_msgTypes[67]
+	mi := &file_nominal_protos_run_v1_run_service_proto_msgTypes[68]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5259,7 +5325,7 @@ func (x *GetRunsResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetRunsResponse.ProtoReflect.Descriptor instead.
 func (*GetRunsResponse) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_run_v1_run_service_proto_rawDescGZIP(), []int{67}
+	return file_nominal_protos_run_v1_run_service_proto_rawDescGZIP(), []int{68}
 }
 
 func (x *GetRunsResponse) GetRuns() map[string]*Run {
@@ -5279,7 +5345,7 @@ type GetRunsByAssetRequest struct {
 
 func (x *GetRunsByAssetRequest) Reset() {
 	*x = GetRunsByAssetRequest{}
-	mi := &file_nominal_protos_run_v1_run_service_proto_msgTypes[68]
+	mi := &file_nominal_protos_run_v1_run_service_proto_msgTypes[69]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5291,7 +5357,7 @@ func (x *GetRunsByAssetRequest) String() string {
 func (*GetRunsByAssetRequest) ProtoMessage() {}
 
 func (x *GetRunsByAssetRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_run_v1_run_service_proto_msgTypes[68]
+	mi := &file_nominal_protos_run_v1_run_service_proto_msgTypes[69]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5304,7 +5370,7 @@ func (x *GetRunsByAssetRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetRunsByAssetRequest.ProtoReflect.Descriptor instead.
 func (*GetRunsByAssetRequest) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_run_v1_run_service_proto_rawDescGZIP(), []int{68}
+	return file_nominal_protos_run_v1_run_service_proto_rawDescGZIP(), []int{69}
 }
 
 func (x *GetRunsByAssetRequest) GetAsset() string {
@@ -5331,7 +5397,7 @@ type GetRunsByAssetResponse struct {
 
 func (x *GetRunsByAssetResponse) Reset() {
 	*x = GetRunsByAssetResponse{}
-	mi := &file_nominal_protos_run_v1_run_service_proto_msgTypes[69]
+	mi := &file_nominal_protos_run_v1_run_service_proto_msgTypes[70]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5343,7 +5409,7 @@ func (x *GetRunsByAssetResponse) String() string {
 func (*GetRunsByAssetResponse) ProtoMessage() {}
 
 func (x *GetRunsByAssetResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_run_v1_run_service_proto_msgTypes[69]
+	mi := &file_nominal_protos_run_v1_run_service_proto_msgTypes[70]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5356,7 +5422,7 @@ func (x *GetRunsByAssetResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetRunsByAssetResponse.ProtoReflect.Descriptor instead.
 func (*GetRunsByAssetResponse) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_run_v1_run_service_proto_rawDescGZIP(), []int{69}
+	return file_nominal_protos_run_v1_run_service_proto_rawDescGZIP(), []int{70}
 }
 
 func (x *GetRunsByAssetResponse) GetResults() []*Run {
@@ -5382,7 +5448,7 @@ type GetLatestRunForAssetsRequest struct {
 
 func (x *GetLatestRunForAssetsRequest) Reset() {
 	*x = GetLatestRunForAssetsRequest{}
-	mi := &file_nominal_protos_run_v1_run_service_proto_msgTypes[70]
+	mi := &file_nominal_protos_run_v1_run_service_proto_msgTypes[71]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5394,7 +5460,7 @@ func (x *GetLatestRunForAssetsRequest) String() string {
 func (*GetLatestRunForAssetsRequest) ProtoMessage() {}
 
 func (x *GetLatestRunForAssetsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_run_v1_run_service_proto_msgTypes[70]
+	mi := &file_nominal_protos_run_v1_run_service_proto_msgTypes[71]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5407,7 +5473,7 @@ func (x *GetLatestRunForAssetsRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetLatestRunForAssetsRequest.ProtoReflect.Descriptor instead.
 func (*GetLatestRunForAssetsRequest) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_run_v1_run_service_proto_rawDescGZIP(), []int{70}
+	return file_nominal_protos_run_v1_run_service_proto_rawDescGZIP(), []int{71}
 }
 
 func (x *GetLatestRunForAssetsRequest) GetAssetRids() []string {
@@ -5426,7 +5492,7 @@ type GetLatestRunForAssetsResponse struct {
 
 func (x *GetLatestRunForAssetsResponse) Reset() {
 	*x = GetLatestRunForAssetsResponse{}
-	mi := &file_nominal_protos_run_v1_run_service_proto_msgTypes[71]
+	mi := &file_nominal_protos_run_v1_run_service_proto_msgTypes[72]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5438,7 +5504,7 @@ func (x *GetLatestRunForAssetsResponse) String() string {
 func (*GetLatestRunForAssetsResponse) ProtoMessage() {}
 
 func (x *GetLatestRunForAssetsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_run_v1_run_service_proto_msgTypes[71]
+	mi := &file_nominal_protos_run_v1_run_service_proto_msgTypes[72]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5451,7 +5517,7 @@ func (x *GetLatestRunForAssetsResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetLatestRunForAssetsResponse.ProtoReflect.Descriptor instead.
 func (*GetLatestRunForAssetsResponse) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_run_v1_run_service_proto_rawDescGZIP(), []int{71}
+	return file_nominal_protos_run_v1_run_service_proto_rawDescGZIP(), []int{72}
 }
 
 func (x *GetLatestRunForAssetsResponse) GetRuns() map[string]*Run {
@@ -5472,7 +5538,7 @@ type GetAllRunsPropertiesAndLabelsRequest struct {
 
 func (x *GetAllRunsPropertiesAndLabelsRequest) Reset() {
 	*x = GetAllRunsPropertiesAndLabelsRequest{}
-	mi := &file_nominal_protos_run_v1_run_service_proto_msgTypes[72]
+	mi := &file_nominal_protos_run_v1_run_service_proto_msgTypes[73]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5484,7 +5550,7 @@ func (x *GetAllRunsPropertiesAndLabelsRequest) String() string {
 func (*GetAllRunsPropertiesAndLabelsRequest) ProtoMessage() {}
 
 func (x *GetAllRunsPropertiesAndLabelsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_run_v1_run_service_proto_msgTypes[72]
+	mi := &file_nominal_protos_run_v1_run_service_proto_msgTypes[73]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5497,7 +5563,7 @@ func (x *GetAllRunsPropertiesAndLabelsRequest) ProtoReflect() protoreflect.Messa
 
 // Deprecated: Use GetAllRunsPropertiesAndLabelsRequest.ProtoReflect.Descriptor instead.
 func (*GetAllRunsPropertiesAndLabelsRequest) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_run_v1_run_service_proto_rawDescGZIP(), []int{72}
+	return file_nominal_protos_run_v1_run_service_proto_rawDescGZIP(), []int{73}
 }
 
 func (x *GetAllRunsPropertiesAndLabelsRequest) GetWorkspaces() []string {
@@ -5517,7 +5583,7 @@ type GetAllRunsPropertiesAndLabelsResponse struct {
 
 func (x *GetAllRunsPropertiesAndLabelsResponse) Reset() {
 	*x = GetAllRunsPropertiesAndLabelsResponse{}
-	mi := &file_nominal_protos_run_v1_run_service_proto_msgTypes[73]
+	mi := &file_nominal_protos_run_v1_run_service_proto_msgTypes[74]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5529,7 +5595,7 @@ func (x *GetAllRunsPropertiesAndLabelsResponse) String() string {
 func (*GetAllRunsPropertiesAndLabelsResponse) ProtoMessage() {}
 
 func (x *GetAllRunsPropertiesAndLabelsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_run_v1_run_service_proto_msgTypes[73]
+	mi := &file_nominal_protos_run_v1_run_service_proto_msgTypes[74]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5542,7 +5608,7 @@ func (x *GetAllRunsPropertiesAndLabelsResponse) ProtoReflect() protoreflect.Mess
 
 // Deprecated: Use GetAllRunsPropertiesAndLabelsResponse.ProtoReflect.Descriptor instead.
 func (*GetAllRunsPropertiesAndLabelsResponse) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_run_v1_run_service_proto_rawDescGZIP(), []int{73}
+	return file_nominal_protos_run_v1_run_service_proto_rawDescGZIP(), []int{74}
 }
 
 func (x *GetAllRunsPropertiesAndLabelsResponse) GetProperties() map[string]*PropertyValueList {
@@ -5569,7 +5635,7 @@ type PropertyValueList struct {
 
 func (x *PropertyValueList) Reset() {
 	*x = PropertyValueList{}
-	mi := &file_nominal_protos_run_v1_run_service_proto_msgTypes[74]
+	mi := &file_nominal_protos_run_v1_run_service_proto_msgTypes[75]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5581,7 +5647,7 @@ func (x *PropertyValueList) String() string {
 func (*PropertyValueList) ProtoMessage() {}
 
 func (x *PropertyValueList) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_run_v1_run_service_proto_msgTypes[74]
+	mi := &file_nominal_protos_run_v1_run_service_proto_msgTypes[75]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5594,7 +5660,7 @@ func (x *PropertyValueList) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use PropertyValueList.ProtoReflect.Descriptor instead.
 func (*PropertyValueList) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_run_v1_run_service_proto_rawDescGZIP(), []int{74}
+	return file_nominal_protos_run_v1_run_service_proto_rawDescGZIP(), []int{75}
 }
 
 func (x *PropertyValueList) GetValues() []string {
@@ -5607,7 +5673,7 @@ func (x *PropertyValueList) GetValues() []string {
 type SearchRunsRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	Sort  *SortOptions           `protobuf:"bytes,1,opt,name=sort,proto3" json:"sort,omitempty"`
-	// Rejects page sizes greater than 1000.
+	// Rejects page sizes greater than 10000.
 	PageSize      int32        `protobuf:"varint,2,opt,name=page_size,json=pageSize,proto3" json:"page_size,omitempty"`
 	NextPageToken *string      `protobuf:"bytes,3,opt,name=next_page_token,json=nextPageToken,proto3,oneof" json:"next_page_token,omitempty"`
 	Query         *SearchQuery `protobuf:"bytes,4,opt,name=query,proto3" json:"query,omitempty"`
@@ -5626,7 +5692,7 @@ type SearchRunsRequest struct {
 
 func (x *SearchRunsRequest) Reset() {
 	*x = SearchRunsRequest{}
-	mi := &file_nominal_protos_run_v1_run_service_proto_msgTypes[75]
+	mi := &file_nominal_protos_run_v1_run_service_proto_msgTypes[76]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5638,7 +5704,7 @@ func (x *SearchRunsRequest) String() string {
 func (*SearchRunsRequest) ProtoMessage() {}
 
 func (x *SearchRunsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_run_v1_run_service_proto_msgTypes[75]
+	mi := &file_nominal_protos_run_v1_run_service_proto_msgTypes[76]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5651,7 +5717,7 @@ func (x *SearchRunsRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SearchRunsRequest.ProtoReflect.Descriptor instead.
 func (*SearchRunsRequest) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_run_v1_run_service_proto_rawDescGZIP(), []int{75}
+	return file_nominal_protos_run_v1_run_service_proto_rawDescGZIP(), []int{76}
 }
 
 func (x *SearchRunsRequest) GetSort() *SortOptions {
@@ -5701,8 +5767,8 @@ type SearchRunsResponse struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Results       []*Run                 `protobuf:"bytes,1,rep,name=results,proto3" json:"results,omitempty"`
 	NextPageToken *string                `protobuf:"bytes,2,opt,name=next_page_token,json=nextPageToken,proto3,oneof" json:"next_page_token,omitempty"`
-	// The number of runs matching the unified-search query, workspace, and archived filters, before applying the
-	// dataset_rids post-filter. Present only when include_match_count was set on the request.
+	// The number of runs matching the unified-search query, workspace, and archived filters. Present only when
+	// include_match_count was set on the request.
 	TotalCount    *int32 `protobuf:"varint,3,opt,name=total_count,json=totalCount,proto3,oneof" json:"total_count,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -5710,7 +5776,7 @@ type SearchRunsResponse struct {
 
 func (x *SearchRunsResponse) Reset() {
 	*x = SearchRunsResponse{}
-	mi := &file_nominal_protos_run_v1_run_service_proto_msgTypes[76]
+	mi := &file_nominal_protos_run_v1_run_service_proto_msgTypes[77]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5722,7 +5788,7 @@ func (x *SearchRunsResponse) String() string {
 func (*SearchRunsResponse) ProtoMessage() {}
 
 func (x *SearchRunsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_run_v1_run_service_proto_msgTypes[76]
+	mi := &file_nominal_protos_run_v1_run_service_proto_msgTypes[77]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5735,7 +5801,7 @@ func (x *SearchRunsResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SearchRunsResponse.ProtoReflect.Descriptor instead.
 func (*SearchRunsResponse) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_run_v1_run_service_proto_rawDescGZIP(), []int{76}
+	return file_nominal_protos_run_v1_run_service_proto_rawDescGZIP(), []int{77}
 }
 
 func (x *SearchRunsResponse) GetResults() []*Run {
@@ -5777,7 +5843,7 @@ type SearchRunsWithDataReviewMetricsRequest struct {
 
 func (x *SearchRunsWithDataReviewMetricsRequest) Reset() {
 	*x = SearchRunsWithDataReviewMetricsRequest{}
-	mi := &file_nominal_protos_run_v1_run_service_proto_msgTypes[77]
+	mi := &file_nominal_protos_run_v1_run_service_proto_msgTypes[78]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5789,7 +5855,7 @@ func (x *SearchRunsWithDataReviewMetricsRequest) String() string {
 func (*SearchRunsWithDataReviewMetricsRequest) ProtoMessage() {}
 
 func (x *SearchRunsWithDataReviewMetricsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_run_v1_run_service_proto_msgTypes[77]
+	mi := &file_nominal_protos_run_v1_run_service_proto_msgTypes[78]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5802,7 +5868,7 @@ func (x *SearchRunsWithDataReviewMetricsRequest) ProtoReflect() protoreflect.Mes
 
 // Deprecated: Use SearchRunsWithDataReviewMetricsRequest.ProtoReflect.Descriptor instead.
 func (*SearchRunsWithDataReviewMetricsRequest) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_run_v1_run_service_proto_rawDescGZIP(), []int{77}
+	return file_nominal_protos_run_v1_run_service_proto_rawDescGZIP(), []int{78}
 }
 
 func (x *SearchRunsWithDataReviewMetricsRequest) GetSort() *SortOptions {
@@ -5851,7 +5917,7 @@ type SearchRunsWithDataReviewMetricsResponse struct {
 
 func (x *SearchRunsWithDataReviewMetricsResponse) Reset() {
 	*x = SearchRunsWithDataReviewMetricsResponse{}
-	mi := &file_nominal_protos_run_v1_run_service_proto_msgTypes[78]
+	mi := &file_nominal_protos_run_v1_run_service_proto_msgTypes[79]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5863,7 +5929,7 @@ func (x *SearchRunsWithDataReviewMetricsResponse) String() string {
 func (*SearchRunsWithDataReviewMetricsResponse) ProtoMessage() {}
 
 func (x *SearchRunsWithDataReviewMetricsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_run_v1_run_service_proto_msgTypes[78]
+	mi := &file_nominal_protos_run_v1_run_service_proto_msgTypes[79]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5876,7 +5942,7 @@ func (x *SearchRunsWithDataReviewMetricsResponse) ProtoReflect() protoreflect.Me
 
 // Deprecated: Use SearchRunsWithDataReviewMetricsResponse.ProtoReflect.Descriptor instead.
 func (*SearchRunsWithDataReviewMetricsResponse) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_run_v1_run_service_proto_rawDescGZIP(), []int{78}
+	return file_nominal_protos_run_v1_run_service_proto_rawDescGZIP(), []int{79}
 }
 
 func (x *SearchRunsWithDataReviewMetricsResponse) GetResults() []*RunWithDataReviewMetrics {
@@ -5911,7 +5977,7 @@ type SearchRunsWithDataReviewSummaryRequest struct {
 
 func (x *SearchRunsWithDataReviewSummaryRequest) Reset() {
 	*x = SearchRunsWithDataReviewSummaryRequest{}
-	mi := &file_nominal_protos_run_v1_run_service_proto_msgTypes[79]
+	mi := &file_nominal_protos_run_v1_run_service_proto_msgTypes[80]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5923,7 +5989,7 @@ func (x *SearchRunsWithDataReviewSummaryRequest) String() string {
 func (*SearchRunsWithDataReviewSummaryRequest) ProtoMessage() {}
 
 func (x *SearchRunsWithDataReviewSummaryRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_run_v1_run_service_proto_msgTypes[79]
+	mi := &file_nominal_protos_run_v1_run_service_proto_msgTypes[80]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5936,7 +6002,7 @@ func (x *SearchRunsWithDataReviewSummaryRequest) ProtoReflect() protoreflect.Mes
 
 // Deprecated: Use SearchRunsWithDataReviewSummaryRequest.ProtoReflect.Descriptor instead.
 func (*SearchRunsWithDataReviewSummaryRequest) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_run_v1_run_service_proto_rawDescGZIP(), []int{79}
+	return file_nominal_protos_run_v1_run_service_proto_rawDescGZIP(), []int{80}
 }
 
 func (x *SearchRunsWithDataReviewSummaryRequest) GetSort() *SortOptions {
@@ -5985,7 +6051,7 @@ type SearchRunsWithDataReviewSummaryResponse struct {
 
 func (x *SearchRunsWithDataReviewSummaryResponse) Reset() {
 	*x = SearchRunsWithDataReviewSummaryResponse{}
-	mi := &file_nominal_protos_run_v1_run_service_proto_msgTypes[80]
+	mi := &file_nominal_protos_run_v1_run_service_proto_msgTypes[81]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5997,7 +6063,7 @@ func (x *SearchRunsWithDataReviewSummaryResponse) String() string {
 func (*SearchRunsWithDataReviewSummaryResponse) ProtoMessage() {}
 
 func (x *SearchRunsWithDataReviewSummaryResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_run_v1_run_service_proto_msgTypes[80]
+	mi := &file_nominal_protos_run_v1_run_service_proto_msgTypes[81]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -6010,7 +6076,7 @@ func (x *SearchRunsWithDataReviewSummaryResponse) ProtoReflect() protoreflect.Me
 
 // Deprecated: Use SearchRunsWithDataReviewSummaryResponse.ProtoReflect.Descriptor instead.
 func (*SearchRunsWithDataReviewSummaryResponse) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_run_v1_run_service_proto_rawDescGZIP(), []int{80}
+	return file_nominal_protos_run_v1_run_service_proto_rawDescGZIP(), []int{81}
 }
 
 func (x *SearchRunsWithDataReviewSummaryResponse) GetResults() []*RunWithDataReviewSummary {
@@ -6038,7 +6104,7 @@ type ArchiveRunRequest struct {
 
 func (x *ArchiveRunRequest) Reset() {
 	*x = ArchiveRunRequest{}
-	mi := &file_nominal_protos_run_v1_run_service_proto_msgTypes[81]
+	mi := &file_nominal_protos_run_v1_run_service_proto_msgTypes[82]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -6050,7 +6116,7 @@ func (x *ArchiveRunRequest) String() string {
 func (*ArchiveRunRequest) ProtoMessage() {}
 
 func (x *ArchiveRunRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_run_v1_run_service_proto_msgTypes[81]
+	mi := &file_nominal_protos_run_v1_run_service_proto_msgTypes[82]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -6063,7 +6129,7 @@ func (x *ArchiveRunRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ArchiveRunRequest.ProtoReflect.Descriptor instead.
 func (*ArchiveRunRequest) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_run_v1_run_service_proto_rawDescGZIP(), []int{81}
+	return file_nominal_protos_run_v1_run_service_proto_rawDescGZIP(), []int{82}
 }
 
 func (x *ArchiveRunRequest) GetRid() string {
@@ -6091,7 +6157,7 @@ type ArchiveRunResponse struct {
 
 func (x *ArchiveRunResponse) Reset() {
 	*x = ArchiveRunResponse{}
-	mi := &file_nominal_protos_run_v1_run_service_proto_msgTypes[82]
+	mi := &file_nominal_protos_run_v1_run_service_proto_msgTypes[83]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -6103,7 +6169,7 @@ func (x *ArchiveRunResponse) String() string {
 func (*ArchiveRunResponse) ProtoMessage() {}
 
 func (x *ArchiveRunResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_run_v1_run_service_proto_msgTypes[82]
+	mi := &file_nominal_protos_run_v1_run_service_proto_msgTypes[83]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -6116,7 +6182,7 @@ func (x *ArchiveRunResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ArchiveRunResponse.ProtoReflect.Descriptor instead.
 func (*ArchiveRunResponse) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_run_v1_run_service_proto_rawDescGZIP(), []int{82}
+	return file_nominal_protos_run_v1_run_service_proto_rawDescGZIP(), []int{83}
 }
 
 type UnarchiveRunRequest struct {
@@ -6130,7 +6196,7 @@ type UnarchiveRunRequest struct {
 
 func (x *UnarchiveRunRequest) Reset() {
 	*x = UnarchiveRunRequest{}
-	mi := &file_nominal_protos_run_v1_run_service_proto_msgTypes[83]
+	mi := &file_nominal_protos_run_v1_run_service_proto_msgTypes[84]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -6142,7 +6208,7 @@ func (x *UnarchiveRunRequest) String() string {
 func (*UnarchiveRunRequest) ProtoMessage() {}
 
 func (x *UnarchiveRunRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_run_v1_run_service_proto_msgTypes[83]
+	mi := &file_nominal_protos_run_v1_run_service_proto_msgTypes[84]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -6155,7 +6221,7 @@ func (x *UnarchiveRunRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UnarchiveRunRequest.ProtoReflect.Descriptor instead.
 func (*UnarchiveRunRequest) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_run_v1_run_service_proto_rawDescGZIP(), []int{83}
+	return file_nominal_protos_run_v1_run_service_proto_rawDescGZIP(), []int{84}
 }
 
 func (x *UnarchiveRunRequest) GetRid() string {
@@ -6181,7 +6247,7 @@ type UnarchiveRunResponse struct {
 
 func (x *UnarchiveRunResponse) Reset() {
 	*x = UnarchiveRunResponse{}
-	mi := &file_nominal_protos_run_v1_run_service_proto_msgTypes[84]
+	mi := &file_nominal_protos_run_v1_run_service_proto_msgTypes[85]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -6193,7 +6259,7 @@ func (x *UnarchiveRunResponse) String() string {
 func (*UnarchiveRunResponse) ProtoMessage() {}
 
 func (x *UnarchiveRunResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_run_v1_run_service_proto_msgTypes[84]
+	mi := &file_nominal_protos_run_v1_run_service_proto_msgTypes[85]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -6206,7 +6272,7 @@ func (x *UnarchiveRunResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UnarchiveRunResponse.ProtoReflect.Descriptor instead.
 func (*UnarchiveRunResponse) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_run_v1_run_service_proto_rawDescGZIP(), []int{84}
+	return file_nominal_protos_run_v1_run_service_proto_rawDescGZIP(), []int{85}
 }
 
 type ArchiveRunsRequest struct {
@@ -6220,7 +6286,7 @@ type ArchiveRunsRequest struct {
 
 func (x *ArchiveRunsRequest) Reset() {
 	*x = ArchiveRunsRequest{}
-	mi := &file_nominal_protos_run_v1_run_service_proto_msgTypes[85]
+	mi := &file_nominal_protos_run_v1_run_service_proto_msgTypes[86]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -6232,7 +6298,7 @@ func (x *ArchiveRunsRequest) String() string {
 func (*ArchiveRunsRequest) ProtoMessage() {}
 
 func (x *ArchiveRunsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_run_v1_run_service_proto_msgTypes[85]
+	mi := &file_nominal_protos_run_v1_run_service_proto_msgTypes[86]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -6245,7 +6311,7 @@ func (x *ArchiveRunsRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ArchiveRunsRequest.ProtoReflect.Descriptor instead.
 func (*ArchiveRunsRequest) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_run_v1_run_service_proto_rawDescGZIP(), []int{85}
+	return file_nominal_protos_run_v1_run_service_proto_rawDescGZIP(), []int{86}
 }
 
 func (x *ArchiveRunsRequest) GetRids() []string {
@@ -6270,7 +6336,7 @@ type ArchiveRunsResponse struct {
 
 func (x *ArchiveRunsResponse) Reset() {
 	*x = ArchiveRunsResponse{}
-	mi := &file_nominal_protos_run_v1_run_service_proto_msgTypes[86]
+	mi := &file_nominal_protos_run_v1_run_service_proto_msgTypes[87]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -6282,7 +6348,7 @@ func (x *ArchiveRunsResponse) String() string {
 func (*ArchiveRunsResponse) ProtoMessage() {}
 
 func (x *ArchiveRunsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_run_v1_run_service_proto_msgTypes[86]
+	mi := &file_nominal_protos_run_v1_run_service_proto_msgTypes[87]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -6295,7 +6361,7 @@ func (x *ArchiveRunsResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ArchiveRunsResponse.ProtoReflect.Descriptor instead.
 func (*ArchiveRunsResponse) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_run_v1_run_service_proto_rawDescGZIP(), []int{86}
+	return file_nominal_protos_run_v1_run_service_proto_rawDescGZIP(), []int{87}
 }
 
 type UnarchiveRunsRequest struct {
@@ -6309,7 +6375,7 @@ type UnarchiveRunsRequest struct {
 
 func (x *UnarchiveRunsRequest) Reset() {
 	*x = UnarchiveRunsRequest{}
-	mi := &file_nominal_protos_run_v1_run_service_proto_msgTypes[87]
+	mi := &file_nominal_protos_run_v1_run_service_proto_msgTypes[88]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -6321,7 +6387,7 @@ func (x *UnarchiveRunsRequest) String() string {
 func (*UnarchiveRunsRequest) ProtoMessage() {}
 
 func (x *UnarchiveRunsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_run_v1_run_service_proto_msgTypes[87]
+	mi := &file_nominal_protos_run_v1_run_service_proto_msgTypes[88]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -6334,7 +6400,7 @@ func (x *UnarchiveRunsRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UnarchiveRunsRequest.ProtoReflect.Descriptor instead.
 func (*UnarchiveRunsRequest) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_run_v1_run_service_proto_rawDescGZIP(), []int{87}
+	return file_nominal_protos_run_v1_run_service_proto_rawDescGZIP(), []int{88}
 }
 
 func (x *UnarchiveRunsRequest) GetRids() []string {
@@ -6359,7 +6425,7 @@ type UnarchiveRunsResponse struct {
 
 func (x *UnarchiveRunsResponse) Reset() {
 	*x = UnarchiveRunsResponse{}
-	mi := &file_nominal_protos_run_v1_run_service_proto_msgTypes[88]
+	mi := &file_nominal_protos_run_v1_run_service_proto_msgTypes[89]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -6371,7 +6437,7 @@ func (x *UnarchiveRunsResponse) String() string {
 func (*UnarchiveRunsResponse) ProtoMessage() {}
 
 func (x *UnarchiveRunsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_run_v1_run_service_proto_msgTypes[88]
+	mi := &file_nominal_protos_run_v1_run_service_proto_msgTypes[89]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -6384,7 +6450,7 @@ func (x *UnarchiveRunsResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UnarchiveRunsResponse.ProtoReflect.Descriptor instead.
 func (*UnarchiveRunsResponse) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_run_v1_run_service_proto_rawDescGZIP(), []int{88}
+	return file_nominal_protos_run_v1_run_service_proto_rawDescGZIP(), []int{89}
 }
 
 type GetDataSourceRefNameAndTypeListRequest struct {
@@ -6398,7 +6464,7 @@ type GetDataSourceRefNameAndTypeListRequest struct {
 
 func (x *GetDataSourceRefNameAndTypeListRequest) Reset() {
 	*x = GetDataSourceRefNameAndTypeListRequest{}
-	mi := &file_nominal_protos_run_v1_run_service_proto_msgTypes[89]
+	mi := &file_nominal_protos_run_v1_run_service_proto_msgTypes[90]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -6410,7 +6476,7 @@ func (x *GetDataSourceRefNameAndTypeListRequest) String() string {
 func (*GetDataSourceRefNameAndTypeListRequest) ProtoMessage() {}
 
 func (x *GetDataSourceRefNameAndTypeListRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_run_v1_run_service_proto_msgTypes[89]
+	mi := &file_nominal_protos_run_v1_run_service_proto_msgTypes[90]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -6423,7 +6489,7 @@ func (x *GetDataSourceRefNameAndTypeListRequest) ProtoReflect() protoreflect.Mes
 
 // Deprecated: Use GetDataSourceRefNameAndTypeListRequest.ProtoReflect.Descriptor instead.
 func (*GetDataSourceRefNameAndTypeListRequest) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_run_v1_run_service_proto_rawDescGZIP(), []int{89}
+	return file_nominal_protos_run_v1_run_service_proto_rawDescGZIP(), []int{90}
 }
 
 func (x *GetDataSourceRefNameAndTypeListRequest) GetWorkspaces() []string {
@@ -6442,7 +6508,7 @@ type GetDataSourceRefNameAndTypeListResponse struct {
 
 func (x *GetDataSourceRefNameAndTypeListResponse) Reset() {
 	*x = GetDataSourceRefNameAndTypeListResponse{}
-	mi := &file_nominal_protos_run_v1_run_service_proto_msgTypes[90]
+	mi := &file_nominal_protos_run_v1_run_service_proto_msgTypes[91]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -6454,7 +6520,7 @@ func (x *GetDataSourceRefNameAndTypeListResponse) String() string {
 func (*GetDataSourceRefNameAndTypeListResponse) ProtoMessage() {}
 
 func (x *GetDataSourceRefNameAndTypeListResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_run_v1_run_service_proto_msgTypes[90]
+	mi := &file_nominal_protos_run_v1_run_service_proto_msgTypes[91]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -6467,7 +6533,7 @@ func (x *GetDataSourceRefNameAndTypeListResponse) ProtoReflect() protoreflect.Me
 
 // Deprecated: Use GetDataSourceRefNameAndTypeListResponse.ProtoReflect.Descriptor instead.
 func (*GetDataSourceRefNameAndTypeListResponse) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_run_v1_run_service_proto_rawDescGZIP(), []int{90}
+	return file_nominal_protos_run_v1_run_service_proto_rawDescGZIP(), []int{91}
 }
 
 func (x *GetDataSourceRefNameAndTypeListResponse) GetRefNameAndTypes() []*RefNameAndType {
@@ -6488,7 +6554,7 @@ type UpdateRunAttachmentRequest struct {
 
 func (x *UpdateRunAttachmentRequest) Reset() {
 	*x = UpdateRunAttachmentRequest{}
-	mi := &file_nominal_protos_run_v1_run_service_proto_msgTypes[91]
+	mi := &file_nominal_protos_run_v1_run_service_proto_msgTypes[92]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -6500,7 +6566,7 @@ func (x *UpdateRunAttachmentRequest) String() string {
 func (*UpdateRunAttachmentRequest) ProtoMessage() {}
 
 func (x *UpdateRunAttachmentRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_run_v1_run_service_proto_msgTypes[91]
+	mi := &file_nominal_protos_run_v1_run_service_proto_msgTypes[92]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -6513,7 +6579,7 @@ func (x *UpdateRunAttachmentRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UpdateRunAttachmentRequest.ProtoReflect.Descriptor instead.
 func (*UpdateRunAttachmentRequest) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_run_v1_run_service_proto_rawDescGZIP(), []int{91}
+	return file_nominal_protos_run_v1_run_service_proto_rawDescGZIP(), []int{92}
 }
 
 func (x *UpdateRunAttachmentRequest) GetRid() string {
@@ -6545,7 +6611,7 @@ type UpdateRunAttachmentResponse struct {
 
 func (x *UpdateRunAttachmentResponse) Reset() {
 	*x = UpdateRunAttachmentResponse{}
-	mi := &file_nominal_protos_run_v1_run_service_proto_msgTypes[92]
+	mi := &file_nominal_protos_run_v1_run_service_proto_msgTypes[93]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -6557,7 +6623,7 @@ func (x *UpdateRunAttachmentResponse) String() string {
 func (*UpdateRunAttachmentResponse) ProtoMessage() {}
 
 func (x *UpdateRunAttachmentResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_run_v1_run_service_proto_msgTypes[92]
+	mi := &file_nominal_protos_run_v1_run_service_proto_msgTypes[93]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -6570,7 +6636,7 @@ func (x *UpdateRunAttachmentResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UpdateRunAttachmentResponse.ProtoReflect.Descriptor instead.
 func (*UpdateRunAttachmentResponse) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_run_v1_run_service_proto_rawDescGZIP(), []int{92}
+	return file_nominal_protos_run_v1_run_service_proto_rawDescGZIP(), []int{93}
 }
 
 type UpdateLockStatusRequest struct {
@@ -6583,7 +6649,7 @@ type UpdateLockStatusRequest struct {
 
 func (x *UpdateLockStatusRequest) Reset() {
 	*x = UpdateLockStatusRequest{}
-	mi := &file_nominal_protos_run_v1_run_service_proto_msgTypes[93]
+	mi := &file_nominal_protos_run_v1_run_service_proto_msgTypes[94]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -6595,7 +6661,7 @@ func (x *UpdateLockStatusRequest) String() string {
 func (*UpdateLockStatusRequest) ProtoMessage() {}
 
 func (x *UpdateLockStatusRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_run_v1_run_service_proto_msgTypes[93]
+	mi := &file_nominal_protos_run_v1_run_service_proto_msgTypes[94]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -6608,7 +6674,7 @@ func (x *UpdateLockStatusRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UpdateLockStatusRequest.ProtoReflect.Descriptor instead.
 func (*UpdateLockStatusRequest) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_run_v1_run_service_proto_rawDescGZIP(), []int{93}
+	return file_nominal_protos_run_v1_run_service_proto_rawDescGZIP(), []int{94}
 }
 
 func (x *UpdateLockStatusRequest) GetRid() string {
@@ -6633,7 +6699,7 @@ type UpdateLockStatusResponse struct {
 
 func (x *UpdateLockStatusResponse) Reset() {
 	*x = UpdateLockStatusResponse{}
-	mi := &file_nominal_protos_run_v1_run_service_proto_msgTypes[94]
+	mi := &file_nominal_protos_run_v1_run_service_proto_msgTypes[95]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -6645,7 +6711,7 @@ func (x *UpdateLockStatusResponse) String() string {
 func (*UpdateLockStatusResponse) ProtoMessage() {}
 
 func (x *UpdateLockStatusResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_run_v1_run_service_proto_msgTypes[94]
+	mi := &file_nominal_protos_run_v1_run_service_proto_msgTypes[95]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -6658,14 +6724,14 @@ func (x *UpdateLockStatusResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UpdateLockStatusResponse.ProtoReflect.Descriptor instead.
 func (*UpdateLockStatusResponse) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_run_v1_run_service_proto_rawDescGZIP(), []int{94}
+	return file_nominal_protos_run_v1_run_service_proto_rawDescGZIP(), []int{95}
 }
 
 var File_nominal_protos_run_v1_run_service_proto protoreflect.FileDescriptor
 
 const file_nominal_protos_run_v1_run_service_proto_rawDesc = "" +
 	"\n" +
-	"'nominal/protos/run/v1/run_service.proto\x12\x0enominal.run.v1\x1a\x1bbuf/validate/validate.proto\x1a\x1cgoogle/api/annotations.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a!nominal/protos/gen/v1/alias.proto\x1a!nominal/protos/gen/v1/error.proto\x1a\x1fnominal/protos/run/v1/run.proto\x1a nominal/protos/types/types.proto\"\xf7\x02\n" +
+	"'nominal/protos/run/v1/run_service.proto\x12\x0enominal.run.v1\x1a\x1bbuf/validate/validate.proto\x1a\x1cgoogle/api/annotations.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a)nominal/protos/authz/v1/annotations.proto\x1a!nominal/protos/gen/v1/alias.proto\x1a!nominal/protos/gen/v1/error.proto\x1a\x1fnominal/protos/run/v1/run.proto\x1a nominal/protos/types/types.proto\"\xf7\x02\n" +
 	"\n" +
 	"DataSource\x12@\n" +
 	"\adataset\x18\x01 \x01(\tB$\x9a\xb2\x1a \n" +
@@ -6889,7 +6955,12 @@ const file_nominal_protos_run_v1_run_service_proto_rawDesc = "" +
 	"\x11DatasetRidsFilter\x12O\n" +
 	"\fdataset_rids\x18\x01 \x03(\tB,\xbaH\x05\x92\x01\x02\x10\n" +
 	"\x9a\xb2\x1a \n" +
-	"\x1eio.nominal.api.rids.DatasetRidR\vdatasetRids\"\xb9\x01\n" +
+	"\x1eio.nominal.api.rids.DatasetRidR\vdatasetRids\"d\n" +
+	"\x10AssetTypesFilter\x12P\n" +
+	"\vasset_types\x18\x01 \x03(\tB/\xbaH\x05\x92\x01\x02\x10\n" +
+	"\x9a\xb2\x1a#\n" +
+	"!io.nominal.scout.rids.api.TypeRidR\n" +
+	"assetTypes\"\xb9\x01\n" +
 	"\x16CheckAlertStatesFilter\x12K\n" +
 	"\x11check_alert_state\x18\x01 \x01(\v2\x1f.nominal.run.v1.CheckAlertStateR\x0fcheckAlertState\x124\n" +
 	"\boperator\x18\x02 \x01(\x0e2\x18.nominal.run.v1.OperatorR\boperator\x12\x1c\n" +
@@ -6910,7 +6981,7 @@ const file_nominal_protos_run_v1_run_service_proto_rawDesc = "" +
 	"\x05start\x18\x01 \x01(\v2\x1c.nominal.run.v1.UtcTimestampH\x00R\x05start\x88\x01\x01\x123\n" +
 	"\x03end\x18\x02 \x01(\v2\x1c.nominal.run.v1.UtcTimestampH\x01R\x03end\x88\x01\x01B\b\n" +
 	"\x06_startB\x06\n" +
-	"\x04_end\"\xe7\x0f\n" +
+	"\x04_end\"\xac\x10\n" +
 	"\vSearchQuery\x12T\n" +
 	"\x14start_time_inclusive\x18\x01 \x01(\v2\x1c.nominal.run.v1.UtcTimestampB\x02\x18\x01H\x00R\x12startTimeInclusive\x12@\n" +
 	"\n" +
@@ -6959,7 +7030,9 @@ const file_nominal_protos_run_v1_run_service_proto_rawDesc = "" +
 	"\vlock_status\x18\x1d \x01(\x0e2\x1a.nominal.run.v1.LockStatusH\x00R\n" +
 	"lockStatus\x12F\n" +
 	"\fdataset_rids\x18\x1e \x01(\v2!.nominal.run.v1.DatasetRidsFilterH\x00R\vdatasetRids\x12d\n" +
-	"\x16numeric_property_range\x18\x1f \x01(\v2,.nominal.types.NumericPropertyRangePredicateH\x00R\x14numericPropertyRangeB\x0e\n" +
+	"\x16numeric_property_range\x18\x1f \x01(\v2,.nominal.types.NumericPropertyRangePredicateH\x00R\x14numericPropertyRange\x12C\n" +
+	"\vasset_types\x18  \x01(\v2 .nominal.run.v1.AssetTypesFilterH\x00R\n" +
+	"assetTypesB\x0e\n" +
 	"\x05query\x12\x05\xbaH\x02\b\x01\"H\n" +
 	"\x0fSearchQueryList\x125\n" +
 	"\aqueries\x18\x01 \x03(\v2\x1b.nominal.run.v1.SearchQueryR\aqueries\"E\n" +
@@ -7327,35 +7400,88 @@ const file_nominal_protos_run_v1_run_service_proto_rawDesc = "" +
 	"\x14PENDING_CHECK_ALERTS\x10\x06*T\n" +
 	"\bRunError\x12H\n" +
 	"\x19RUN_ERROR_INVALID_REQUEST\x10\x00\x1a)\xb2\xb2\x1a%\n" +
-	"\x10INVALID_ARGUMENT\x12\x11InvalidRunRequest2\xea\x1a\n" +
+	"\x10INVALID_ARGUMENT\x12\x11InvalidRunRequest2\xc7\x1e\n" +
 	"\n" +
-	"RunService\x12i\n" +
-	"\tCreateRun\x12 .nominal.run.v1.CreateRunRequest\x1a!.nominal.run.v1.CreateRunResponse\"\x17\x82\xd3\xe4\x93\x02\x11:\x01*\"\f/run/v1/runs\x12o\n" +
-	"\tUpdateRun\x12 .nominal.run.v1.UpdateRunRequest\x1a!.nominal.run.v1.UpdateRunResponse\"\x1d\x82\xd3\xe4\x93\x02\x17:\x01*\x1a\x12/run/v1/runs/{rid}\x12\x92\x01\n" +
-	"\x11CreateOrUpdateRun\x12(.nominal.run.v1.CreateOrUpdateRunRequest\x1a).nominal.run.v1.CreateOrUpdateRunResponse\"(\x82\xd3\xe4\x93\x02\":\x01*\"\x1d/run/v1/runs/create-or-update\x12\x9e\x01\n" +
-	"\x13AddDataSourcesToRun\x12*.nominal.run.v1.AddDataSourcesToRunRequest\x1a+.nominal.run.v1.AddDataSourcesToRunResponse\".\x82\xd3\xe4\x93\x02(:\x01*\"#/run/v1/runs/{run_rid}/data-sources\x12\x9e\x01\n" +
-	"\x14BatchEditRunMetadata\x12+.nominal.run.v1.BatchEditRunMetadataRequest\x1a,.nominal.run.v1.BatchEditRunMetadataResponse\"+\x82\xd3\xe4\x93\x02%:\x01*\" /run/v1/runs/metadata/batch-edit\x12c\n" +
-	"\x06GetRun\x12\x1d.nominal.run.v1.GetRunRequest\x1a\x1e.nominal.run.v1.GetRunResponse\"\x1a\x82\xd3\xe4\x93\x02\x14\x12\x12/run/v1/runs/{rid}\x12\xbb\x01\n" +
-	"\x1bGetRunWithDataReviewMetrics\x122.nominal.run.v1.GetRunWithDataReviewMetricsRequest\x1a3.nominal.run.v1.GetRunWithDataReviewMetricsResponse\"3\x82\xd3\xe4\x93\x02-\x12+/run/v1/runs/{rid}/with-data-review-metrics\x12\xbb\x01\n" +
-	"\x1bGetRunWithDataReviewSummary\x122.nominal.run.v1.GetRunWithDataReviewSummaryRequest\x1a3.nominal.run.v1.GetRunWithDataReviewSummaryResponse\"3\x82\xd3\xe4\x93\x02-\x12+/run/v1/runs/{rid}/with-data-review-summary\x12r\n" +
+	"RunService\x12\x87\x01\n" +
+	"\tCreateRun\x12 .nominal.run.v1.CreateRunRequest\x1a!.nominal.run.v1.CreateRunResponse\"5\xba\xb2\x1a\x1a\n" +
+	"\x18\n" +
+	"\x14workspace:create_run\"\x00\x82\xd3\xe4\x93\x02\x11:\x01*\"\f/run/v1/runs\x12\x86\x01\n" +
+	"\tUpdateRun\x12 .nominal.run.v1.UpdateRunRequest\x1a!.nominal.run.v1.UpdateRunResponse\"4\xba\xb2\x1a\x13\n" +
+	"\x11\n" +
+	"\brun:edit\x12\x05\n" +
+	"\x03rid\x82\xd3\xe4\x93\x02\x17:\x01*\x1a\x12/run/v1/runs/{rid}\x12\xb0\x01\n" +
+	"\x11CreateOrUpdateRun\x12(.nominal.run.v1.CreateOrUpdateRunRequest\x1a).nominal.run.v1.CreateOrUpdateRunResponse\"F\xba\xb2\x1a\x1a\n" +
+	"\x18\n" +
+	"\x14workspace:create_run\"\x00\x82\xd3\xe4\x93\x02\":\x01*\"\x1d/run/v1/runs/create-or-update\x12\xb9\x01\n" +
+	"\x13AddDataSourcesToRun\x12*.nominal.run.v1.AddDataSourcesToRunRequest\x1a+.nominal.run.v1.AddDataSourcesToRunResponse\"I\xba\xb2\x1a\x17\n" +
+	"\x15\n" +
+	"\brun:edit\x12\t\n" +
+	"\arun_rid\x82\xd3\xe4\x93\x02(:\x01*\"#/run/v1/runs/{run_rid}/data-sources\x12\xb6\x01\n" +
+	"\x14BatchEditRunMetadata\x12+.nominal.run.v1.BatchEditRunMetadataRequest\x1a,.nominal.run.v1.BatchEditRunMetadataResponse\"C\xba\xb2\x1a\x14\n" +
+	"\x12\n" +
+	"\x0eworkspace:view\"\x00\x82\xd3\xe4\x93\x02%:\x01*\" /run/v1/runs/metadata/batch-edit\x12z\n" +
+	"\x06GetRun\x12\x1d.nominal.run.v1.GetRunRequest\x1a\x1e.nominal.run.v1.GetRunResponse\"1\xba\xb2\x1a\x13\n" +
+	"\x11\n" +
+	"\brun:view\x12\x05\n" +
+	"\x03rid\x82\xd3\xe4\x93\x02\x14\x12\x12/run/v1/runs/{rid}\x12\xd2\x01\n" +
+	"\x1bGetRunWithDataReviewMetrics\x122.nominal.run.v1.GetRunWithDataReviewMetricsRequest\x1a3.nominal.run.v1.GetRunWithDataReviewMetricsResponse\"J\xba\xb2\x1a\x13\n" +
+	"\x11\n" +
+	"\brun:view\x12\x05\n" +
+	"\x03rid\x82\xd3\xe4\x93\x02-\x12+/run/v1/runs/{rid}/with-data-review-metrics\x12\xd2\x01\n" +
+	"\x1bGetRunWithDataReviewSummary\x122.nominal.run.v1.GetRunWithDataReviewSummaryRequest\x1a3.nominal.run.v1.GetRunWithDataReviewSummaryResponse\"J\xba\xb2\x1a\x13\n" +
+	"\x11\n" +
+	"\brun:view\x12\x05\n" +
+	"\x03rid\x82\xd3\xe4\x93\x02-\x12+/run/v1/runs/{rid}/with-data-review-summary\x12\x8a\x01\n" +
 	"\n" +
-	"GetRunById\x12!.nominal.run.v1.GetRunByIdRequest\x1a\".nominal.run.v1.GetRunByIdResponse\"\x1d\x82\xd3\xe4\x93\x02\x17:\x01*\"\x12/run/v1/runs/by-id\x12m\n" +
-	"\aGetRuns\x12\x1e.nominal.run.v1.GetRunsRequest\x1a\x1f.nominal.run.v1.GetRunsResponse\"!\x82\xd3\xe4\x93\x02\x1b:\x01*\"\x16/run/v1/runs/batch-get\x12\x81\x01\n" +
-	"\x0eGetRunsByAsset\x12%.nominal.run.v1.GetRunsByAssetRequest\x1a&.nominal.run.v1.GetRunsByAssetResponse\" \x82\xd3\xe4\x93\x02\x1a:\x01*\"\x15/run/v1/runs/by-asset\x12\x9e\x01\n" +
-	"\x15GetLatestRunForAssets\x12,.nominal.run.v1.GetLatestRunForAssetsRequest\x1a-.nominal.run.v1.GetLatestRunForAssetsResponse\"(\x82\xd3\xe4\x93\x02\":\x01*\"\x1d/run/v1/runs/by-assets/latest\x12\xbb\x01\n" +
-	"\x1dGetAllRunsPropertiesAndLabels\x124.nominal.run.v1.GetAllRunsPropertiesAndLabelsRequest\x1a5.nominal.run.v1.GetAllRunsPropertiesAndLabelsResponse\"-\x82\xd3\xe4\x93\x02$\x12\"/run/v1/runs/properties-and-labels\x88\x02\x01\x12s\n" +
+	"GetRunById\x12!.nominal.run.v1.GetRunByIdRequest\x1a\".nominal.run.v1.GetRunByIdResponse\"5\xba\xb2\x1a\x14\n" +
+	"\x12\n" +
+	"\x0eworkspace:view\"\x00\x82\xd3\xe4\x93\x02\x17:\x01*\"\x12/run/v1/runs/by-id\x12\x85\x01\n" +
+	"\aGetRuns\x12\x1e.nominal.run.v1.GetRunsRequest\x1a\x1f.nominal.run.v1.GetRunsResponse\"9\xba\xb2\x1a\x14\n" +
+	"\x12\n" +
+	"\brun:view\x12\x06\n" +
+	"\x04rids\x82\xd3\xe4\x93\x02\x1b:\x01*\"\x16/run/v1/runs/batch-get\x12\x9c\x01\n" +
+	"\x0eGetRunsByAsset\x12%.nominal.run.v1.GetRunsByAssetRequest\x1a&.nominal.run.v1.GetRunsByAssetResponse\";\xba\xb2\x1a\x17\n" +
+	"\x15\n" +
 	"\n" +
-	"SearchRuns\x12!.nominal.run.v1.SearchRunsRequest\x1a\".nominal.run.v1.SearchRunsResponse\"\x1e\x82\xd3\xe4\x93\x02\x18:\x01*\"\x13/run/v1/runs/search\x12\xcb\x01\n" +
-	"\x1fSearchRunsWithDataReviewMetrics\x126.nominal.run.v1.SearchRunsWithDataReviewMetricsRequest\x1a7.nominal.run.v1.SearchRunsWithDataReviewMetricsResponse\"7\x82\xd3\xe4\x93\x021:\x01*\",/run/v1/runs/search-with-data-review-metrics\x12\xce\x01\n" +
-	"\x1fSearchRunsWithDataReviewSummary\x126.nominal.run.v1.SearchRunsWithDataReviewSummaryRequest\x1a7.nominal.run.v1.SearchRunsWithDataReviewSummaryResponse\":\x82\xd3\xe4\x93\x021:\x01*\",/run/v1/runs/search-with-data-review-summary\x88\x02\x01\x12z\n" +
+	"asset:view\x12\a\n" +
+	"\x05asset\x82\xd3\xe4\x93\x02\x1a:\x01*\"\x15/run/v1/runs/by-asset\x12\xbe\x01\n" +
+	"\x15GetLatestRunForAssets\x12,.nominal.run.v1.GetLatestRunForAssetsRequest\x1a-.nominal.run.v1.GetLatestRunForAssetsResponse\"H\xba\xb2\x1a\x1c\n" +
+	"\x1a\n" +
 	"\n" +
-	"ArchiveRun\x12!.nominal.run.v1.ArchiveRunRequest\x1a\".nominal.run.v1.ArchiveRunResponse\"%\x82\xd3\xe4\x93\x02\x1f:\x01*\"\x1a/run/v1/runs/{rid}/archive\x12\x82\x01\n" +
-	"\fUnarchiveRun\x12#.nominal.run.v1.UnarchiveRunRequest\x1a$.nominal.run.v1.UnarchiveRunResponse\"'\x82\xd3\xe4\x93\x02!:\x01*\"\x1c/run/v1/runs/{rid}/unarchive\x12w\n" +
-	"\vArchiveRuns\x12\".nominal.run.v1.ArchiveRunsRequest\x1a#.nominal.run.v1.ArchiveRunsResponse\"\x1f\x82\xd3\xe4\x93\x02\x19:\x01*\"\x14/run/v1/runs/archive\x12\x7f\n" +
-	"\rUnarchiveRuns\x12$.nominal.run.v1.UnarchiveRunsRequest\x1a%.nominal.run.v1.UnarchiveRunsResponse\"!\x82\xd3\xe4\x93\x02\x1b:\x01*\"\x16/run/v1/runs/unarchive\x12\xc3\x01\n" +
-	"\x1fGetDataSourceRefNameAndTypeList\x126.nominal.run.v1.GetDataSourceRefNameAndTypeListRequest\x1a7.nominal.run.v1.GetDataSourceRefNameAndTypeListResponse\"/\x82\xd3\xe4\x93\x02)\x12'/run/v1/data-source-ref-names-and-types\x12\x99\x01\n" +
-	"\x13UpdateRunAttachment\x12*.nominal.run.v1.UpdateRunAttachmentRequest\x1a+.nominal.run.v1.UpdateRunAttachmentResponse\")\x82\xd3\xe4\x93\x02#:\x01*\"\x1e/run/v1/runs/{rid}/attachments\x12\x90\x01\n" +
-	"\x10UpdateLockStatus\x12'.nominal.run.v1.UpdateLockStatusRequest\x1a(.nominal.run.v1.UpdateLockStatusResponse\")\x82\xd3\xe4\x93\x02#:\x01*\x1a\x1e/run/v1/runs/{rid}/lock-statusB\xc8\x01\n" +
+	"asset:view\x12\f\n" +
+	"\n" +
+	"asset_rids\x82\xd3\xe4\x93\x02\":\x01*\"\x1d/run/v1/runs/by-assets/latest\x12\xbf\x01\n" +
+	"\x1dGetAllRunsPropertiesAndLabels\x124.nominal.run.v1.GetAllRunsPropertiesAndLabelsRequest\x1a5.nominal.run.v1.GetAllRunsPropertiesAndLabelsResponse\"1\xba\xb2\x1a\x00\x82\xd3\xe4\x93\x02$\x12\"/run/v1/runs/properties-and-labels\x88\x02\x01\x12w\n" +
+	"\n" +
+	"SearchRuns\x12!.nominal.run.v1.SearchRunsRequest\x1a\".nominal.run.v1.SearchRunsResponse\"\"\xba\xb2\x1a\x00\x82\xd3\xe4\x93\x02\x18:\x01*\"\x13/run/v1/runs/search\x12\xcf\x01\n" +
+	"\x1fSearchRunsWithDataReviewMetrics\x126.nominal.run.v1.SearchRunsWithDataReviewMetricsRequest\x1a7.nominal.run.v1.SearchRunsWithDataReviewMetricsResponse\";\xba\xb2\x1a\x00\x82\xd3\xe4\x93\x021:\x01*\",/run/v1/runs/search-with-data-review-metrics\x12\xd2\x01\n" +
+	"\x1fSearchRunsWithDataReviewSummary\x126.nominal.run.v1.SearchRunsWithDataReviewSummaryRequest\x1a7.nominal.run.v1.SearchRunsWithDataReviewSummaryResponse\">\xba\xb2\x1a\x00\x82\xd3\xe4\x93\x021:\x01*\",/run/v1/runs/search-with-data-review-summary\x88\x02\x01\x12\x91\x01\n" +
+	"\n" +
+	"ArchiveRun\x12!.nominal.run.v1.ArchiveRunRequest\x1a\".nominal.run.v1.ArchiveRunResponse\"<\xba\xb2\x1a\x13\n" +
+	"\x11\n" +
+	"\brun:edit\x12\x05\n" +
+	"\x03rid\x82\xd3\xe4\x93\x02\x1f:\x01*\"\x1a/run/v1/runs/{rid}/archive\x12\x99\x01\n" +
+	"\fUnarchiveRun\x12#.nominal.run.v1.UnarchiveRunRequest\x1a$.nominal.run.v1.UnarchiveRunResponse\">\xba\xb2\x1a\x13\n" +
+	"\x11\n" +
+	"\brun:edit\x12\x05\n" +
+	"\x03rid\x82\xd3\xe4\x93\x02!:\x01*\"\x1c/run/v1/runs/{rid}/unarchive\x12\x8f\x01\n" +
+	"\vArchiveRuns\x12\".nominal.run.v1.ArchiveRunsRequest\x1a#.nominal.run.v1.ArchiveRunsResponse\"7\xba\xb2\x1a\x14\n" +
+	"\x12\n" +
+	"\brun:edit\x12\x06\n" +
+	"\x04rids\x82\xd3\xe4\x93\x02\x19:\x01*\"\x14/run/v1/runs/archive\x12\x97\x01\n" +
+	"\rUnarchiveRuns\x12$.nominal.run.v1.UnarchiveRunsRequest\x1a%.nominal.run.v1.UnarchiveRunsResponse\"9\xba\xb2\x1a\x14\n" +
+	"\x12\n" +
+	"\brun:edit\x12\x06\n" +
+	"\x04rids\x82\xd3\xe4\x93\x02\x1b:\x01*\"\x16/run/v1/runs/unarchive\x12\xc7\x01\n" +
+	"\x1fGetDataSourceRefNameAndTypeList\x126.nominal.run.v1.GetDataSourceRefNameAndTypeListRequest\x1a7.nominal.run.v1.GetDataSourceRefNameAndTypeListResponse\"3\xba\xb2\x1a\x00\x82\xd3\xe4\x93\x02)\x12'/run/v1/data-source-ref-names-and-types\x12\xb0\x01\n" +
+	"\x13UpdateRunAttachment\x12*.nominal.run.v1.UpdateRunAttachmentRequest\x1a+.nominal.run.v1.UpdateRunAttachmentResponse\"@\xba\xb2\x1a\x13\n" +
+	"\x11\n" +
+	"\brun:edit\x12\x05\n" +
+	"\x03rid\x82\xd3\xe4\x93\x02#:\x01*\"\x1e/run/v1/runs/{rid}/attachments\x12\xa7\x01\n" +
+	"\x10UpdateLockStatus\x12'.nominal.run.v1.UpdateLockStatusRequest\x1a(.nominal.run.v1.UpdateLockStatusResponse\"@\xba\xb2\x1a\x13\n" +
+	"\x11\n" +
+	"\brun:edit\x12\x05\n" +
+	"\x03rid\x82\xd3\xe4\x93\x02#:\x01*\x1a\x1e/run/v1/runs/{rid}/lock-statusB\xc8\x01\n" +
 	"\x12com.nominal.run.v1B\x0fRunServiceProtoP\x01ZGgithub.com/nominal-io/nominal-api-protos-go/nominal/protos/run/v1;runv1\xa2\x02\x03NRX\xaa\x02\x0eNominal.Run.V1\xca\x02\x0eNominal\\Run\\V1\xe2\x02\x1aNominal\\Run\\V1\\GPBMetadata\xea\x02\x10Nominal::Run::V1b\x06proto3"
 
 var (
@@ -7371,7 +7497,7 @@ func file_nominal_protos_run_v1_run_service_proto_rawDescGZIP() []byte {
 }
 
 var file_nominal_protos_run_v1_run_service_proto_enumTypes = make([]protoimpl.EnumInfo, 8)
-var file_nominal_protos_run_v1_run_service_proto_msgTypes = make([]protoimpl.MessageInfo, 112)
+var file_nominal_protos_run_v1_run_service_proto_msgTypes = make([]protoimpl.MessageInfo, 113)
 var file_nominal_protos_run_v1_run_service_proto_goTypes = []any{
 	(DataSourceType)(0),                             // 0: nominal.run.v1.DataSourceType
 	(SetOperator)(0),                                // 1: nominal.run.v1.SetOperator
@@ -7412,96 +7538,97 @@ var file_nominal_protos_run_v1_run_service_proto_goTypes = []any{
 	(*RunWithDataReviewSummary)(nil),                // 36: nominal.run.v1.RunWithDataReviewSummary
 	(*AssetsFilter)(nil),                            // 37: nominal.run.v1.AssetsFilter
 	(*DatasetRidsFilter)(nil),                       // 38: nominal.run.v1.DatasetRidsFilter
-	(*CheckAlertStatesFilter)(nil),                  // 39: nominal.run.v1.CheckAlertStatesFilter
-	(*CustomTimeframeFilter)(nil),                   // 40: nominal.run.v1.CustomTimeframeFilter
-	(*PresetTimeframeFilter)(nil),                   // 41: nominal.run.v1.PresetTimeframeFilter
-	(*TimeframeFilter)(nil),                         // 42: nominal.run.v1.TimeframeFilter
-	(*TimeRangeFilter)(nil),                         // 43: nominal.run.v1.TimeRangeFilter
-	(*SearchQuery)(nil),                             // 44: nominal.run.v1.SearchQuery
-	(*SearchQueryList)(nil),                         // 45: nominal.run.v1.SearchQueryList
-	(*SortProperty)(nil),                            // 46: nominal.run.v1.SortProperty
-	(*SortKey)(nil),                                 // 47: nominal.run.v1.SortKey
-	(*SortKeyWithDirection)(nil),                    // 48: nominal.run.v1.SortKeyWithDirection
-	(*SortOptions)(nil),                             // 49: nominal.run.v1.SortOptions
-	(*ArchivedStatusSet)(nil),                       // 50: nominal.run.v1.ArchivedStatusSet
-	(*PropertyMap)(nil),                             // 51: nominal.run.v1.PropertyMap
-	(*LabelSet)(nil),                                // 52: nominal.run.v1.LabelSet
-	(*LinkList)(nil),                                // 53: nominal.run.v1.LinkList
-	(*CreateRunDataSourceMap)(nil),                  // 54: nominal.run.v1.CreateRunDataSourceMap
-	(*AttachmentRidSet)(nil),                        // 55: nominal.run.v1.AttachmentRidSet
-	(*CreateRunRequest)(nil),                        // 56: nominal.run.v1.CreateRunRequest
-	(*CreateRunResponse)(nil),                       // 57: nominal.run.v1.CreateRunResponse
-	(*UpdateRunRequest)(nil),                        // 58: nominal.run.v1.UpdateRunRequest
-	(*UpdateRunResponse)(nil),                       // 59: nominal.run.v1.UpdateRunResponse
-	(*CreateOrUpdateRunRequest)(nil),                // 60: nominal.run.v1.CreateOrUpdateRunRequest
-	(*CreateOrUpdateRunResponse)(nil),               // 61: nominal.run.v1.CreateOrUpdateRunResponse
-	(*AddDataSourcesToRunRequest)(nil),              // 62: nominal.run.v1.AddDataSourcesToRunRequest
-	(*AddDataSourcesToRunResponse)(nil),             // 63: nominal.run.v1.AddDataSourcesToRunResponse
-	(*BatchEditRunMetadataRequest)(nil),             // 64: nominal.run.v1.BatchEditRunMetadataRequest
-	(*BatchEditRunMetadataResponse)(nil),            // 65: nominal.run.v1.BatchEditRunMetadataResponse
-	(*GetRunRequest)(nil),                           // 66: nominal.run.v1.GetRunRequest
-	(*GetRunResponse)(nil),                          // 67: nominal.run.v1.GetRunResponse
-	(*GetRunWithDataReviewMetricsRequest)(nil),      // 68: nominal.run.v1.GetRunWithDataReviewMetricsRequest
-	(*GetRunWithDataReviewMetricsResponse)(nil),     // 69: nominal.run.v1.GetRunWithDataReviewMetricsResponse
-	(*GetRunWithDataReviewSummaryRequest)(nil),      // 70: nominal.run.v1.GetRunWithDataReviewSummaryRequest
-	(*GetRunWithDataReviewSummaryResponse)(nil),     // 71: nominal.run.v1.GetRunWithDataReviewSummaryResponse
-	(*GetRunByIdRequest)(nil),                       // 72: nominal.run.v1.GetRunByIdRequest
-	(*GetRunByIdResponse)(nil),                      // 73: nominal.run.v1.GetRunByIdResponse
-	(*GetRunsRequest)(nil),                          // 74: nominal.run.v1.GetRunsRequest
-	(*GetRunsResponse)(nil),                         // 75: nominal.run.v1.GetRunsResponse
-	(*GetRunsByAssetRequest)(nil),                   // 76: nominal.run.v1.GetRunsByAssetRequest
-	(*GetRunsByAssetResponse)(nil),                  // 77: nominal.run.v1.GetRunsByAssetResponse
-	(*GetLatestRunForAssetsRequest)(nil),            // 78: nominal.run.v1.GetLatestRunForAssetsRequest
-	(*GetLatestRunForAssetsResponse)(nil),           // 79: nominal.run.v1.GetLatestRunForAssetsResponse
-	(*GetAllRunsPropertiesAndLabelsRequest)(nil),    // 80: nominal.run.v1.GetAllRunsPropertiesAndLabelsRequest
-	(*GetAllRunsPropertiesAndLabelsResponse)(nil),   // 81: nominal.run.v1.GetAllRunsPropertiesAndLabelsResponse
-	(*PropertyValueList)(nil),                       // 82: nominal.run.v1.PropertyValueList
-	(*SearchRunsRequest)(nil),                       // 83: nominal.run.v1.SearchRunsRequest
-	(*SearchRunsResponse)(nil),                      // 84: nominal.run.v1.SearchRunsResponse
-	(*SearchRunsWithDataReviewMetricsRequest)(nil),  // 85: nominal.run.v1.SearchRunsWithDataReviewMetricsRequest
-	(*SearchRunsWithDataReviewMetricsResponse)(nil), // 86: nominal.run.v1.SearchRunsWithDataReviewMetricsResponse
-	(*SearchRunsWithDataReviewSummaryRequest)(nil),  // 87: nominal.run.v1.SearchRunsWithDataReviewSummaryRequest
-	(*SearchRunsWithDataReviewSummaryResponse)(nil), // 88: nominal.run.v1.SearchRunsWithDataReviewSummaryResponse
-	(*ArchiveRunRequest)(nil),                       // 89: nominal.run.v1.ArchiveRunRequest
-	(*ArchiveRunResponse)(nil),                      // 90: nominal.run.v1.ArchiveRunResponse
-	(*UnarchiveRunRequest)(nil),                     // 91: nominal.run.v1.UnarchiveRunRequest
-	(*UnarchiveRunResponse)(nil),                    // 92: nominal.run.v1.UnarchiveRunResponse
-	(*ArchiveRunsRequest)(nil),                      // 93: nominal.run.v1.ArchiveRunsRequest
-	(*ArchiveRunsResponse)(nil),                     // 94: nominal.run.v1.ArchiveRunsResponse
-	(*UnarchiveRunsRequest)(nil),                    // 95: nominal.run.v1.UnarchiveRunsRequest
-	(*UnarchiveRunsResponse)(nil),                   // 96: nominal.run.v1.UnarchiveRunsResponse
-	(*GetDataSourceRefNameAndTypeListRequest)(nil),  // 97: nominal.run.v1.GetDataSourceRefNameAndTypeListRequest
-	(*GetDataSourceRefNameAndTypeListResponse)(nil), // 98: nominal.run.v1.GetDataSourceRefNameAndTypeListResponse
-	(*UpdateRunAttachmentRequest)(nil),              // 99: nominal.run.v1.UpdateRunAttachmentRequest
-	(*UpdateRunAttachmentResponse)(nil),             // 100: nominal.run.v1.UpdateRunAttachmentResponse
-	(*UpdateLockStatusRequest)(nil),                 // 101: nominal.run.v1.UpdateLockStatusRequest
-	(*UpdateLockStatusResponse)(nil),                // 102: nominal.run.v1.UpdateLockStatusResponse
-	nil,                                             // 103: nominal.run.v1.DataScope.SeriesTagsEntry
-	nil,                                             // 104: nominal.run.v1.Run.PropertiesEntry
-	nil,                                             // 105: nominal.run.v1.Run.AssetDataScopesMapEntry
-	nil,                                             // 106: nominal.run.v1.Run.DataSourcesEntry
-	nil,                                             // 107: nominal.run.v1.Run.TypedPropertiesEntry
-	nil,                                             // 108: nominal.run.v1.DataScopes.DataScopesEntry
-	nil,                                             // 109: nominal.run.v1.RunDataSource.SeriesTagsEntry
-	nil,                                             // 110: nominal.run.v1.CreateRunDataSource.SeriesTagsEntry
-	nil,                                             // 111: nominal.run.v1.PropertyMap.PropertiesEntry
-	nil,                                             // 112: nominal.run.v1.CreateRunDataSourceMap.DataSourcesEntry
-	nil,                                             // 113: nominal.run.v1.CreateRunRequest.PropertiesEntry
-	nil,                                             // 114: nominal.run.v1.CreateRunRequest.DataSourcesEntry
-	nil,                                             // 115: nominal.run.v1.CreateRunRequest.TypedPropertiesEntry
-	nil,                                             // 116: nominal.run.v1.AddDataSourcesToRunRequest.DataSourcesEntry
-	nil,                                             // 117: nominal.run.v1.GetRunsResponse.RunsEntry
-	nil,                                             // 118: nominal.run.v1.GetLatestRunForAssetsResponse.RunsEntry
-	nil,                                             // 119: nominal.run.v1.GetAllRunsPropertiesAndLabelsResponse.PropertiesEntry
-	(WeakTimestampType)(0),                          // 120: nominal.run.v1.WeakTimestampType
-	(*UtcTimestamp)(nil),                            // 121: nominal.run.v1.UtcTimestamp
-	(*timestamppb.Timestamp)(nil),                   // 122: google.protobuf.Timestamp
-	(*types.Property)(nil),                          // 123: nominal.types.Property
-	(*types.NumericPropertyPredicate)(nil),          // 124: nominal.types.NumericPropertyPredicate
-	(*types.NumericPropertyRangePredicate)(nil),     // 125: nominal.types.NumericPropertyRangePredicate
-	(types.ArchivedStatus)(0),                       // 126: nominal.types.ArchivedStatus
-	(*types.TypedPropertyUpdateWrapper)(nil),        // 127: nominal.types.TypedPropertyUpdateWrapper
-	(*types.TypedPropertyValue)(nil),                // 128: nominal.types.TypedPropertyValue
+	(*AssetTypesFilter)(nil),                        // 39: nominal.run.v1.AssetTypesFilter
+	(*CheckAlertStatesFilter)(nil),                  // 40: nominal.run.v1.CheckAlertStatesFilter
+	(*CustomTimeframeFilter)(nil),                   // 41: nominal.run.v1.CustomTimeframeFilter
+	(*PresetTimeframeFilter)(nil),                   // 42: nominal.run.v1.PresetTimeframeFilter
+	(*TimeframeFilter)(nil),                         // 43: nominal.run.v1.TimeframeFilter
+	(*TimeRangeFilter)(nil),                         // 44: nominal.run.v1.TimeRangeFilter
+	(*SearchQuery)(nil),                             // 45: nominal.run.v1.SearchQuery
+	(*SearchQueryList)(nil),                         // 46: nominal.run.v1.SearchQueryList
+	(*SortProperty)(nil),                            // 47: nominal.run.v1.SortProperty
+	(*SortKey)(nil),                                 // 48: nominal.run.v1.SortKey
+	(*SortKeyWithDirection)(nil),                    // 49: nominal.run.v1.SortKeyWithDirection
+	(*SortOptions)(nil),                             // 50: nominal.run.v1.SortOptions
+	(*ArchivedStatusSet)(nil),                       // 51: nominal.run.v1.ArchivedStatusSet
+	(*PropertyMap)(nil),                             // 52: nominal.run.v1.PropertyMap
+	(*LabelSet)(nil),                                // 53: nominal.run.v1.LabelSet
+	(*LinkList)(nil),                                // 54: nominal.run.v1.LinkList
+	(*CreateRunDataSourceMap)(nil),                  // 55: nominal.run.v1.CreateRunDataSourceMap
+	(*AttachmentRidSet)(nil),                        // 56: nominal.run.v1.AttachmentRidSet
+	(*CreateRunRequest)(nil),                        // 57: nominal.run.v1.CreateRunRequest
+	(*CreateRunResponse)(nil),                       // 58: nominal.run.v1.CreateRunResponse
+	(*UpdateRunRequest)(nil),                        // 59: nominal.run.v1.UpdateRunRequest
+	(*UpdateRunResponse)(nil),                       // 60: nominal.run.v1.UpdateRunResponse
+	(*CreateOrUpdateRunRequest)(nil),                // 61: nominal.run.v1.CreateOrUpdateRunRequest
+	(*CreateOrUpdateRunResponse)(nil),               // 62: nominal.run.v1.CreateOrUpdateRunResponse
+	(*AddDataSourcesToRunRequest)(nil),              // 63: nominal.run.v1.AddDataSourcesToRunRequest
+	(*AddDataSourcesToRunResponse)(nil),             // 64: nominal.run.v1.AddDataSourcesToRunResponse
+	(*BatchEditRunMetadataRequest)(nil),             // 65: nominal.run.v1.BatchEditRunMetadataRequest
+	(*BatchEditRunMetadataResponse)(nil),            // 66: nominal.run.v1.BatchEditRunMetadataResponse
+	(*GetRunRequest)(nil),                           // 67: nominal.run.v1.GetRunRequest
+	(*GetRunResponse)(nil),                          // 68: nominal.run.v1.GetRunResponse
+	(*GetRunWithDataReviewMetricsRequest)(nil),      // 69: nominal.run.v1.GetRunWithDataReviewMetricsRequest
+	(*GetRunWithDataReviewMetricsResponse)(nil),     // 70: nominal.run.v1.GetRunWithDataReviewMetricsResponse
+	(*GetRunWithDataReviewSummaryRequest)(nil),      // 71: nominal.run.v1.GetRunWithDataReviewSummaryRequest
+	(*GetRunWithDataReviewSummaryResponse)(nil),     // 72: nominal.run.v1.GetRunWithDataReviewSummaryResponse
+	(*GetRunByIdRequest)(nil),                       // 73: nominal.run.v1.GetRunByIdRequest
+	(*GetRunByIdResponse)(nil),                      // 74: nominal.run.v1.GetRunByIdResponse
+	(*GetRunsRequest)(nil),                          // 75: nominal.run.v1.GetRunsRequest
+	(*GetRunsResponse)(nil),                         // 76: nominal.run.v1.GetRunsResponse
+	(*GetRunsByAssetRequest)(nil),                   // 77: nominal.run.v1.GetRunsByAssetRequest
+	(*GetRunsByAssetResponse)(nil),                  // 78: nominal.run.v1.GetRunsByAssetResponse
+	(*GetLatestRunForAssetsRequest)(nil),            // 79: nominal.run.v1.GetLatestRunForAssetsRequest
+	(*GetLatestRunForAssetsResponse)(nil),           // 80: nominal.run.v1.GetLatestRunForAssetsResponse
+	(*GetAllRunsPropertiesAndLabelsRequest)(nil),    // 81: nominal.run.v1.GetAllRunsPropertiesAndLabelsRequest
+	(*GetAllRunsPropertiesAndLabelsResponse)(nil),   // 82: nominal.run.v1.GetAllRunsPropertiesAndLabelsResponse
+	(*PropertyValueList)(nil),                       // 83: nominal.run.v1.PropertyValueList
+	(*SearchRunsRequest)(nil),                       // 84: nominal.run.v1.SearchRunsRequest
+	(*SearchRunsResponse)(nil),                      // 85: nominal.run.v1.SearchRunsResponse
+	(*SearchRunsWithDataReviewMetricsRequest)(nil),  // 86: nominal.run.v1.SearchRunsWithDataReviewMetricsRequest
+	(*SearchRunsWithDataReviewMetricsResponse)(nil), // 87: nominal.run.v1.SearchRunsWithDataReviewMetricsResponse
+	(*SearchRunsWithDataReviewSummaryRequest)(nil),  // 88: nominal.run.v1.SearchRunsWithDataReviewSummaryRequest
+	(*SearchRunsWithDataReviewSummaryResponse)(nil), // 89: nominal.run.v1.SearchRunsWithDataReviewSummaryResponse
+	(*ArchiveRunRequest)(nil),                       // 90: nominal.run.v1.ArchiveRunRequest
+	(*ArchiveRunResponse)(nil),                      // 91: nominal.run.v1.ArchiveRunResponse
+	(*UnarchiveRunRequest)(nil),                     // 92: nominal.run.v1.UnarchiveRunRequest
+	(*UnarchiveRunResponse)(nil),                    // 93: nominal.run.v1.UnarchiveRunResponse
+	(*ArchiveRunsRequest)(nil),                      // 94: nominal.run.v1.ArchiveRunsRequest
+	(*ArchiveRunsResponse)(nil),                     // 95: nominal.run.v1.ArchiveRunsResponse
+	(*UnarchiveRunsRequest)(nil),                    // 96: nominal.run.v1.UnarchiveRunsRequest
+	(*UnarchiveRunsResponse)(nil),                   // 97: nominal.run.v1.UnarchiveRunsResponse
+	(*GetDataSourceRefNameAndTypeListRequest)(nil),  // 98: nominal.run.v1.GetDataSourceRefNameAndTypeListRequest
+	(*GetDataSourceRefNameAndTypeListResponse)(nil), // 99: nominal.run.v1.GetDataSourceRefNameAndTypeListResponse
+	(*UpdateRunAttachmentRequest)(nil),              // 100: nominal.run.v1.UpdateRunAttachmentRequest
+	(*UpdateRunAttachmentResponse)(nil),             // 101: nominal.run.v1.UpdateRunAttachmentResponse
+	(*UpdateLockStatusRequest)(nil),                 // 102: nominal.run.v1.UpdateLockStatusRequest
+	(*UpdateLockStatusResponse)(nil),                // 103: nominal.run.v1.UpdateLockStatusResponse
+	nil,                                             // 104: nominal.run.v1.DataScope.SeriesTagsEntry
+	nil,                                             // 105: nominal.run.v1.Run.PropertiesEntry
+	nil,                                             // 106: nominal.run.v1.Run.AssetDataScopesMapEntry
+	nil,                                             // 107: nominal.run.v1.Run.DataSourcesEntry
+	nil,                                             // 108: nominal.run.v1.Run.TypedPropertiesEntry
+	nil,                                             // 109: nominal.run.v1.DataScopes.DataScopesEntry
+	nil,                                             // 110: nominal.run.v1.RunDataSource.SeriesTagsEntry
+	nil,                                             // 111: nominal.run.v1.CreateRunDataSource.SeriesTagsEntry
+	nil,                                             // 112: nominal.run.v1.PropertyMap.PropertiesEntry
+	nil,                                             // 113: nominal.run.v1.CreateRunDataSourceMap.DataSourcesEntry
+	nil,                                             // 114: nominal.run.v1.CreateRunRequest.PropertiesEntry
+	nil,                                             // 115: nominal.run.v1.CreateRunRequest.DataSourcesEntry
+	nil,                                             // 116: nominal.run.v1.CreateRunRequest.TypedPropertiesEntry
+	nil,                                             // 117: nominal.run.v1.AddDataSourcesToRunRequest.DataSourcesEntry
+	nil,                                             // 118: nominal.run.v1.GetRunsResponse.RunsEntry
+	nil,                                             // 119: nominal.run.v1.GetLatestRunForAssetsResponse.RunsEntry
+	nil,                                             // 120: nominal.run.v1.GetAllRunsPropertiesAndLabelsResponse.PropertiesEntry
+	(WeakTimestampType)(0),                          // 121: nominal.run.v1.WeakTimestampType
+	(*UtcTimestamp)(nil),                            // 122: nominal.run.v1.UtcTimestamp
+	(*timestamppb.Timestamp)(nil),                   // 123: google.protobuf.Timestamp
+	(*types.Property)(nil),                          // 124: nominal.types.Property
+	(*types.NumericPropertyPredicate)(nil),          // 125: nominal.types.NumericPropertyPredicate
+	(*types.NumericPropertyRangePredicate)(nil),     // 126: nominal.types.NumericPropertyRangePredicate
+	(types.ArchivedStatus)(0),                       // 127: nominal.types.ArchivedStatus
+	(*types.TypedPropertyUpdateWrapper)(nil),        // 128: nominal.types.TypedPropertyUpdateWrapper
+	(*types.TypedPropertyValue)(nil),                // 129: nominal.types.TypedPropertyValue
 }
 var file_nominal_protos_run_v1_run_service_proto_depIdxs = []int32{
 	1,   // 0: nominal.run.v1.LabelsFilter.operator:type_name -> nominal.run.v1.SetOperator
@@ -7510,33 +7637,33 @@ var file_nominal_protos_run_v1_run_service_proto_depIdxs = []int32{
 	16,  // 3: nominal.run.v1.CheckAlertState.closed_with_ignore:type_name -> nominal.run.v1.ClosedWithIgnoreAlertState
 	8,   // 4: nominal.run.v1.DataScope.data_source:type_name -> nominal.run.v1.DataSource
 	9,   // 5: nominal.run.v1.DataScope.offset:type_name -> nominal.run.v1.Duration
-	120, // 6: nominal.run.v1.DataScope.timestamp_type:type_name -> nominal.run.v1.WeakTimestampType
-	103, // 7: nominal.run.v1.DataScope.series_tags:type_name -> nominal.run.v1.DataScope.SeriesTagsEntry
+	121, // 6: nominal.run.v1.DataScope.timestamp_type:type_name -> nominal.run.v1.WeakTimestampType
+	104, // 7: nominal.run.v1.DataScope.series_tags:type_name -> nominal.run.v1.DataScope.SeriesTagsEntry
 	19,  // 8: nominal.run.v1.MetadataChange.rename_label:type_name -> nominal.run.v1.RenameLabel
 	20,  // 9: nominal.run.v1.MetadataChange.rename_property_key:type_name -> nominal.run.v1.RenamePropertyKey
 	21,  // 10: nominal.run.v1.MetadataChange.merge_property_values_for_key:type_name -> nominal.run.v1.MergePropertyValuesForKey
 	22,  // 11: nominal.run.v1.RenamePropertyKey.on_conflict:type_name -> nominal.run.v1.ConflictBehavior
 	23,  // 12: nominal.run.v1.ConflictBehavior.skip:type_name -> nominal.run.v1.SkipOnConflict
 	24,  // 13: nominal.run.v1.ConflictBehavior.overwrite:type_name -> nominal.run.v1.OverwriteOnConflict
-	121, // 14: nominal.run.v1.Run.start_time:type_name -> nominal.run.v1.UtcTimestamp
-	121, // 15: nominal.run.v1.Run.end_time:type_name -> nominal.run.v1.UtcTimestamp
-	104, // 16: nominal.run.v1.Run.properties:type_name -> nominal.run.v1.Run.PropertiesEntry
+	122, // 14: nominal.run.v1.Run.start_time:type_name -> nominal.run.v1.UtcTimestamp
+	122, // 15: nominal.run.v1.Run.end_time:type_name -> nominal.run.v1.UtcTimestamp
+	105, // 16: nominal.run.v1.Run.properties:type_name -> nominal.run.v1.Run.PropertiesEntry
 	10,  // 17: nominal.run.v1.Run.links:type_name -> nominal.run.v1.Link
-	122, // 18: nominal.run.v1.Run.created_at:type_name -> google.protobuf.Timestamp
-	122, // 19: nominal.run.v1.Run.updated_at:type_name -> google.protobuf.Timestamp
-	105, // 20: nominal.run.v1.Run.asset_data_scopes_map:type_name -> nominal.run.v1.Run.AssetDataScopesMapEntry
+	123, // 18: nominal.run.v1.Run.created_at:type_name -> google.protobuf.Timestamp
+	123, // 19: nominal.run.v1.Run.updated_at:type_name -> google.protobuf.Timestamp
+	106, // 20: nominal.run.v1.Run.asset_data_scopes_map:type_name -> nominal.run.v1.Run.AssetDataScopesMapEntry
 	17,  // 21: nominal.run.v1.Run.asset_data_scopes:type_name -> nominal.run.v1.DataScope
-	106, // 22: nominal.run.v1.Run.data_sources:type_name -> nominal.run.v1.Run.DataSourcesEntry
-	107, // 23: nominal.run.v1.Run.typed_properties:type_name -> nominal.run.v1.Run.TypedPropertiesEntry
+	107, // 22: nominal.run.v1.Run.data_sources:type_name -> nominal.run.v1.Run.DataSourcesEntry
+	108, // 23: nominal.run.v1.Run.typed_properties:type_name -> nominal.run.v1.Run.TypedPropertiesEntry
 	3,   // 24: nominal.run.v1.Run.lock_status:type_name -> nominal.run.v1.LockStatus
-	108, // 25: nominal.run.v1.DataScopes.data_scopes:type_name -> nominal.run.v1.DataScopes.DataScopesEntry
+	109, // 25: nominal.run.v1.DataScopes.data_scopes:type_name -> nominal.run.v1.DataScopes.DataScopesEntry
 	8,   // 26: nominal.run.v1.RunDataSource.data_source:type_name -> nominal.run.v1.DataSource
 	9,   // 27: nominal.run.v1.RunDataSource.offset:type_name -> nominal.run.v1.Duration
-	120, // 28: nominal.run.v1.RunDataSource.timestamp_type:type_name -> nominal.run.v1.WeakTimestampType
-	109, // 29: nominal.run.v1.RunDataSource.series_tags:type_name -> nominal.run.v1.RunDataSource.SeriesTagsEntry
+	121, // 28: nominal.run.v1.RunDataSource.timestamp_type:type_name -> nominal.run.v1.WeakTimestampType
+	110, // 29: nominal.run.v1.RunDataSource.series_tags:type_name -> nominal.run.v1.RunDataSource.SeriesTagsEntry
 	8,   // 30: nominal.run.v1.CreateRunDataSource.data_source:type_name -> nominal.run.v1.DataSource
 	9,   // 31: nominal.run.v1.CreateRunDataSource.offset:type_name -> nominal.run.v1.Duration
-	110, // 32: nominal.run.v1.CreateRunDataSource.series_tags:type_name -> nominal.run.v1.CreateRunDataSource.SeriesTagsEntry
+	111, // 32: nominal.run.v1.CreateRunDataSource.series_tags:type_name -> nominal.run.v1.CreateRunDataSource.SeriesTagsEntry
 	0,   // 33: nominal.run.v1.RefNameAndType.type:type_name -> nominal.run.v1.DataSourceType
 	32,  // 34: nominal.run.v1.DataReviewMetrics.checks:type_name -> nominal.run.v1.DataReviewCheckMetrics
 	31,  // 35: nominal.run.v1.DataReviewMetrics.alerts:type_name -> nominal.run.v1.DataReviewAlertMetrics
@@ -7547,151 +7674,152 @@ var file_nominal_protos_run_v1_run_service_proto_depIdxs = []int32{
 	34,  // 40: nominal.run.v1.RunWithDataReviewSummary.data_review_summary:type_name -> nominal.run.v1.RunDataReviewSummary
 	13,  // 41: nominal.run.v1.CheckAlertStatesFilter.check_alert_state:type_name -> nominal.run.v1.CheckAlertState
 	2,   // 42: nominal.run.v1.CheckAlertStatesFilter.operator:type_name -> nominal.run.v1.Operator
-	121, // 43: nominal.run.v1.CustomTimeframeFilter.start_time:type_name -> nominal.run.v1.UtcTimestamp
-	121, // 44: nominal.run.v1.CustomTimeframeFilter.end_time:type_name -> nominal.run.v1.UtcTimestamp
+	122, // 43: nominal.run.v1.CustomTimeframeFilter.start_time:type_name -> nominal.run.v1.UtcTimestamp
+	122, // 44: nominal.run.v1.CustomTimeframeFilter.end_time:type_name -> nominal.run.v1.UtcTimestamp
 	5,   // 45: nominal.run.v1.PresetTimeframeFilter.duration:type_name -> nominal.run.v1.PresetTimeframeDuration
-	40,  // 46: nominal.run.v1.TimeframeFilter.custom:type_name -> nominal.run.v1.CustomTimeframeFilter
-	41,  // 47: nominal.run.v1.TimeframeFilter.preset:type_name -> nominal.run.v1.PresetTimeframeFilter
-	121, // 48: nominal.run.v1.TimeRangeFilter.start:type_name -> nominal.run.v1.UtcTimestamp
-	121, // 49: nominal.run.v1.TimeRangeFilter.end:type_name -> nominal.run.v1.UtcTimestamp
-	121, // 50: nominal.run.v1.SearchQuery.start_time_inclusive:type_name -> nominal.run.v1.UtcTimestamp
-	42,  // 51: nominal.run.v1.SearchQuery.start_time:type_name -> nominal.run.v1.TimeframeFilter
-	121, // 52: nominal.run.v1.SearchQuery.end_time_inclusive:type_name -> nominal.run.v1.UtcTimestamp
-	42,  // 53: nominal.run.v1.SearchQuery.end_time:type_name -> nominal.run.v1.TimeframeFilter
-	43,  // 54: nominal.run.v1.SearchQuery.time_range:type_name -> nominal.run.v1.TimeRangeFilter
-	42,  // 55: nominal.run.v1.SearchQuery.created_at:type_name -> nominal.run.v1.TimeframeFilter
+	41,  // 46: nominal.run.v1.TimeframeFilter.custom:type_name -> nominal.run.v1.CustomTimeframeFilter
+	42,  // 47: nominal.run.v1.TimeframeFilter.preset:type_name -> nominal.run.v1.PresetTimeframeFilter
+	122, // 48: nominal.run.v1.TimeRangeFilter.start:type_name -> nominal.run.v1.UtcTimestamp
+	122, // 49: nominal.run.v1.TimeRangeFilter.end:type_name -> nominal.run.v1.UtcTimestamp
+	122, // 50: nominal.run.v1.SearchQuery.start_time_inclusive:type_name -> nominal.run.v1.UtcTimestamp
+	43,  // 51: nominal.run.v1.SearchQuery.start_time:type_name -> nominal.run.v1.TimeframeFilter
+	122, // 52: nominal.run.v1.SearchQuery.end_time_inclusive:type_name -> nominal.run.v1.UtcTimestamp
+	43,  // 53: nominal.run.v1.SearchQuery.end_time:type_name -> nominal.run.v1.TimeframeFilter
+	44,  // 54: nominal.run.v1.SearchQuery.time_range:type_name -> nominal.run.v1.TimeRangeFilter
+	43,  // 55: nominal.run.v1.SearchQuery.created_at:type_name -> nominal.run.v1.TimeframeFilter
 	37,  // 56: nominal.run.v1.SearchQuery.assets:type_name -> nominal.run.v1.AssetsFilter
 	12,  // 57: nominal.run.v1.SearchQuery.labels:type_name -> nominal.run.v1.LabelsFilter
-	123, // 58: nominal.run.v1.SearchQuery.property:type_name -> nominal.types.Property
+	124, // 58: nominal.run.v1.SearchQuery.property:type_name -> nominal.types.Property
 	11,  // 59: nominal.run.v1.SearchQuery.properties:type_name -> nominal.run.v1.PropertiesFilter
 	30,  // 60: nominal.run.v1.SearchQuery.data_source_series_tag:type_name -> nominal.run.v1.DataSourceSeriesTag
 	8,   // 61: nominal.run.v1.SearchQuery.data_source:type_name -> nominal.run.v1.DataSource
-	39,  // 62: nominal.run.v1.SearchQuery.check_alert_states_filter:type_name -> nominal.run.v1.CheckAlertStatesFilter
-	45,  // 63: nominal.run.v1.SearchQuery.all_of:type_name -> nominal.run.v1.SearchQueryList
-	45,  // 64: nominal.run.v1.SearchQuery.any_of:type_name -> nominal.run.v1.SearchQueryList
-	44,  // 65: nominal.run.v1.SearchQuery.negated:type_name -> nominal.run.v1.SearchQuery
-	124, // 66: nominal.run.v1.SearchQuery.numeric_property:type_name -> nominal.types.NumericPropertyPredicate
+	40,  // 62: nominal.run.v1.SearchQuery.check_alert_states_filter:type_name -> nominal.run.v1.CheckAlertStatesFilter
+	46,  // 63: nominal.run.v1.SearchQuery.all_of:type_name -> nominal.run.v1.SearchQueryList
+	46,  // 64: nominal.run.v1.SearchQuery.any_of:type_name -> nominal.run.v1.SearchQueryList
+	45,  // 65: nominal.run.v1.SearchQuery.negated:type_name -> nominal.run.v1.SearchQuery
+	125, // 66: nominal.run.v1.SearchQuery.numeric_property:type_name -> nominal.types.NumericPropertyPredicate
 	3,   // 67: nominal.run.v1.SearchQuery.lock_status:type_name -> nominal.run.v1.LockStatus
 	38,  // 68: nominal.run.v1.SearchQuery.dataset_rids:type_name -> nominal.run.v1.DatasetRidsFilter
-	125, // 69: nominal.run.v1.SearchQuery.numeric_property_range:type_name -> nominal.types.NumericPropertyRangePredicate
-	44,  // 70: nominal.run.v1.SearchQueryList.queries:type_name -> nominal.run.v1.SearchQuery
-	6,   // 71: nominal.run.v1.SortKey.field:type_name -> nominal.run.v1.SortField
-	46,  // 72: nominal.run.v1.SortKey.property:type_name -> nominal.run.v1.SortProperty
-	46,  // 73: nominal.run.v1.SortKey.numeric_property:type_name -> nominal.run.v1.SortProperty
-	47,  // 74: nominal.run.v1.SortKeyWithDirection.sort_key:type_name -> nominal.run.v1.SortKey
-	6,   // 75: nominal.run.v1.SortOptions.field:type_name -> nominal.run.v1.SortField
-	47,  // 76: nominal.run.v1.SortOptions.sort_key:type_name -> nominal.run.v1.SortKey
-	48,  // 77: nominal.run.v1.SortOptions.additional_sort_keys:type_name -> nominal.run.v1.SortKeyWithDirection
-	126, // 78: nominal.run.v1.ArchivedStatusSet.archived_statuses:type_name -> nominal.types.ArchivedStatus
-	111, // 79: nominal.run.v1.PropertyMap.properties:type_name -> nominal.run.v1.PropertyMap.PropertiesEntry
-	10,  // 80: nominal.run.v1.LinkList.links:type_name -> nominal.run.v1.Link
-	112, // 81: nominal.run.v1.CreateRunDataSourceMap.data_sources:type_name -> nominal.run.v1.CreateRunDataSourceMap.DataSourcesEntry
-	121, // 82: nominal.run.v1.CreateRunRequest.start_time:type_name -> nominal.run.v1.UtcTimestamp
-	121, // 83: nominal.run.v1.CreateRunRequest.end_time:type_name -> nominal.run.v1.UtcTimestamp
-	113, // 84: nominal.run.v1.CreateRunRequest.properties:type_name -> nominal.run.v1.CreateRunRequest.PropertiesEntry
-	10,  // 85: nominal.run.v1.CreateRunRequest.links:type_name -> nominal.run.v1.Link
-	114, // 86: nominal.run.v1.CreateRunRequest.data_sources:type_name -> nominal.run.v1.CreateRunRequest.DataSourcesEntry
-	115, // 87: nominal.run.v1.CreateRunRequest.typed_properties:type_name -> nominal.run.v1.CreateRunRequest.TypedPropertiesEntry
-	25,  // 88: nominal.run.v1.CreateRunResponse.run:type_name -> nominal.run.v1.Run
-	121, // 89: nominal.run.v1.UpdateRunRequest.start_time:type_name -> nominal.run.v1.UtcTimestamp
-	121, // 90: nominal.run.v1.UpdateRunRequest.end_time:type_name -> nominal.run.v1.UtcTimestamp
-	51,  // 91: nominal.run.v1.UpdateRunRequest.properties:type_name -> nominal.run.v1.PropertyMap
-	52,  // 92: nominal.run.v1.UpdateRunRequest.labels:type_name -> nominal.run.v1.LabelSet
-	53,  // 93: nominal.run.v1.UpdateRunRequest.links:type_name -> nominal.run.v1.LinkList
-	54,  // 94: nominal.run.v1.UpdateRunRequest.data_sources:type_name -> nominal.run.v1.CreateRunDataSourceMap
-	55,  // 95: nominal.run.v1.UpdateRunRequest.attachments:type_name -> nominal.run.v1.AttachmentRidSet
-	127, // 96: nominal.run.v1.UpdateRunRequest.typed_properties:type_name -> nominal.types.TypedPropertyUpdateWrapper
-	25,  // 97: nominal.run.v1.UpdateRunResponse.run:type_name -> nominal.run.v1.Run
-	56,  // 98: nominal.run.v1.CreateOrUpdateRunRequest.create_run_request:type_name -> nominal.run.v1.CreateRunRequest
-	25,  // 99: nominal.run.v1.CreateOrUpdateRunResponse.run:type_name -> nominal.run.v1.Run
-	116, // 100: nominal.run.v1.AddDataSourcesToRunRequest.data_sources:type_name -> nominal.run.v1.AddDataSourcesToRunRequest.DataSourcesEntry
-	25,  // 101: nominal.run.v1.AddDataSourcesToRunResponse.run:type_name -> nominal.run.v1.Run
-	44,  // 102: nominal.run.v1.BatchEditRunMetadataRequest.run_search_query:type_name -> nominal.run.v1.SearchQuery
-	18,  // 103: nominal.run.v1.BatchEditRunMetadataRequest.operation:type_name -> nominal.run.v1.MetadataChange
-	25,  // 104: nominal.run.v1.GetRunResponse.run:type_name -> nominal.run.v1.Run
-	35,  // 105: nominal.run.v1.GetRunWithDataReviewMetricsResponse.run_with_data_review_metrics:type_name -> nominal.run.v1.RunWithDataReviewMetrics
-	36,  // 106: nominal.run.v1.GetRunWithDataReviewSummaryResponse.run_with_data_review_summary:type_name -> nominal.run.v1.RunWithDataReviewSummary
-	25,  // 107: nominal.run.v1.GetRunByIdResponse.run:type_name -> nominal.run.v1.Run
-	117, // 108: nominal.run.v1.GetRunsResponse.runs:type_name -> nominal.run.v1.GetRunsResponse.RunsEntry
-	25,  // 109: nominal.run.v1.GetRunsByAssetResponse.results:type_name -> nominal.run.v1.Run
-	118, // 110: nominal.run.v1.GetLatestRunForAssetsResponse.runs:type_name -> nominal.run.v1.GetLatestRunForAssetsResponse.RunsEntry
-	119, // 111: nominal.run.v1.GetAllRunsPropertiesAndLabelsResponse.properties:type_name -> nominal.run.v1.GetAllRunsPropertiesAndLabelsResponse.PropertiesEntry
-	49,  // 112: nominal.run.v1.SearchRunsRequest.sort:type_name -> nominal.run.v1.SortOptions
-	44,  // 113: nominal.run.v1.SearchRunsRequest.query:type_name -> nominal.run.v1.SearchQuery
-	50,  // 114: nominal.run.v1.SearchRunsRequest.archived_statuses:type_name -> nominal.run.v1.ArchivedStatusSet
-	25,  // 115: nominal.run.v1.SearchRunsResponse.results:type_name -> nominal.run.v1.Run
-	49,  // 116: nominal.run.v1.SearchRunsWithDataReviewMetricsRequest.sort:type_name -> nominal.run.v1.SortOptions
-	44,  // 117: nominal.run.v1.SearchRunsWithDataReviewMetricsRequest.query:type_name -> nominal.run.v1.SearchQuery
-	50,  // 118: nominal.run.v1.SearchRunsWithDataReviewMetricsRequest.archived_statuses:type_name -> nominal.run.v1.ArchivedStatusSet
-	35,  // 119: nominal.run.v1.SearchRunsWithDataReviewMetricsResponse.results:type_name -> nominal.run.v1.RunWithDataReviewMetrics
-	49,  // 120: nominal.run.v1.SearchRunsWithDataReviewSummaryRequest.sort:type_name -> nominal.run.v1.SortOptions
-	44,  // 121: nominal.run.v1.SearchRunsWithDataReviewSummaryRequest.query:type_name -> nominal.run.v1.SearchQuery
-	50,  // 122: nominal.run.v1.SearchRunsWithDataReviewSummaryRequest.archived_statuses:type_name -> nominal.run.v1.ArchivedStatusSet
-	36,  // 123: nominal.run.v1.SearchRunsWithDataReviewSummaryResponse.results:type_name -> nominal.run.v1.RunWithDataReviewSummary
-	29,  // 124: nominal.run.v1.GetDataSourceRefNameAndTypeListResponse.ref_name_and_types:type_name -> nominal.run.v1.RefNameAndType
-	3,   // 125: nominal.run.v1.UpdateLockStatusRequest.lock_status:type_name -> nominal.run.v1.LockStatus
-	26,  // 126: nominal.run.v1.Run.AssetDataScopesMapEntry.value:type_name -> nominal.run.v1.DataScopes
-	27,  // 127: nominal.run.v1.Run.DataSourcesEntry.value:type_name -> nominal.run.v1.RunDataSource
-	128, // 128: nominal.run.v1.Run.TypedPropertiesEntry.value:type_name -> nominal.types.TypedPropertyValue
-	17,  // 129: nominal.run.v1.DataScopes.DataScopesEntry.value:type_name -> nominal.run.v1.DataScope
-	28,  // 130: nominal.run.v1.CreateRunDataSourceMap.DataSourcesEntry.value:type_name -> nominal.run.v1.CreateRunDataSource
-	28,  // 131: nominal.run.v1.CreateRunRequest.DataSourcesEntry.value:type_name -> nominal.run.v1.CreateRunDataSource
-	128, // 132: nominal.run.v1.CreateRunRequest.TypedPropertiesEntry.value:type_name -> nominal.types.TypedPropertyValue
-	28,  // 133: nominal.run.v1.AddDataSourcesToRunRequest.DataSourcesEntry.value:type_name -> nominal.run.v1.CreateRunDataSource
-	25,  // 134: nominal.run.v1.GetRunsResponse.RunsEntry.value:type_name -> nominal.run.v1.Run
-	25,  // 135: nominal.run.v1.GetLatestRunForAssetsResponse.RunsEntry.value:type_name -> nominal.run.v1.Run
-	82,  // 136: nominal.run.v1.GetAllRunsPropertiesAndLabelsResponse.PropertiesEntry.value:type_name -> nominal.run.v1.PropertyValueList
-	56,  // 137: nominal.run.v1.RunService.CreateRun:input_type -> nominal.run.v1.CreateRunRequest
-	58,  // 138: nominal.run.v1.RunService.UpdateRun:input_type -> nominal.run.v1.UpdateRunRequest
-	60,  // 139: nominal.run.v1.RunService.CreateOrUpdateRun:input_type -> nominal.run.v1.CreateOrUpdateRunRequest
-	62,  // 140: nominal.run.v1.RunService.AddDataSourcesToRun:input_type -> nominal.run.v1.AddDataSourcesToRunRequest
-	64,  // 141: nominal.run.v1.RunService.BatchEditRunMetadata:input_type -> nominal.run.v1.BatchEditRunMetadataRequest
-	66,  // 142: nominal.run.v1.RunService.GetRun:input_type -> nominal.run.v1.GetRunRequest
-	68,  // 143: nominal.run.v1.RunService.GetRunWithDataReviewMetrics:input_type -> nominal.run.v1.GetRunWithDataReviewMetricsRequest
-	70,  // 144: nominal.run.v1.RunService.GetRunWithDataReviewSummary:input_type -> nominal.run.v1.GetRunWithDataReviewSummaryRequest
-	72,  // 145: nominal.run.v1.RunService.GetRunById:input_type -> nominal.run.v1.GetRunByIdRequest
-	74,  // 146: nominal.run.v1.RunService.GetRuns:input_type -> nominal.run.v1.GetRunsRequest
-	76,  // 147: nominal.run.v1.RunService.GetRunsByAsset:input_type -> nominal.run.v1.GetRunsByAssetRequest
-	78,  // 148: nominal.run.v1.RunService.GetLatestRunForAssets:input_type -> nominal.run.v1.GetLatestRunForAssetsRequest
-	80,  // 149: nominal.run.v1.RunService.GetAllRunsPropertiesAndLabels:input_type -> nominal.run.v1.GetAllRunsPropertiesAndLabelsRequest
-	83,  // 150: nominal.run.v1.RunService.SearchRuns:input_type -> nominal.run.v1.SearchRunsRequest
-	85,  // 151: nominal.run.v1.RunService.SearchRunsWithDataReviewMetrics:input_type -> nominal.run.v1.SearchRunsWithDataReviewMetricsRequest
-	87,  // 152: nominal.run.v1.RunService.SearchRunsWithDataReviewSummary:input_type -> nominal.run.v1.SearchRunsWithDataReviewSummaryRequest
-	89,  // 153: nominal.run.v1.RunService.ArchiveRun:input_type -> nominal.run.v1.ArchiveRunRequest
-	91,  // 154: nominal.run.v1.RunService.UnarchiveRun:input_type -> nominal.run.v1.UnarchiveRunRequest
-	93,  // 155: nominal.run.v1.RunService.ArchiveRuns:input_type -> nominal.run.v1.ArchiveRunsRequest
-	95,  // 156: nominal.run.v1.RunService.UnarchiveRuns:input_type -> nominal.run.v1.UnarchiveRunsRequest
-	97,  // 157: nominal.run.v1.RunService.GetDataSourceRefNameAndTypeList:input_type -> nominal.run.v1.GetDataSourceRefNameAndTypeListRequest
-	99,  // 158: nominal.run.v1.RunService.UpdateRunAttachment:input_type -> nominal.run.v1.UpdateRunAttachmentRequest
-	101, // 159: nominal.run.v1.RunService.UpdateLockStatus:input_type -> nominal.run.v1.UpdateLockStatusRequest
-	57,  // 160: nominal.run.v1.RunService.CreateRun:output_type -> nominal.run.v1.CreateRunResponse
-	59,  // 161: nominal.run.v1.RunService.UpdateRun:output_type -> nominal.run.v1.UpdateRunResponse
-	61,  // 162: nominal.run.v1.RunService.CreateOrUpdateRun:output_type -> nominal.run.v1.CreateOrUpdateRunResponse
-	63,  // 163: nominal.run.v1.RunService.AddDataSourcesToRun:output_type -> nominal.run.v1.AddDataSourcesToRunResponse
-	65,  // 164: nominal.run.v1.RunService.BatchEditRunMetadata:output_type -> nominal.run.v1.BatchEditRunMetadataResponse
-	67,  // 165: nominal.run.v1.RunService.GetRun:output_type -> nominal.run.v1.GetRunResponse
-	69,  // 166: nominal.run.v1.RunService.GetRunWithDataReviewMetrics:output_type -> nominal.run.v1.GetRunWithDataReviewMetricsResponse
-	71,  // 167: nominal.run.v1.RunService.GetRunWithDataReviewSummary:output_type -> nominal.run.v1.GetRunWithDataReviewSummaryResponse
-	73,  // 168: nominal.run.v1.RunService.GetRunById:output_type -> nominal.run.v1.GetRunByIdResponse
-	75,  // 169: nominal.run.v1.RunService.GetRuns:output_type -> nominal.run.v1.GetRunsResponse
-	77,  // 170: nominal.run.v1.RunService.GetRunsByAsset:output_type -> nominal.run.v1.GetRunsByAssetResponse
-	79,  // 171: nominal.run.v1.RunService.GetLatestRunForAssets:output_type -> nominal.run.v1.GetLatestRunForAssetsResponse
-	81,  // 172: nominal.run.v1.RunService.GetAllRunsPropertiesAndLabels:output_type -> nominal.run.v1.GetAllRunsPropertiesAndLabelsResponse
-	84,  // 173: nominal.run.v1.RunService.SearchRuns:output_type -> nominal.run.v1.SearchRunsResponse
-	86,  // 174: nominal.run.v1.RunService.SearchRunsWithDataReviewMetrics:output_type -> nominal.run.v1.SearchRunsWithDataReviewMetricsResponse
-	88,  // 175: nominal.run.v1.RunService.SearchRunsWithDataReviewSummary:output_type -> nominal.run.v1.SearchRunsWithDataReviewSummaryResponse
-	90,  // 176: nominal.run.v1.RunService.ArchiveRun:output_type -> nominal.run.v1.ArchiveRunResponse
-	92,  // 177: nominal.run.v1.RunService.UnarchiveRun:output_type -> nominal.run.v1.UnarchiveRunResponse
-	94,  // 178: nominal.run.v1.RunService.ArchiveRuns:output_type -> nominal.run.v1.ArchiveRunsResponse
-	96,  // 179: nominal.run.v1.RunService.UnarchiveRuns:output_type -> nominal.run.v1.UnarchiveRunsResponse
-	98,  // 180: nominal.run.v1.RunService.GetDataSourceRefNameAndTypeList:output_type -> nominal.run.v1.GetDataSourceRefNameAndTypeListResponse
-	100, // 181: nominal.run.v1.RunService.UpdateRunAttachment:output_type -> nominal.run.v1.UpdateRunAttachmentResponse
-	102, // 182: nominal.run.v1.RunService.UpdateLockStatus:output_type -> nominal.run.v1.UpdateLockStatusResponse
-	160, // [160:183] is the sub-list for method output_type
-	137, // [137:160] is the sub-list for method input_type
-	137, // [137:137] is the sub-list for extension type_name
-	137, // [137:137] is the sub-list for extension extendee
-	0,   // [0:137] is the sub-list for field type_name
+	126, // 69: nominal.run.v1.SearchQuery.numeric_property_range:type_name -> nominal.types.NumericPropertyRangePredicate
+	39,  // 70: nominal.run.v1.SearchQuery.asset_types:type_name -> nominal.run.v1.AssetTypesFilter
+	45,  // 71: nominal.run.v1.SearchQueryList.queries:type_name -> nominal.run.v1.SearchQuery
+	6,   // 72: nominal.run.v1.SortKey.field:type_name -> nominal.run.v1.SortField
+	47,  // 73: nominal.run.v1.SortKey.property:type_name -> nominal.run.v1.SortProperty
+	47,  // 74: nominal.run.v1.SortKey.numeric_property:type_name -> nominal.run.v1.SortProperty
+	48,  // 75: nominal.run.v1.SortKeyWithDirection.sort_key:type_name -> nominal.run.v1.SortKey
+	6,   // 76: nominal.run.v1.SortOptions.field:type_name -> nominal.run.v1.SortField
+	48,  // 77: nominal.run.v1.SortOptions.sort_key:type_name -> nominal.run.v1.SortKey
+	49,  // 78: nominal.run.v1.SortOptions.additional_sort_keys:type_name -> nominal.run.v1.SortKeyWithDirection
+	127, // 79: nominal.run.v1.ArchivedStatusSet.archived_statuses:type_name -> nominal.types.ArchivedStatus
+	112, // 80: nominal.run.v1.PropertyMap.properties:type_name -> nominal.run.v1.PropertyMap.PropertiesEntry
+	10,  // 81: nominal.run.v1.LinkList.links:type_name -> nominal.run.v1.Link
+	113, // 82: nominal.run.v1.CreateRunDataSourceMap.data_sources:type_name -> nominal.run.v1.CreateRunDataSourceMap.DataSourcesEntry
+	122, // 83: nominal.run.v1.CreateRunRequest.start_time:type_name -> nominal.run.v1.UtcTimestamp
+	122, // 84: nominal.run.v1.CreateRunRequest.end_time:type_name -> nominal.run.v1.UtcTimestamp
+	114, // 85: nominal.run.v1.CreateRunRequest.properties:type_name -> nominal.run.v1.CreateRunRequest.PropertiesEntry
+	10,  // 86: nominal.run.v1.CreateRunRequest.links:type_name -> nominal.run.v1.Link
+	115, // 87: nominal.run.v1.CreateRunRequest.data_sources:type_name -> nominal.run.v1.CreateRunRequest.DataSourcesEntry
+	116, // 88: nominal.run.v1.CreateRunRequest.typed_properties:type_name -> nominal.run.v1.CreateRunRequest.TypedPropertiesEntry
+	25,  // 89: nominal.run.v1.CreateRunResponse.run:type_name -> nominal.run.v1.Run
+	122, // 90: nominal.run.v1.UpdateRunRequest.start_time:type_name -> nominal.run.v1.UtcTimestamp
+	122, // 91: nominal.run.v1.UpdateRunRequest.end_time:type_name -> nominal.run.v1.UtcTimestamp
+	52,  // 92: nominal.run.v1.UpdateRunRequest.properties:type_name -> nominal.run.v1.PropertyMap
+	53,  // 93: nominal.run.v1.UpdateRunRequest.labels:type_name -> nominal.run.v1.LabelSet
+	54,  // 94: nominal.run.v1.UpdateRunRequest.links:type_name -> nominal.run.v1.LinkList
+	55,  // 95: nominal.run.v1.UpdateRunRequest.data_sources:type_name -> nominal.run.v1.CreateRunDataSourceMap
+	56,  // 96: nominal.run.v1.UpdateRunRequest.attachments:type_name -> nominal.run.v1.AttachmentRidSet
+	128, // 97: nominal.run.v1.UpdateRunRequest.typed_properties:type_name -> nominal.types.TypedPropertyUpdateWrapper
+	25,  // 98: nominal.run.v1.UpdateRunResponse.run:type_name -> nominal.run.v1.Run
+	57,  // 99: nominal.run.v1.CreateOrUpdateRunRequest.create_run_request:type_name -> nominal.run.v1.CreateRunRequest
+	25,  // 100: nominal.run.v1.CreateOrUpdateRunResponse.run:type_name -> nominal.run.v1.Run
+	117, // 101: nominal.run.v1.AddDataSourcesToRunRequest.data_sources:type_name -> nominal.run.v1.AddDataSourcesToRunRequest.DataSourcesEntry
+	25,  // 102: nominal.run.v1.AddDataSourcesToRunResponse.run:type_name -> nominal.run.v1.Run
+	45,  // 103: nominal.run.v1.BatchEditRunMetadataRequest.run_search_query:type_name -> nominal.run.v1.SearchQuery
+	18,  // 104: nominal.run.v1.BatchEditRunMetadataRequest.operation:type_name -> nominal.run.v1.MetadataChange
+	25,  // 105: nominal.run.v1.GetRunResponse.run:type_name -> nominal.run.v1.Run
+	35,  // 106: nominal.run.v1.GetRunWithDataReviewMetricsResponse.run_with_data_review_metrics:type_name -> nominal.run.v1.RunWithDataReviewMetrics
+	36,  // 107: nominal.run.v1.GetRunWithDataReviewSummaryResponse.run_with_data_review_summary:type_name -> nominal.run.v1.RunWithDataReviewSummary
+	25,  // 108: nominal.run.v1.GetRunByIdResponse.run:type_name -> nominal.run.v1.Run
+	118, // 109: nominal.run.v1.GetRunsResponse.runs:type_name -> nominal.run.v1.GetRunsResponse.RunsEntry
+	25,  // 110: nominal.run.v1.GetRunsByAssetResponse.results:type_name -> nominal.run.v1.Run
+	119, // 111: nominal.run.v1.GetLatestRunForAssetsResponse.runs:type_name -> nominal.run.v1.GetLatestRunForAssetsResponse.RunsEntry
+	120, // 112: nominal.run.v1.GetAllRunsPropertiesAndLabelsResponse.properties:type_name -> nominal.run.v1.GetAllRunsPropertiesAndLabelsResponse.PropertiesEntry
+	50,  // 113: nominal.run.v1.SearchRunsRequest.sort:type_name -> nominal.run.v1.SortOptions
+	45,  // 114: nominal.run.v1.SearchRunsRequest.query:type_name -> nominal.run.v1.SearchQuery
+	51,  // 115: nominal.run.v1.SearchRunsRequest.archived_statuses:type_name -> nominal.run.v1.ArchivedStatusSet
+	25,  // 116: nominal.run.v1.SearchRunsResponse.results:type_name -> nominal.run.v1.Run
+	50,  // 117: nominal.run.v1.SearchRunsWithDataReviewMetricsRequest.sort:type_name -> nominal.run.v1.SortOptions
+	45,  // 118: nominal.run.v1.SearchRunsWithDataReviewMetricsRequest.query:type_name -> nominal.run.v1.SearchQuery
+	51,  // 119: nominal.run.v1.SearchRunsWithDataReviewMetricsRequest.archived_statuses:type_name -> nominal.run.v1.ArchivedStatusSet
+	35,  // 120: nominal.run.v1.SearchRunsWithDataReviewMetricsResponse.results:type_name -> nominal.run.v1.RunWithDataReviewMetrics
+	50,  // 121: nominal.run.v1.SearchRunsWithDataReviewSummaryRequest.sort:type_name -> nominal.run.v1.SortOptions
+	45,  // 122: nominal.run.v1.SearchRunsWithDataReviewSummaryRequest.query:type_name -> nominal.run.v1.SearchQuery
+	51,  // 123: nominal.run.v1.SearchRunsWithDataReviewSummaryRequest.archived_statuses:type_name -> nominal.run.v1.ArchivedStatusSet
+	36,  // 124: nominal.run.v1.SearchRunsWithDataReviewSummaryResponse.results:type_name -> nominal.run.v1.RunWithDataReviewSummary
+	29,  // 125: nominal.run.v1.GetDataSourceRefNameAndTypeListResponse.ref_name_and_types:type_name -> nominal.run.v1.RefNameAndType
+	3,   // 126: nominal.run.v1.UpdateLockStatusRequest.lock_status:type_name -> nominal.run.v1.LockStatus
+	26,  // 127: nominal.run.v1.Run.AssetDataScopesMapEntry.value:type_name -> nominal.run.v1.DataScopes
+	27,  // 128: nominal.run.v1.Run.DataSourcesEntry.value:type_name -> nominal.run.v1.RunDataSource
+	129, // 129: nominal.run.v1.Run.TypedPropertiesEntry.value:type_name -> nominal.types.TypedPropertyValue
+	17,  // 130: nominal.run.v1.DataScopes.DataScopesEntry.value:type_name -> nominal.run.v1.DataScope
+	28,  // 131: nominal.run.v1.CreateRunDataSourceMap.DataSourcesEntry.value:type_name -> nominal.run.v1.CreateRunDataSource
+	28,  // 132: nominal.run.v1.CreateRunRequest.DataSourcesEntry.value:type_name -> nominal.run.v1.CreateRunDataSource
+	129, // 133: nominal.run.v1.CreateRunRequest.TypedPropertiesEntry.value:type_name -> nominal.types.TypedPropertyValue
+	28,  // 134: nominal.run.v1.AddDataSourcesToRunRequest.DataSourcesEntry.value:type_name -> nominal.run.v1.CreateRunDataSource
+	25,  // 135: nominal.run.v1.GetRunsResponse.RunsEntry.value:type_name -> nominal.run.v1.Run
+	25,  // 136: nominal.run.v1.GetLatestRunForAssetsResponse.RunsEntry.value:type_name -> nominal.run.v1.Run
+	83,  // 137: nominal.run.v1.GetAllRunsPropertiesAndLabelsResponse.PropertiesEntry.value:type_name -> nominal.run.v1.PropertyValueList
+	57,  // 138: nominal.run.v1.RunService.CreateRun:input_type -> nominal.run.v1.CreateRunRequest
+	59,  // 139: nominal.run.v1.RunService.UpdateRun:input_type -> nominal.run.v1.UpdateRunRequest
+	61,  // 140: nominal.run.v1.RunService.CreateOrUpdateRun:input_type -> nominal.run.v1.CreateOrUpdateRunRequest
+	63,  // 141: nominal.run.v1.RunService.AddDataSourcesToRun:input_type -> nominal.run.v1.AddDataSourcesToRunRequest
+	65,  // 142: nominal.run.v1.RunService.BatchEditRunMetadata:input_type -> nominal.run.v1.BatchEditRunMetadataRequest
+	67,  // 143: nominal.run.v1.RunService.GetRun:input_type -> nominal.run.v1.GetRunRequest
+	69,  // 144: nominal.run.v1.RunService.GetRunWithDataReviewMetrics:input_type -> nominal.run.v1.GetRunWithDataReviewMetricsRequest
+	71,  // 145: nominal.run.v1.RunService.GetRunWithDataReviewSummary:input_type -> nominal.run.v1.GetRunWithDataReviewSummaryRequest
+	73,  // 146: nominal.run.v1.RunService.GetRunById:input_type -> nominal.run.v1.GetRunByIdRequest
+	75,  // 147: nominal.run.v1.RunService.GetRuns:input_type -> nominal.run.v1.GetRunsRequest
+	77,  // 148: nominal.run.v1.RunService.GetRunsByAsset:input_type -> nominal.run.v1.GetRunsByAssetRequest
+	79,  // 149: nominal.run.v1.RunService.GetLatestRunForAssets:input_type -> nominal.run.v1.GetLatestRunForAssetsRequest
+	81,  // 150: nominal.run.v1.RunService.GetAllRunsPropertiesAndLabels:input_type -> nominal.run.v1.GetAllRunsPropertiesAndLabelsRequest
+	84,  // 151: nominal.run.v1.RunService.SearchRuns:input_type -> nominal.run.v1.SearchRunsRequest
+	86,  // 152: nominal.run.v1.RunService.SearchRunsWithDataReviewMetrics:input_type -> nominal.run.v1.SearchRunsWithDataReviewMetricsRequest
+	88,  // 153: nominal.run.v1.RunService.SearchRunsWithDataReviewSummary:input_type -> nominal.run.v1.SearchRunsWithDataReviewSummaryRequest
+	90,  // 154: nominal.run.v1.RunService.ArchiveRun:input_type -> nominal.run.v1.ArchiveRunRequest
+	92,  // 155: nominal.run.v1.RunService.UnarchiveRun:input_type -> nominal.run.v1.UnarchiveRunRequest
+	94,  // 156: nominal.run.v1.RunService.ArchiveRuns:input_type -> nominal.run.v1.ArchiveRunsRequest
+	96,  // 157: nominal.run.v1.RunService.UnarchiveRuns:input_type -> nominal.run.v1.UnarchiveRunsRequest
+	98,  // 158: nominal.run.v1.RunService.GetDataSourceRefNameAndTypeList:input_type -> nominal.run.v1.GetDataSourceRefNameAndTypeListRequest
+	100, // 159: nominal.run.v1.RunService.UpdateRunAttachment:input_type -> nominal.run.v1.UpdateRunAttachmentRequest
+	102, // 160: nominal.run.v1.RunService.UpdateLockStatus:input_type -> nominal.run.v1.UpdateLockStatusRequest
+	58,  // 161: nominal.run.v1.RunService.CreateRun:output_type -> nominal.run.v1.CreateRunResponse
+	60,  // 162: nominal.run.v1.RunService.UpdateRun:output_type -> nominal.run.v1.UpdateRunResponse
+	62,  // 163: nominal.run.v1.RunService.CreateOrUpdateRun:output_type -> nominal.run.v1.CreateOrUpdateRunResponse
+	64,  // 164: nominal.run.v1.RunService.AddDataSourcesToRun:output_type -> nominal.run.v1.AddDataSourcesToRunResponse
+	66,  // 165: nominal.run.v1.RunService.BatchEditRunMetadata:output_type -> nominal.run.v1.BatchEditRunMetadataResponse
+	68,  // 166: nominal.run.v1.RunService.GetRun:output_type -> nominal.run.v1.GetRunResponse
+	70,  // 167: nominal.run.v1.RunService.GetRunWithDataReviewMetrics:output_type -> nominal.run.v1.GetRunWithDataReviewMetricsResponse
+	72,  // 168: nominal.run.v1.RunService.GetRunWithDataReviewSummary:output_type -> nominal.run.v1.GetRunWithDataReviewSummaryResponse
+	74,  // 169: nominal.run.v1.RunService.GetRunById:output_type -> nominal.run.v1.GetRunByIdResponse
+	76,  // 170: nominal.run.v1.RunService.GetRuns:output_type -> nominal.run.v1.GetRunsResponse
+	78,  // 171: nominal.run.v1.RunService.GetRunsByAsset:output_type -> nominal.run.v1.GetRunsByAssetResponse
+	80,  // 172: nominal.run.v1.RunService.GetLatestRunForAssets:output_type -> nominal.run.v1.GetLatestRunForAssetsResponse
+	82,  // 173: nominal.run.v1.RunService.GetAllRunsPropertiesAndLabels:output_type -> nominal.run.v1.GetAllRunsPropertiesAndLabelsResponse
+	85,  // 174: nominal.run.v1.RunService.SearchRuns:output_type -> nominal.run.v1.SearchRunsResponse
+	87,  // 175: nominal.run.v1.RunService.SearchRunsWithDataReviewMetrics:output_type -> nominal.run.v1.SearchRunsWithDataReviewMetricsResponse
+	89,  // 176: nominal.run.v1.RunService.SearchRunsWithDataReviewSummary:output_type -> nominal.run.v1.SearchRunsWithDataReviewSummaryResponse
+	91,  // 177: nominal.run.v1.RunService.ArchiveRun:output_type -> nominal.run.v1.ArchiveRunResponse
+	93,  // 178: nominal.run.v1.RunService.UnarchiveRun:output_type -> nominal.run.v1.UnarchiveRunResponse
+	95,  // 179: nominal.run.v1.RunService.ArchiveRuns:output_type -> nominal.run.v1.ArchiveRunsResponse
+	97,  // 180: nominal.run.v1.RunService.UnarchiveRuns:output_type -> nominal.run.v1.UnarchiveRunsResponse
+	99,  // 181: nominal.run.v1.RunService.GetDataSourceRefNameAndTypeList:output_type -> nominal.run.v1.GetDataSourceRefNameAndTypeListResponse
+	101, // 182: nominal.run.v1.RunService.UpdateRunAttachment:output_type -> nominal.run.v1.UpdateRunAttachmentResponse
+	103, // 183: nominal.run.v1.RunService.UpdateLockStatus:output_type -> nominal.run.v1.UpdateLockStatusResponse
+	161, // [161:184] is the sub-list for method output_type
+	138, // [138:161] is the sub-list for method input_type
+	138, // [138:138] is the sub-list for extension type_name
+	138, // [138:138] is the sub-list for extension extendee
+	0,   // [0:138] is the sub-list for field type_name
 }
 
 func init() { file_nominal_protos_run_v1_run_service_proto_init() }
@@ -7725,13 +7853,13 @@ func file_nominal_protos_run_v1_run_service_proto_init() {
 	}
 	file_nominal_protos_run_v1_run_service_proto_msgTypes[17].OneofWrappers = []any{}
 	file_nominal_protos_run_v1_run_service_proto_msgTypes[20].OneofWrappers = []any{}
-	file_nominal_protos_run_v1_run_service_proto_msgTypes[32].OneofWrappers = []any{}
-	file_nominal_protos_run_v1_run_service_proto_msgTypes[34].OneofWrappers = []any{
+	file_nominal_protos_run_v1_run_service_proto_msgTypes[33].OneofWrappers = []any{}
+	file_nominal_protos_run_v1_run_service_proto_msgTypes[35].OneofWrappers = []any{
 		(*TimeframeFilter_Custom)(nil),
 		(*TimeframeFilter_Preset)(nil),
 	}
-	file_nominal_protos_run_v1_run_service_proto_msgTypes[35].OneofWrappers = []any{}
-	file_nominal_protos_run_v1_run_service_proto_msgTypes[36].OneofWrappers = []any{
+	file_nominal_protos_run_v1_run_service_proto_msgTypes[36].OneofWrappers = []any{}
+	file_nominal_protos_run_v1_run_service_proto_msgTypes[37].OneofWrappers = []any{
 		(*SearchQuery_StartTimeInclusive)(nil),
 		(*SearchQuery_StartTime)(nil),
 		(*SearchQuery_EndTimeInclusive)(nil),
@@ -7763,37 +7891,38 @@ func file_nominal_protos_run_v1_run_service_proto_init() {
 		(*SearchQuery_LockStatus)(nil),
 		(*SearchQuery_DatasetRids)(nil),
 		(*SearchQuery_NumericPropertyRange)(nil),
+		(*SearchQuery_AssetTypes)(nil),
 	}
-	file_nominal_protos_run_v1_run_service_proto_msgTypes[39].OneofWrappers = []any{
+	file_nominal_protos_run_v1_run_service_proto_msgTypes[40].OneofWrappers = []any{
 		(*SortKey_Field)(nil),
 		(*SortKey_Property)(nil),
 		(*SortKey_NumericProperty)(nil),
 	}
-	file_nominal_protos_run_v1_run_service_proto_msgTypes[41].OneofWrappers = []any{}
-	file_nominal_protos_run_v1_run_service_proto_msgTypes[48].OneofWrappers = []any{}
-	file_nominal_protos_run_v1_run_service_proto_msgTypes[50].OneofWrappers = []any{}
-	file_nominal_protos_run_v1_run_service_proto_msgTypes[52].OneofWrappers = []any{}
-	file_nominal_protos_run_v1_run_service_proto_msgTypes[56].OneofWrappers = []any{}
-	file_nominal_protos_run_v1_run_service_proto_msgTypes[64].OneofWrappers = []any{}
-	file_nominal_protos_run_v1_run_service_proto_msgTypes[68].OneofWrappers = []any{}
+	file_nominal_protos_run_v1_run_service_proto_msgTypes[42].OneofWrappers = []any{}
+	file_nominal_protos_run_v1_run_service_proto_msgTypes[49].OneofWrappers = []any{}
+	file_nominal_protos_run_v1_run_service_proto_msgTypes[51].OneofWrappers = []any{}
+	file_nominal_protos_run_v1_run_service_proto_msgTypes[53].OneofWrappers = []any{}
+	file_nominal_protos_run_v1_run_service_proto_msgTypes[57].OneofWrappers = []any{}
+	file_nominal_protos_run_v1_run_service_proto_msgTypes[65].OneofWrappers = []any{}
 	file_nominal_protos_run_v1_run_service_proto_msgTypes[69].OneofWrappers = []any{}
-	file_nominal_protos_run_v1_run_service_proto_msgTypes[75].OneofWrappers = []any{}
+	file_nominal_protos_run_v1_run_service_proto_msgTypes[70].OneofWrappers = []any{}
 	file_nominal_protos_run_v1_run_service_proto_msgTypes[76].OneofWrappers = []any{}
 	file_nominal_protos_run_v1_run_service_proto_msgTypes[77].OneofWrappers = []any{}
 	file_nominal_protos_run_v1_run_service_proto_msgTypes[78].OneofWrappers = []any{}
 	file_nominal_protos_run_v1_run_service_proto_msgTypes[79].OneofWrappers = []any{}
 	file_nominal_protos_run_v1_run_service_proto_msgTypes[80].OneofWrappers = []any{}
 	file_nominal_protos_run_v1_run_service_proto_msgTypes[81].OneofWrappers = []any{}
-	file_nominal_protos_run_v1_run_service_proto_msgTypes[83].OneofWrappers = []any{}
-	file_nominal_protos_run_v1_run_service_proto_msgTypes[85].OneofWrappers = []any{}
-	file_nominal_protos_run_v1_run_service_proto_msgTypes[87].OneofWrappers = []any{}
+	file_nominal_protos_run_v1_run_service_proto_msgTypes[82].OneofWrappers = []any{}
+	file_nominal_protos_run_v1_run_service_proto_msgTypes[84].OneofWrappers = []any{}
+	file_nominal_protos_run_v1_run_service_proto_msgTypes[86].OneofWrappers = []any{}
+	file_nominal_protos_run_v1_run_service_proto_msgTypes[88].OneofWrappers = []any{}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_nominal_protos_run_v1_run_service_proto_rawDesc), len(file_nominal_protos_run_v1_run_service_proto_rawDesc)),
 			NumEnums:      8,
-			NumMessages:   112,
+			NumMessages:   113,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

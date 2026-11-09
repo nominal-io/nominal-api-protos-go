@@ -8,6 +8,7 @@ package data_connectorv1
 
 import (
 	_ "buf.build/gen/go/bufbuild/protovalidate/protocolbuffers/go/buf/validate"
+	_ "github.com/nominal-io/nominal-api-protos-go/nominal/protos/authz/v1"
 	_ "github.com/nominal-io/nominal-api-protos-go/nominal/protos/gen/v1"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
@@ -1831,7 +1832,7 @@ var File_nominal_protos_data_connector_v1_data_connector_proto protoreflect.File
 
 const file_nominal_protos_data_connector_v1_data_connector_proto_rawDesc = "" +
 	"\n" +
-	"5nominal/protos/data_connector/v1/data_connector.proto\x12\x19nominal.data_connector.v1\x1a\x1bbuf/validate/validate.proto\x1a\x1cgoogle/api/annotations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a7nominal/protos/data_connector/v1/opc_ua_connector.proto\x1a!nominal/protos/gen/v1/alias.proto\x1a!nominal/protos/gen/v1/error.proto\"\x84\x03\n" +
+	"5nominal/protos/data_connector/v1/data_connector.proto\x12\x19nominal.data_connector.v1\x1a\x1bbuf/validate/validate.proto\x1a\x1cgoogle/api/annotations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a)nominal/protos/authz/v1/annotations.proto\x1a7nominal/protos/data_connector/v1/opc_ua_connector.proto\x1a!nominal/protos/gen/v1/alias.proto\x1a!nominal/protos/gen/v1/error.proto\"\x84\x03\n" +
 	"\x1aCreateDataConnectorRequest\x12\x1a\n" +
 	"\x04name\x18\x01 \x01(\tB\x06\xbaH\x03\xc8\x01\x01R\x04name\x12%\n" +
 	"\vdescription\x18\x02 \x01(\tH\x00R\vdescription\x88\x01\x01\x12f\n" +
@@ -1965,17 +1966,36 @@ const file_nominal_protos_data_connector_v1_data_connector_proto_rawDesc = "" +
 	"\x1aREPLICA_STATUS_SUBSCRIBING\x10\x02\x12\x1a\n" +
 	"\x16REPLICA_STATUS_RUNNING\x10\x03\x12\x1b\n" +
 	"\x17REPLICA_STATUS_STOPPING\x10\x04\x12\x1a\n" +
-	"\x16REPLICA_STATUS_STOPPED\x10\x052\xce\f\n" +
-	"\x14DataConnectorService\x12\xad\x01\n" +
-	"\x13CreateDataConnector\x125.nominal.data_connector.v1.CreateDataConnectorRequest\x1a6.nominal.data_connector.v1.CreateDataConnectorResponse\"'\x82\xd3\xe4\x93\x02!:\x01*\"\x1c/data-connector/v1/connector\x12\x83\x01\n" +
-	"\x06Search\x12(.nominal.data_connector.v1.SearchRequest\x1a).nominal.data_connector.v1.SearchResponse\"$\x82\xd3\xe4\x93\x02\x1eb\x01*\x12\x19/data-connector/v1/search\x12\xaf\x01\n" +
-	"\x10GetDataConnector\x122.nominal.data_connector.v1.GetDataConnectorRequest\x1a3.nominal.data_connector.v1.GetDataConnectorResponse\"2\x82\xd3\xe4\x93\x02,b\x01*\x12'/data-connector/v1/{data_connector_rid}\x12\xb6\x01\n" +
-	"\x16BatchGetDataConnectors\x128.nominal.data_connector.v1.BatchGetDataConnectorsRequest\x1a9.nominal.data_connector.v1.BatchGetDataConnectorsResponse\"'\x82\xd3\xe4\x93\x02!:\x01*\"\x1c/data-connector/v1/batch-get\x12\xbb\x01\n" +
-	"\x13UpdateDataConnector\x125.nominal.data_connector.v1.UpdateDataConnectorRequest\x1a6.nominal.data_connector.v1.UpdateDataConnectorResponse\"5\x82\xd3\xe4\x93\x02/:\x01*b\x01*\"'/data-connector/v1/{data_connector_rid}\x12\xb1\x01\n" +
-	"\fStartSession\x12..nominal.data_connector.v1.StartSessionRequest\x1a/.nominal.data_connector.v1.StartSessionResponse\"@\x82\xd3\xe4\x93\x02:b\x01*\"5/data-connector/v1/{data_connector_rid}/session/start\x12\xad\x01\n" +
-	"\vStopSession\x12-.nominal.data_connector.v1.StopSessionRequest\x1a..nominal.data_connector.v1.StopSessionResponse\"?\x82\xd3\xe4\x93\x029b\x01*\"4/data-connector/v1/{data_connector_rid}/session/stop\x12\xb7\x01\n" +
-	"\x10GetSessionStatus\x122.nominal.data_connector.v1.GetSessionStatusRequest\x1a3.nominal.data_connector.v1.GetSessionStatusResponse\":\x82\xd3\xe4\x93\x024b\x01*\x12//data-connector/v1/{data_connector_rid}/session\x12\xb8\x01\n" +
-	"\x13DeleteDataConnector\x125.nominal.data_connector.v1.DeleteDataConnectorRequest\x1a6.nominal.data_connector.v1.DeleteDataConnectorResponse\"2\x82\xd3\xe4\x93\x02,b\x01**'/data-connector/v1/{data_connector_rid}B\x94\x02\n" +
+	"\x16REPLICA_STATUS_STOPPED\x10\x052\x82\x0f\n" +
+	"\x14DataConnectorService\x12\x81\x02\n" +
+	"\x13CreateDataConnector\x125.nominal.data_connector.v1.CreateDataConnectorRequest\x1a6.nominal.data_connector.v1.CreateDataConnectorResponse\"{\xba\xb2\x1aP\n" +
+	"\x1f\n" +
+	"\x1bworkspace:edit_connectivity\"\x00\n" +
+	"-\n" +
+	"\x15datasource:write_data\x12\x14\n" +
+	"\x12target_dataset_rid\x82\xd3\xe4\x93\x02!:\x01*\"\x1c/data-connector/v1/connector\x12\x9b\x01\n" +
+	"\x06Search\x12(.nominal.data_connector.v1.SearchRequest\x1a).nominal.data_connector.v1.SearchResponse\"<\xba\xb2\x1a\x14\n" +
+	"\x12\n" +
+	"\x0eworkspace:view\"\x00\x82\xd3\xe4\x93\x02\x1eb\x01*\x12\x19/data-connector/v1/search\x12\xc7\x01\n" +
+	"\x10GetDataConnector\x122.nominal.data_connector.v1.GetDataConnectorRequest\x1a3.nominal.data_connector.v1.GetDataConnectorResponse\"J\xba\xb2\x1a\x14\n" +
+	"\x12\n" +
+	"\x0eworkspace:view\"\x00\x82\xd3\xe4\x93\x02,b\x01*\x12'/data-connector/v1/{data_connector_rid}\x12\xba\x01\n" +
+	"\x16BatchGetDataConnectors\x128.nominal.data_connector.v1.BatchGetDataConnectorsRequest\x1a9.nominal.data_connector.v1.BatchGetDataConnectorsResponse\"+\xba\xb2\x1a\x00\x82\xd3\xe4\x93\x02!:\x01*\"\x1c/data-connector/v1/batch-get\x12\xe0\x01\n" +
+	"\x13UpdateDataConnector\x125.nominal.data_connector.v1.UpdateDataConnectorRequest\x1a6.nominal.data_connector.v1.UpdateDataConnectorResponse\"Z\xba\xb2\x1a!\n" +
+	"\x1f\n" +
+	"\x1bworkspace:edit_connectivity\"\x00\x82\xd3\xe4\x93\x02/:\x01*b\x01*\"'/data-connector/v1/{data_connector_rid}\x12\xd6\x01\n" +
+	"\fStartSession\x12..nominal.data_connector.v1.StartSessionRequest\x1a/.nominal.data_connector.v1.StartSessionResponse\"e\xba\xb2\x1a!\n" +
+	"\x1f\n" +
+	"\x1bworkspace:edit_connectivity\"\x00\x82\xd3\xe4\x93\x02:b\x01*\"5/data-connector/v1/{data_connector_rid}/session/start\x12\xd2\x01\n" +
+	"\vStopSession\x12-.nominal.data_connector.v1.StopSessionRequest\x1a..nominal.data_connector.v1.StopSessionResponse\"d\xba\xb2\x1a!\n" +
+	"\x1f\n" +
+	"\x1bworkspace:edit_connectivity\"\x00\x82\xd3\xe4\x93\x029b\x01*\"4/data-connector/v1/{data_connector_rid}/session/stop\x12\xcf\x01\n" +
+	"\x10GetSessionStatus\x122.nominal.data_connector.v1.GetSessionStatusRequest\x1a3.nominal.data_connector.v1.GetSessionStatusResponse\"R\xba\xb2\x1a\x14\n" +
+	"\x12\n" +
+	"\x0eworkspace:view\"\x00\x82\xd3\xe4\x93\x024b\x01*\x12//data-connector/v1/{data_connector_rid}/session\x12\xdd\x01\n" +
+	"\x13DeleteDataConnector\x125.nominal.data_connector.v1.DeleteDataConnectorRequest\x1a6.nominal.data_connector.v1.DeleteDataConnectorResponse\"W\xba\xb2\x1a!\n" +
+	"\x1f\n" +
+	"\x1bworkspace:edit_connectivity\"\x00\x82\xd3\xe4\x93\x02,b\x01**'/data-connector/v1/{data_connector_rid}B\x94\x02\n" +
 	"\x1dcom.nominal.data_connector.v1B\x12DataConnectorProtoP\x01Z]github.com/nominal-io/nominal-api-protos-go/nominal/protos/data_connector/v1;data_connectorv1\xa2\x02\x03NDX\xaa\x02\x18Nominal.DataConnector.V1\xca\x02\x18Nominal\\DataConnector\\V1\xe2\x02$Nominal\\DataConnector\\V1\\GPBMetadata\xea\x02\x1aNominal::DataConnector::V1b\x06proto3"
 
 var (

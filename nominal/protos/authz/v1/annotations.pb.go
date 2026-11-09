@@ -24,15 +24,8 @@ const (
 
 // The failing-check policy for one RPC. All requirements must hold
 type AuthzPolicy struct {
-	state protoimpl.MessageState `protogen:"open.v1"`
-	// Unordered. Empty means no grant can fail this call, unless dynamic is set
-	Requirements []*Requirement `protobuf:"bytes,1,rep,name=requirements,proto3" json:"requirements,omitempty"`
-	// The handler has a failing check the caller cannot pre-evaluate, because it
-	// depends on server state or on a resource the handler resolves. Consumers
-	// must not read `requirements` as exhaustive.
-	Dynamic bool `protobuf:"varint,2,opt,name=dynamic,proto3" json:"dynamic,omitempty"`
-	// What cannot be pre-checked, and why. Required when dynamic is true
-	DynamicReason string `protobuf:"bytes,3,opt,name=dynamic_reason,json=dynamicReason,proto3" json:"dynamic_reason,omitempty"`
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Requirements  []*Requirement         `protobuf:"bytes,1,rep,name=requirements,proto3" json:"requirements,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -72,20 +65,6 @@ func (x *AuthzPolicy) GetRequirements() []*Requirement {
 		return x.Requirements
 	}
 	return nil
-}
-
-func (x *AuthzPolicy) GetDynamic() bool {
-	if x != nil {
-		return x.Dynamic
-	}
-	return false
-}
-
-func (x *AuthzPolicy) GetDynamicReason() string {
-	if x != nil {
-		return x.DynamicReason
-	}
-	return ""
 }
 
 // One check whose denial fails the call
@@ -203,7 +182,7 @@ func (*Requirement_Workspace) isRequirement_Scope() {}
 type ResourceScope struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// The request field carrying the resource, in lower_snake_case. If the resource
-	// is resolved by the handler instead, set AuthzPolicy.dynamic.
+	// is resolved by the handler instead, use a workspace or organization scope.
 	Field         string `protobuf:"bytes,1,opt,name=field,proto3" json:"field,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -341,11 +320,9 @@ var File_nominal_protos_authz_v1_annotations_proto protoreflect.FileDescriptor
 
 const file_nominal_protos_authz_v1_annotations_proto_rawDesc = "" +
 	"\n" +
-	")nominal/protos/authz/v1/annotations.proto\x12\x10nominal.authz.v1\x1a google/protobuf/descriptor.proto\"\x91\x01\n" +
+	")nominal/protos/authz/v1/annotations.proto\x12\x10nominal.authz.v1\x1a google/protobuf/descriptor.proto\"P\n" +
 	"\vAuthzPolicy\x12A\n" +
-	"\frequirements\x18\x01 \x03(\v2\x1d.nominal.authz.v1.RequirementR\frequirements\x12\x18\n" +
-	"\adynamic\x18\x02 \x01(\bR\adynamic\x12%\n" +
-	"\x0edynamic_reason\x18\x03 \x01(\tR\rdynamicReason\"\xfa\x01\n" +
+	"\frequirements\x18\x01 \x03(\v2\x1d.nominal.authz.v1.RequirementR\frequirements\"\xfa\x01\n" +
 	"\vRequirement\x12\x16\n" +
 	"\x06action\x18\x01 \x01(\tR\x06action\x12=\n" +
 	"\bresource\x18\x02 \x01(\v2\x1f.nominal.authz.v1.ResourceScopeH\x00R\bresource\x12I\n" +

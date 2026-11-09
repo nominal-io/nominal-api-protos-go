@@ -182,19 +182,19 @@ func (ExecutionEvent_ExecutionError_Source) EnumDescriptor() ([]byte, []int) {
 }
 
 // ExecutionEvent is one step of one execution on a sandbox's Python interpreter.
-// A sandbox emits a stream of these per execution, ending in exactly one
-// ExecutionComplete.
+// A sandbox emits a stream of these per execution.
 //
-// An event is at most 4 MiB less 64 KiB of envelope headroom, which bounds every
-// variable-length field below.
+// Keep each event inside the receiver's gRPC maximum receive message size,
+// which defaults to 4 MiB. Drop output and report SOURCE_OUTPUT_DROPPED
+// instead.
 //
-// An event whose `event` is not set carries a variant added after the reader was
-// built; fail rather than treat the execution as finished.
+// An event with no `event` set carries an unknown variant. Fail the execution
+// rather than report it finished.
 type ExecutionEvent struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Per-sandbox sequence number, starting at 1 and spanning executions.
 	Seq uint64 `protobuf:"varint,1,opt,name=seq,proto3" json:"seq,omitempty"`
-	// The execution this event belongs to. At most 256 bytes.
+	// The execution this event belongs to.
 	ExecId string `protobuf:"bytes,2,opt,name=exec_id,json=execId,proto3" json:"exec_id,omitempty"`
 	// Types that are valid to be assigned to Event:
 	//
@@ -342,7 +342,7 @@ func (*ExecutionEvent_Complete) isExecutionEvent_Event() {}
 type ExecutionEvent_StreamOutput struct {
 	state protoimpl.MessageState    `protogen:"open.v1"`
 	Name  ExecutionEvent_StreamName `protobuf:"varint,1,opt,name=name,proto3,enum=nominal.codesandbox.v1.ExecutionEvent_StreamName" json:"name,omitempty"`
-	// Unmodified and not newline-terminated. Bounded by the event size limit.
+	// Unmodified and not newline-terminated.
 	Text          string `protobuf:"bytes,2,opt,name=text,proto3" json:"text,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -392,11 +392,10 @@ func (x *ExecutionEvent_StreamOutput) GetText() string {
 	return ""
 }
 
-// A Jupyter MIME bundle: one rendering of a value per MIME type.
+// A Jupyter MIME bundle.
 type ExecutionEvent_MimeBundle struct {
-	state protoimpl.MessageState `protogen:"open.v1"`
-	// Bounded by the event size limit.
-	Payloads      map[string][]byte `protobuf:"bytes,1,rep,name=payloads,proto3" json:"payloads,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Payloads      map[string][]byte      `protobuf:"bytes,1,rep,name=payloads,proto3" json:"payloads,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -483,7 +482,7 @@ func (x *ExecutionEvent_ExecutionResult) GetMimeBundle() *ExecutionEvent_MimeBun
 	return nil
 }
 
-// Rich output displayed along the way: a plot, a dataframe's HTML.
+// Rich output the execution displayed while it ran.
 type ExecutionEvent_DisplayData struct {
 	state         protoimpl.MessageState     `protogen:"open.v1"`
 	MimeBundle    *ExecutionEvent_MimeBundle `protobuf:"bytes,1,opt,name=mime_bundle,json=mimeBundle,proto3" json:"mime_bundle,omitempty"`
@@ -533,12 +532,11 @@ type ExecutionEvent_ExecutionError struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Exception class name when source is SOURCE_INTERPRETER. Empty otherwise.
 	Ename string `protobuf:"bytes,1,opt,name=ename,proto3" json:"ename,omitempty"`
-	// Human-readable message. Bounded by the event size limit.
+	// Human-readable message.
 	Evalue string `protobuf:"bytes,2,opt,name=evalue,proto3" json:"evalue,omitempty"`
-	// Traceback lines with ANSI escape codes preserved. Bounded by the event
-	// size limit.
+	// Traceback lines with ANSI escape codes preserved.
 	Traceback []string `protobuf:"bytes,3,rep,name=traceback,proto3" json:"traceback,omitempty"`
-	// Readers switch on this, not on ename.
+	// Switch on this field, not on ename.
 	Source        ExecutionEvent_ExecutionError_Source `protobuf:"varint,4,opt,name=source,proto3,enum=nominal.codesandbox.v1.ExecutionEvent_ExecutionError_Source" json:"source,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -602,7 +600,7 @@ func (x *ExecutionEvent_ExecutionError) GetSource() ExecutionEvent_ExecutionErro
 	return ExecutionEvent_ExecutionError_SOURCE_UNSPECIFIED
 }
 
-// Terminal event: exactly one per exec_id, and the last.
+// The last event of the execution. Exactly one per exec_id.
 type ExecutionEvent_ExecutionComplete struct {
 	state  protoimpl.MessageState `protogen:"open.v1"`
 	Status ExecutionEvent_Status  `protobuf:"varint,1,opt,name=status,proto3,enum=nominal.codesandbox.v1.ExecutionEvent_Status" json:"status,omitempty"`

@@ -538,12 +538,12 @@ const file_nominal_protos_public_app_authentication_v1_public_app_authentication
 	"-PUBLIC_APP_AUTHENTICATION_ERROR_INVALID_GRANT\x10\x06\x1a7\xb2\xb2\x1a3\n" +
 	"\x10INVALID_ARGUMENT\x12\x1fcould not grant an access token\x12\x8a\x01\n" +
 	":PUBLIC_APP_AUTHENTICATION_ERROR_INVALID_CLIENT_CREDENTIALS\x10\a\x1aJ\xb2\xb2\x1aF\n" +
-	"\x10INVALID_ARGUMENT\x122invalid client credentials used for authentication2\xdf\x06\n" +
-	"\x1ePublicAppAuthenticationService\x12\xb2\x01\n" +
-	"\vHealthCheck\x128.nominal.public_app.authentication.v1.HealthCheckRequest\x1a9.nominal.public_app.authentication.v1.HealthCheckResponse\".\x82\xd3\xe4\x93\x02(\x12&/authentication/public/v1/health-check\x12\xb2\x01\n" +
-	"\vGetOidcInit\x128.nominal.public_app.authentication.v1.GetOidcInitRequest\x1a9.nominal.public_app.authentication.v1.GetOidcInitResponse\".\x82\xd3\xe4\x93\x02(:\x01*\"#/authentication/public/v1/oidc-init\x12\xf3\x01\n" +
-	"\x19ExchangeAuthorizationCode\x12F.nominal.public_app.authentication.v1.ExchangeAuthorizationCodeRequest\x1aG.nominal.public_app.authentication.v1.ExchangeAuthorizationCodeResponse\"E\x82\xd3\xe4\x93\x02?:\x01*\":/authentication/public/v1/oidc-exchange-authorization-code\x12\xdc\x01\n" +
-	"\x16GetNominalInstanceInfo\x12C.nominal.public_app.authentication.v1.GetNominalInstanceInfoRequest\x1aD.nominal.public_app.authentication.v1.GetNominalInstanceInfoResponse\"7\x82\xd3\xe4\x93\x021\x12//authentication/public/v1/nominal-instance-infoB\xe1\x02\n" +
+	"\x10INVALID_ARGUMENT\x122invalid client credentials used for authentication2\xe8\x06\n" +
+	"\x1ePublicAppAuthenticationService\x12\xb5\x01\n" +
+	"\vHealthCheck\x128.nominal.public_app.authentication.v1.HealthCheckRequest\x1a9.nominal.public_app.authentication.v1.HealthCheckResponse\"1\x82\xd3\xe4\x93\x02(\x12&/authentication/public/v1/health-check\x90\x02\x01\x12\xb5\x01\n" +
+	"\vGetOidcInit\x128.nominal.public_app.authentication.v1.GetOidcInitRequest\x1a9.nominal.public_app.authentication.v1.GetOidcInitResponse\"1\x82\xd3\xe4\x93\x02(:\x01*\"#/authentication/public/v1/oidc-init\x90\x02\x01\x12\xf3\x01\n" +
+	"\x19ExchangeAuthorizationCode\x12F.nominal.public_app.authentication.v1.ExchangeAuthorizationCodeRequest\x1aG.nominal.public_app.authentication.v1.ExchangeAuthorizationCodeResponse\"E\x82\xd3\xe4\x93\x02?:\x01*\":/authentication/public/v1/oidc-exchange-authorization-code\x12\xdf\x01\n" +
+	"\x16GetNominalInstanceInfo\x12C.nominal.public_app.authentication.v1.GetNominalInstanceInfoRequest\x1aD.nominal.public_app.authentication.v1.GetNominalInstanceInfoResponse\":\x82\xd3\xe4\x93\x021\x12//authentication/public/v1/nominal-instance-info\x90\x02\x01B\xe1\x02\n" +
 	"(com.nominal.public_app.authentication.v1B\x1cPublicAppAuthenticationProtoP\x01Zhgithub.com/nominal-io/nominal-api-protos-go/nominal/protos/public_app/authentication/v1;authenticationv1\xa2\x02\x03NPA\xaa\x02#Nominal.PublicApp.Authentication.V1\xca\x02#Nominal\\PublicApp\\Authentication\\V1\xe2\x02/Nominal\\PublicApp\\Authentication\\V1\\GPBMetadata\xea\x02&Nominal::PublicApp::Authentication::V1b\x06proto3"
 
 var (

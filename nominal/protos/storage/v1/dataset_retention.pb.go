@@ -8,6 +8,7 @@ package storagev1
 
 import (
 	_ "buf.build/gen/go/bufbuild/protovalidate/protocolbuffers/go/buf/validate"
+	_ "github.com/nominal-io/nominal-api-protos-go/nominal/protos/authz/v1"
 	_ "github.com/nominal-io/nominal-api-protos-go/nominal/protos/gen/v1"
 	time "github.com/nominal-io/nominal-api-protos-go/nominal/protos/types/time"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
@@ -859,7 +860,7 @@ var File_nominal_protos_storage_v1_dataset_retention_proto protoreflect.FileDesc
 
 const file_nominal_protos_storage_v1_dataset_retention_proto_rawDesc = "" +
 	"\n" +
-	"1nominal/protos/storage/v1/dataset_retention.proto\x12\x12nominal.storage.v1\x1a\x1bbuf/validate/validate.proto\x1a\x1cgoogle/api/annotations.proto\x1a!nominal/protos/gen/v1/alias.proto\x1a$nominal/protos/types/time/time.proto\"\x89\x02\n" +
+	"1nominal/protos/storage/v1/dataset_retention.proto\x12\x12nominal.storage.v1\x1a\x1bbuf/validate/validate.proto\x1a\x1cgoogle/api/annotations.proto\x1a)nominal/protos/authz/v1/annotations.proto\x1a!nominal/protos/gen/v1/alias.proto\x1a$nominal/protos/types/time/time.proto\"\x89\x02\n" +
 	"\x19DatasetRetentionExemption\x12K\n" +
 	"\vdataset_rid\x18\x01 \x01(\tB*\xbaH\x03\xc8\x01\x01\x9a\xb2\x1a \n" +
 	"\x1eio.nominal.api.rids.DatasetRidR\n" +
@@ -932,15 +933,32 @@ const file_nominal_protos_storage_v1_dataset_retention_proto_rawDesc = "" +
 	"datasetRid\x12S\n" +
 	"\x10retention_policy\x18\x02 \x01(\v2#.nominal.storage.v1.RetentionPolicyH\x00R\x0fretentionPolicy\x88\x01\x01B\x13\n" +
 	"\x11_retention_policy\"\x1f\n" +
-	"\x1dUpdateRetentionPolicyResponse2\x9a\n" +
-	"\n" +
-	"\x17DatasetRetentionService\x12\xbb\x01\n" +
-	"\x15UpdateRetentionPolicy\x120.nominal.storage.v1.UpdateRetentionPolicyRequest\x1a1.nominal.storage.v1.UpdateRetentionPolicyResponse\"=\x82\xd3\xe4\x93\x027:\x01*\x1a2/storage/dataset-retention/v1/policy/{dataset_rid}\x12\xcf\x01\n" +
-	"\x1fUpsertDatasetRetentionExemption\x12:.nominal.storage.v1.UpsertDatasetRetentionExemptionRequest\x1a;.nominal.storage.v1.UpsertDatasetRetentionExemptionResponse\"3\x82\xd3\xe4\x93\x02-:\x01*\"(/storage/dataset-retention/v1/exemptions\x12\xe6\x01\n" +
-	"\x1fDeleteDatasetRetentionExemption\x12:.nominal.storage.v1.DeleteDatasetRetentionExemptionRequest\x1a;.nominal.storage.v1.DeleteDatasetRetentionExemptionResponse\"J\x82\xd3\xe4\x93\x02D*B/storage/dataset-retention/v1/exemptions/{dataset_rid}/{source_id}\x12\xd1\x01\n" +
-	"\x1eListDatasetRetentionExemptions\x129.nominal.storage.v1.ListDatasetRetentionExemptionsRequest\x1a:.nominal.storage.v1.ListDatasetRetentionExemptionsResponse\"8\x82\xd3\xe4\x93\x022:\x01*\"-/storage/dataset-retention/v1/exemptions/list\x12\xd1\x01\n" +
-	"\x1cGetDatasetRetentionWatermark\x127.nominal.storage.v1.GetDatasetRetentionWatermarkRequest\x1a8.nominal.storage.v1.GetDatasetRetentionWatermarkResponse\">\x82\xd3\xe4\x93\x028\x126/storage/dataset-retention/v1/watermarks/{dataset_rid}\x12\xdd\x01\n" +
-	"\x1fUpdateDatasetRetentionWatermark\x12:.nominal.storage.v1.UpdateDatasetRetentionWatermarkRequest\x1a;.nominal.storage.v1.UpdateDatasetRetentionWatermarkResponse\"A\x82\xd3\xe4\x93\x02;:\x01*\x1a6/storage/dataset-retention/v1/watermarks/{dataset_rid}B\xea\x01\n" +
+	"\x1dUpdateRetentionPolicyResponse2\xac\f\n" +
+	"\x17DatasetRetentionService\x12\xe8\x01\n" +
+	"\x15UpdateRetentionPolicy\x120.nominal.storage.v1.UpdateRetentionPolicyRequest\x1a1.nominal.storage.v1.UpdateRetentionPolicyResponse\"j\xba\xb2\x1a)\n" +
+	"'\n" +
+	"\x16datasource:delete_data\x12\r\n" +
+	"\vdataset_rid\x82\xd3\xe4\x93\x027:\x01*\x1a2/storage/dataset-retention/v1/policy/{dataset_rid}\x12\xfc\x01\n" +
+	"\x1fUpsertDatasetRetentionExemption\x12:.nominal.storage.v1.UpsertDatasetRetentionExemptionRequest\x1a;.nominal.storage.v1.UpsertDatasetRetentionExemptionResponse\"`\xba\xb2\x1a)\n" +
+	"'\n" +
+	"\x16datasource:delete_data\x12\r\n" +
+	"\vdataset_rid\x82\xd3\xe4\x93\x02-:\x01*\"(/storage/dataset-retention/v1/exemptions\x12\x93\x02\n" +
+	"\x1fDeleteDatasetRetentionExemption\x12:.nominal.storage.v1.DeleteDatasetRetentionExemptionRequest\x1a;.nominal.storage.v1.DeleteDatasetRetentionExemptionResponse\"w\xba\xb2\x1a)\n" +
+	"'\n" +
+	"\x16datasource:delete_data\x12\r\n" +
+	"\vdataset_rid\x82\xd3\xe4\x93\x02D*B/storage/dataset-retention/v1/exemptions/{dataset_rid}/{source_id}\x12\x80\x02\n" +
+	"\x1eListDatasetRetentionExemptions\x129.nominal.storage.v1.ListDatasetRetentionExemptionsRequest\x1a:.nominal.storage.v1.ListDatasetRetentionExemptionsResponse\"g\xba\xb2\x1a+\n" +
+	")\n" +
+	"\x18datasource:read_metadata\x12\r\n" +
+	"\vdataset_rid\x82\xd3\xe4\x93\x022:\x01*\"-/storage/dataset-retention/v1/exemptions/list\x12\x80\x02\n" +
+	"\x1cGetDatasetRetentionWatermark\x127.nominal.storage.v1.GetDatasetRetentionWatermarkRequest\x1a8.nominal.storage.v1.GetDatasetRetentionWatermarkResponse\"m\xba\xb2\x1a+\n" +
+	")\n" +
+	"\x18datasource:read_metadata\x12\r\n" +
+	"\vdataset_rid\x82\xd3\xe4\x93\x028\x126/storage/dataset-retention/v1/watermarks/{dataset_rid}\x12\x8a\x02\n" +
+	"\x1fUpdateDatasetRetentionWatermark\x12:.nominal.storage.v1.UpdateDatasetRetentionWatermarkRequest\x1a;.nominal.storage.v1.UpdateDatasetRetentionWatermarkResponse\"n\xba\xb2\x1a)\n" +
+	"'\n" +
+	"\x16datasource:delete_data\x12\r\n" +
+	"\vdataset_rid\x82\xd3\xe4\x93\x02;:\x01*\x1a6/storage/dataset-retention/v1/watermarks/{dataset_rid}B\xea\x01\n" +
 	"\x16com.nominal.storage.v1B\x15DatasetRetentionProtoP\x01ZOgithub.com/nominal-io/nominal-api-protos-go/nominal/protos/storage/v1;storagev1\xa2\x02\x03NSX\xaa\x02\x12Nominal.Storage.V1\xca\x02\x12Nominal\\Storage\\V1\xe2\x02\x1eNominal\\Storage\\V1\\GPBMetadata\xea\x02\x14Nominal::Storage::V1b\x06proto3"
 
 var (

@@ -8,6 +8,7 @@ package novav1
 
 import (
 	_ "buf.build/gen/go/bufbuild/protovalidate/protocolbuffers/go/buf/validate"
+	_ "github.com/nominal-io/nominal-api-protos-go/nominal/protos/authz/v1"
 	_ "github.com/nominal-io/nominal-api-protos-go/nominal/protos/gen/v1"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
@@ -1160,7 +1161,7 @@ var File_nominal_protos_nova_v1_key_value_proto protoreflect.FileDescriptor
 
 const file_nominal_protos_nova_v1_key_value_proto_rawDesc = "" +
 	"\n" +
-	"&nominal/protos/nova/v1/key_value.proto\x12\x0fnominal.nova.v1\x1a\x1bbuf/validate/validate.proto\x1a\x1cgoogle/api/annotations.proto\x1a\x1cgoogle/protobuf/struct.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a!nominal/protos/gen/v1/alias.proto\x1a!nominal/protos/gen/v1/error.proto\"\xb2\x02\n" +
+	"&nominal/protos/nova/v1/key_value.proto\x12\x0fnominal.nova.v1\x1a\x1bbuf/validate/validate.proto\x1a\x1cgoogle/api/annotations.proto\x1a\x1cgoogle/protobuf/struct.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a)nominal/protos/authz/v1/annotations.proto\x1a!nominal/protos/gen/v1/alias.proto\x1a!nominal/protos/gen/v1/error.proto\"\xb2\x02\n" +
 	"\rKeyValueEntry\x12E\n" +
 	"\aapp_rid\x18\x01 \x01(\tB,\xbaH\x05r\x03\x18\x80\x04\x9a\xb2\x1a \n" +
 	"\x1eio.nominal.api.rids.NovaAppRidR\x06appRid\x12\x1c\n" +
@@ -1275,17 +1276,35 @@ const file_nominal_protos_nova_v1_key_value_proto_rawDesc = "" +
 	")NOVA_KEY_VALUE_ERROR_ENTRY_ALREADY_EXISTS\x10\x06\x1a0\xb2\xb2\x1a,\n" +
 	"\x0eALREADY_EXISTS\x12\x1aKeyValueEntryAlreadyExists\x12P\n" +
 	"$NOVA_KEY_VALUE_ERROR_ENTRY_NOT_FOUND\x10\x05\x1a&\xb2\xb2\x1a\"\n" +
-	"\tNOT_FOUND\x12\x15KeyValueEntryNotFound2\x8b\f\n" +
-	"\x13NovaKeyValueService\x12\x97\x01\n" +
-	"\x13CreateKeyValueEntry\x12+.nominal.nova.v1.CreateKeyValueEntryRequest\x1a,.nominal.nova.v1.CreateKeyValueEntryResponse\"%\x82\xd3\xe4\x93\x02\x1f:\x01*\"\x1a/nova/v1/apps/{app_rid}/kv\x12\x9d\x01\n" +
-	"\x13UpdateKeyValueEntry\x12+.nominal.nova.v1.UpdateKeyValueEntryRequest\x1a,.nominal.nova.v1.UpdateKeyValueEntryResponse\"+\x82\xd3\xe4\x93\x02%:\x01*\x1a /nova/v1/apps/{app_rid}/kv/{key}\x12\x91\x01\n" +
-	"\x10GetKeyValueEntry\x12(.nominal.nova.v1.GetKeyValueEntryRequest\x1a).nominal.nova.v1.GetKeyValueEntryResponse\"(\x82\xd3\xe4\x93\x02\"\x12 /nova/v1/apps/{app_rid}/kv/{key}\x12\x9a\x01\n" +
-	"\x13DeleteKeyValueEntry\x12+.nominal.nova.v1.DeleteKeyValueEntryRequest\x1a,.nominal.nova.v1.DeleteKeyValueEntryResponse\"(\x82\xd3\xe4\x93\x02\"* /nova/v1/apps/{app_rid}/kv/{key}\x12\xad\x01\n" +
-	"\x17BatchGetKeyValueEntries\x12/.nominal.nova.v1.BatchGetKeyValueEntriesRequest\x1a0.nominal.nova.v1.BatchGetKeyValueEntriesResponse\"/\x82\xd3\xe4\x93\x02):\x01*\"$/nova/v1/apps/{app_rid}/kv/batch-get\x12\xb9\x01\n" +
-	"\x1aBatchCreateKeyValueEntries\x122.nominal.nova.v1.BatchCreateKeyValueEntriesRequest\x1a3.nominal.nova.v1.BatchCreateKeyValueEntriesResponse\"2\x82\xd3\xe4\x93\x02,:\x01*\"'/nova/v1/apps/{app_rid}/kv/batch-create\x12\xb9\x01\n" +
-	"\x1aBatchUpdateKeyValueEntries\x122.nominal.nova.v1.BatchUpdateKeyValueEntriesRequest\x1a3.nominal.nova.v1.BatchUpdateKeyValueEntriesResponse\"2\x82\xd3\xe4\x93\x02,:\x01*\"'/nova/v1/apps/{app_rid}/kv/batch-update\x12\xb9\x01\n" +
-	"\x1aBatchDeleteKeyValueEntries\x122.nominal.nova.v1.BatchDeleteKeyValueEntriesRequest\x1a3.nominal.nova.v1.BatchDeleteKeyValueEntriesResponse\"2\x82\xd3\xe4\x93\x02,:\x01*\"'/nova/v1/apps/{app_rid}/kv/batch-delete\x12\xa4\x01\n" +
-	"\x15SearchKeyValueEntries\x12-.nominal.nova.v1.SearchKeyValueEntriesRequest\x1a..nominal.nova.v1.SearchKeyValueEntriesResponse\",\x82\xd3\xe4\x93\x02&:\x01*\"!/nova/v1/apps/{app_rid}/kv/searchB\xcd\x01\n" +
+	"\tNOT_FOUND\x12\x15KeyValueEntryNotFound2\xe3\r\n" +
+	"\x13NovaKeyValueService\x12\xaf\x01\n" +
+	"\x13CreateKeyValueEntry\x12+.nominal.nova.v1.CreateKeyValueEntryRequest\x1a,.nominal.nova.v1.CreateKeyValueEntryResponse\"=\xba\xb2\x1a\x14\n" +
+	"\x12\n" +
+	"\x0eworkspace:view\"\x00\x82\xd3\xe4\x93\x02\x1f:\x01*\"\x1a/nova/v1/apps/{app_rid}/kv\x12\xb5\x01\n" +
+	"\x13UpdateKeyValueEntry\x12+.nominal.nova.v1.UpdateKeyValueEntryRequest\x1a,.nominal.nova.v1.UpdateKeyValueEntryResponse\"C\xba\xb2\x1a\x14\n" +
+	"\x12\n" +
+	"\x0eworkspace:view\"\x00\x82\xd3\xe4\x93\x02%:\x01*\x1a /nova/v1/apps/{app_rid}/kv/{key}\x12\xa9\x01\n" +
+	"\x10GetKeyValueEntry\x12(.nominal.nova.v1.GetKeyValueEntryRequest\x1a).nominal.nova.v1.GetKeyValueEntryResponse\"@\xba\xb2\x1a\x14\n" +
+	"\x12\n" +
+	"\x0eworkspace:view\"\x00\x82\xd3\xe4\x93\x02\"\x12 /nova/v1/apps/{app_rid}/kv/{key}\x12\xb2\x01\n" +
+	"\x13DeleteKeyValueEntry\x12+.nominal.nova.v1.DeleteKeyValueEntryRequest\x1a,.nominal.nova.v1.DeleteKeyValueEntryResponse\"@\xba\xb2\x1a\x14\n" +
+	"\x12\n" +
+	"\x0eworkspace:view\"\x00\x82\xd3\xe4\x93\x02\"* /nova/v1/apps/{app_rid}/kv/{key}\x12\xc5\x01\n" +
+	"\x17BatchGetKeyValueEntries\x12/.nominal.nova.v1.BatchGetKeyValueEntriesRequest\x1a0.nominal.nova.v1.BatchGetKeyValueEntriesResponse\"G\xba\xb2\x1a\x14\n" +
+	"\x12\n" +
+	"\x0eworkspace:view\"\x00\x82\xd3\xe4\x93\x02):\x01*\"$/nova/v1/apps/{app_rid}/kv/batch-get\x12\xd1\x01\n" +
+	"\x1aBatchCreateKeyValueEntries\x122.nominal.nova.v1.BatchCreateKeyValueEntriesRequest\x1a3.nominal.nova.v1.BatchCreateKeyValueEntriesResponse\"J\xba\xb2\x1a\x14\n" +
+	"\x12\n" +
+	"\x0eworkspace:view\"\x00\x82\xd3\xe4\x93\x02,:\x01*\"'/nova/v1/apps/{app_rid}/kv/batch-create\x12\xd1\x01\n" +
+	"\x1aBatchUpdateKeyValueEntries\x122.nominal.nova.v1.BatchUpdateKeyValueEntriesRequest\x1a3.nominal.nova.v1.BatchUpdateKeyValueEntriesResponse\"J\xba\xb2\x1a\x14\n" +
+	"\x12\n" +
+	"\x0eworkspace:view\"\x00\x82\xd3\xe4\x93\x02,:\x01*\"'/nova/v1/apps/{app_rid}/kv/batch-update\x12\xd1\x01\n" +
+	"\x1aBatchDeleteKeyValueEntries\x122.nominal.nova.v1.BatchDeleteKeyValueEntriesRequest\x1a3.nominal.nova.v1.BatchDeleteKeyValueEntriesResponse\"J\xba\xb2\x1a\x14\n" +
+	"\x12\n" +
+	"\x0eworkspace:view\"\x00\x82\xd3\xe4\x93\x02,:\x01*\"'/nova/v1/apps/{app_rid}/kv/batch-delete\x12\xbc\x01\n" +
+	"\x15SearchKeyValueEntries\x12-.nominal.nova.v1.SearchKeyValueEntriesRequest\x1a..nominal.nova.v1.SearchKeyValueEntriesResponse\"D\xba\xb2\x1a\x14\n" +
+	"\x12\n" +
+	"\x0eworkspace:view\"\x00\x82\xd3\xe4\x93\x02&:\x01*\"!/nova/v1/apps/{app_rid}/kv/searchB\xcd\x01\n" +
 	"\x13com.nominal.nova.v1B\rKeyValueProtoP\x01ZIgithub.com/nominal-io/nominal-api-protos-go/nominal/protos/nova/v1;novav1\xa2\x02\x03NNX\xaa\x02\x0fNominal.Nova.V1\xca\x02\x0fNominal\\Nova\\V1\xe2\x02\x1bNominal\\Nova\\V1\\GPBMetadata\xea\x02\x11Nominal::Nova::V1b\x06proto3"
 
 var (

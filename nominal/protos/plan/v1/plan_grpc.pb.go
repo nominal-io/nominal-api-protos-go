@@ -21,13 +21,15 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	PlanService_CreatePlan_FullMethodName         = "/nominal.plan.v1.PlanService/CreatePlan"
-	PlanService_GetPlan_FullMethodName            = "/nominal.plan.v1.PlanService/GetPlan"
-	PlanService_BatchGetPlans_FullMethodName      = "/nominal.plan.v1.PlanService/BatchGetPlans"
-	PlanService_CreatePlanCommit_FullMethodName   = "/nominal.plan.v1.PlanService/CreatePlanCommit"
-	PlanService_UpdatePlanMetadata_FullMethodName = "/nominal.plan.v1.PlanService/UpdatePlanMetadata"
-	PlanService_SearchPlans_FullMethodName        = "/nominal.plan.v1.PlanService/SearchPlans"
-	PlanService_ValidatePlan_FullMethodName       = "/nominal.plan.v1.PlanService/ValidatePlan"
+	PlanService_CreatePlan_FullMethodName                  = "/nominal.plan.v1.PlanService/CreatePlan"
+	PlanService_GetPlan_FullMethodName                     = "/nominal.plan.v1.PlanService/GetPlan"
+	PlanService_BatchGetPlans_FullMethodName               = "/nominal.plan.v1.PlanService/BatchGetPlans"
+	PlanService_BatchGetPlanSummaries_FullMethodName       = "/nominal.plan.v1.PlanService/BatchGetPlanSummaries"
+	PlanService_CreatePlanCommit_FullMethodName            = "/nominal.plan.v1.PlanService/CreatePlanCommit"
+	PlanService_UpdatePlanMetadata_FullMethodName          = "/nominal.plan.v1.PlanService/UpdatePlanMetadata"
+	PlanService_SearchPlans_FullMethodName                 = "/nominal.plan.v1.PlanService/SearchPlans"
+	PlanService_ValidatePlan_FullMethodName                = "/nominal.plan.v1.PlanService/ValidatePlan"
+	PlanService_ListPlanAssetGroupSummaries_FullMethodName = "/nominal.plan.v1.PlanService/ListPlanAssetGroupSummaries"
 )
 
 // PlanServiceClient is the client API for PlanService service.
@@ -42,6 +44,9 @@ type PlanServiceClient interface {
 	GetPlan(ctx context.Context, in *GetPlanRequest, opts ...grpc.CallOption) (*GetPlanResponse, error)
 	// Read several plans at the latest commit on their "main" branch.
 	BatchGetPlans(ctx context.Context, in *BatchGetPlansRequest, opts ...grpc.CallOption) (*BatchGetPlansResponse, error)
+	// Read several plans' summaries — metadata and cached dates, without content. Order is not guaranteed to match
+	// the request.
+	BatchGetPlanSummaries(ctx context.Context, in *BatchGetPlanSummariesRequest, opts ...grpc.CallOption) (*BatchGetPlanSummariesResponse, error)
 	// Write plan content by creating a commit on a branch.
 	CreatePlanCommit(ctx context.Context, in *CreatePlanCommitRequest, opts ...grpc.CallOption) (*CreatePlanCommitResponse, error)
 	// Update a plan's metadata. Only fields present in the request are changed.
@@ -52,11 +57,21 @@ type PlanServiceClient interface {
 	// so this call succeeds even when the content is invalid; an ERROR finding is one CreatePlanCommit
 	// would reject, a WARNING one it would accept.
 	//
-	// Reads either a committed revision or content supplied inline. Membership of an activity's finalized
-	// assets in its objectives' candidate pools is only checked when every pool lists its assets
-	// explicitly — a pool defined by an asset search is not enumerated. The same holds for the base asset
-	// pool: one that searches bounds nothing here.
+	// Reads either a committed revision or content supplied inline. An assigned asset is checked against the
+	// pool of each resource it names, or against every pool of the activity's objectives when it names none,
+	// and only when that pool lists its assets explicitly — a pool defined by an asset search is not
+	// enumerated. The same holds for the base asset pool: one that searches bounds nothing here.
+	//
+	// Asset capacity and turnaround follow the solver: a constraint on the asset over its typed property over
+	// the default, the property only while `inherit_asset_limits` is unset or true, and a capacity on a group, a
+	// resource or the plan pooled across its assets. A stored plan, or content sent with `workspace_rid`, has its
+	// scheduled assets read in that workspace, and a searching pool only as far as it holds them; when that read
+	// is cut short `is_truncated` is set. Daily usage ceilings from asset properties are not checked; explicit
+	// `usage_ceiling` constraints are validated.
 	ValidatePlan(ctx context.Context, in *ValidatePlanRequest, opts ...grpc.CallOption) (*ValidatePlanResponse, error)
+	// Resolve a plan revision's asset groups against the asset search index and report each group's
+	// effective asset count, optionally narrowed to the groups containing one asset. Read-only.
+	ListPlanAssetGroupSummaries(ctx context.Context, in *ListPlanAssetGroupSummariesRequest, opts ...grpc.CallOption) (*ListPlanAssetGroupSummariesResponse, error)
 }
 
 type planServiceClient struct {
@@ -91,6 +106,16 @@ func (c *planServiceClient) BatchGetPlans(ctx context.Context, in *BatchGetPlans
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(BatchGetPlansResponse)
 	err := c.cc.Invoke(ctx, PlanService_BatchGetPlans_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *planServiceClient) BatchGetPlanSummaries(ctx context.Context, in *BatchGetPlanSummariesRequest, opts ...grpc.CallOption) (*BatchGetPlanSummariesResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(BatchGetPlanSummariesResponse)
+	err := c.cc.Invoke(ctx, PlanService_BatchGetPlanSummaries_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -137,6 +162,16 @@ func (c *planServiceClient) ValidatePlan(ctx context.Context, in *ValidatePlanRe
 	return out, nil
 }
 
+func (c *planServiceClient) ListPlanAssetGroupSummaries(ctx context.Context, in *ListPlanAssetGroupSummariesRequest, opts ...grpc.CallOption) (*ListPlanAssetGroupSummariesResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(ListPlanAssetGroupSummariesResponse)
+	err := c.cc.Invoke(ctx, PlanService_ListPlanAssetGroupSummaries_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // PlanServiceServer is the server API for PlanService service.
 // All implementations must embed UnimplementedPlanServiceServer
 // for forward compatibility.
@@ -149,6 +184,9 @@ type PlanServiceServer interface {
 	GetPlan(context.Context, *GetPlanRequest) (*GetPlanResponse, error)
 	// Read several plans at the latest commit on their "main" branch.
 	BatchGetPlans(context.Context, *BatchGetPlansRequest) (*BatchGetPlansResponse, error)
+	// Read several plans' summaries — metadata and cached dates, without content. Order is not guaranteed to match
+	// the request.
+	BatchGetPlanSummaries(context.Context, *BatchGetPlanSummariesRequest) (*BatchGetPlanSummariesResponse, error)
 	// Write plan content by creating a commit on a branch.
 	CreatePlanCommit(context.Context, *CreatePlanCommitRequest) (*CreatePlanCommitResponse, error)
 	// Update a plan's metadata. Only fields present in the request are changed.
@@ -159,11 +197,21 @@ type PlanServiceServer interface {
 	// so this call succeeds even when the content is invalid; an ERROR finding is one CreatePlanCommit
 	// would reject, a WARNING one it would accept.
 	//
-	// Reads either a committed revision or content supplied inline. Membership of an activity's finalized
-	// assets in its objectives' candidate pools is only checked when every pool lists its assets
-	// explicitly — a pool defined by an asset search is not enumerated. The same holds for the base asset
-	// pool: one that searches bounds nothing here.
+	// Reads either a committed revision or content supplied inline. An assigned asset is checked against the
+	// pool of each resource it names, or against every pool of the activity's objectives when it names none,
+	// and only when that pool lists its assets explicitly — a pool defined by an asset search is not
+	// enumerated. The same holds for the base asset pool: one that searches bounds nothing here.
+	//
+	// Asset capacity and turnaround follow the solver: a constraint on the asset over its typed property over
+	// the default, the property only while `inherit_asset_limits` is unset or true, and a capacity on a group, a
+	// resource or the plan pooled across its assets. A stored plan, or content sent with `workspace_rid`, has its
+	// scheduled assets read in that workspace, and a searching pool only as far as it holds them; when that read
+	// is cut short `is_truncated` is set. Daily usage ceilings from asset properties are not checked; explicit
+	// `usage_ceiling` constraints are validated.
 	ValidatePlan(context.Context, *ValidatePlanRequest) (*ValidatePlanResponse, error)
+	// Resolve a plan revision's asset groups against the asset search index and report each group's
+	// effective asset count, optionally narrowed to the groups containing one asset. Read-only.
+	ListPlanAssetGroupSummaries(context.Context, *ListPlanAssetGroupSummariesRequest) (*ListPlanAssetGroupSummariesResponse, error)
 	mustEmbedUnimplementedPlanServiceServer()
 }
 
@@ -183,6 +231,9 @@ func (UnimplementedPlanServiceServer) GetPlan(context.Context, *GetPlanRequest) 
 func (UnimplementedPlanServiceServer) BatchGetPlans(context.Context, *BatchGetPlansRequest) (*BatchGetPlansResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method BatchGetPlans not implemented")
 }
+func (UnimplementedPlanServiceServer) BatchGetPlanSummaries(context.Context, *BatchGetPlanSummariesRequest) (*BatchGetPlanSummariesResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method BatchGetPlanSummaries not implemented")
+}
 func (UnimplementedPlanServiceServer) CreatePlanCommit(context.Context, *CreatePlanCommitRequest) (*CreatePlanCommitResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method CreatePlanCommit not implemented")
 }
@@ -194,6 +245,9 @@ func (UnimplementedPlanServiceServer) SearchPlans(context.Context, *SearchPlansR
 }
 func (UnimplementedPlanServiceServer) ValidatePlan(context.Context, *ValidatePlanRequest) (*ValidatePlanResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method ValidatePlan not implemented")
+}
+func (UnimplementedPlanServiceServer) ListPlanAssetGroupSummaries(context.Context, *ListPlanAssetGroupSummariesRequest) (*ListPlanAssetGroupSummariesResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method ListPlanAssetGroupSummaries not implemented")
 }
 func (UnimplementedPlanServiceServer) mustEmbedUnimplementedPlanServiceServer() {}
 func (UnimplementedPlanServiceServer) testEmbeddedByValue()                     {}
@@ -270,6 +324,24 @@ func _PlanService_BatchGetPlans_Handler(srv interface{}, ctx context.Context, de
 	return interceptor(ctx, in, info, handler)
 }
 
+func _PlanService_BatchGetPlanSummaries_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(BatchGetPlanSummariesRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(PlanServiceServer).BatchGetPlanSummaries(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: PlanService_BatchGetPlanSummaries_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(PlanServiceServer).BatchGetPlanSummaries(ctx, req.(*BatchGetPlanSummariesRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _PlanService_CreatePlanCommit_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(CreatePlanCommitRequest)
 	if err := dec(in); err != nil {
@@ -342,6 +414,24 @@ func _PlanService_ValidatePlan_Handler(srv interface{}, ctx context.Context, dec
 	return interceptor(ctx, in, info, handler)
 }
 
+func _PlanService_ListPlanAssetGroupSummaries_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ListPlanAssetGroupSummariesRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(PlanServiceServer).ListPlanAssetGroupSummaries(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: PlanService_ListPlanAssetGroupSummaries_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(PlanServiceServer).ListPlanAssetGroupSummaries(ctx, req.(*ListPlanAssetGroupSummariesRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // PlanService_ServiceDesc is the grpc.ServiceDesc for PlanService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -362,6 +452,10 @@ var PlanService_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _PlanService_BatchGetPlans_Handler,
 		},
 		{
+			MethodName: "BatchGetPlanSummaries",
+			Handler:    _PlanService_BatchGetPlanSummaries_Handler,
+		},
+		{
 			MethodName: "CreatePlanCommit",
 			Handler:    _PlanService_CreatePlanCommit_Handler,
 		},
@@ -376,6 +470,10 @@ var PlanService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "ValidatePlan",
 			Handler:    _PlanService_ValidatePlan_Handler,
+		},
+		{
+			MethodName: "ListPlanAssetGroupSummaries",
+			Handler:    _PlanService_ListPlanAssetGroupSummaries_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

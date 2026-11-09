@@ -32,6 +32,7 @@ const (
 	DrivesService_UpdateDriveDetails_FullMethodName         = "/nominal.file_store.v1.DrivesService/UpdateDriveDetails"
 	DrivesService_ArchiveDrive_FullMethodName               = "/nominal.file_store.v1.DrivesService/ArchiveDrive"
 	DrivesService_UnarchiveDrive_FullMethodName             = "/nominal.file_store.v1.DrivesService/UnarchiveDrive"
+	DrivesService_NotifyVirtualDriveFiles_FullMethodName    = "/nominal.file_store.v1.DrivesService/NotifyVirtualDriveFiles"
 )
 
 // DrivesServiceClient is the client API for DrivesService service.
@@ -104,6 +105,9 @@ type DrivesServiceClient interface {
 	//
 	// Errors: FileStoreCommonError (DRIVE_NOT_FOUND, PERMISSION_DENIED).
 	UnarchiveDrive(ctx context.Context, in *UnarchiveDriveRequest, opts ...grpc.CallOption) (*UnarchiveDriveResponse, error)
+	// Tells an S3 virtual drive that objects were created in its bucket, so they are picked up before the next scrape.
+	// Skipped objects are counted, not errors; repeats are harmless. On UNAVAILABLE, retry the whole call.
+	NotifyVirtualDriveFiles(ctx context.Context, in *NotifyVirtualDriveFilesRequest, opts ...grpc.CallOption) (*NotifyVirtualDriveFilesResponse, error)
 }
 
 type drivesServiceClient struct {
@@ -244,6 +248,16 @@ func (c *drivesServiceClient) UnarchiveDrive(ctx context.Context, in *UnarchiveD
 	return out, nil
 }
 
+func (c *drivesServiceClient) NotifyVirtualDriveFiles(ctx context.Context, in *NotifyVirtualDriveFilesRequest, opts ...grpc.CallOption) (*NotifyVirtualDriveFilesResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(NotifyVirtualDriveFilesResponse)
+	err := c.cc.Invoke(ctx, DrivesService_NotifyVirtualDriveFiles_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // DrivesServiceServer is the server API for DrivesService service.
 // All implementations must embed UnimplementedDrivesServiceServer
 // for forward compatibility.
@@ -314,6 +328,9 @@ type DrivesServiceServer interface {
 	//
 	// Errors: FileStoreCommonError (DRIVE_NOT_FOUND, PERMISSION_DENIED).
 	UnarchiveDrive(context.Context, *UnarchiveDriveRequest) (*UnarchiveDriveResponse, error)
+	// Tells an S3 virtual drive that objects were created in its bucket, so they are picked up before the next scrape.
+	// Skipped objects are counted, not errors; repeats are harmless. On UNAVAILABLE, retry the whole call.
+	NotifyVirtualDriveFiles(context.Context, *NotifyVirtualDriveFilesRequest) (*NotifyVirtualDriveFilesResponse, error)
 	mustEmbedUnimplementedDrivesServiceServer()
 }
 
@@ -362,6 +379,9 @@ func (UnimplementedDrivesServiceServer) ArchiveDrive(context.Context, *ArchiveDr
 }
 func (UnimplementedDrivesServiceServer) UnarchiveDrive(context.Context, *UnarchiveDriveRequest) (*UnarchiveDriveResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method UnarchiveDrive not implemented")
+}
+func (UnimplementedDrivesServiceServer) NotifyVirtualDriveFiles(context.Context, *NotifyVirtualDriveFilesRequest) (*NotifyVirtualDriveFilesResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method NotifyVirtualDriveFiles not implemented")
 }
 func (UnimplementedDrivesServiceServer) mustEmbedUnimplementedDrivesServiceServer() {}
 func (UnimplementedDrivesServiceServer) testEmbeddedByValue()                       {}
@@ -618,6 +638,24 @@ func _DrivesService_UnarchiveDrive_Handler(srv interface{}, ctx context.Context,
 	return interceptor(ctx, in, info, handler)
 }
 
+func _DrivesService_NotifyVirtualDriveFiles_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(NotifyVirtualDriveFilesRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(DrivesServiceServer).NotifyVirtualDriveFiles(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: DrivesService_NotifyVirtualDriveFiles_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(DrivesServiceServer).NotifyVirtualDriveFiles(ctx, req.(*NotifyVirtualDriveFilesRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // DrivesService_ServiceDesc is the grpc.ServiceDesc for DrivesService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -676,6 +714,10 @@ var DrivesService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "UnarchiveDrive",
 			Handler:    _DrivesService_UnarchiveDrive_Handler,
+		},
+		{
+			MethodName: "NotifyVirtualDriveFiles",
+			Handler:    _DrivesService_NotifyVirtualDriveFiles_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

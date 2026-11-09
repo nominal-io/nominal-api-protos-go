@@ -7,6 +7,7 @@
 package eventv2
 
 import (
+	_ "github.com/nominal-io/nominal-api-protos-go/nominal/protos/authz/v1"
 	_ "github.com/nominal-io/nominal-api-protos-go/nominal/protos/gen/v1"
 	v2 "github.com/nominal-io/nominal-api-protos-go/nominal/protos/metadata/v2"
 	types "github.com/nominal-io/nominal-api-protos-go/nominal/protos/types"
@@ -2407,6 +2408,8 @@ type SearchQuery struct {
 	//	*SearchQuery_StepId
 	//	*SearchQuery_StreamingChecklist
 	//	*SearchQuery_StreamingCheck
+	//	*SearchQuery_NumericProperty
+	//	*SearchQuery_NumericPropertyRange
 	SearchQuery   isSearchQuery_SearchQuery `protobuf_oneof:"search_query"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -2800,6 +2803,24 @@ func (x *SearchQuery) GetStreamingCheck() string {
 	return ""
 }
 
+func (x *SearchQuery) GetNumericProperty() *types.NumericPropertyPredicate {
+	if x != nil {
+		if x, ok := x.SearchQuery.(*SearchQuery_NumericProperty); ok {
+			return x.NumericProperty
+		}
+	}
+	return nil
+}
+
+func (x *SearchQuery) GetNumericPropertyRange() *types.NumericPropertyRangePredicate {
+	if x != nil {
+		if x, ok := x.SearchQuery.(*SearchQuery_NumericPropertyRange); ok {
+			return x.NumericPropertyRange
+		}
+	}
+	return nil
+}
+
 type isSearchQuery_SearchQuery interface {
 	isSearchQuery_SearchQuery()
 }
@@ -2966,6 +2987,16 @@ type SearchQuery_StreamingCheck struct {
 	StreamingCheck string `protobuf:"bytes,39,opt,name=streaming_check,json=streamingCheck,proto3,oneof"`
 }
 
+type SearchQuery_NumericProperty struct {
+	// Matches events using a numeric property comparison.
+	NumericProperty *types.NumericPropertyPredicate `protobuf:"bytes,40,opt,name=numeric_property,json=numericProperty,proto3,oneof"`
+}
+
+type SearchQuery_NumericPropertyRange struct {
+	// Matches events using an inclusive numeric property range.
+	NumericPropertyRange *types.NumericPropertyRangePredicate `protobuf:"bytes,41,opt,name=numeric_property_range,json=numericPropertyRange,proto3,oneof"`
+}
+
 func (*SearchQuery_Archived) isSearchQuery_SearchQuery() {}
 
 func (*SearchQuery_SearchText) isSearchQuery_SearchQuery() {}
@@ -3043,6 +3074,10 @@ func (*SearchQuery_StepId) isSearchQuery_SearchQuery() {}
 func (*SearchQuery_StreamingChecklist) isSearchQuery_SearchQuery() {}
 
 func (*SearchQuery_StreamingCheck) isSearchQuery_SearchQuery() {}
+
+func (*SearchQuery_NumericProperty) isSearchQuery_SearchQuery() {}
+
+func (*SearchQuery_NumericPropertyRange) isSearchQuery_SearchQuery() {}
 
 type HistogramFilterQuery struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
@@ -5598,7 +5633,7 @@ var File_nominal_protos_event_v2_event_proto protoreflect.FileDescriptor
 
 const file_nominal_protos_event_v2_event_proto_rawDesc = "" +
 	"\n" +
-	"#nominal/protos/event/v2/event.proto\x12\x10nominal.event.v2\x1a\x1cgoogle/api/annotations.proto\x1a!nominal/protos/gen/v1/alias.proto\x1a!nominal/protos/gen/v1/error.proto\x1a2nominal/protos/metadata/v2/resource_metadata.proto\x1a!nominal/protos/types/common.proto\x1a$nominal/protos/types/time/time.proto\x1a nominal/protos/types/types.proto\"e\n" +
+	"#nominal/protos/event/v2/event.proto\x12\x10nominal.event.v2\x1a\x1cgoogle/api/annotations.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a)nominal/protos/authz/v1/annotations.proto\x1a!nominal/protos/gen/v1/alias.proto\x1a!nominal/protos/gen/v1/error.proto\x1a2nominal/protos/metadata/v2/resource_metadata.proto\x1a!nominal/protos/types/common.proto\x1a$nominal/protos/types/time/time.proto\x1a nominal/protos/types/types.proto\"e\n" +
 	"\x1dPendingReviewDispositionState\x12D\n" +
 	"\topened_by\x18\x01 \x01(\tB'\x9a\xb2\x1a#\n" +
 	"!io.nominal.scout.rids.api.UserRidR\bopenedBy\"o\n" +
@@ -5749,7 +5784,7 @@ const file_nominal_protos_event_v2_event_proto_rawDesc = "" +
 	"\x06values\x18\x01 \x03(\x0e2\x1b.nominal.event.v2.EventTypeR\x06values\"N\n" +
 	"\vUserRidList\x12?\n" +
 	"\x06values\x18\x01 \x03(\tB'\x9a\xb2\x1a#\n" +
-	"!io.nominal.scout.rids.api.UserRidR\x06values\"\xe9\x14\n" +
+	"!io.nominal.scout.rids.api.UserRidR\x06values\"\xa5\x16\n" +
 	"\vSearchQuery\x12\x1c\n" +
 	"\barchived\x18\x01 \x01(\bH\x00R\barchived\x12!\n" +
 	"\vsearch_text\x18\x02 \x01(\tH\x00R\n" +
@@ -5814,7 +5849,9 @@ const file_nominal_protos_event_v2_event_proto_rawDesc = "" +
 	"\x13streaming_checklist\x18& \x01(\tB,\x9a\xb2\x1a(\n" +
 	"&io.nominal.scout.rids.api.ChecklistRidH\x00R\x12streamingChecklist\x12S\n" +
 	"\x0fstreaming_check\x18' \x01(\tB(\x9a\xb2\x1a$\n" +
-	"\"io.nominal.scout.rids.api.CheckRidH\x00R\x0estreamingCheckB\x0e\n" +
+	"\"io.nominal.scout.rids.api.CheckRidH\x00R\x0estreamingCheck\x12T\n" +
+	"\x10numeric_property\x18( \x01(\v2'.nominal.types.NumericPropertyPredicateH\x00R\x0fnumericProperty\x12d\n" +
+	"\x16numeric_property_range\x18) \x01(\v2,.nominal.types.NumericPropertyRangePredicateH\x00R\x14numericPropertyRangeB\x0e\n" +
 	"\fsearch_query\"\xb9\v\n" +
 	"\x14HistogramFilterQuery\x12!\n" +
 	"\vsearch_text\x18\x01 \x01(\tH\x00R\n" +
@@ -5855,10 +5892,10 @@ const file_nominal_protos_event_v2_event_proto_rawDesc = "" +
 	"\x13procedure_execution\x18\x14 \x01(\tB/\x9a\xb2\x1a+\n" +
 	")io.nominal.api.rids.ProcedureExecutionRidH\x00R\x12procedureExecution\x12\x19\n" +
 	"\astep_id\x18\x15 \x01(\tH\x00R\x06stepIdB\x18\n" +
-	"\x16histogram_filter_query\"e\n" +
+	"\x16histogram_filter_query\"j\n" +
 	"\vSortOptions\x12#\n" +
-	"\ris_descending\x18\x01 \x01(\bR\fisDescending\x121\n" +
-	"\x05field\x18\x02 \x01(\x0e2\x1b.nominal.event.v2.SortFieldR\x05field\"r\n" +
+	"\ris_descending\x18\x01 \x01(\bR\fisDescending\x126\n" +
+	"\x05field\x18\x02 \x01(\x0e2\x1b.nominal.event.v2.SortFieldB\x03\xe0A\x02R\x05field\"r\n" +
 	"\x0eAggregateValue\x125\n" +
 	"\bduration\x18\x01 \x01(\v2\x17.nominal.types.DurationH\x00R\bduration\x12\x16\n" +
 	"\x05count\x18\x02 \x01(\x05H\x00R\x05countB\x11\n" +
@@ -5997,9 +6034,9 @@ const file_nominal_protos_event_v2_event_proto_rawDesc = "" +
 	"\n" +
 	"event_rids\x18\x01 \x03(\tB\"\x9a\xb2\x1a\x1e\n" +
 	"\x1cio.nominal.api.rids.EventRidR\teventRids\"\x1d\n" +
-	"\x1bBatchUnarchiveEventResponse\"\xc3\x02\n" +
-	"\x13SearchEventsRequest\x121\n" +
-	"\x04sort\x18\x01 \x01(\v2\x1d.nominal.event.v2.SortOptionsR\x04sort\x12\x1b\n" +
+	"\x1bBatchUnarchiveEventResponse\"\xc8\x02\n" +
+	"\x13SearchEventsRequest\x126\n" +
+	"\x04sort\x18\x01 \x01(\v2\x1d.nominal.event.v2.SortOptionsB\x03\xe0A\x02R\x04sort\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12G\n" +
 	"\x0fnext_page_token\x18\x03 \x01(\tB\x1a\x9a\xb2\x1a\x16\n" +
 	"\x14io.nominal.api.TokenH\x00R\rnextPageToken\x88\x01\x01\x123\n" +
@@ -6121,24 +6158,38 @@ const file_nominal_protos_event_v2_event_proto_rawDesc = "" +
 	"\x12DISPOSITION_STATUS\x10\x04\x12\f\n" +
 	"\bPRIORITY\x10\x05\x12\x0e\n" +
 	"\n" +
-	"EVENT_NAME\x10\x062\xd0\x12\n" +
-	"\fEventService\x12w\n" +
-	"\vCreateEvent\x12$.nominal.event.v2.CreateEventRequest\x1a%.nominal.event.v2.CreateEventResponse\"\x1b\x82\xd3\xe4\x93\x02\x15:\x01*\"\x10/event/v2/events\x12~\n" +
-	"\tGetEvents\x12\".nominal.event.v2.GetEventsRequest\x1a#.nominal.event.v2.GetEventsResponse\"(\x82\xd3\xe4\x93\x02\":\x01*\"\x1d/event/v2/events/get-by-uuids\x12\x8a\x01\n" +
-	"\x0eBatchGetEvents\x12'.nominal.event.v2.BatchGetEventsRequest\x1a(.nominal.event.v2.BatchGetEventsResponse\"%\x82\xd3\xe4\x93\x02\x1f:\x01*\"\x1a/event/v2/events/batch-get\x12\x9a\x01\n" +
-	"\x11BatchFilterEvents\x12*.nominal.event.v2.BatchFilterEventsRequest\x1a+.nominal.event.v2.BatchFilterEventsResponse\",\x82\xd3\xe4\x93\x02&:\x01*\"!/event/v2/events/batch-filter-get\x12~\n" +
-	"\vUpdateEvent\x12$.nominal.event.v2.UpdateEventRequest\x1a%.nominal.event.v2.UpdateEventResponse\"\"\x82\xd3\xe4\x93\x02\x1c:\x01*\"\x17/event/v2/events/update\x12\x93\x01\n" +
-	"\x10BatchUpdateEvent\x12).nominal.event.v2.BatchUpdateEventRequest\x1a*.nominal.event.v2.BatchUpdateEventResponse\"(\x82\xd3\xe4\x93\x02\":\x01*\"\x1d/event/v2/events/batch-update\x12\xb1\x01\n" +
-	"\x16BatchUpdateDisposition\x12/.nominal.event.v2.BatchUpdateDispositionRequest\x1a0.nominal.event.v2.BatchUpdateDispositionResponse\"4\x82\xd3\xe4\x93\x02.:\x01*\")/event/v2/events/batch-update-disposition\x12\x82\x01\n" +
-	"\fArchiveEvent\x12%.nominal.event.v2.ArchiveEventRequest\x1a&.nominal.event.v2.ArchiveEventResponse\"#\x82\xd3\xe4\x93\x02\x1d:\x01*\"\x18/event/v2/events/archive\x12\x97\x01\n" +
-	"\x11BatchArchiveEvent\x12*.nominal.event.v2.BatchArchiveEventRequest\x1a+.nominal.event.v2.BatchArchiveEventResponse\")\x82\xd3\xe4\x93\x02#:\x01*\"\x1e/event/v2/events/batch-archive\x12\x9f\x01\n" +
-	"\x13BatchUnarchiveEvent\x12,.nominal.event.v2.BatchUnarchiveEventRequest\x1a-.nominal.event.v2.BatchUnarchiveEventResponse\"+\x82\xd3\xe4\x93\x02%:\x01*\" /event/v2/events/batch-unarchive\x12\x81\x01\n" +
-	"\fSearchEvents\x12%.nominal.event.v2.SearchEventsRequest\x1a&.nominal.event.v2.SearchEventsResponse\"\"\x82\xd3\xe4\x93\x02\x1c:\x01*\"\x17/event/v2/events/search\x12\x8e\x01\n" +
-	"\x0fBatchFindEvents\x12(.nominal.event.v2.BatchFindEventsRequest\x1a).nominal.event.v2.BatchFindEventsResponse\"&\x82\xd3\xe4\x93\x02 :\x01*\"\x1b/event/v2/events/batch-find\x12\x8d\x01\n" +
-	"\x0fAggregateEvents\x12(.nominal.event.v2.AggregateEventsRequest\x1a).nominal.event.v2.AggregateEventsResponse\"%\x82\xd3\xe4\x93\x02\x1f:\x01*\"\x1a/event/v2/events/aggregate\x12\xa2\x01\n" +
-	"\x14BatchAggregateEvents\x12-.nominal.event.v2.BatchAggregateEventsRequest\x1a..nominal.event.v2.BatchAggregateEventsResponse\"+\x82\xd3\xe4\x93\x02%:\x01*\" /event/v2/events/batch-aggregate\x12\x96\x01\n" +
-	"\x12GetEventsHistogram\x12+.nominal.event.v2.GetEventsHistogramRequest\x1a,.nominal.event.v2.GetEventsHistogramResponse\"%\x82\xd3\xe4\x93\x02\x1f:\x01*\"\x1a/event/v2/events/histogram\x12\xae\x01\n" +
-	"\x17ListPropertiesAndLabels\x120.nominal.event.v2.ListPropertiesAndLabelsRequest\x1a4.nominal.metadata.v2.ListPropertiesAndLabelsResponse\"+\x82\xd3\xe4\x93\x02%:\x01*\" /event/v2/list-properties-labelsB\xd1\x01\n" +
+	"EVENT_NAME\x10\x062\xd0\x14\n" +
+	"\fEventService\x12\x96\x01\n" +
+	"\vCreateEvent\x12$.nominal.event.v2.CreateEventRequest\x1a%.nominal.event.v2.CreateEventResponse\":\xba\xb2\x1a\x1b\n" +
+	"\x19\n" +
+	"\x15workspace:edit_events\"\x00\x82\xd3\xe4\x93\x02\x15:\x01*\"\x10/event/v2/events\x12\x82\x01\n" +
+	"\tGetEvents\x12\".nominal.event.v2.GetEventsRequest\x1a#.nominal.event.v2.GetEventsResponse\",\xba\xb2\x1a\x00\x82\xd3\xe4\x93\x02\":\x01*\"\x1d/event/v2/events/get-by-uuids\x12\x8e\x01\n" +
+	"\x0eBatchGetEvents\x12'.nominal.event.v2.BatchGetEventsRequest\x1a(.nominal.event.v2.BatchGetEventsResponse\")\xba\xb2\x1a\x00\x82\xd3\xe4\x93\x02\x1f:\x01*\"\x1a/event/v2/events/batch-get\x12\x9e\x01\n" +
+	"\x11BatchFilterEvents\x12*.nominal.event.v2.BatchFilterEventsRequest\x1a+.nominal.event.v2.BatchFilterEventsResponse\"0\xba\xb2\x1a\x00\x82\xd3\xe4\x93\x02&:\x01*\"!/event/v2/events/batch-filter-get\x12\x9d\x01\n" +
+	"\vUpdateEvent\x12$.nominal.event.v2.UpdateEventRequest\x1a%.nominal.event.v2.UpdateEventResponse\"A\xba\xb2\x1a\x1b\n" +
+	"\x19\n" +
+	"\x15workspace:edit_events\"\x00\x82\xd3\xe4\x93\x02\x1c:\x01*\"\x17/event/v2/events/update\x12\xb2\x01\n" +
+	"\x10BatchUpdateEvent\x12).nominal.event.v2.BatchUpdateEventRequest\x1a*.nominal.event.v2.BatchUpdateEventResponse\"G\xba\xb2\x1a\x1b\n" +
+	"\x19\n" +
+	"\x15workspace:edit_events\"\x00\x82\xd3\xe4\x93\x02\":\x01*\"\x1d/event/v2/events/batch-update\x12\xd0\x01\n" +
+	"\x16BatchUpdateDisposition\x12/.nominal.event.v2.BatchUpdateDispositionRequest\x1a0.nominal.event.v2.BatchUpdateDispositionResponse\"S\xba\xb2\x1a\x1b\n" +
+	"\x19\n" +
+	"\x15workspace:edit_events\"\x00\x82\xd3\xe4\x93\x02.:\x01*\")/event/v2/events/batch-update-disposition\x12\xa1\x01\n" +
+	"\fArchiveEvent\x12%.nominal.event.v2.ArchiveEventRequest\x1a&.nominal.event.v2.ArchiveEventResponse\"B\xba\xb2\x1a\x1b\n" +
+	"\x19\n" +
+	"\x15workspace:edit_events\"\x00\x82\xd3\xe4\x93\x02\x1d:\x01*\"\x18/event/v2/events/archive\x12\xb6\x01\n" +
+	"\x11BatchArchiveEvent\x12*.nominal.event.v2.BatchArchiveEventRequest\x1a+.nominal.event.v2.BatchArchiveEventResponse\"H\xba\xb2\x1a\x1b\n" +
+	"\x19\n" +
+	"\x15workspace:edit_events\"\x00\x82\xd3\xe4\x93\x02#:\x01*\"\x1e/event/v2/events/batch-archive\x12\xbe\x01\n" +
+	"\x13BatchUnarchiveEvent\x12,.nominal.event.v2.BatchUnarchiveEventRequest\x1a-.nominal.event.v2.BatchUnarchiveEventResponse\"J\xba\xb2\x1a\x1b\n" +
+	"\x19\n" +
+	"\x15workspace:edit_events\"\x00\x82\xd3\xe4\x93\x02%:\x01*\" /event/v2/events/batch-unarchive\x12\x85\x01\n" +
+	"\fSearchEvents\x12%.nominal.event.v2.SearchEventsRequest\x1a&.nominal.event.v2.SearchEventsResponse\"&\xba\xb2\x1a\x00\x82\xd3\xe4\x93\x02\x1c:\x01*\"\x17/event/v2/events/search\x12\x92\x01\n" +
+	"\x0fBatchFindEvents\x12(.nominal.event.v2.BatchFindEventsRequest\x1a).nominal.event.v2.BatchFindEventsResponse\"*\xba\xb2\x1a\x00\x82\xd3\xe4\x93\x02 :\x01*\"\x1b/event/v2/events/batch-find\x12\x91\x01\n" +
+	"\x0fAggregateEvents\x12(.nominal.event.v2.AggregateEventsRequest\x1a).nominal.event.v2.AggregateEventsResponse\")\xba\xb2\x1a\x00\x82\xd3\xe4\x93\x02\x1f:\x01*\"\x1a/event/v2/events/aggregate\x12\xa6\x01\n" +
+	"\x14BatchAggregateEvents\x12-.nominal.event.v2.BatchAggregateEventsRequest\x1a..nominal.event.v2.BatchAggregateEventsResponse\"/\xba\xb2\x1a\x00\x82\xd3\xe4\x93\x02%:\x01*\" /event/v2/events/batch-aggregate\x12\x9a\x01\n" +
+	"\x12GetEventsHistogram\x12+.nominal.event.v2.GetEventsHistogramRequest\x1a,.nominal.event.v2.GetEventsHistogramResponse\")\xba\xb2\x1a\x00\x82\xd3\xe4\x93\x02\x1f:\x01*\"\x1a/event/v2/events/histogram\x12\xb2\x01\n" +
+	"\x17ListPropertiesAndLabels\x120.nominal.event.v2.ListPropertiesAndLabelsRequest\x1a4.nominal.metadata.v2.ListPropertiesAndLabelsResponse\"/\xba\xb2\x1a\x00\x82\xd3\xe4\x93\x02%:\x01*\" /event/v2/list-properties-labelsB\xd1\x01\n" +
 	"\x14com.nominal.event.v2B\n" +
 	"EventProtoP\x01ZKgithub.com/nominal-io/nominal-api-protos-go/nominal/protos/event/v2;eventv2\xa2\x02\x03NEX\xaa\x02\x10Nominal.Event.V2\xca\x02\x10Nominal\\Event\\V2\xe2\x02\x1cNominal\\Event\\V2\\GPBMetadata\xea\x02\x12Nominal::Event::V2b\x06proto3"
 
@@ -6247,12 +6298,14 @@ var file_nominal_protos_event_v2_event_proto_goTypes = []any{
 	(*time.Timestamp)(nil),                          // 87: nominal.types.time.Timestamp
 	(*types.Duration)(nil),                          // 88: nominal.types.Duration
 	(*types.Property)(nil),                          // 89: nominal.types.Property
-	(*types.LabelUpdateWrapper)(nil),                // 90: nominal.types.LabelUpdateWrapper
-	(*types.PropertyUpdateWrapper)(nil),             // 91: nominal.types.PropertyUpdateWrapper
-	(*types.TypedPropertyUpdateWrapper)(nil),        // 92: nominal.types.TypedPropertyUpdateWrapper
-	(types.ArchivedStatus)(0),                       // 93: nominal.types.ArchivedStatus
-	(*types.TypedPropertyValue)(nil),                // 94: nominal.types.TypedPropertyValue
-	(*v2.ListPropertiesAndLabelsResponse)(nil),      // 95: nominal.metadata.v2.ListPropertiesAndLabelsResponse
+	(*types.NumericPropertyPredicate)(nil),          // 90: nominal.types.NumericPropertyPredicate
+	(*types.NumericPropertyRangePredicate)(nil),     // 91: nominal.types.NumericPropertyRangePredicate
+	(*types.LabelUpdateWrapper)(nil),                // 92: nominal.types.LabelUpdateWrapper
+	(*types.PropertyUpdateWrapper)(nil),             // 93: nominal.types.PropertyUpdateWrapper
+	(*types.TypedPropertyUpdateWrapper)(nil),        // 94: nominal.types.TypedPropertyUpdateWrapper
+	(types.ArchivedStatus)(0),                       // 95: nominal.types.ArchivedStatus
+	(*types.TypedPropertyValue)(nil),                // 96: nominal.types.TypedPropertyValue
+	(*v2.ListPropertiesAndLabelsResponse)(nil),      // 97: nominal.metadata.v2.ListPropertiesAndLabelsResponse
 }
 var file_nominal_protos_event_v2_event_proto_depIdxs = []int32{
 	9,   // 0: nominal.event.v2.DispositionState.pending_review:type_name -> nominal.event.v2.PendingReviewDispositionState
@@ -6312,111 +6365,113 @@ var file_nominal_protos_event_v2_event_proto_depIdxs = []int32{
 	34,  // 54: nominal.event.v2.SearchQuery.and:type_name -> nominal.event.v2.SearchQueryList
 	34,  // 55: nominal.event.v2.SearchQuery.or:type_name -> nominal.event.v2.SearchQueryList
 	40,  // 56: nominal.event.v2.SearchQuery.not:type_name -> nominal.event.v2.SearchQuery
-	6,   // 57: nominal.event.v2.HistogramFilterQuery.origin_type:type_name -> nominal.event.v2.SearchEventOriginType
-	4,   // 58: nominal.event.v2.HistogramFilterQuery.disposition_status:type_name -> nominal.event.v2.EventDispositionStatus
-	1,   // 59: nominal.event.v2.HistogramFilterQuery.priority:type_name -> nominal.event.v2.Priority
-	3,   // 60: nominal.event.v2.HistogramFilterQuery.event_type:type_name -> nominal.event.v2.EventType
-	89,  // 61: nominal.event.v2.HistogramFilterQuery.property:type_name -> nominal.types.Property
-	35,  // 62: nominal.event.v2.HistogramFilterQuery.and:type_name -> nominal.event.v2.HistogramFilterQueryList
-	35,  // 63: nominal.event.v2.HistogramFilterQuery.or:type_name -> nominal.event.v2.HistogramFilterQueryList
-	41,  // 64: nominal.event.v2.HistogramFilterQuery.not:type_name -> nominal.event.v2.HistogramFilterQuery
-	8,   // 65: nominal.event.v2.SortOptions.field:type_name -> nominal.event.v2.SortField
-	88,  // 66: nominal.event.v2.AggregateValue.duration:type_name -> nominal.types.Duration
-	87,  // 67: nominal.event.v2.EventsHistogramBucket.start_inclusive:type_name -> nominal.types.time.Timestamp
-	87,  // 68: nominal.event.v2.EventsHistogramBucket.end_exclusive:type_name -> nominal.types.time.Timestamp
-	26,  // 69: nominal.event.v2.CreateEventRequest.origins:type_name -> nominal.event.v2.EventOrigin
-	87,  // 70: nominal.event.v2.CreateEventRequest.timestamp:type_name -> nominal.types.time.Timestamp
-	88,  // 71: nominal.event.v2.CreateEventRequest.duration:type_name -> nominal.types.Duration
-	3,   // 72: nominal.event.v2.CreateEventRequest.type:type_name -> nominal.event.v2.EventType
-	84,  // 73: nominal.event.v2.CreateEventRequest.properties:type_name -> nominal.event.v2.CreateEventRequest.PropertiesEntry
-	15,  // 74: nominal.event.v2.CreateEventRequest.disposition:type_name -> nominal.event.v2.EventDisposition
-	85,  // 75: nominal.event.v2.CreateEventRequest.typed_properties:type_name -> nominal.event.v2.CreateEventRequest.TypedPropertiesEntry
-	27,  // 76: nominal.event.v2.CreateEventResponse.event:type_name -> nominal.event.v2.Event
-	27,  // 77: nominal.event.v2.GetEventsResponse.events:type_name -> nominal.event.v2.Event
-	27,  // 78: nominal.event.v2.BatchGetEventsResponse.events:type_name -> nominal.event.v2.Event
-	40,  // 79: nominal.event.v2.BatchFilterEventsRequest.filter_query:type_name -> nominal.event.v2.SearchQuery
-	27,  // 80: nominal.event.v2.BatchFilterEventsResponse.events:type_name -> nominal.event.v2.Event
-	53,  // 81: nominal.event.v2.UpdateEventRequest.asset_rids:type_name -> nominal.event.v2.AssetRidSet
-	87,  // 82: nominal.event.v2.UpdateEventRequest.timestamp:type_name -> nominal.types.time.Timestamp
-	88,  // 83: nominal.event.v2.UpdateEventRequest.duration:type_name -> nominal.types.Duration
-	3,   // 84: nominal.event.v2.UpdateEventRequest.type:type_name -> nominal.event.v2.EventType
-	90,  // 85: nominal.event.v2.UpdateEventRequest.labels:type_name -> nominal.types.LabelUpdateWrapper
-	91,  // 86: nominal.event.v2.UpdateEventRequest.properties:type_name -> nominal.types.PropertyUpdateWrapper
-	92,  // 87: nominal.event.v2.UpdateEventRequest.typed_properties:type_name -> nominal.types.TypedPropertyUpdateWrapper
-	27,  // 88: nominal.event.v2.UpdateEventResponse.event:type_name -> nominal.event.v2.Event
-	53,  // 89: nominal.event.v2.EventUpdate.asset_rids:type_name -> nominal.event.v2.AssetRidSet
-	87,  // 90: nominal.event.v2.EventUpdate.timestamp:type_name -> nominal.types.time.Timestamp
-	88,  // 91: nominal.event.v2.EventUpdate.duration:type_name -> nominal.types.Duration
-	3,   // 92: nominal.event.v2.EventUpdate.type:type_name -> nominal.event.v2.EventType
-	90,  // 93: nominal.event.v2.EventUpdate.labels:type_name -> nominal.types.LabelUpdateWrapper
-	91,  // 94: nominal.event.v2.EventUpdate.properties:type_name -> nominal.types.PropertyUpdateWrapper
-	92,  // 95: nominal.event.v2.EventUpdate.typed_properties:type_name -> nominal.types.TypedPropertyUpdateWrapper
-	56,  // 96: nominal.event.v2.BatchUpdateEventRequest.updates:type_name -> nominal.event.v2.EventUpdate
-	27,  // 97: nominal.event.v2.BatchUpdateEventResponse.events:type_name -> nominal.event.v2.Event
-	15,  // 98: nominal.event.v2.UpdateDispositionRequest.disposition:type_name -> nominal.event.v2.EventDisposition
-	59,  // 99: nominal.event.v2.BatchUpdateDispositionRequest.requests:type_name -> nominal.event.v2.UpdateDispositionRequest
-	27,  // 100: nominal.event.v2.BatchUpdateDispositionResponse.events:type_name -> nominal.event.v2.Event
-	42,  // 101: nominal.event.v2.SearchEventsRequest.sort:type_name -> nominal.event.v2.SortOptions
-	40,  // 102: nominal.event.v2.SearchEventsRequest.query:type_name -> nominal.event.v2.SearchQuery
-	93,  // 103: nominal.event.v2.SearchEventsRequest.archived_statuses:type_name -> nominal.types.ArchivedStatus
-	27,  // 104: nominal.event.v2.SearchEventsResponse.results:type_name -> nominal.event.v2.Event
-	87,  // 105: nominal.event.v2.FindEventsQuery.start_inclusive:type_name -> nominal.types.time.Timestamp
-	87,  // 106: nominal.event.v2.FindEventsQuery.end_exclusive:type_name -> nominal.types.time.Timestamp
-	40,  // 107: nominal.event.v2.BatchFindEventsRequest.query:type_name -> nominal.event.v2.SearchQuery
-	42,  // 108: nominal.event.v2.BatchFindEventsRequest.sort:type_name -> nominal.event.v2.SortOptions
-	70,  // 109: nominal.event.v2.BatchFindEventsRequest.queries:type_name -> nominal.event.v2.FindEventsQuery
-	27,  // 110: nominal.event.v2.FindEventsResult.event:type_name -> nominal.event.v2.Event
-	72,  // 111: nominal.event.v2.BatchFindEventsResponse.results:type_name -> nominal.event.v2.FindEventsResult
-	40,  // 112: nominal.event.v2.AggregateEventsRequest.query:type_name -> nominal.event.v2.SearchQuery
-	7,   // 113: nominal.event.v2.AggregateEventsRequest.aggregate_types:type_name -> nominal.event.v2.AggregateType
-	86,  // 114: nominal.event.v2.AggregateEventsResponse.values:type_name -> nominal.event.v2.AggregateEventsResponse.ValuesEntry
-	74,  // 115: nominal.event.v2.BatchAggregateEventsRequest.requests:type_name -> nominal.event.v2.AggregateEventsRequest
-	75,  // 116: nominal.event.v2.BatchAggregateEventsResponse.responses:type_name -> nominal.event.v2.AggregateEventsResponse
-	87,  // 117: nominal.event.v2.GetEventsHistogramRequest.start_inclusive:type_name -> nominal.types.time.Timestamp
-	87,  // 118: nominal.event.v2.GetEventsHistogramRequest.end_exclusive:type_name -> nominal.types.time.Timestamp
-	41,  // 119: nominal.event.v2.GetEventsHistogramRequest.filter_query:type_name -> nominal.event.v2.HistogramFilterQuery
-	93,  // 120: nominal.event.v2.GetEventsHistogramRequest.archived_statuses:type_name -> nominal.types.ArchivedStatus
-	44,  // 121: nominal.event.v2.GetEventsHistogramResponse.buckets:type_name -> nominal.event.v2.EventsHistogramBucket
-	94,  // 122: nominal.event.v2.Event.TypedPropertiesEntry.value:type_name -> nominal.types.TypedPropertyValue
-	94,  // 123: nominal.event.v2.CreateEventRequest.TypedPropertiesEntry.value:type_name -> nominal.types.TypedPropertyValue
-	43,  // 124: nominal.event.v2.AggregateEventsResponse.ValuesEntry.value:type_name -> nominal.event.v2.AggregateValue
-	45,  // 125: nominal.event.v2.EventService.CreateEvent:input_type -> nominal.event.v2.CreateEventRequest
-	47,  // 126: nominal.event.v2.EventService.GetEvents:input_type -> nominal.event.v2.GetEventsRequest
-	49,  // 127: nominal.event.v2.EventService.BatchGetEvents:input_type -> nominal.event.v2.BatchGetEventsRequest
-	51,  // 128: nominal.event.v2.EventService.BatchFilterEvents:input_type -> nominal.event.v2.BatchFilterEventsRequest
-	54,  // 129: nominal.event.v2.EventService.UpdateEvent:input_type -> nominal.event.v2.UpdateEventRequest
-	57,  // 130: nominal.event.v2.EventService.BatchUpdateEvent:input_type -> nominal.event.v2.BatchUpdateEventRequest
-	60,  // 131: nominal.event.v2.EventService.BatchUpdateDisposition:input_type -> nominal.event.v2.BatchUpdateDispositionRequest
-	62,  // 132: nominal.event.v2.EventService.ArchiveEvent:input_type -> nominal.event.v2.ArchiveEventRequest
-	64,  // 133: nominal.event.v2.EventService.BatchArchiveEvent:input_type -> nominal.event.v2.BatchArchiveEventRequest
-	66,  // 134: nominal.event.v2.EventService.BatchUnarchiveEvent:input_type -> nominal.event.v2.BatchUnarchiveEventRequest
-	68,  // 135: nominal.event.v2.EventService.SearchEvents:input_type -> nominal.event.v2.SearchEventsRequest
-	71,  // 136: nominal.event.v2.EventService.BatchFindEvents:input_type -> nominal.event.v2.BatchFindEventsRequest
-	74,  // 137: nominal.event.v2.EventService.AggregateEvents:input_type -> nominal.event.v2.AggregateEventsRequest
-	76,  // 138: nominal.event.v2.EventService.BatchAggregateEvents:input_type -> nominal.event.v2.BatchAggregateEventsRequest
-	78,  // 139: nominal.event.v2.EventService.GetEventsHistogram:input_type -> nominal.event.v2.GetEventsHistogramRequest
-	80,  // 140: nominal.event.v2.EventService.ListPropertiesAndLabels:input_type -> nominal.event.v2.ListPropertiesAndLabelsRequest
-	46,  // 141: nominal.event.v2.EventService.CreateEvent:output_type -> nominal.event.v2.CreateEventResponse
-	48,  // 142: nominal.event.v2.EventService.GetEvents:output_type -> nominal.event.v2.GetEventsResponse
-	50,  // 143: nominal.event.v2.EventService.BatchGetEvents:output_type -> nominal.event.v2.BatchGetEventsResponse
-	52,  // 144: nominal.event.v2.EventService.BatchFilterEvents:output_type -> nominal.event.v2.BatchFilterEventsResponse
-	55,  // 145: nominal.event.v2.EventService.UpdateEvent:output_type -> nominal.event.v2.UpdateEventResponse
-	58,  // 146: nominal.event.v2.EventService.BatchUpdateEvent:output_type -> nominal.event.v2.BatchUpdateEventResponse
-	61,  // 147: nominal.event.v2.EventService.BatchUpdateDisposition:output_type -> nominal.event.v2.BatchUpdateDispositionResponse
-	63,  // 148: nominal.event.v2.EventService.ArchiveEvent:output_type -> nominal.event.v2.ArchiveEventResponse
-	65,  // 149: nominal.event.v2.EventService.BatchArchiveEvent:output_type -> nominal.event.v2.BatchArchiveEventResponse
-	67,  // 150: nominal.event.v2.EventService.BatchUnarchiveEvent:output_type -> nominal.event.v2.BatchUnarchiveEventResponse
-	69,  // 151: nominal.event.v2.EventService.SearchEvents:output_type -> nominal.event.v2.SearchEventsResponse
-	73,  // 152: nominal.event.v2.EventService.BatchFindEvents:output_type -> nominal.event.v2.BatchFindEventsResponse
-	75,  // 153: nominal.event.v2.EventService.AggregateEvents:output_type -> nominal.event.v2.AggregateEventsResponse
-	77,  // 154: nominal.event.v2.EventService.BatchAggregateEvents:output_type -> nominal.event.v2.BatchAggregateEventsResponse
-	79,  // 155: nominal.event.v2.EventService.GetEventsHistogram:output_type -> nominal.event.v2.GetEventsHistogramResponse
-	95,  // 156: nominal.event.v2.EventService.ListPropertiesAndLabels:output_type -> nominal.metadata.v2.ListPropertiesAndLabelsResponse
-	141, // [141:157] is the sub-list for method output_type
-	125, // [125:141] is the sub-list for method input_type
-	125, // [125:125] is the sub-list for extension type_name
-	125, // [125:125] is the sub-list for extension extendee
-	0,   // [0:125] is the sub-list for field type_name
+	90,  // 57: nominal.event.v2.SearchQuery.numeric_property:type_name -> nominal.types.NumericPropertyPredicate
+	91,  // 58: nominal.event.v2.SearchQuery.numeric_property_range:type_name -> nominal.types.NumericPropertyRangePredicate
+	6,   // 59: nominal.event.v2.HistogramFilterQuery.origin_type:type_name -> nominal.event.v2.SearchEventOriginType
+	4,   // 60: nominal.event.v2.HistogramFilterQuery.disposition_status:type_name -> nominal.event.v2.EventDispositionStatus
+	1,   // 61: nominal.event.v2.HistogramFilterQuery.priority:type_name -> nominal.event.v2.Priority
+	3,   // 62: nominal.event.v2.HistogramFilterQuery.event_type:type_name -> nominal.event.v2.EventType
+	89,  // 63: nominal.event.v2.HistogramFilterQuery.property:type_name -> nominal.types.Property
+	35,  // 64: nominal.event.v2.HistogramFilterQuery.and:type_name -> nominal.event.v2.HistogramFilterQueryList
+	35,  // 65: nominal.event.v2.HistogramFilterQuery.or:type_name -> nominal.event.v2.HistogramFilterQueryList
+	41,  // 66: nominal.event.v2.HistogramFilterQuery.not:type_name -> nominal.event.v2.HistogramFilterQuery
+	8,   // 67: nominal.event.v2.SortOptions.field:type_name -> nominal.event.v2.SortField
+	88,  // 68: nominal.event.v2.AggregateValue.duration:type_name -> nominal.types.Duration
+	87,  // 69: nominal.event.v2.EventsHistogramBucket.start_inclusive:type_name -> nominal.types.time.Timestamp
+	87,  // 70: nominal.event.v2.EventsHistogramBucket.end_exclusive:type_name -> nominal.types.time.Timestamp
+	26,  // 71: nominal.event.v2.CreateEventRequest.origins:type_name -> nominal.event.v2.EventOrigin
+	87,  // 72: nominal.event.v2.CreateEventRequest.timestamp:type_name -> nominal.types.time.Timestamp
+	88,  // 73: nominal.event.v2.CreateEventRequest.duration:type_name -> nominal.types.Duration
+	3,   // 74: nominal.event.v2.CreateEventRequest.type:type_name -> nominal.event.v2.EventType
+	84,  // 75: nominal.event.v2.CreateEventRequest.properties:type_name -> nominal.event.v2.CreateEventRequest.PropertiesEntry
+	15,  // 76: nominal.event.v2.CreateEventRequest.disposition:type_name -> nominal.event.v2.EventDisposition
+	85,  // 77: nominal.event.v2.CreateEventRequest.typed_properties:type_name -> nominal.event.v2.CreateEventRequest.TypedPropertiesEntry
+	27,  // 78: nominal.event.v2.CreateEventResponse.event:type_name -> nominal.event.v2.Event
+	27,  // 79: nominal.event.v2.GetEventsResponse.events:type_name -> nominal.event.v2.Event
+	27,  // 80: nominal.event.v2.BatchGetEventsResponse.events:type_name -> nominal.event.v2.Event
+	40,  // 81: nominal.event.v2.BatchFilterEventsRequest.filter_query:type_name -> nominal.event.v2.SearchQuery
+	27,  // 82: nominal.event.v2.BatchFilterEventsResponse.events:type_name -> nominal.event.v2.Event
+	53,  // 83: nominal.event.v2.UpdateEventRequest.asset_rids:type_name -> nominal.event.v2.AssetRidSet
+	87,  // 84: nominal.event.v2.UpdateEventRequest.timestamp:type_name -> nominal.types.time.Timestamp
+	88,  // 85: nominal.event.v2.UpdateEventRequest.duration:type_name -> nominal.types.Duration
+	3,   // 86: nominal.event.v2.UpdateEventRequest.type:type_name -> nominal.event.v2.EventType
+	92,  // 87: nominal.event.v2.UpdateEventRequest.labels:type_name -> nominal.types.LabelUpdateWrapper
+	93,  // 88: nominal.event.v2.UpdateEventRequest.properties:type_name -> nominal.types.PropertyUpdateWrapper
+	94,  // 89: nominal.event.v2.UpdateEventRequest.typed_properties:type_name -> nominal.types.TypedPropertyUpdateWrapper
+	27,  // 90: nominal.event.v2.UpdateEventResponse.event:type_name -> nominal.event.v2.Event
+	53,  // 91: nominal.event.v2.EventUpdate.asset_rids:type_name -> nominal.event.v2.AssetRidSet
+	87,  // 92: nominal.event.v2.EventUpdate.timestamp:type_name -> nominal.types.time.Timestamp
+	88,  // 93: nominal.event.v2.EventUpdate.duration:type_name -> nominal.types.Duration
+	3,   // 94: nominal.event.v2.EventUpdate.type:type_name -> nominal.event.v2.EventType
+	92,  // 95: nominal.event.v2.EventUpdate.labels:type_name -> nominal.types.LabelUpdateWrapper
+	93,  // 96: nominal.event.v2.EventUpdate.properties:type_name -> nominal.types.PropertyUpdateWrapper
+	94,  // 97: nominal.event.v2.EventUpdate.typed_properties:type_name -> nominal.types.TypedPropertyUpdateWrapper
+	56,  // 98: nominal.event.v2.BatchUpdateEventRequest.updates:type_name -> nominal.event.v2.EventUpdate
+	27,  // 99: nominal.event.v2.BatchUpdateEventResponse.events:type_name -> nominal.event.v2.Event
+	15,  // 100: nominal.event.v2.UpdateDispositionRequest.disposition:type_name -> nominal.event.v2.EventDisposition
+	59,  // 101: nominal.event.v2.BatchUpdateDispositionRequest.requests:type_name -> nominal.event.v2.UpdateDispositionRequest
+	27,  // 102: nominal.event.v2.BatchUpdateDispositionResponse.events:type_name -> nominal.event.v2.Event
+	42,  // 103: nominal.event.v2.SearchEventsRequest.sort:type_name -> nominal.event.v2.SortOptions
+	40,  // 104: nominal.event.v2.SearchEventsRequest.query:type_name -> nominal.event.v2.SearchQuery
+	95,  // 105: nominal.event.v2.SearchEventsRequest.archived_statuses:type_name -> nominal.types.ArchivedStatus
+	27,  // 106: nominal.event.v2.SearchEventsResponse.results:type_name -> nominal.event.v2.Event
+	87,  // 107: nominal.event.v2.FindEventsQuery.start_inclusive:type_name -> nominal.types.time.Timestamp
+	87,  // 108: nominal.event.v2.FindEventsQuery.end_exclusive:type_name -> nominal.types.time.Timestamp
+	40,  // 109: nominal.event.v2.BatchFindEventsRequest.query:type_name -> nominal.event.v2.SearchQuery
+	42,  // 110: nominal.event.v2.BatchFindEventsRequest.sort:type_name -> nominal.event.v2.SortOptions
+	70,  // 111: nominal.event.v2.BatchFindEventsRequest.queries:type_name -> nominal.event.v2.FindEventsQuery
+	27,  // 112: nominal.event.v2.FindEventsResult.event:type_name -> nominal.event.v2.Event
+	72,  // 113: nominal.event.v2.BatchFindEventsResponse.results:type_name -> nominal.event.v2.FindEventsResult
+	40,  // 114: nominal.event.v2.AggregateEventsRequest.query:type_name -> nominal.event.v2.SearchQuery
+	7,   // 115: nominal.event.v2.AggregateEventsRequest.aggregate_types:type_name -> nominal.event.v2.AggregateType
+	86,  // 116: nominal.event.v2.AggregateEventsResponse.values:type_name -> nominal.event.v2.AggregateEventsResponse.ValuesEntry
+	74,  // 117: nominal.event.v2.BatchAggregateEventsRequest.requests:type_name -> nominal.event.v2.AggregateEventsRequest
+	75,  // 118: nominal.event.v2.BatchAggregateEventsResponse.responses:type_name -> nominal.event.v2.AggregateEventsResponse
+	87,  // 119: nominal.event.v2.GetEventsHistogramRequest.start_inclusive:type_name -> nominal.types.time.Timestamp
+	87,  // 120: nominal.event.v2.GetEventsHistogramRequest.end_exclusive:type_name -> nominal.types.time.Timestamp
+	41,  // 121: nominal.event.v2.GetEventsHistogramRequest.filter_query:type_name -> nominal.event.v2.HistogramFilterQuery
+	95,  // 122: nominal.event.v2.GetEventsHistogramRequest.archived_statuses:type_name -> nominal.types.ArchivedStatus
+	44,  // 123: nominal.event.v2.GetEventsHistogramResponse.buckets:type_name -> nominal.event.v2.EventsHistogramBucket
+	96,  // 124: nominal.event.v2.Event.TypedPropertiesEntry.value:type_name -> nominal.types.TypedPropertyValue
+	96,  // 125: nominal.event.v2.CreateEventRequest.TypedPropertiesEntry.value:type_name -> nominal.types.TypedPropertyValue
+	43,  // 126: nominal.event.v2.AggregateEventsResponse.ValuesEntry.value:type_name -> nominal.event.v2.AggregateValue
+	45,  // 127: nominal.event.v2.EventService.CreateEvent:input_type -> nominal.event.v2.CreateEventRequest
+	47,  // 128: nominal.event.v2.EventService.GetEvents:input_type -> nominal.event.v2.GetEventsRequest
+	49,  // 129: nominal.event.v2.EventService.BatchGetEvents:input_type -> nominal.event.v2.BatchGetEventsRequest
+	51,  // 130: nominal.event.v2.EventService.BatchFilterEvents:input_type -> nominal.event.v2.BatchFilterEventsRequest
+	54,  // 131: nominal.event.v2.EventService.UpdateEvent:input_type -> nominal.event.v2.UpdateEventRequest
+	57,  // 132: nominal.event.v2.EventService.BatchUpdateEvent:input_type -> nominal.event.v2.BatchUpdateEventRequest
+	60,  // 133: nominal.event.v2.EventService.BatchUpdateDisposition:input_type -> nominal.event.v2.BatchUpdateDispositionRequest
+	62,  // 134: nominal.event.v2.EventService.ArchiveEvent:input_type -> nominal.event.v2.ArchiveEventRequest
+	64,  // 135: nominal.event.v2.EventService.BatchArchiveEvent:input_type -> nominal.event.v2.BatchArchiveEventRequest
+	66,  // 136: nominal.event.v2.EventService.BatchUnarchiveEvent:input_type -> nominal.event.v2.BatchUnarchiveEventRequest
+	68,  // 137: nominal.event.v2.EventService.SearchEvents:input_type -> nominal.event.v2.SearchEventsRequest
+	71,  // 138: nominal.event.v2.EventService.BatchFindEvents:input_type -> nominal.event.v2.BatchFindEventsRequest
+	74,  // 139: nominal.event.v2.EventService.AggregateEvents:input_type -> nominal.event.v2.AggregateEventsRequest
+	76,  // 140: nominal.event.v2.EventService.BatchAggregateEvents:input_type -> nominal.event.v2.BatchAggregateEventsRequest
+	78,  // 141: nominal.event.v2.EventService.GetEventsHistogram:input_type -> nominal.event.v2.GetEventsHistogramRequest
+	80,  // 142: nominal.event.v2.EventService.ListPropertiesAndLabels:input_type -> nominal.event.v2.ListPropertiesAndLabelsRequest
+	46,  // 143: nominal.event.v2.EventService.CreateEvent:output_type -> nominal.event.v2.CreateEventResponse
+	48,  // 144: nominal.event.v2.EventService.GetEvents:output_type -> nominal.event.v2.GetEventsResponse
+	50,  // 145: nominal.event.v2.EventService.BatchGetEvents:output_type -> nominal.event.v2.BatchGetEventsResponse
+	52,  // 146: nominal.event.v2.EventService.BatchFilterEvents:output_type -> nominal.event.v2.BatchFilterEventsResponse
+	55,  // 147: nominal.event.v2.EventService.UpdateEvent:output_type -> nominal.event.v2.UpdateEventResponse
+	58,  // 148: nominal.event.v2.EventService.BatchUpdateEvent:output_type -> nominal.event.v2.BatchUpdateEventResponse
+	61,  // 149: nominal.event.v2.EventService.BatchUpdateDisposition:output_type -> nominal.event.v2.BatchUpdateDispositionResponse
+	63,  // 150: nominal.event.v2.EventService.ArchiveEvent:output_type -> nominal.event.v2.ArchiveEventResponse
+	65,  // 151: nominal.event.v2.EventService.BatchArchiveEvent:output_type -> nominal.event.v2.BatchArchiveEventResponse
+	67,  // 152: nominal.event.v2.EventService.BatchUnarchiveEvent:output_type -> nominal.event.v2.BatchUnarchiveEventResponse
+	69,  // 153: nominal.event.v2.EventService.SearchEvents:output_type -> nominal.event.v2.SearchEventsResponse
+	73,  // 154: nominal.event.v2.EventService.BatchFindEvents:output_type -> nominal.event.v2.BatchFindEventsResponse
+	75,  // 155: nominal.event.v2.EventService.AggregateEvents:output_type -> nominal.event.v2.AggregateEventsResponse
+	77,  // 156: nominal.event.v2.EventService.BatchAggregateEvents:output_type -> nominal.event.v2.BatchAggregateEventsResponse
+	79,  // 157: nominal.event.v2.EventService.GetEventsHistogram:output_type -> nominal.event.v2.GetEventsHistogramResponse
+	97,  // 158: nominal.event.v2.EventService.ListPropertiesAndLabels:output_type -> nominal.metadata.v2.ListPropertiesAndLabelsResponse
+	143, // [143:159] is the sub-list for method output_type
+	127, // [127:143] is the sub-list for method input_type
+	127, // [127:127] is the sub-list for extension type_name
+	127, // [127:127] is the sub-list for extension extendee
+	0,   // [0:127] is the sub-list for field type_name
 }
 
 func init() { file_nominal_protos_event_v2_event_proto_init() }
@@ -6483,6 +6538,8 @@ func file_nominal_protos_event_v2_event_proto_init() {
 		(*SearchQuery_StepId)(nil),
 		(*SearchQuery_StreamingChecklist)(nil),
 		(*SearchQuery_StreamingCheck)(nil),
+		(*SearchQuery_NumericProperty)(nil),
+		(*SearchQuery_NumericPropertyRange)(nil),
 	}
 	file_nominal_protos_event_v2_event_proto_msgTypes[32].OneofWrappers = []any{
 		(*HistogramFilterQuery_SearchText)(nil),

@@ -24,6 +24,74 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
+// Why a notified object was not enqueued.
+type NotifySkipReason int32
+
+const (
+	NotifySkipReason_NOTIFY_SKIP_REASON_UNSPECIFIED NotifySkipReason = 0
+	// The bucket is not the drive's bucket.
+	NotifySkipReason_NOTIFY_SKIP_REASON_WRONG_BUCKET NotifySkipReason = 1
+	// The key is not under the drive's prefix.
+	NotifySkipReason_NOTIFY_SKIP_REASON_OUTSIDE_PREFIX NotifySkipReason = 2
+	// The key ends in a slash, so it is a folder marker.
+	NotifySkipReason_NOTIFY_SKIP_REASON_FOLDER_MARKER NotifySkipReason = 3
+	// The key is not a valid file path (for example it has a ".." segment).
+	NotifySkipReason_NOTIFY_SKIP_REASON_INVALID_PATH NotifySkipReason = 4
+	// The object is not in the bucket (it was deleted, or the key is wrong).
+	NotifySkipReason_NOTIFY_SKIP_REASON_NOT_FOUND NotifySkipReason = 5
+	// The bucket will not give this object's metadata (access denied, or an ETag the drive cannot pin to).
+	NotifySkipReason_NOTIFY_SKIP_REASON_UNREADABLE NotifySkipReason = 6
+)
+
+// Enum value maps for NotifySkipReason.
+var (
+	NotifySkipReason_name = map[int32]string{
+		0: "NOTIFY_SKIP_REASON_UNSPECIFIED",
+		1: "NOTIFY_SKIP_REASON_WRONG_BUCKET",
+		2: "NOTIFY_SKIP_REASON_OUTSIDE_PREFIX",
+		3: "NOTIFY_SKIP_REASON_FOLDER_MARKER",
+		4: "NOTIFY_SKIP_REASON_INVALID_PATH",
+		5: "NOTIFY_SKIP_REASON_NOT_FOUND",
+		6: "NOTIFY_SKIP_REASON_UNREADABLE",
+	}
+	NotifySkipReason_value = map[string]int32{
+		"NOTIFY_SKIP_REASON_UNSPECIFIED":    0,
+		"NOTIFY_SKIP_REASON_WRONG_BUCKET":   1,
+		"NOTIFY_SKIP_REASON_OUTSIDE_PREFIX": 2,
+		"NOTIFY_SKIP_REASON_FOLDER_MARKER":  3,
+		"NOTIFY_SKIP_REASON_INVALID_PATH":   4,
+		"NOTIFY_SKIP_REASON_NOT_FOUND":      5,
+		"NOTIFY_SKIP_REASON_UNREADABLE":     6,
+	}
+)
+
+func (x NotifySkipReason) Enum() *NotifySkipReason {
+	p := new(NotifySkipReason)
+	*p = x
+	return p
+}
+
+func (x NotifySkipReason) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (NotifySkipReason) Descriptor() protoreflect.EnumDescriptor {
+	return file_nominal_protos_file_store_v1_drives_proto_enumTypes[0].Descriptor()
+}
+
+func (NotifySkipReason) Type() protoreflect.EnumType {
+	return &file_nominal_protos_file_store_v1_drives_proto_enumTypes[0]
+}
+
+func (x NotifySkipReason) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use NotifySkipReason.Descriptor instead.
+func (NotifySkipReason) EnumDescriptor() ([]byte, []int) {
+	return file_nominal_protos_file_store_v1_drives_proto_rawDescGZIP(), []int{0}
+}
+
 // Drive lifecycle and virtual-drive administration.
 type DriveAdminError int32
 
@@ -61,11 +129,11 @@ func (x DriveAdminError) String() string {
 }
 
 func (DriveAdminError) Descriptor() protoreflect.EnumDescriptor {
-	return file_nominal_protos_file_store_v1_drives_proto_enumTypes[0].Descriptor()
+	return file_nominal_protos_file_store_v1_drives_proto_enumTypes[1].Descriptor()
 }
 
 func (DriveAdminError) Type() protoreflect.EnumType {
-	return &file_nominal_protos_file_store_v1_drives_proto_enumTypes[0]
+	return &file_nominal_protos_file_store_v1_drives_proto_enumTypes[1]
 }
 
 func (x DriveAdminError) Number() protoreflect.EnumNumber {
@@ -74,7 +142,7 @@ func (x DriveAdminError) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use DriveAdminError.Descriptor instead.
 func (DriveAdminError) EnumDescriptor() ([]byte, []int) {
-	return file_nominal_protos_file_store_v1_drives_proto_rawDescGZIP(), []int{0}
+	return file_nominal_protos_file_store_v1_drives_proto_rawDescGZIP(), []int{1}
 }
 
 type CreateDriveRequest struct {
@@ -1382,6 +1450,258 @@ func (x *UnarchiveDriveResponse) GetDrive() *Drive {
 	return nil
 }
 
+type NotifyVirtualDriveFilesRequest struct {
+	state    protoimpl.MessageState `protogen:"open.v1"`
+	DriveRid string                 `protobuf:"bytes,1,opt,name=drive_rid,json=driveRid,proto3" json:"drive_rid,omitempty"`
+	// The objects that were created. At most 100 per call.
+	Objects       []*NotifiedObject `protobuf:"bytes,2,rep,name=objects,proto3" json:"objects,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *NotifyVirtualDriveFilesRequest) Reset() {
+	*x = NotifyVirtualDriveFilesRequest{}
+	mi := &file_nominal_protos_file_store_v1_drives_proto_msgTypes[26]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *NotifyVirtualDriveFilesRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*NotifyVirtualDriveFilesRequest) ProtoMessage() {}
+
+func (x *NotifyVirtualDriveFilesRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_nominal_protos_file_store_v1_drives_proto_msgTypes[26]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use NotifyVirtualDriveFilesRequest.ProtoReflect.Descriptor instead.
+func (*NotifyVirtualDriveFilesRequest) Descriptor() ([]byte, []int) {
+	return file_nominal_protos_file_store_v1_drives_proto_rawDescGZIP(), []int{26}
+}
+
+func (x *NotifyVirtualDriveFilesRequest) GetDriveRid() string {
+	if x != nil {
+		return x.DriveRid
+	}
+	return ""
+}
+
+func (x *NotifyVirtualDriveFilesRequest) GetObjects() []*NotifiedObject {
+	if x != nil {
+		return x.Objects
+	}
+	return nil
+}
+
+// An object an external system says was created in the drive's bucket.
+type NotifiedObject struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// The bucket the object is in. Must be the drive's bucket.
+	Bucket string `protobuf:"bytes,1,opt,name=bucket,proto3" json:"bucket,omitempty"`
+	// The object key as stored in the bucket, not URL-encoded. Must be under the drive's prefix.
+	Key string `protobuf:"bytes,2,opt,name=key,proto3" json:"key,omitempty"`
+	// Ignored: the drive enqueues the object's current ETag in the bucket.
+	Etag string `protobuf:"bytes,3,opt,name=etag,proto3" json:"etag,omitempty"`
+	// Tags applied to all data the drive's ingest rules ingest from this object version. A version's tags are
+	// fixed by the first notify that tags it or the first ingest rule that dispatches it, whichever comes first;
+	// later notifies of the same version don't change them. At most 32 tags; keys must not be Nominal-reserved.
+	Tags          map[string]string `protobuf:"bytes,4,rep,name=tags,proto3" json:"tags,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *NotifiedObject) Reset() {
+	*x = NotifiedObject{}
+	mi := &file_nominal_protos_file_store_v1_drives_proto_msgTypes[27]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *NotifiedObject) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*NotifiedObject) ProtoMessage() {}
+
+func (x *NotifiedObject) ProtoReflect() protoreflect.Message {
+	mi := &file_nominal_protos_file_store_v1_drives_proto_msgTypes[27]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use NotifiedObject.ProtoReflect.Descriptor instead.
+func (*NotifiedObject) Descriptor() ([]byte, []int) {
+	return file_nominal_protos_file_store_v1_drives_proto_rawDescGZIP(), []int{27}
+}
+
+func (x *NotifiedObject) GetBucket() string {
+	if x != nil {
+		return x.Bucket
+	}
+	return ""
+}
+
+func (x *NotifiedObject) GetKey() string {
+	if x != nil {
+		return x.Key
+	}
+	return ""
+}
+
+func (x *NotifiedObject) GetEtag() string {
+	if x != nil {
+		return x.Etag
+	}
+	return ""
+}
+
+func (x *NotifiedObject) GetTags() map[string]string {
+	if x != nil {
+		return x.Tags
+	}
+	return nil
+}
+
+type NotifyVirtualDriveFilesResponse struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Objects added to the drive's file queue.
+	Enqueued int32 `protobuf:"varint,1,opt,name=enqueued,proto3" json:"enqueued,omitempty"`
+	// Objects left out, in total. See skipped_by_reason.
+	Skipped int32 `protobuf:"varint,2,opt,name=skipped,proto3" json:"skipped,omitempty"`
+	// Always 0, kept for a stable response shape.
+	Malformed int32 `protobuf:"varint,3,opt,name=malformed,proto3" json:"malformed,omitempty"`
+	// The skipped objects, counted by why.
+	SkippedByReason []*SkippedCount `protobuf:"bytes,4,rep,name=skipped_by_reason,json=skippedByReason,proto3" json:"skipped_by_reason,omitempty"`
+	unknownFields   protoimpl.UnknownFields
+	sizeCache       protoimpl.SizeCache
+}
+
+func (x *NotifyVirtualDriveFilesResponse) Reset() {
+	*x = NotifyVirtualDriveFilesResponse{}
+	mi := &file_nominal_protos_file_store_v1_drives_proto_msgTypes[28]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *NotifyVirtualDriveFilesResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*NotifyVirtualDriveFilesResponse) ProtoMessage() {}
+
+func (x *NotifyVirtualDriveFilesResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_nominal_protos_file_store_v1_drives_proto_msgTypes[28]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use NotifyVirtualDriveFilesResponse.ProtoReflect.Descriptor instead.
+func (*NotifyVirtualDriveFilesResponse) Descriptor() ([]byte, []int) {
+	return file_nominal_protos_file_store_v1_drives_proto_rawDescGZIP(), []int{28}
+}
+
+func (x *NotifyVirtualDriveFilesResponse) GetEnqueued() int32 {
+	if x != nil {
+		return x.Enqueued
+	}
+	return 0
+}
+
+func (x *NotifyVirtualDriveFilesResponse) GetSkipped() int32 {
+	if x != nil {
+		return x.Skipped
+	}
+	return 0
+}
+
+func (x *NotifyVirtualDriveFilesResponse) GetMalformed() int32 {
+	if x != nil {
+		return x.Malformed
+	}
+	return 0
+}
+
+func (x *NotifyVirtualDriveFilesResponse) GetSkippedByReason() []*SkippedCount {
+	if x != nil {
+		return x.SkippedByReason
+	}
+	return nil
+}
+
+type SkippedCount struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Reason        NotifySkipReason       `protobuf:"varint,1,opt,name=reason,proto3,enum=nominal.file_store.v1.NotifySkipReason" json:"reason,omitempty"`
+	Count         int32                  `protobuf:"varint,2,opt,name=count,proto3" json:"count,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *SkippedCount) Reset() {
+	*x = SkippedCount{}
+	mi := &file_nominal_protos_file_store_v1_drives_proto_msgTypes[29]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *SkippedCount) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*SkippedCount) ProtoMessage() {}
+
+func (x *SkippedCount) ProtoReflect() protoreflect.Message {
+	mi := &file_nominal_protos_file_store_v1_drives_proto_msgTypes[29]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use SkippedCount.ProtoReflect.Descriptor instead.
+func (*SkippedCount) Descriptor() ([]byte, []int) {
+	return file_nominal_protos_file_store_v1_drives_proto_rawDescGZIP(), []int{29}
+}
+
+func (x *SkippedCount) GetReason() NotifySkipReason {
+	if x != nil {
+		return x.Reason
+	}
+	return NotifySkipReason_NOTIFY_SKIP_REASON_UNSPECIFIED
+}
+
+func (x *SkippedCount) GetCount() int32 {
+	if x != nil {
+		return x.Count
+	}
+	return 0
+}
+
 var File_nominal_protos_file_store_v1_drives_proto protoreflect.FileDescriptor
 
 const file_nominal_protos_file_store_v1_drives_proto_rawDesc = "" +
@@ -1484,7 +1804,37 @@ const file_nominal_protos_file_store_v1_drives_proto_rawDesc = "" +
 	"\tdrive_rid\x18\x01 \x01(\tB\"\x9a\xb2\x1a\x1e\n" +
 	"\x1cio.nominal.api.rids.DriveRidR\bdriveRid\"L\n" +
 	"\x16UnarchiveDriveResponse\x122\n" +
-	"\x05drive\x18\x01 \x01(\v2\x1c.nominal.file_store.v1.DriveR\x05drive*\xe3\x02\n" +
+	"\x05drive\x18\x01 \x01(\v2\x1c.nominal.file_store.v1.DriveR\x05drive\"\xae\x01\n" +
+	"\x1eNotifyVirtualDriveFilesRequest\x12?\n" +
+	"\tdrive_rid\x18\x01 \x01(\tB\"\x9a\xb2\x1a\x1e\n" +
+	"\x1cio.nominal.api.rids.DriveRidR\bdriveRid\x12K\n" +
+	"\aobjects\x18\x02 \x03(\v2%.nominal.file_store.v1.NotifiedObjectB\n" +
+	"\xbaH\a\x92\x01\x04\b\x01\x10dR\aobjects\"\xbd\x02\n" +
+	"\x0eNotifiedObject\x12!\n" +
+	"\x06bucket\x18\x01 \x01(\tB\t\xbaH\x06r\x04\x10\x01\x18?R\x06bucket\x12\x1c\n" +
+	"\x03key\x18\x02 \x01(\tB\n" +
+	"\xbaH\ar\x05\x10\x01(\x80\bR\x03key\x12\x1c\n" +
+	"\x04etag\x18\x03 \x01(\tB\b\xbaH\x05r\x03\x18\x80\x02R\x04etag\x12\x92\x01\n" +
+	"\x04tags\x18\x04 \x03(\v2/.nominal.file_store.v1.NotifiedObject.TagsEntryBM\xbaH\x15\x9a\x01\x12\x10 \"\ar\x05\x10\x01\x18\x80\b*\x05r\x03\x18\x80\b\x9a\xb2\x1a1\x12\x16io.nominal.api.TagName\x1a\x17io.nominal.api.TagValueR\x04tags\x1a7\n" +
+	"\tTagsEntry\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
+	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"\xc6\x01\n" +
+	"\x1fNotifyVirtualDriveFilesResponse\x12\x1a\n" +
+	"\benqueued\x18\x01 \x01(\x05R\benqueued\x12\x18\n" +
+	"\askipped\x18\x02 \x01(\x05R\askipped\x12\x1c\n" +
+	"\tmalformed\x18\x03 \x01(\x05R\tmalformed\x12O\n" +
+	"\x11skipped_by_reason\x18\x04 \x03(\v2#.nominal.file_store.v1.SkippedCountR\x0fskippedByReason\"e\n" +
+	"\fSkippedCount\x12?\n" +
+	"\x06reason\x18\x01 \x01(\x0e2'.nominal.file_store.v1.NotifySkipReasonR\x06reason\x12\x14\n" +
+	"\x05count\x18\x02 \x01(\x05R\x05count*\x92\x02\n" +
+	"\x10NotifySkipReason\x12\"\n" +
+	"\x1eNOTIFY_SKIP_REASON_UNSPECIFIED\x10\x00\x12#\n" +
+	"\x1fNOTIFY_SKIP_REASON_WRONG_BUCKET\x10\x01\x12%\n" +
+	"!NOTIFY_SKIP_REASON_OUTSIDE_PREFIX\x10\x02\x12$\n" +
+	" NOTIFY_SKIP_REASON_FOLDER_MARKER\x10\x03\x12#\n" +
+	"\x1fNOTIFY_SKIP_REASON_INVALID_PATH\x10\x04\x12 \n" +
+	"\x1cNOTIFY_SKIP_REASON_NOT_FOUND\x10\x05\x12!\n" +
+	"\x1dNOTIFY_SKIP_REASON_UNREADABLE\x10\x06*\xe3\x02\n" +
 	"\x0fDriveAdminError\x12!\n" +
 	"\x1dDRIVE_ADMIN_ERROR_UNSPECIFIED\x10\x00\x12\\\n" +
 	")DRIVE_ADMIN_ERROR_DRIVE_ID_ALREADY_EXISTS\x10\x01\x1a-\xb2\xb2\x1a)\n" +
@@ -1492,7 +1842,7 @@ const file_nominal_protos_file_store_v1_drives_proto_rawDesc = "" +
 	")DRIVE_ADMIN_ERROR_VIRTUAL_DRIVE_NOT_FOUND\x10\x02\x1a(\xb2\xb2\x1a$\n" +
 	"\tNOT_FOUND\x12\x17Virtual drive not found\x12v\n" +
 	"5DRIVE_ADMIN_ERROR_INVALID_VIRTUAL_DRIVE_CONFIGURATION\x10\x03\x1a;\xb2\xb2\x1a7\n" +
-	"\x10INVALID_ARGUMENT\x12#Invalid virtual drive configuration2\xf6\x11\n" +
+	"\x10INVALID_ARGUMENT\x12#Invalid virtual drive configuration2\xc4\x13\n" +
 	"\rDrivesService\x12\x86\x01\n" +
 	"\vCreateDrive\x12).nominal.file_store.v1.CreateDriveRequest\x1a*.nominal.file_store.v1.CreateDriveResponse\" \x82\xd3\xe4\x93\x02\x1a:\x01*\"\x15/file-store/v1/drives\x12\xa3\x01\n" +
 	"\x12CreateVirtualDrive\x120.nominal.file_store.v1.CreateVirtualDriveRequest\x1a1.nominal.file_store.v1.CreateVirtualDriveResponse\"(\x82\xd3\xe4\x93\x02\":\x01*\"\x1d/file-store/v1/virtual-drives\x12\x86\x01\n" +
@@ -1507,7 +1857,8 @@ const file_nominal_protos_file_store_v1_drives_proto_rawDesc = "" +
 	"\x12UpdateVirtualDrive\x120.nominal.file_store.v1.UpdateVirtualDriveRequest\x1a1.nominal.file_store.v1.UpdateVirtualDriveResponse\"4\x82\xd3\xe4\x93\x02.:\x01*\x1a)/file-store/v1/virtual-drives/{drive_rid}\x12\xa7\x01\n" +
 	"\x12UpdateDriveDetails\x120.nominal.file_store.v1.UpdateDriveDetailsRequest\x1a1.nominal.file_store.v1.UpdateDriveDetailsResponse\",\x82\xd3\xe4\x93\x02&:\x01*\x1a!/file-store/v1/drives/{drive_rid}\x12\x9d\x01\n" +
 	"\fArchiveDrive\x12*.nominal.file_store.v1.ArchiveDriveRequest\x1a+.nominal.file_store.v1.ArchiveDriveResponse\"4\x82\xd3\xe4\x93\x02.:\x01*\")/file-store/v1/drives/{drive_rid}/archive\x12\xa5\x01\n" +
-	"\x0eUnarchiveDrive\x12,.nominal.file_store.v1.UnarchiveDriveRequest\x1a-.nominal.file_store.v1.UnarchiveDriveResponse\"6\x82\xd3\xe4\x93\x020:\x01*\"+/file-store/v1/drives/{drive_rid}/unarchiveB\xf1\x01\n" +
+	"\x0eUnarchiveDrive\x12,.nominal.file_store.v1.UnarchiveDriveRequest\x1a-.nominal.file_store.v1.UnarchiveDriveResponse\"6\x82\xd3\xe4\x93\x020:\x01*\"+/file-store/v1/drives/{drive_rid}/unarchive\x12\xcb\x01\n" +
+	"\x17NotifyVirtualDriveFiles\x125.nominal.file_store.v1.NotifyVirtualDriveFilesRequest\x1a6.nominal.file_store.v1.NotifyVirtualDriveFilesResponse\"A\x82\xd3\xe4\x93\x02;:\x01*\"6/file-store/v1/virtual-drives/{drive_rid}/files/notifyB\xf1\x01\n" +
 	"\x19com.nominal.file_store.v1B\vDrivesProtoP\x01ZUgithub.com/nominal-io/nominal-api-protos-go/nominal/protos/file_store/v1;file_storev1\xa2\x02\x03NFX\xaa\x02\x14Nominal.FileStore.V1\xca\x02\x14Nominal\\FileStore\\V1\xe2\x02 Nominal\\FileStore\\V1\\GPBMetadata\xea\x02\x16Nominal::FileStore::V1b\x06proto3"
 
 var (
@@ -1522,93 +1873,105 @@ func file_nominal_protos_file_store_v1_drives_proto_rawDescGZIP() []byte {
 	return file_nominal_protos_file_store_v1_drives_proto_rawDescData
 }
 
-var file_nominal_protos_file_store_v1_drives_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
-var file_nominal_protos_file_store_v1_drives_proto_msgTypes = make([]protoimpl.MessageInfo, 26)
+var file_nominal_protos_file_store_v1_drives_proto_enumTypes = make([]protoimpl.EnumInfo, 2)
+var file_nominal_protos_file_store_v1_drives_proto_msgTypes = make([]protoimpl.MessageInfo, 31)
 var file_nominal_protos_file_store_v1_drives_proto_goTypes = []any{
-	(DriveAdminError)(0),                       // 0: nominal.file_store.v1.DriveAdminError
-	(*CreateDriveRequest)(nil),                 // 1: nominal.file_store.v1.CreateDriveRequest
-	(*CreateDriveResponse)(nil),                // 2: nominal.file_store.v1.CreateDriveResponse
-	(*CreateVirtualDriveRequest)(nil),          // 3: nominal.file_store.v1.CreateVirtualDriveRequest
-	(*CreateVirtualDriveResponse)(nil),         // 4: nominal.file_store.v1.CreateVirtualDriveResponse
-	(*GetDriveRequest)(nil),                    // 5: nominal.file_store.v1.GetDriveRequest
-	(*GetDriveResponse)(nil),                   // 6: nominal.file_store.v1.GetDriveResponse
-	(*GetVirtualDriveDetailsRequest)(nil),      // 7: nominal.file_store.v1.GetVirtualDriveDetailsRequest
-	(*GetVirtualDriveDetailsResponse)(nil),     // 8: nominal.file_store.v1.GetVirtualDriveDetailsResponse
-	(*GetVirtualDriveStatusRequest)(nil),       // 9: nominal.file_store.v1.GetVirtualDriveStatusRequest
-	(*GetVirtualDriveStatusResponse)(nil),      // 10: nominal.file_store.v1.GetVirtualDriveStatusResponse
-	(*GetDriveByIdRequest)(nil),                // 11: nominal.file_store.v1.GetDriveByIdRequest
-	(*GetDriveByIdResponse)(nil),               // 12: nominal.file_store.v1.GetDriveByIdResponse
-	(*GetVirtualDriveDetailsByIdRequest)(nil),  // 13: nominal.file_store.v1.GetVirtualDriveDetailsByIdRequest
-	(*GetVirtualDriveDetailsByIdResponse)(nil), // 14: nominal.file_store.v1.GetVirtualDriveDetailsByIdResponse
-	(*GetVirtualDriveStatusByIdRequest)(nil),   // 15: nominal.file_store.v1.GetVirtualDriveStatusByIdRequest
-	(*GetVirtualDriveStatusByIdResponse)(nil),  // 16: nominal.file_store.v1.GetVirtualDriveStatusByIdResponse
-	(*ListDrivesRequest)(nil),                  // 17: nominal.file_store.v1.ListDrivesRequest
-	(*ListDrivesResponse)(nil),                 // 18: nominal.file_store.v1.ListDrivesResponse
-	(*UpdateVirtualDriveRequest)(nil),          // 19: nominal.file_store.v1.UpdateVirtualDriveRequest
-	(*UpdateVirtualDriveResponse)(nil),         // 20: nominal.file_store.v1.UpdateVirtualDriveResponse
-	(*UpdateDriveDetailsRequest)(nil),          // 21: nominal.file_store.v1.UpdateDriveDetailsRequest
-	(*UpdateDriveDetailsResponse)(nil),         // 22: nominal.file_store.v1.UpdateDriveDetailsResponse
-	(*ArchiveDriveRequest)(nil),                // 23: nominal.file_store.v1.ArchiveDriveRequest
-	(*ArchiveDriveResponse)(nil),               // 24: nominal.file_store.v1.ArchiveDriveResponse
-	(*UnarchiveDriveRequest)(nil),              // 25: nominal.file_store.v1.UnarchiveDriveRequest
-	(*UnarchiveDriveResponse)(nil),             // 26: nominal.file_store.v1.UnarchiveDriveResponse
-	(*Drive)(nil),                              // 27: nominal.file_store.v1.Drive
-	(*VirtualDriveConnectionDetails)(nil),      // 28: nominal.file_store.v1.VirtualDriveConnectionDetails
-	(*VirtualDrive)(nil),                       // 29: nominal.file_store.v1.VirtualDrive
-	(*VirtualDriveDetails)(nil),                // 30: nominal.file_store.v1.VirtualDriveDetails
-	(*VirtualDriveStatus)(nil),                 // 31: nominal.file_store.v1.VirtualDriveStatus
+	(NotifySkipReason)(0),                      // 0: nominal.file_store.v1.NotifySkipReason
+	(DriveAdminError)(0),                       // 1: nominal.file_store.v1.DriveAdminError
+	(*CreateDriveRequest)(nil),                 // 2: nominal.file_store.v1.CreateDriveRequest
+	(*CreateDriveResponse)(nil),                // 3: nominal.file_store.v1.CreateDriveResponse
+	(*CreateVirtualDriveRequest)(nil),          // 4: nominal.file_store.v1.CreateVirtualDriveRequest
+	(*CreateVirtualDriveResponse)(nil),         // 5: nominal.file_store.v1.CreateVirtualDriveResponse
+	(*GetDriveRequest)(nil),                    // 6: nominal.file_store.v1.GetDriveRequest
+	(*GetDriveResponse)(nil),                   // 7: nominal.file_store.v1.GetDriveResponse
+	(*GetVirtualDriveDetailsRequest)(nil),      // 8: nominal.file_store.v1.GetVirtualDriveDetailsRequest
+	(*GetVirtualDriveDetailsResponse)(nil),     // 9: nominal.file_store.v1.GetVirtualDriveDetailsResponse
+	(*GetVirtualDriveStatusRequest)(nil),       // 10: nominal.file_store.v1.GetVirtualDriveStatusRequest
+	(*GetVirtualDriveStatusResponse)(nil),      // 11: nominal.file_store.v1.GetVirtualDriveStatusResponse
+	(*GetDriveByIdRequest)(nil),                // 12: nominal.file_store.v1.GetDriveByIdRequest
+	(*GetDriveByIdResponse)(nil),               // 13: nominal.file_store.v1.GetDriveByIdResponse
+	(*GetVirtualDriveDetailsByIdRequest)(nil),  // 14: nominal.file_store.v1.GetVirtualDriveDetailsByIdRequest
+	(*GetVirtualDriveDetailsByIdResponse)(nil), // 15: nominal.file_store.v1.GetVirtualDriveDetailsByIdResponse
+	(*GetVirtualDriveStatusByIdRequest)(nil),   // 16: nominal.file_store.v1.GetVirtualDriveStatusByIdRequest
+	(*GetVirtualDriveStatusByIdResponse)(nil),  // 17: nominal.file_store.v1.GetVirtualDriveStatusByIdResponse
+	(*ListDrivesRequest)(nil),                  // 18: nominal.file_store.v1.ListDrivesRequest
+	(*ListDrivesResponse)(nil),                 // 19: nominal.file_store.v1.ListDrivesResponse
+	(*UpdateVirtualDriveRequest)(nil),          // 20: nominal.file_store.v1.UpdateVirtualDriveRequest
+	(*UpdateVirtualDriveResponse)(nil),         // 21: nominal.file_store.v1.UpdateVirtualDriveResponse
+	(*UpdateDriveDetailsRequest)(nil),          // 22: nominal.file_store.v1.UpdateDriveDetailsRequest
+	(*UpdateDriveDetailsResponse)(nil),         // 23: nominal.file_store.v1.UpdateDriveDetailsResponse
+	(*ArchiveDriveRequest)(nil),                // 24: nominal.file_store.v1.ArchiveDriveRequest
+	(*ArchiveDriveResponse)(nil),               // 25: nominal.file_store.v1.ArchiveDriveResponse
+	(*UnarchiveDriveRequest)(nil),              // 26: nominal.file_store.v1.UnarchiveDriveRequest
+	(*UnarchiveDriveResponse)(nil),             // 27: nominal.file_store.v1.UnarchiveDriveResponse
+	(*NotifyVirtualDriveFilesRequest)(nil),     // 28: nominal.file_store.v1.NotifyVirtualDriveFilesRequest
+	(*NotifiedObject)(nil),                     // 29: nominal.file_store.v1.NotifiedObject
+	(*NotifyVirtualDriveFilesResponse)(nil),    // 30: nominal.file_store.v1.NotifyVirtualDriveFilesResponse
+	(*SkippedCount)(nil),                       // 31: nominal.file_store.v1.SkippedCount
+	nil,                                        // 32: nominal.file_store.v1.NotifiedObject.TagsEntry
+	(*Drive)(nil),                              // 33: nominal.file_store.v1.Drive
+	(*VirtualDriveConnectionDetails)(nil),      // 34: nominal.file_store.v1.VirtualDriveConnectionDetails
+	(*VirtualDrive)(nil),                       // 35: nominal.file_store.v1.VirtualDrive
+	(*VirtualDriveDetails)(nil),                // 36: nominal.file_store.v1.VirtualDriveDetails
+	(*VirtualDriveStatus)(nil),                 // 37: nominal.file_store.v1.VirtualDriveStatus
 }
 var file_nominal_protos_file_store_v1_drives_proto_depIdxs = []int32{
-	27, // 0: nominal.file_store.v1.CreateDriveResponse.drive:type_name -> nominal.file_store.v1.Drive
-	28, // 1: nominal.file_store.v1.CreateVirtualDriveRequest.connection_details:type_name -> nominal.file_store.v1.VirtualDriveConnectionDetails
-	27, // 2: nominal.file_store.v1.CreateVirtualDriveResponse.drive:type_name -> nominal.file_store.v1.Drive
-	29, // 3: nominal.file_store.v1.CreateVirtualDriveResponse.virtual_drive:type_name -> nominal.file_store.v1.VirtualDrive
-	27, // 4: nominal.file_store.v1.GetDriveResponse.drive:type_name -> nominal.file_store.v1.Drive
-	27, // 5: nominal.file_store.v1.GetVirtualDriveDetailsResponse.drive:type_name -> nominal.file_store.v1.Drive
-	30, // 6: nominal.file_store.v1.GetVirtualDriveDetailsResponse.virtual_drive_details:type_name -> nominal.file_store.v1.VirtualDriveDetails
-	31, // 7: nominal.file_store.v1.GetVirtualDriveStatusResponse.status:type_name -> nominal.file_store.v1.VirtualDriveStatus
-	27, // 8: nominal.file_store.v1.GetDriveByIdResponse.drive:type_name -> nominal.file_store.v1.Drive
-	27, // 9: nominal.file_store.v1.GetVirtualDriveDetailsByIdResponse.drive:type_name -> nominal.file_store.v1.Drive
-	30, // 10: nominal.file_store.v1.GetVirtualDriveDetailsByIdResponse.virtual_drive_details:type_name -> nominal.file_store.v1.VirtualDriveDetails
-	31, // 11: nominal.file_store.v1.GetVirtualDriveStatusByIdResponse.status:type_name -> nominal.file_store.v1.VirtualDriveStatus
-	27, // 12: nominal.file_store.v1.ListDrivesResponse.drives:type_name -> nominal.file_store.v1.Drive
-	28, // 13: nominal.file_store.v1.UpdateVirtualDriveRequest.connection_details:type_name -> nominal.file_store.v1.VirtualDriveConnectionDetails
-	27, // 14: nominal.file_store.v1.UpdateVirtualDriveResponse.drive:type_name -> nominal.file_store.v1.Drive
-	29, // 15: nominal.file_store.v1.UpdateVirtualDriveResponse.virtual_drive:type_name -> nominal.file_store.v1.VirtualDrive
-	27, // 16: nominal.file_store.v1.UpdateDriveDetailsResponse.drive:type_name -> nominal.file_store.v1.Drive
-	27, // 17: nominal.file_store.v1.ArchiveDriveResponse.drive:type_name -> nominal.file_store.v1.Drive
-	27, // 18: nominal.file_store.v1.UnarchiveDriveResponse.drive:type_name -> nominal.file_store.v1.Drive
-	1,  // 19: nominal.file_store.v1.DrivesService.CreateDrive:input_type -> nominal.file_store.v1.CreateDriveRequest
-	3,  // 20: nominal.file_store.v1.DrivesService.CreateVirtualDrive:input_type -> nominal.file_store.v1.CreateVirtualDriveRequest
-	5,  // 21: nominal.file_store.v1.DrivesService.GetDrive:input_type -> nominal.file_store.v1.GetDriveRequest
-	7,  // 22: nominal.file_store.v1.DrivesService.GetVirtualDriveDetails:input_type -> nominal.file_store.v1.GetVirtualDriveDetailsRequest
-	9,  // 23: nominal.file_store.v1.DrivesService.GetVirtualDriveStatus:input_type -> nominal.file_store.v1.GetVirtualDriveStatusRequest
-	11, // 24: nominal.file_store.v1.DrivesService.GetDriveById:input_type -> nominal.file_store.v1.GetDriveByIdRequest
-	13, // 25: nominal.file_store.v1.DrivesService.GetVirtualDriveDetailsById:input_type -> nominal.file_store.v1.GetVirtualDriveDetailsByIdRequest
-	15, // 26: nominal.file_store.v1.DrivesService.GetVirtualDriveStatusById:input_type -> nominal.file_store.v1.GetVirtualDriveStatusByIdRequest
-	17, // 27: nominal.file_store.v1.DrivesService.ListDrives:input_type -> nominal.file_store.v1.ListDrivesRequest
-	19, // 28: nominal.file_store.v1.DrivesService.UpdateVirtualDrive:input_type -> nominal.file_store.v1.UpdateVirtualDriveRequest
-	21, // 29: nominal.file_store.v1.DrivesService.UpdateDriveDetails:input_type -> nominal.file_store.v1.UpdateDriveDetailsRequest
-	23, // 30: nominal.file_store.v1.DrivesService.ArchiveDrive:input_type -> nominal.file_store.v1.ArchiveDriveRequest
-	25, // 31: nominal.file_store.v1.DrivesService.UnarchiveDrive:input_type -> nominal.file_store.v1.UnarchiveDriveRequest
-	2,  // 32: nominal.file_store.v1.DrivesService.CreateDrive:output_type -> nominal.file_store.v1.CreateDriveResponse
-	4,  // 33: nominal.file_store.v1.DrivesService.CreateVirtualDrive:output_type -> nominal.file_store.v1.CreateVirtualDriveResponse
-	6,  // 34: nominal.file_store.v1.DrivesService.GetDrive:output_type -> nominal.file_store.v1.GetDriveResponse
-	8,  // 35: nominal.file_store.v1.DrivesService.GetVirtualDriveDetails:output_type -> nominal.file_store.v1.GetVirtualDriveDetailsResponse
-	10, // 36: nominal.file_store.v1.DrivesService.GetVirtualDriveStatus:output_type -> nominal.file_store.v1.GetVirtualDriveStatusResponse
-	12, // 37: nominal.file_store.v1.DrivesService.GetDriveById:output_type -> nominal.file_store.v1.GetDriveByIdResponse
-	14, // 38: nominal.file_store.v1.DrivesService.GetVirtualDriveDetailsById:output_type -> nominal.file_store.v1.GetVirtualDriveDetailsByIdResponse
-	16, // 39: nominal.file_store.v1.DrivesService.GetVirtualDriveStatusById:output_type -> nominal.file_store.v1.GetVirtualDriveStatusByIdResponse
-	18, // 40: nominal.file_store.v1.DrivesService.ListDrives:output_type -> nominal.file_store.v1.ListDrivesResponse
-	20, // 41: nominal.file_store.v1.DrivesService.UpdateVirtualDrive:output_type -> nominal.file_store.v1.UpdateVirtualDriveResponse
-	22, // 42: nominal.file_store.v1.DrivesService.UpdateDriveDetails:output_type -> nominal.file_store.v1.UpdateDriveDetailsResponse
-	24, // 43: nominal.file_store.v1.DrivesService.ArchiveDrive:output_type -> nominal.file_store.v1.ArchiveDriveResponse
-	26, // 44: nominal.file_store.v1.DrivesService.UnarchiveDrive:output_type -> nominal.file_store.v1.UnarchiveDriveResponse
-	32, // [32:45] is the sub-list for method output_type
-	19, // [19:32] is the sub-list for method input_type
-	19, // [19:19] is the sub-list for extension type_name
-	19, // [19:19] is the sub-list for extension extendee
-	0,  // [0:19] is the sub-list for field type_name
+	33, // 0: nominal.file_store.v1.CreateDriveResponse.drive:type_name -> nominal.file_store.v1.Drive
+	34, // 1: nominal.file_store.v1.CreateVirtualDriveRequest.connection_details:type_name -> nominal.file_store.v1.VirtualDriveConnectionDetails
+	33, // 2: nominal.file_store.v1.CreateVirtualDriveResponse.drive:type_name -> nominal.file_store.v1.Drive
+	35, // 3: nominal.file_store.v1.CreateVirtualDriveResponse.virtual_drive:type_name -> nominal.file_store.v1.VirtualDrive
+	33, // 4: nominal.file_store.v1.GetDriveResponse.drive:type_name -> nominal.file_store.v1.Drive
+	33, // 5: nominal.file_store.v1.GetVirtualDriveDetailsResponse.drive:type_name -> nominal.file_store.v1.Drive
+	36, // 6: nominal.file_store.v1.GetVirtualDriveDetailsResponse.virtual_drive_details:type_name -> nominal.file_store.v1.VirtualDriveDetails
+	37, // 7: nominal.file_store.v1.GetVirtualDriveStatusResponse.status:type_name -> nominal.file_store.v1.VirtualDriveStatus
+	33, // 8: nominal.file_store.v1.GetDriveByIdResponse.drive:type_name -> nominal.file_store.v1.Drive
+	33, // 9: nominal.file_store.v1.GetVirtualDriveDetailsByIdResponse.drive:type_name -> nominal.file_store.v1.Drive
+	36, // 10: nominal.file_store.v1.GetVirtualDriveDetailsByIdResponse.virtual_drive_details:type_name -> nominal.file_store.v1.VirtualDriveDetails
+	37, // 11: nominal.file_store.v1.GetVirtualDriveStatusByIdResponse.status:type_name -> nominal.file_store.v1.VirtualDriveStatus
+	33, // 12: nominal.file_store.v1.ListDrivesResponse.drives:type_name -> nominal.file_store.v1.Drive
+	34, // 13: nominal.file_store.v1.UpdateVirtualDriveRequest.connection_details:type_name -> nominal.file_store.v1.VirtualDriveConnectionDetails
+	33, // 14: nominal.file_store.v1.UpdateVirtualDriveResponse.drive:type_name -> nominal.file_store.v1.Drive
+	35, // 15: nominal.file_store.v1.UpdateVirtualDriveResponse.virtual_drive:type_name -> nominal.file_store.v1.VirtualDrive
+	33, // 16: nominal.file_store.v1.UpdateDriveDetailsResponse.drive:type_name -> nominal.file_store.v1.Drive
+	33, // 17: nominal.file_store.v1.ArchiveDriveResponse.drive:type_name -> nominal.file_store.v1.Drive
+	33, // 18: nominal.file_store.v1.UnarchiveDriveResponse.drive:type_name -> nominal.file_store.v1.Drive
+	29, // 19: nominal.file_store.v1.NotifyVirtualDriveFilesRequest.objects:type_name -> nominal.file_store.v1.NotifiedObject
+	32, // 20: nominal.file_store.v1.NotifiedObject.tags:type_name -> nominal.file_store.v1.NotifiedObject.TagsEntry
+	31, // 21: nominal.file_store.v1.NotifyVirtualDriveFilesResponse.skipped_by_reason:type_name -> nominal.file_store.v1.SkippedCount
+	0,  // 22: nominal.file_store.v1.SkippedCount.reason:type_name -> nominal.file_store.v1.NotifySkipReason
+	2,  // 23: nominal.file_store.v1.DrivesService.CreateDrive:input_type -> nominal.file_store.v1.CreateDriveRequest
+	4,  // 24: nominal.file_store.v1.DrivesService.CreateVirtualDrive:input_type -> nominal.file_store.v1.CreateVirtualDriveRequest
+	6,  // 25: nominal.file_store.v1.DrivesService.GetDrive:input_type -> nominal.file_store.v1.GetDriveRequest
+	8,  // 26: nominal.file_store.v1.DrivesService.GetVirtualDriveDetails:input_type -> nominal.file_store.v1.GetVirtualDriveDetailsRequest
+	10, // 27: nominal.file_store.v1.DrivesService.GetVirtualDriveStatus:input_type -> nominal.file_store.v1.GetVirtualDriveStatusRequest
+	12, // 28: nominal.file_store.v1.DrivesService.GetDriveById:input_type -> nominal.file_store.v1.GetDriveByIdRequest
+	14, // 29: nominal.file_store.v1.DrivesService.GetVirtualDriveDetailsById:input_type -> nominal.file_store.v1.GetVirtualDriveDetailsByIdRequest
+	16, // 30: nominal.file_store.v1.DrivesService.GetVirtualDriveStatusById:input_type -> nominal.file_store.v1.GetVirtualDriveStatusByIdRequest
+	18, // 31: nominal.file_store.v1.DrivesService.ListDrives:input_type -> nominal.file_store.v1.ListDrivesRequest
+	20, // 32: nominal.file_store.v1.DrivesService.UpdateVirtualDrive:input_type -> nominal.file_store.v1.UpdateVirtualDriveRequest
+	22, // 33: nominal.file_store.v1.DrivesService.UpdateDriveDetails:input_type -> nominal.file_store.v1.UpdateDriveDetailsRequest
+	24, // 34: nominal.file_store.v1.DrivesService.ArchiveDrive:input_type -> nominal.file_store.v1.ArchiveDriveRequest
+	26, // 35: nominal.file_store.v1.DrivesService.UnarchiveDrive:input_type -> nominal.file_store.v1.UnarchiveDriveRequest
+	28, // 36: nominal.file_store.v1.DrivesService.NotifyVirtualDriveFiles:input_type -> nominal.file_store.v1.NotifyVirtualDriveFilesRequest
+	3,  // 37: nominal.file_store.v1.DrivesService.CreateDrive:output_type -> nominal.file_store.v1.CreateDriveResponse
+	5,  // 38: nominal.file_store.v1.DrivesService.CreateVirtualDrive:output_type -> nominal.file_store.v1.CreateVirtualDriveResponse
+	7,  // 39: nominal.file_store.v1.DrivesService.GetDrive:output_type -> nominal.file_store.v1.GetDriveResponse
+	9,  // 40: nominal.file_store.v1.DrivesService.GetVirtualDriveDetails:output_type -> nominal.file_store.v1.GetVirtualDriveDetailsResponse
+	11, // 41: nominal.file_store.v1.DrivesService.GetVirtualDriveStatus:output_type -> nominal.file_store.v1.GetVirtualDriveStatusResponse
+	13, // 42: nominal.file_store.v1.DrivesService.GetDriveById:output_type -> nominal.file_store.v1.GetDriveByIdResponse
+	15, // 43: nominal.file_store.v1.DrivesService.GetVirtualDriveDetailsById:output_type -> nominal.file_store.v1.GetVirtualDriveDetailsByIdResponse
+	17, // 44: nominal.file_store.v1.DrivesService.GetVirtualDriveStatusById:output_type -> nominal.file_store.v1.GetVirtualDriveStatusByIdResponse
+	19, // 45: nominal.file_store.v1.DrivesService.ListDrives:output_type -> nominal.file_store.v1.ListDrivesResponse
+	21, // 46: nominal.file_store.v1.DrivesService.UpdateVirtualDrive:output_type -> nominal.file_store.v1.UpdateVirtualDriveResponse
+	23, // 47: nominal.file_store.v1.DrivesService.UpdateDriveDetails:output_type -> nominal.file_store.v1.UpdateDriveDetailsResponse
+	25, // 48: nominal.file_store.v1.DrivesService.ArchiveDrive:output_type -> nominal.file_store.v1.ArchiveDriveResponse
+	27, // 49: nominal.file_store.v1.DrivesService.UnarchiveDrive:output_type -> nominal.file_store.v1.UnarchiveDriveResponse
+	30, // 50: nominal.file_store.v1.DrivesService.NotifyVirtualDriveFiles:output_type -> nominal.file_store.v1.NotifyVirtualDriveFilesResponse
+	37, // [37:51] is the sub-list for method output_type
+	23, // [23:37] is the sub-list for method input_type
+	23, // [23:23] is the sub-list for extension type_name
+	23, // [23:23] is the sub-list for extension extendee
+	0,  // [0:23] is the sub-list for field type_name
 }
 
 func init() { file_nominal_protos_file_store_v1_drives_proto_init() }
@@ -1627,8 +1990,8 @@ func file_nominal_protos_file_store_v1_drives_proto_init() {
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_nominal_protos_file_store_v1_drives_proto_rawDesc), len(file_nominal_protos_file_store_v1_drives_proto_rawDesc)),
-			NumEnums:      1,
-			NumMessages:   26,
+			NumEnums:      2,
+			NumMessages:   31,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

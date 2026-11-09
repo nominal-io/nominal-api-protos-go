@@ -67,7 +67,8 @@ type MeshServiceClient interface {
 	// Throws MESH_SERVICE_ERROR_REMOTE_CONNECTION_NOT_FOUND if there is no remote connection.
 	GetRemoteConnection(ctx context.Context, in *GetRemoteConnectionRequest, opts ...grpc.CallOption) (*GetRemoteConnectionResponse, error)
 	// Updates a remote connection by RID.
-	// Throws MESH_SERVICE_ERROR_REMOTE_CONNECTION_NOT_FOUND if there is no remote connection.
+	// Throws MESH_SERVICE_ERROR_REMOTE_CONNECTION_NOT_FOUND if there is no remote connection and
+	// MESH_SERVICE_ERROR_FLAG_NOT_FOUND if a flag does not exist in the connection's workspace.
 	UpdateRemoteConnection(ctx context.Context, in *UpdateRemoteConnectionRequest, opts ...grpc.CallOption) (*UpdateRemoteConnectionResponse, error)
 	// Deletes a remote connection by RID.
 	DeleteRemoteConnection(ctx context.Context, in *DeleteRemoteConnectionRequest, opts ...grpc.CallOption) (*DeleteRemoteConnectionResponse, error)
@@ -237,7 +238,8 @@ type MeshServiceServer interface {
 	// Throws MESH_SERVICE_ERROR_REMOTE_CONNECTION_NOT_FOUND if there is no remote connection.
 	GetRemoteConnection(context.Context, *GetRemoteConnectionRequest) (*GetRemoteConnectionResponse, error)
 	// Updates a remote connection by RID.
-	// Throws MESH_SERVICE_ERROR_REMOTE_CONNECTION_NOT_FOUND if there is no remote connection.
+	// Throws MESH_SERVICE_ERROR_REMOTE_CONNECTION_NOT_FOUND if there is no remote connection and
+	// MESH_SERVICE_ERROR_FLAG_NOT_FOUND if a flag does not exist in the connection's workspace.
 	UpdateRemoteConnection(context.Context, *UpdateRemoteConnectionRequest) (*UpdateRemoteConnectionResponse, error)
 	// Deletes a remote connection by RID.
 	DeleteRemoteConnection(context.Context, *DeleteRemoteConnectionRequest) (*DeleteRemoteConnectionResponse, error)
