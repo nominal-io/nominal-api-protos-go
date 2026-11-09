@@ -69,6 +69,9 @@ type FilesServiceClient interface {
 	PurgeFile(ctx context.Context, in *PurgeFileRequest, opts ...grpc.CallOption) (*PurgeFileResponse, error)
 	// Returns a short-lived signed URL to download a file revision's content.
 	//
+	// The URL supports HTTP range requests (https://www.rfc-editor.org/rfc/rfc9110#field.range). Only a single
+	// byte range is supported.
+	//
 	// Errors: FileStoreCommonError (FILE_REVISION_NOT_FOUND, PERMISSION_DENIED),
 	// RevisionReadError (BYTES_RECLAIMED), VirtualDriveUpstreamError (on virtual drives).
 	GetDownloadUrl(ctx context.Context, in *GetDownloadUrlRequest, opts ...grpc.CallOption) (*GetDownloadUrlResponse, error)
@@ -201,6 +204,9 @@ type FilesServiceServer interface {
 	// Errors: FileStoreCommonError (FILE_REVISION_NOT_FOUND, PERMISSION_DENIED).
 	PurgeFile(context.Context, *PurgeFileRequest) (*PurgeFileResponse, error)
 	// Returns a short-lived signed URL to download a file revision's content.
+	//
+	// The URL supports HTTP range requests (https://www.rfc-editor.org/rfc/rfc9110#field.range). Only a single
+	// byte range is supported.
 	//
 	// Errors: FileStoreCommonError (FILE_REVISION_NOT_FOUND, PERMISSION_DENIED),
 	// RevisionReadError (BYTES_RECLAIMED), VirtualDriveUpstreamError (on virtual drives).

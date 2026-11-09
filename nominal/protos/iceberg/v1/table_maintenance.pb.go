@@ -92,6 +92,67 @@ func (RewriteJobOrder) EnumDescriptor() ([]byte, []int) {
 	return file_nominal_protos_iceberg_v1_table_maintenance_proto_rawDescGZIP(), []int{0}
 }
 
+// The compaction tier a RewriteDataFiles action belongs to. A minimum data age
+// and a file-size window keep the tiers' candidate files disjoint, so two
+// different tiers may rewrite one table at the same time.
+type RewriteTier int32
+
+const (
+	// Resolved to REWRITE_TIER_SMALL by the server.
+	RewriteTier_REWRITE_TIER_UNSPECIFIED RewriteTier = 0
+	// Compacts files at the ingest frontier. Runs often and finishes quickly.
+	RewriteTier_REWRITE_TIER_SMALL RewriteTier = 1
+	// Consolidates the output of the small tier, once it has aged out of the
+	// frontier.
+	RewriteTier_REWRITE_TIER_MEDIUM RewriteTier = 2
+	// The final consolidation, into large sorted files. Runs rarely and takes far
+	// longer than the other tiers.
+	RewriteTier_REWRITE_TIER_LARGE RewriteTier = 3
+)
+
+// Enum value maps for RewriteTier.
+var (
+	RewriteTier_name = map[int32]string{
+		0: "REWRITE_TIER_UNSPECIFIED",
+		1: "REWRITE_TIER_SMALL",
+		2: "REWRITE_TIER_MEDIUM",
+		3: "REWRITE_TIER_LARGE",
+	}
+	RewriteTier_value = map[string]int32{
+		"REWRITE_TIER_UNSPECIFIED": 0,
+		"REWRITE_TIER_SMALL":       1,
+		"REWRITE_TIER_MEDIUM":      2,
+		"REWRITE_TIER_LARGE":       3,
+	}
+)
+
+func (x RewriteTier) Enum() *RewriteTier {
+	p := new(RewriteTier)
+	*p = x
+	return p
+}
+
+func (x RewriteTier) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (RewriteTier) Descriptor() protoreflect.EnumDescriptor {
+	return file_nominal_protos_iceberg_v1_table_maintenance_proto_enumTypes[1].Descriptor()
+}
+
+func (RewriteTier) Type() protoreflect.EnumType {
+	return &file_nominal_protos_iceberg_v1_table_maintenance_proto_enumTypes[1]
+}
+
+func (x RewriteTier) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use RewriteTier.Descriptor instead.
+func (RewriteTier) EnumDescriptor() ([]byte, []int) {
+	return file_nominal_protos_iceberg_v1_table_maintenance_proto_rawDescGZIP(), []int{1}
+}
+
 type MaintenanceRunStatus int32
 
 const (
@@ -131,11 +192,11 @@ func (x MaintenanceRunStatus) String() string {
 }
 
 func (MaintenanceRunStatus) Descriptor() protoreflect.EnumDescriptor {
-	return file_nominal_protos_iceberg_v1_table_maintenance_proto_enumTypes[1].Descriptor()
+	return file_nominal_protos_iceberg_v1_table_maintenance_proto_enumTypes[2].Descriptor()
 }
 
 func (MaintenanceRunStatus) Type() protoreflect.EnumType {
-	return &file_nominal_protos_iceberg_v1_table_maintenance_proto_enumTypes[1]
+	return &file_nominal_protos_iceberg_v1_table_maintenance_proto_enumTypes[2]
 }
 
 func (x MaintenanceRunStatus) Number() protoreflect.EnumNumber {
@@ -144,7 +205,7 @@ func (x MaintenanceRunStatus) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use MaintenanceRunStatus.Descriptor instead.
 func (MaintenanceRunStatus) EnumDescriptor() ([]byte, []int) {
-	return file_nominal_protos_iceberg_v1_table_maintenance_proto_rawDescGZIP(), []int{1}
+	return file_nominal_protos_iceberg_v1_table_maintenance_proto_rawDescGZIP(), []int{2}
 }
 
 type TableMaintenanceErrors int32
@@ -177,11 +238,11 @@ func (x TableMaintenanceErrors) String() string {
 }
 
 func (TableMaintenanceErrors) Descriptor() protoreflect.EnumDescriptor {
-	return file_nominal_protos_iceberg_v1_table_maintenance_proto_enumTypes[2].Descriptor()
+	return file_nominal_protos_iceberg_v1_table_maintenance_proto_enumTypes[3].Descriptor()
 }
 
 func (TableMaintenanceErrors) Type() protoreflect.EnumType {
-	return &file_nominal_protos_iceberg_v1_table_maintenance_proto_enumTypes[2]
+	return &file_nominal_protos_iceberg_v1_table_maintenance_proto_enumTypes[3]
 }
 
 func (x TableMaintenanceErrors) Number() protoreflect.EnumNumber {
@@ -190,7 +251,7 @@ func (x TableMaintenanceErrors) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use TableMaintenanceErrors.Descriptor instead.
 func (TableMaintenanceErrors) EnumDescriptor() ([]byte, []int) {
-	return file_nominal_protos_iceberg_v1_table_maintenance_proto_rawDescGZIP(), []int{2}
+	return file_nominal_protos_iceberg_v1_table_maintenance_proto_rawDescGZIP(), []int{3}
 }
 
 // A single maintenance action against one or more Iceberg tables. A maintenance
@@ -376,8 +437,8 @@ type RewriteDataFiles struct {
 	TargetFileSizeBytes *uint64 `protobuf:"varint,1,opt,name=target_file_size_bytes,json=targetFileSizeBytes,proto3,oneof" json:"target_file_size_bytes,omitempty"`
 	// Commit each file group as it finishes rather than accumulating every group
 	// for one commit at the end, capped at this many commits (Iceberg
-	// partial-progress.max-commits). Setting this field is what enables partial
-	// progress; leaving it unset keeps Iceberg's default of a single final commit.
+	// partial-progress.max-commits). Unset takes the server's configured default
+	// for the rewrite's tier, so every rewrite commits partial progress.
 	//
 	// A single final commit means an interrupted run discards all of its work, and
 	// the driver holds every rewritten group's file metadata in memory until the
@@ -406,8 +467,10 @@ type RewriteDataFiles struct {
 	// oversize file to split.
 	MinInputFiles *uint32 `protobuf:"varint,6,opt,name=min_input_files,json=minInputFiles,proto3,oneof" json:"min_input_files,omitempty"`
 	// Hard cap on the input files this run rewrites (Iceberg max-files-to-rewrite).
-	// Unset rewrites every eligible file. Setting it makes the cost of one run
-	// predictable and lets a large backlog drain over several scheduled runs.
+	// Unset takes the server's configured cap for the rewrite's tier, if one is
+	// set; otherwise unset rewrites every eligible file. Setting it makes the cost
+	// of one run predictable and lets a large backlog drain over several scheduled
+	// runs.
 	MaxFilesToRewrite *uint32 `protobuf:"varint,7,opt,name=max_files_to_rewrite,json=maxFilesToRewrite,proto3,oneof" json:"max_files_to_rewrite,omitempty"`
 	// How many file groups Iceberg rewrites at once (Iceberg
 	// max-concurrent-file-group-rewrites). Unset leaves Iceberg's default of 5.
@@ -435,7 +498,6 @@ type RewriteDataFiles struct {
 	// Cap on failed group commits before the whole rewrite fails, when partial
 	// progress is on (Iceberg partial-progress.max-failed-commits). Unset tolerates
 	// as many failures as there are commits, so commit contention never fails a run.
-	// Requires partial_progress_max_commits.
 	PartialProgressMaxFailedCommits *uint32 `protobuf:"varint,12,opt,name=partial_progress_max_failed_commits,json=partialProgressMaxFailedCommits,proto3,oneof" json:"partial_progress_max_failed_commits,omitempty"`
 	// Restricts the rewrite to files holding data older than this, applied as an
 	// Iceberg filter against the epoch-nanosecond timestamp column. Keeps a large
@@ -447,8 +509,13 @@ type RewriteDataFiles struct {
 	// timestamp column; every data table does, the series table does not, and the
 	// job fails the action for a table that does not.
 	MinDataAgeMillis *uint64 `protobuf:"varint,13,opt,name=min_data_age_millis,json=minDataAgeMillis,proto3,oneof" json:"min_data_age_millis,omitempty"`
-	unknownFields    protoimpl.UnknownFields
-	sizeCache        protoimpl.SizeCache
+	// Which compaction tier this rewrite belongs to, which decides what it may run
+	// alongside on the same table. Unset resolves to REWRITE_TIER_SMALL, and a
+	// GetMaintenanceRun response reports the resolved tier rather than the value
+	// that was sent.
+	Tier          RewriteTier `protobuf:"varint,14,opt,name=tier,proto3,enum=nominal.iceberg.v1.RewriteTier" json:"tier,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
 }
 
 func (x *RewriteDataFiles) Reset() {
@@ -570,6 +637,13 @@ func (x *RewriteDataFiles) GetMinDataAgeMillis() uint64 {
 		return *x.MinDataAgeMillis
 	}
 	return 0
+}
+
+func (x *RewriteDataFiles) GetTier() RewriteTier {
+	if x != nil {
+		return x.Tier
+	}
+	return RewriteTier_REWRITE_TIER_UNSPECIFIED
 }
 
 // Collapse a series table's rows to one row per series and month, aggregating
@@ -1195,7 +1269,8 @@ const file_nominal_protos_iceberg_v1_table_maintenance_proto_rawDesc = "" +
 	"deleteRows\x12Q\n" +
 	"\x11merge_series_rows\x18\b \x01(\v2#.nominal.iceberg.v1.MergeSeriesRowsH\x00R\x0fmergeSeriesRows:\x8d\x01\xbaH\x89\x01\x1a\x86\x01\n" +
 	"\"maintenance_action.target-required\x125target is required for non-delete maintenance actions\x1a)has(this.delete_rows) || has(this.target)B\x0f\n" +
-	"\x06action\x12\x05\xbaH\x02\b\x01\"\xfd\t\n" +
+	"\x06action\x12\x05\xbaH\x02\b\x01\"\xbc\n" +
+	"\n" +
 	"\x10RewriteDataFiles\x12A\n" +
 	"\x16target_file_size_bytes\x18\x01 \x01(\x04B\a\xbaH\x042\x02 \x00H\x00R\x13targetFileSizeBytes\x88\x01\x01\x12M\n" +
 	"\x1cpartial_progress_max_commits\x18\x02 \x01(\rB\a\xbaH\x04*\x02 \x00H\x01R\x19partialProgressMaxCommits\x88\x01\x01\x12F\n" +
@@ -1211,7 +1286,8 @@ const file_nominal_protos_iceberg_v1_table_maintenance_proto_rawDesc = "" +
 	"\x11rewrite_job_order\x18\v \x01(\x0e2#.nominal.iceberg.v1.RewriteJobOrderB\b\xbaH\x05\x82\x01\x02\x10\x01R\x0frewriteJobOrder\x12Q\n" +
 	"#partial_progress_max_failed_commits\x18\f \x01(\rH\n" +
 	"R\x1fpartialProgressMaxFailedCommits\x88\x01\x01\x12;\n" +
-	"\x13min_data_age_millis\x18\r \x01(\x04B\a\xbaH\x042\x02 \x00H\vR\x10minDataAgeMillis\x88\x01\x01B\x19\n" +
+	"\x13min_data_age_millis\x18\r \x01(\x04B\a\xbaH\x042\x02 \x00H\vR\x10minDataAgeMillis\x88\x01\x01\x12=\n" +
+	"\x04tier\x18\x0e \x01(\x0e2\x1f.nominal.iceberg.v1.RewriteTierB\b\xbaH\x05\x82\x01\x02\x10\x01R\x04tierB\x19\n" +
 	"\x17_target_file_size_bytesB\x1f\n" +
 	"\x1d_partial_progress_max_commitsB\x1c\n" +
 	"\x1a_max_file_group_size_bytesB\x16\n" +
@@ -1282,7 +1358,12 @@ const file_nominal_protos_iceberg_v1_table_maintenance_proto_rawDesc = "" +
 	"\x1cREWRITE_JOB_ORDER_BYTES_DESC\x10\x02\x12\x1f\n" +
 	"\x1bREWRITE_JOB_ORDER_FILES_ASC\x10\x03\x12 \n" +
 	"\x1cREWRITE_JOB_ORDER_FILES_DESC\x10\x04\x12\x1a\n" +
-	"\x16REWRITE_JOB_ORDER_NONE\x10\x05*\xcf\x01\n" +
+	"\x16REWRITE_JOB_ORDER_NONE\x10\x05*t\n" +
+	"\vRewriteTier\x12\x1c\n" +
+	"\x18REWRITE_TIER_UNSPECIFIED\x10\x00\x12\x16\n" +
+	"\x12REWRITE_TIER_SMALL\x10\x01\x12\x17\n" +
+	"\x13REWRITE_TIER_MEDIUM\x10\x02\x12\x16\n" +
+	"\x12REWRITE_TIER_LARGE\x10\x03*\xcf\x01\n" +
 	"\x14MaintenanceRunStatus\x12&\n" +
 	"\"MAINTENANCE_RUN_STATUS_UNSPECIFIED\x10\x00\x12\"\n" +
 	"\x1eMAINTENANCE_RUN_STATUS_PENDING\x10\x01\x12\"\n" +
@@ -1310,56 +1391,58 @@ func file_nominal_protos_iceberg_v1_table_maintenance_proto_rawDescGZIP() []byte
 	return file_nominal_protos_iceberg_v1_table_maintenance_proto_rawDescData
 }
 
-var file_nominal_protos_iceberg_v1_table_maintenance_proto_enumTypes = make([]protoimpl.EnumInfo, 3)
+var file_nominal_protos_iceberg_v1_table_maintenance_proto_enumTypes = make([]protoimpl.EnumInfo, 4)
 var file_nominal_protos_iceberg_v1_table_maintenance_proto_msgTypes = make([]protoimpl.MessageInfo, 13)
 var file_nominal_protos_iceberg_v1_table_maintenance_proto_goTypes = []any{
 	(RewriteJobOrder)(0),              // 0: nominal.iceberg.v1.RewriteJobOrder
-	(MaintenanceRunStatus)(0),         // 1: nominal.iceberg.v1.MaintenanceRunStatus
-	(TableMaintenanceErrors)(0),       // 2: nominal.iceberg.v1.TableMaintenanceErrors
-	(*MaintenanceAction)(nil),         // 3: nominal.iceberg.v1.MaintenanceAction
-	(*RewriteDataFiles)(nil),          // 4: nominal.iceberg.v1.RewriteDataFiles
-	(*MergeSeriesRows)(nil),           // 5: nominal.iceberg.v1.MergeSeriesRows
-	(*RewriteManifests)(nil),          // 6: nominal.iceberg.v1.RewriteManifests
-	(*ExpireSnapshots)(nil),           // 7: nominal.iceberg.v1.ExpireSnapshots
-	(*RemoveOrphanFiles)(nil),         // 8: nominal.iceberg.v1.RemoveOrphanFiles
-	(*RemoveDuplicateDataFiles)(nil),  // 9: nominal.iceberg.v1.RemoveDuplicateDataFiles
-	(*DeleteRowsTimeRange)(nil),       // 10: nominal.iceberg.v1.DeleteRowsTimeRange
-	(*DeleteRows)(nil),                // 11: nominal.iceberg.v1.DeleteRows
-	(*GetMaintenanceRunResponse)(nil), // 12: nominal.iceberg.v1.GetMaintenanceRunResponse
-	(*RunMaintenanceRequest)(nil),     // 13: nominal.iceberg.v1.RunMaintenanceRequest
-	(*RunMaintenanceResponse)(nil),    // 14: nominal.iceberg.v1.RunMaintenanceResponse
-	(*GetMaintenanceRunRequest)(nil),  // 15: nominal.iceberg.v1.GetMaintenanceRunRequest
-	(*TableTarget)(nil),               // 16: nominal.iceberg.v1.TableTarget
-	(*timestamppb.Timestamp)(nil),     // 17: google.protobuf.Timestamp
+	(RewriteTier)(0),                  // 1: nominal.iceberg.v1.RewriteTier
+	(MaintenanceRunStatus)(0),         // 2: nominal.iceberg.v1.MaintenanceRunStatus
+	(TableMaintenanceErrors)(0),       // 3: nominal.iceberg.v1.TableMaintenanceErrors
+	(*MaintenanceAction)(nil),         // 4: nominal.iceberg.v1.MaintenanceAction
+	(*RewriteDataFiles)(nil),          // 5: nominal.iceberg.v1.RewriteDataFiles
+	(*MergeSeriesRows)(nil),           // 6: nominal.iceberg.v1.MergeSeriesRows
+	(*RewriteManifests)(nil),          // 7: nominal.iceberg.v1.RewriteManifests
+	(*ExpireSnapshots)(nil),           // 8: nominal.iceberg.v1.ExpireSnapshots
+	(*RemoveOrphanFiles)(nil),         // 9: nominal.iceberg.v1.RemoveOrphanFiles
+	(*RemoveDuplicateDataFiles)(nil),  // 10: nominal.iceberg.v1.RemoveDuplicateDataFiles
+	(*DeleteRowsTimeRange)(nil),       // 11: nominal.iceberg.v1.DeleteRowsTimeRange
+	(*DeleteRows)(nil),                // 12: nominal.iceberg.v1.DeleteRows
+	(*GetMaintenanceRunResponse)(nil), // 13: nominal.iceberg.v1.GetMaintenanceRunResponse
+	(*RunMaintenanceRequest)(nil),     // 14: nominal.iceberg.v1.RunMaintenanceRequest
+	(*RunMaintenanceResponse)(nil),    // 15: nominal.iceberg.v1.RunMaintenanceResponse
+	(*GetMaintenanceRunRequest)(nil),  // 16: nominal.iceberg.v1.GetMaintenanceRunRequest
+	(*TableTarget)(nil),               // 17: nominal.iceberg.v1.TableTarget
+	(*timestamppb.Timestamp)(nil),     // 18: google.protobuf.Timestamp
 }
 var file_nominal_protos_iceberg_v1_table_maintenance_proto_depIdxs = []int32{
-	16, // 0: nominal.iceberg.v1.MaintenanceAction.target:type_name -> nominal.iceberg.v1.TableTarget
-	4,  // 1: nominal.iceberg.v1.MaintenanceAction.rewrite_data_files:type_name -> nominal.iceberg.v1.RewriteDataFiles
-	6,  // 2: nominal.iceberg.v1.MaintenanceAction.rewrite_manifests:type_name -> nominal.iceberg.v1.RewriteManifests
-	7,  // 3: nominal.iceberg.v1.MaintenanceAction.expire_snapshots:type_name -> nominal.iceberg.v1.ExpireSnapshots
-	8,  // 4: nominal.iceberg.v1.MaintenanceAction.remove_orphan_files:type_name -> nominal.iceberg.v1.RemoveOrphanFiles
-	9,  // 5: nominal.iceberg.v1.MaintenanceAction.remove_duplicate_data_files:type_name -> nominal.iceberg.v1.RemoveDuplicateDataFiles
-	11, // 6: nominal.iceberg.v1.MaintenanceAction.delete_rows:type_name -> nominal.iceberg.v1.DeleteRows
-	5,  // 7: nominal.iceberg.v1.MaintenanceAction.merge_series_rows:type_name -> nominal.iceberg.v1.MergeSeriesRows
+	17, // 0: nominal.iceberg.v1.MaintenanceAction.target:type_name -> nominal.iceberg.v1.TableTarget
+	5,  // 1: nominal.iceberg.v1.MaintenanceAction.rewrite_data_files:type_name -> nominal.iceberg.v1.RewriteDataFiles
+	7,  // 2: nominal.iceberg.v1.MaintenanceAction.rewrite_manifests:type_name -> nominal.iceberg.v1.RewriteManifests
+	8,  // 3: nominal.iceberg.v1.MaintenanceAction.expire_snapshots:type_name -> nominal.iceberg.v1.ExpireSnapshots
+	9,  // 4: nominal.iceberg.v1.MaintenanceAction.remove_orphan_files:type_name -> nominal.iceberg.v1.RemoveOrphanFiles
+	10, // 5: nominal.iceberg.v1.MaintenanceAction.remove_duplicate_data_files:type_name -> nominal.iceberg.v1.RemoveDuplicateDataFiles
+	12, // 6: nominal.iceberg.v1.MaintenanceAction.delete_rows:type_name -> nominal.iceberg.v1.DeleteRows
+	6,  // 7: nominal.iceberg.v1.MaintenanceAction.merge_series_rows:type_name -> nominal.iceberg.v1.MergeSeriesRows
 	0,  // 8: nominal.iceberg.v1.RewriteDataFiles.rewrite_job_order:type_name -> nominal.iceberg.v1.RewriteJobOrder
-	16, // 9: nominal.iceberg.v1.DeleteRows.data_table_targets:type_name -> nominal.iceberg.v1.TableTarget
-	16, // 10: nominal.iceberg.v1.DeleteRows.series_table_target:type_name -> nominal.iceberg.v1.TableTarget
-	10, // 11: nominal.iceberg.v1.DeleteRows.time_range:type_name -> nominal.iceberg.v1.DeleteRowsTimeRange
-	10, // 12: nominal.iceberg.v1.DeleteRows.exemption_ranges:type_name -> nominal.iceberg.v1.DeleteRowsTimeRange
-	3,  // 13: nominal.iceberg.v1.GetMaintenanceRunResponse.actions:type_name -> nominal.iceberg.v1.MaintenanceAction
-	1,  // 14: nominal.iceberg.v1.GetMaintenanceRunResponse.status:type_name -> nominal.iceberg.v1.MaintenanceRunStatus
-	17, // 15: nominal.iceberg.v1.GetMaintenanceRunResponse.started_at:type_name -> google.protobuf.Timestamp
-	17, // 16: nominal.iceberg.v1.GetMaintenanceRunResponse.finished_at:type_name -> google.protobuf.Timestamp
-	3,  // 17: nominal.iceberg.v1.RunMaintenanceRequest.actions:type_name -> nominal.iceberg.v1.MaintenanceAction
-	13, // 18: nominal.iceberg.v1.IcebergTableMaintenanceService.RunMaintenance:input_type -> nominal.iceberg.v1.RunMaintenanceRequest
-	15, // 19: nominal.iceberg.v1.IcebergTableMaintenanceService.GetMaintenanceRun:input_type -> nominal.iceberg.v1.GetMaintenanceRunRequest
-	14, // 20: nominal.iceberg.v1.IcebergTableMaintenanceService.RunMaintenance:output_type -> nominal.iceberg.v1.RunMaintenanceResponse
-	12, // 21: nominal.iceberg.v1.IcebergTableMaintenanceService.GetMaintenanceRun:output_type -> nominal.iceberg.v1.GetMaintenanceRunResponse
-	20, // [20:22] is the sub-list for method output_type
-	18, // [18:20] is the sub-list for method input_type
-	18, // [18:18] is the sub-list for extension type_name
-	18, // [18:18] is the sub-list for extension extendee
-	0,  // [0:18] is the sub-list for field type_name
+	1,  // 9: nominal.iceberg.v1.RewriteDataFiles.tier:type_name -> nominal.iceberg.v1.RewriteTier
+	17, // 10: nominal.iceberg.v1.DeleteRows.data_table_targets:type_name -> nominal.iceberg.v1.TableTarget
+	17, // 11: nominal.iceberg.v1.DeleteRows.series_table_target:type_name -> nominal.iceberg.v1.TableTarget
+	11, // 12: nominal.iceberg.v1.DeleteRows.time_range:type_name -> nominal.iceberg.v1.DeleteRowsTimeRange
+	11, // 13: nominal.iceberg.v1.DeleteRows.exemption_ranges:type_name -> nominal.iceberg.v1.DeleteRowsTimeRange
+	4,  // 14: nominal.iceberg.v1.GetMaintenanceRunResponse.actions:type_name -> nominal.iceberg.v1.MaintenanceAction
+	2,  // 15: nominal.iceberg.v1.GetMaintenanceRunResponse.status:type_name -> nominal.iceberg.v1.MaintenanceRunStatus
+	18, // 16: nominal.iceberg.v1.GetMaintenanceRunResponse.started_at:type_name -> google.protobuf.Timestamp
+	18, // 17: nominal.iceberg.v1.GetMaintenanceRunResponse.finished_at:type_name -> google.protobuf.Timestamp
+	4,  // 18: nominal.iceberg.v1.RunMaintenanceRequest.actions:type_name -> nominal.iceberg.v1.MaintenanceAction
+	14, // 19: nominal.iceberg.v1.IcebergTableMaintenanceService.RunMaintenance:input_type -> nominal.iceberg.v1.RunMaintenanceRequest
+	16, // 20: nominal.iceberg.v1.IcebergTableMaintenanceService.GetMaintenanceRun:input_type -> nominal.iceberg.v1.GetMaintenanceRunRequest
+	15, // 21: nominal.iceberg.v1.IcebergTableMaintenanceService.RunMaintenance:output_type -> nominal.iceberg.v1.RunMaintenanceResponse
+	13, // 22: nominal.iceberg.v1.IcebergTableMaintenanceService.GetMaintenanceRun:output_type -> nominal.iceberg.v1.GetMaintenanceRunResponse
+	21, // [21:23] is the sub-list for method output_type
+	19, // [19:21] is the sub-list for method input_type
+	19, // [19:19] is the sub-list for extension type_name
+	19, // [19:19] is the sub-list for extension extendee
+	0,  // [0:19] is the sub-list for field type_name
 }
 
 func init() { file_nominal_protos_iceberg_v1_table_maintenance_proto_init() }
@@ -1388,7 +1471,7 @@ func file_nominal_protos_iceberg_v1_table_maintenance_proto_init() {
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_nominal_protos_iceberg_v1_table_maintenance_proto_rawDesc), len(file_nominal_protos_iceberg_v1_table_maintenance_proto_rawDesc)),
-			NumEnums:      3,
+			NumEnums:      4,
 			NumMessages:   13,
 			NumExtensions: 0,
 			NumServices:   1,

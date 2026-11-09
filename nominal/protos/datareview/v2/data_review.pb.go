@@ -7,6 +7,7 @@
 package datareviewv2
 
 import (
+	_ "github.com/nominal-io/nominal-api-protos-go/nominal/protos/authz/v1"
 	_ "github.com/nominal-io/nominal-api-protos-go/nominal/protos/gen/v1"
 	types "github.com/nominal-io/nominal-api-protos-go/nominal/protos/types"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
@@ -8040,7 +8041,7 @@ var File_nominal_protos_datareview_v2_data_review_proto protoreflect.FileDescrip
 
 const file_nominal_protos_datareview_v2_data_review_proto_rawDesc = "" +
 	"\n" +
-	".nominal/protos/datareview/v2/data_review.proto\x12\x15nominal.datareview.v2\x1a\x1cgoogle/api/annotations.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a!nominal/protos/gen/v1/alias.proto\x1a!nominal/protos/gen/v1/error.proto\x1a!nominal/protos/types/common.proto\x1a nominal/protos/types/types.proto\"c\n" +
+	".nominal/protos/datareview/v2/data_review.proto\x12\x15nominal.datareview.v2\x1a\x1cgoogle/api/annotations.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a)nominal/protos/authz/v1/annotations.proto\x1a!nominal/protos/gen/v1/alias.proto\x1a!nominal/protos/gen/v1/error.proto\x1a!nominal/protos/types/common.proto\x1a nominal/protos/types/types.proto\"c\n" +
 	"\x0eVersionedVizId\x127\n" +
 	"\x03rid\x18\x01 \x01(\tB%\x9a\xb2\x1a!\n" +
 	"\x1fio.nominal.scout.rids.api.VizIdR\x03rid\x12\x18\n" +
@@ -8662,29 +8663,73 @@ const file_nominal_protos_datareview_v2_data_review_proto_rawDesc = "" +
 	"\x04FAIL\x10\x02*v\n" +
 	"\x0fDataReviewError\x12c\n" +
 	"-DATA_REVIEW_ERROR_INVALID_DATA_REVIEW_REQUEST\x10\x00\x1a0\xb2\xb2\x1a,\n" +
-	"\x10INVALID_ARGUMENT\x12\x18InvalidDataReviewRequest2\xe5!\n" +
-	"\x11DataReviewService\x12\xa1\x01\n" +
-	"\rBatchInitiate\x12+.nominal.datareview.v2.BatchInitiateRequest\x1a,.nominal.datareview.v2.BatchInitiateResponse\"5\x82\xd3\xe4\x93\x02/:\x01*\"*/datareview/v2/data-reviews/batch-initiate\x12\xe6\x01\n" +
-	"\x1aRerunFailedAutomaticChecks\x128.nominal.datareview.v2.RerunFailedAutomaticChecksRequest\x1a9.nominal.datareview.v2.RerunFailedAutomaticChecksResponse\"S\x82\xd3\xe4\x93\x02M\"K/datareview/v2/data-reviews/{data_review_rid}/rerun-failed-automatic-checks\x12\x9f\x01\n" +
-	"\x0fFindDataReviews\x12-.nominal.datareview.v2.FindDataReviewsRequest\x1a..nominal.datareview.v2.FindDataReviewsResponse\"-\x82\xd3\xe4\x93\x02':\x01*\"\"/datareview/v2/data-reviews/search\x12\xa1\x01\n" +
-	"\rGetDataReview\x12+.nominal.datareview.v2.GetDataReviewRequest\x1a,.nominal.datareview.v2.GetDataReviewResponse\"5\x82\xd3\xe4\x93\x02/\x12-/datareview/v2/data-reviews/{data_review_rid}\x12\xa1\x01\n" +
-	"\rGetCheckAlert\x12+.nominal.datareview.v2.GetCheckAlertRequest\x1a,.nominal.datareview.v2.GetCheckAlertResponse\"5\x82\xd3\xe4\x93\x02/\x12-/datareview/v2/check-alerts/{check_alert_rid}\x12\xd8\x01\n" +
-	"\x1bGetCheckAlertsForDataReview\x129.nominal.datareview.v2.GetCheckAlertsForDataReviewRequest\x1a:.nominal.datareview.v2.GetCheckAlertsForDataReviewResponse\"B\x82\xd3\xe4\x93\x02<\x12:/datareview/v2/data-reviews/{data_review_rid}/check-alerts\x12\xba\x01\n" +
-	"\x17GetCheckAlertsHistogram\x125.nominal.datareview.v2.GetCheckAlertsHistogramRequest\x1a6.nominal.datareview.v2.GetCheckAlertsHistogramResponse\"0\x82\xd3\xe4\x93\x02*:\x01*\"%/datareview/v2/check-alerts/histogram\x12\xa5\x01\n" +
-	"\x11SearchCheckAlerts\x12/.nominal.datareview.v2.SearchCheckAlertsRequest\x1a0.nominal.datareview.v2.SearchCheckAlertsResponse\"-\x82\xd3\xe4\x93\x02':\x01*\"\"/datareview/v2/check-alerts/search\x12\xc7\x01\n" +
-	"\x16GetCheckAlertActionLog\x124.nominal.datareview.v2.GetCheckAlertActionLogRequest\x1a5.nominal.datareview.v2.GetCheckAlertActionLogResponse\"@\x82\xd3\xe4\x93\x02:\x128/datareview/v2/check-alerts/{check_alert_rid}/action-log\x12\xdd\x01\n" +
-	"\x1fGetCheckAlertCountsForNotebooks\x12=.nominal.datareview.v2.GetCheckAlertCountsForNotebooksRequest\x1a>.nominal.datareview.v2.GetCheckAlertCountsForNotebooksResponse\";\x82\xd3\xe4\x93\x025:\x01*\"0/datareview/v2/check-alerts/counts-for-notebooks\x12\xdd\x01\n" +
-	"\x1fGetCheckAlertStatusForNotebooks\x12=.nominal.datareview.v2.GetCheckAlertStatusForNotebooksRequest\x1a>.nominal.datareview.v2.GetCheckAlertStatusForNotebooksResponse\";\x82\xd3\xe4\x93\x025:\x01*\"0/datareview/v2/check-alerts/status-for-notebooks\x12\xc2\x01\n" +
-	"\x17PerformCheckAlertAction\x125.nominal.datareview.v2.PerformCheckAlertActionRequest\x1a6.nominal.datareview.v2.PerformCheckAlertActionResponse\"8\x82\xd3\xe4\x93\x022:\x01*\x1a-/datareview/v2/check-alerts/{check_alert_rid}\x12\xd4\x01\n" +
-	"\x1cBatchPerformCheckAlertAction\x12:.nominal.datareview.v2.BatchPerformCheckAlertActionRequest\x1a;.nominal.datareview.v2.BatchPerformCheckAlertActionResponse\";\x82\xd3\xe4\x93\x025:\x01*\"0/datareview/v2/check-alerts/batch-perform-action\x12\x9f\x02\n" +
-	"0BatchPerformAutomaticCheckEvaluationReviewAction\x12N.nominal.datareview.v2.BatchPerformAutomaticCheckEvaluationReviewActionRequest\x1aO.nominal.datareview.v2.BatchPerformAutomaticCheckEvaluationReviewActionResponse\"J\x82\xd3\xe4\x93\x02D:\x01*\"?/datareview/v2/automatic-check-evaluations/batch-perform-action\x12\xf4\x01\n" +
-	"$GetAutomaticCheckEvaluationActionLog\x12B.nominal.datareview.v2.GetAutomaticCheckEvaluationActionLogRequest\x1aC.nominal.datareview.v2.GetAutomaticCheckEvaluationActionLogResponse\"C\x82\xd3\xe4\x93\x02=\x12;/datareview/v2/automatic-check-evaluations/{rid}/action-log\x12\xf2\x01\n" +
-	"\"BatchPerformManualCheckAlertAction\x12@.nominal.datareview.v2.BatchPerformManualCheckAlertActionRequest\x1aA.nominal.datareview.v2.BatchPerformManualCheckAlertActionResponse\"G\x82\xd3\xe4\x93\x02A:\x01*\"</datareview/v2/manual-check-evaluations/batch-perform-action\x12\xe8\x01\n" +
-	"!GetManualCheckEvaluationActionLog\x12?.nominal.datareview.v2.GetManualCheckEvaluationActionLogRequest\x1a@.nominal.datareview.v2.GetManualCheckEvaluationActionLogResponse\"@\x82\xd3\xe4\x93\x02:\x128/datareview/v2/manual-check-evaluations/{rid}/action-log\x12\xb5\x01\n" +
-	"\x11ArchiveDataReview\x12/.nominal.datareview.v2.ArchiveDataReviewRequest\x1a0.nominal.datareview.v2.ArchiveDataReviewResponse\"=\x82\xd3\xe4\x93\x027\"5/datareview/v2/data-reviews/{data_review_rid}/archive\x12\xbb\x01\n" +
-	"\x16BatchArchiveDataReview\x124.nominal.datareview.v2.BatchArchiveDataReviewRequest\x1a5.nominal.datareview.v2.BatchArchiveDataReviewResponse\"4\x82\xd3\xe4\x93\x02.:\x01*\")/datareview/v2/data-reviews/batch-archive\x12\xbd\x01\n" +
-	"\x13UnarchiveDataReview\x121.nominal.datareview.v2.UnarchiveDataReviewRequest\x1a2.nominal.datareview.v2.UnarchiveDataReviewResponse\"?\x82\xd3\xe4\x93\x029\"7/datareview/v2/data-reviews/{data_review_rid}/unarchive\x12\xc3\x01\n" +
-	"\x19GetDataReviewCheckMetrics\x127.nominal.datareview.v2.GetDataReviewCheckMetricsRequest\x1a8.nominal.datareview.v2.GetDataReviewCheckMetricsResponse\"3\x82\xd3\xe4\x93\x02-:\x01*\"(/datareview/v2/data-review-check-metricsB\xf9\x01\n" +
+	"\x10INVALID_ARGUMENT\x12\x18InvalidDataReviewRequest2\xee&\n" +
+	"\x11DataReviewService\x12\xc6\x01\n" +
+	"\rBatchInitiate\x12+.nominal.datareview.v2.BatchInitiateRequest\x1a,.nominal.datareview.v2.BatchInitiateResponse\"Z\xba\xb2\x1a!\n" +
+	"\x1f\n" +
+	"\x1bworkspace:edit_data_reviews\"\x00\x82\xd3\xe4\x93\x02/:\x01*\"*/datareview/v2/data-reviews/batch-initiate\x12\x8b\x02\n" +
+	"\x1aRerunFailedAutomaticChecks\x128.nominal.datareview.v2.RerunFailedAutomaticChecksRequest\x1a9.nominal.datareview.v2.RerunFailedAutomaticChecksResponse\"x\xba\xb2\x1a!\n" +
+	"\x1f\n" +
+	"\x1bworkspace:edit_data_reviews\"\x00\x82\xd3\xe4\x93\x02M\"K/datareview/v2/data-reviews/{data_review_rid}/rerun-failed-automatic-checks\x12\xb7\x01\n" +
+	"\x0fFindDataReviews\x12-.nominal.datareview.v2.FindDataReviewsRequest\x1a..nominal.datareview.v2.FindDataReviewsResponse\"E\xba\xb2\x1a\x14\n" +
+	"\x12\n" +
+	"\x0eworkspace:view\"\x00\x82\xd3\xe4\x93\x02':\x01*\"\"/datareview/v2/data-reviews/search\x12\xb9\x01\n" +
+	"\rGetDataReview\x12+.nominal.datareview.v2.GetDataReviewRequest\x1a,.nominal.datareview.v2.GetDataReviewResponse\"M\xba\xb2\x1a\x14\n" +
+	"\x12\n" +
+	"\x0eworkspace:view\"\x00\x82\xd3\xe4\x93\x02/\x12-/datareview/v2/data-reviews/{data_review_rid}\x12\xb9\x01\n" +
+	"\rGetCheckAlert\x12+.nominal.datareview.v2.GetCheckAlertRequest\x1a,.nominal.datareview.v2.GetCheckAlertResponse\"M\xba\xb2\x1a\x14\n" +
+	"\x12\n" +
+	"\x0eworkspace:view\"\x00\x82\xd3\xe4\x93\x02/\x12-/datareview/v2/check-alerts/{check_alert_rid}\x12\xf0\x01\n" +
+	"\x1bGetCheckAlertsForDataReview\x129.nominal.datareview.v2.GetCheckAlertsForDataReviewRequest\x1a:.nominal.datareview.v2.GetCheckAlertsForDataReviewResponse\"Z\xba\xb2\x1a\x14\n" +
+	"\x12\n" +
+	"\x0eworkspace:view\"\x00\x82\xd3\xe4\x93\x02<\x12:/datareview/v2/data-reviews/{data_review_rid}/check-alerts\x12\xd2\x01\n" +
+	"\x17GetCheckAlertsHistogram\x125.nominal.datareview.v2.GetCheckAlertsHistogramRequest\x1a6.nominal.datareview.v2.GetCheckAlertsHistogramResponse\"H\xba\xb2\x1a\x14\n" +
+	"\x12\n" +
+	"\x0eworkspace:view\"\x00\x82\xd3\xe4\x93\x02*:\x01*\"%/datareview/v2/check-alerts/histogram\x12\xbd\x01\n" +
+	"\x11SearchCheckAlerts\x12/.nominal.datareview.v2.SearchCheckAlertsRequest\x1a0.nominal.datareview.v2.SearchCheckAlertsResponse\"E\xba\xb2\x1a\x14\n" +
+	"\x12\n" +
+	"\x0eworkspace:view\"\x00\x82\xd3\xe4\x93\x02':\x01*\"\"/datareview/v2/check-alerts/search\x12\xdf\x01\n" +
+	"\x16GetCheckAlertActionLog\x124.nominal.datareview.v2.GetCheckAlertActionLogRequest\x1a5.nominal.datareview.v2.GetCheckAlertActionLogResponse\"X\xba\xb2\x1a\x14\n" +
+	"\x12\n" +
+	"\x0eworkspace:view\"\x00\x82\xd3\xe4\x93\x02:\x128/datareview/v2/check-alerts/{check_alert_rid}/action-log\x12\x83\x02\n" +
+	"\x1fGetCheckAlertCountsForNotebooks\x12=.nominal.datareview.v2.GetCheckAlertCountsForNotebooksRequest\x1a>.nominal.datareview.v2.GetCheckAlertCountsForNotebooksResponse\"a\xba\xb2\x1a\"\n" +
+	" \n" +
+	"\rworkbook:view\x12\x0f\n" +
+	"\rnotebook_rids\x82\xd3\xe4\x93\x025:\x01*\"0/datareview/v2/check-alerts/counts-for-notebooks\x12\x83\x02\n" +
+	"\x1fGetCheckAlertStatusForNotebooks\x12=.nominal.datareview.v2.GetCheckAlertStatusForNotebooksRequest\x1a>.nominal.datareview.v2.GetCheckAlertStatusForNotebooksResponse\"a\xba\xb2\x1a\"\n" +
+	" \n" +
+	"\rworkbook:view\x12\x0f\n" +
+	"\rnotebook_rids\x82\xd3\xe4\x93\x025:\x01*\"0/datareview/v2/check-alerts/status-for-notebooks\x12\xe7\x01\n" +
+	"\x17PerformCheckAlertAction\x125.nominal.datareview.v2.PerformCheckAlertActionRequest\x1a6.nominal.datareview.v2.PerformCheckAlertActionResponse\"]\xba\xb2\x1a!\n" +
+	"\x1f\n" +
+	"\x1bworkspace:edit_data_reviews\"\x00\x82\xd3\xe4\x93\x022:\x01*\x1a-/datareview/v2/check-alerts/{check_alert_rid}\x12\xf9\x01\n" +
+	"\x1cBatchPerformCheckAlertAction\x12:.nominal.datareview.v2.BatchPerformCheckAlertActionRequest\x1a;.nominal.datareview.v2.BatchPerformCheckAlertActionResponse\"`\xba\xb2\x1a!\n" +
+	"\x1f\n" +
+	"\x1bworkspace:edit_data_reviews\"\x00\x82\xd3\xe4\x93\x025:\x01*\"0/datareview/v2/check-alerts/batch-perform-action\x12\xc4\x02\n" +
+	"0BatchPerformAutomaticCheckEvaluationReviewAction\x12N.nominal.datareview.v2.BatchPerformAutomaticCheckEvaluationReviewActionRequest\x1aO.nominal.datareview.v2.BatchPerformAutomaticCheckEvaluationReviewActionResponse\"o\xba\xb2\x1a!\n" +
+	"\x1f\n" +
+	"\x1bworkspace:edit_data_reviews\"\x00\x82\xd3\xe4\x93\x02D:\x01*\"?/datareview/v2/automatic-check-evaluations/batch-perform-action\x12\x8c\x02\n" +
+	"$GetAutomaticCheckEvaluationActionLog\x12B.nominal.datareview.v2.GetAutomaticCheckEvaluationActionLogRequest\x1aC.nominal.datareview.v2.GetAutomaticCheckEvaluationActionLogResponse\"[\xba\xb2\x1a\x14\n" +
+	"\x12\n" +
+	"\x0eworkspace:view\"\x00\x82\xd3\xe4\x93\x02=\x12;/datareview/v2/automatic-check-evaluations/{rid}/action-log\x12\x97\x02\n" +
+	"\"BatchPerformManualCheckAlertAction\x12@.nominal.datareview.v2.BatchPerformManualCheckAlertActionRequest\x1aA.nominal.datareview.v2.BatchPerformManualCheckAlertActionResponse\"l\xba\xb2\x1a!\n" +
+	"\x1f\n" +
+	"\x1bworkspace:edit_data_reviews\"\x00\x82\xd3\xe4\x93\x02A:\x01*\"</datareview/v2/manual-check-evaluations/batch-perform-action\x12\x80\x02\n" +
+	"!GetManualCheckEvaluationActionLog\x12?.nominal.datareview.v2.GetManualCheckEvaluationActionLogRequest\x1a@.nominal.datareview.v2.GetManualCheckEvaluationActionLogResponse\"X\xba\xb2\x1a\x14\n" +
+	"\x12\n" +
+	"\x0eworkspace:view\"\x00\x82\xd3\xe4\x93\x02:\x128/datareview/v2/manual-check-evaluations/{rid}/action-log\x12\xda\x01\n" +
+	"\x11ArchiveDataReview\x12/.nominal.datareview.v2.ArchiveDataReviewRequest\x1a0.nominal.datareview.v2.ArchiveDataReviewResponse\"b\xba\xb2\x1a!\n" +
+	"\x1f\n" +
+	"\x1bworkspace:edit_data_reviews\"\x00\x82\xd3\xe4\x93\x027\"5/datareview/v2/data-reviews/{data_review_rid}/archive\x12\xe0\x01\n" +
+	"\x16BatchArchiveDataReview\x124.nominal.datareview.v2.BatchArchiveDataReviewRequest\x1a5.nominal.datareview.v2.BatchArchiveDataReviewResponse\"Y\xba\xb2\x1a!\n" +
+	"\x1f\n" +
+	"\x1bworkspace:edit_data_reviews\"\x00\x82\xd3\xe4\x93\x02.:\x01*\")/datareview/v2/data-reviews/batch-archive\x12\xe2\x01\n" +
+	"\x13UnarchiveDataReview\x121.nominal.datareview.v2.UnarchiveDataReviewRequest\x1a2.nominal.datareview.v2.UnarchiveDataReviewResponse\"d\xba\xb2\x1a!\n" +
+	"\x1f\n" +
+	"\x1bworkspace:edit_data_reviews\"\x00\x82\xd3\xe4\x93\x029\"7/datareview/v2/data-reviews/{data_review_rid}/unarchive\x12\xdb\x01\n" +
+	"\x19GetDataReviewCheckMetrics\x127.nominal.datareview.v2.GetDataReviewCheckMetricsRequest\x1a8.nominal.datareview.v2.GetDataReviewCheckMetricsResponse\"K\xba\xb2\x1a\x14\n" +
+	"\x12\n" +
+	"\x0eworkspace:view\"\x00\x82\xd3\xe4\x93\x02-:\x01*\"(/datareview/v2/data-review-check-metricsB\xf9\x01\n" +
 	"\x19com.nominal.datareview.v2B\x0fDataReviewProtoP\x01ZUgithub.com/nominal-io/nominal-api-protos-go/nominal/protos/datareview/v2;datareviewv2\xa2\x02\x03NDX\xaa\x02\x15Nominal.Datareview.V2\xca\x02\x15Nominal\\Datareview\\V2\xe2\x02!Nominal\\Datareview\\V2\\GPBMetadata\xea\x02\x17Nominal::Datareview::V2b\x06proto3"
 
 var (

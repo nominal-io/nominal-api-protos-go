@@ -8,6 +8,7 @@ package downloadv1
 
 import (
 	_ "buf.build/gen/go/bufbuild/protovalidate/protocolbuffers/go/buf/validate"
+	_ "github.com/nominal-io/nominal-api-protos-go/nominal/protos/authz/v1"
 	_ "github.com/nominal-io/nominal-api-protos-go/nominal/protos/gen/v1"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
@@ -250,7 +251,7 @@ var File_nominal_protos_connect_download_v1_connect_download_proto protoreflect.
 
 const file_nominal_protos_connect_download_v1_connect_download_proto_rawDesc = "" +
 	"\n" +
-	"9nominal/protos/connect/download/v1/connect_download.proto\x12\x1bnominal.connect.download.v1\x1a\x1bbuf/validate/validate.proto\x1a\x1cgoogle/api/annotations.proto\x1a!nominal/protos/gen/v1/error.proto\"b\n" +
+	"9nominal/protos/connect/download/v1/connect_download.proto\x12\x1bnominal.connect.download.v1\x1a\x1bbuf/validate/validate.proto\x1a\x1cgoogle/api/annotations.proto\x1a)nominal/protos/authz/v1/annotations.proto\x1a!nominal/protos/gen/v1/error.proto\"b\n" +
 	"\x1aGetLatestConnectUriRequest\x12D\n" +
 	"\bplatform\x18\x01 \x01(\tB(\xbaH%r#R\x05macosR\tmacos-pkgR\awindowsR\x06ubuntuR\bplatform\"_\n" +
 	"\x17GetLatestVersionRequest\x12D\n" +
@@ -264,10 +265,10 @@ const file_nominal_protos_connect_download_v1_connect_download_proto_rawDesc = "
 	"\x1bConnectDownloadServiceError\x12.\n" +
 	"*CONNECT_DOWNLOAD_SERVICE_ERROR_UNSPECIFIED\x10\x00\x12\x94\x01\n" +
 	"4CONNECT_DOWNLOAD_SERVICE_ERROR_CONNECT_NOT_AVAILABLE\x10\x01\x1aZ\xb2\xb2\x1aV\n" +
-	"\tNOT_FOUND\x12IConnect not available for download on this stack. Please contact support.2\x83\x03\n" +
-	"\x16ConnectDownloadService\x12\xb5\x01\n" +
-	"\x13GetLatestConnectUri\x127.nominal.connect.download.v1.GetLatestConnectUriRequest\x1a8.nominal.connect.download.v1.GetLatestConnectUriResponse\"+\x82\xd3\xe4\x93\x02%\x12#/connect/v1/download/{platform}/uri\x12\xb0\x01\n" +
-	"\x10GetLatestVersion\x124.nominal.connect.download.v1.GetLatestVersionRequest\x1a5.nominal.connect.download.v1.GetLatestVersionResponse\"/\x82\xd3\xe4\x93\x02)\x12'/connect/v1/download/{platform}/versionB\xa1\x02\n" +
+	"\tNOT_FOUND\x12IConnect not available for download on this stack. Please contact support.2\x8b\x03\n" +
+	"\x16ConnectDownloadService\x12\xb9\x01\n" +
+	"\x13GetLatestConnectUri\x127.nominal.connect.download.v1.GetLatestConnectUriRequest\x1a8.nominal.connect.download.v1.GetLatestConnectUriResponse\"/\xba\xb2\x1a\x00\x82\xd3\xe4\x93\x02%\x12#/connect/v1/download/{platform}/uri\x12\xb4\x01\n" +
+	"\x10GetLatestVersion\x124.nominal.connect.download.v1.GetLatestVersionRequest\x1a5.nominal.connect.download.v1.GetLatestVersionResponse\"3\xba\xb2\x1a\x00\x82\xd3\xe4\x93\x02)\x12'/connect/v1/download/{platform}/versionB\xa1\x02\n" +
 	"\x1fcom.nominal.connect.download.v1B\x14ConnectDownloadProtoP\x01ZYgithub.com/nominal-io/nominal-api-protos-go/nominal/protos/connect/download/v1;downloadv1\xa2\x02\x03NCD\xaa\x02\x1bNominal.Connect.Download.V1\xca\x02\x1bNominal\\Connect\\Download\\V1\xe2\x02'Nominal\\Connect\\Download\\V1\\GPBMetadata\xea\x02\x1eNominal::Connect::Download::V1b\x06proto3"
 
 var (

@@ -8,6 +8,8 @@ package proceduresv1
 
 import (
 	_ "buf.build/gen/go/bufbuild/protovalidate/protocolbuffers/go/buf/validate"
+	_ "github.com/nominal-io/nominal-api-protos-go/nominal/protos/authn/v1"
+	_ "github.com/nominal-io/nominal-api-protos-go/nominal/protos/authz/v1"
 	_ "github.com/nominal-io/nominal-api-protos-go/nominal/protos/gen/v1"
 	types "github.com/nominal-io/nominal-api-protos-go/nominal/protos/types"
 	time "github.com/nominal-io/nominal-api-protos-go/nominal/protos/types/time"
@@ -9524,7 +9526,7 @@ var File_nominal_protos_procedures_v1_procedures_proto protoreflect.FileDescript
 
 const file_nominal_protos_procedures_v1_procedures_proto_rawDesc = "" +
 	"\n" +
-	"-nominal/protos/procedures/v1/procedures.proto\x12\x15nominal.procedures.v1\x1a\x1bbuf/validate/validate.proto\x1a\x1cgoogle/api/annotations.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a!nominal/protos/gen/v1/alias.proto\x1a!nominal/protos/gen/v1/error.proto\x1a,nominal/protos/procedures/v1/id_format.proto\x1a1nominal/protos/types/time/timestamp_parsers.proto\x1a nominal/protos/types/types.proto\x1a-nominal/protos/versioning/v1/versioning.proto\"\xf7\x06\n" +
+	"-nominal/protos/procedures/v1/procedures.proto\x12\x15nominal.procedures.v1\x1a\x1bbuf/validate/validate.proto\x1a\x1cgoogle/api/annotations.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a)nominal/protos/authn/v1/annotations.proto\x1a)nominal/protos/authz/v1/annotations.proto\x1a!nominal/protos/gen/v1/alias.proto\x1a!nominal/protos/gen/v1/error.proto\x1a,nominal/protos/procedures/v1/id_format.proto\x1a1nominal/protos/types/time/timestamp_parsers.proto\x1a nominal/protos/types/types.proto\x1a-nominal/protos/versioning/v1/versioning.proto\"\xf7\x06\n" +
 	"\x0eProcedureState\x12k\n" +
 	"\rglobal_fields\x18\x01 \x03(\v27.nominal.procedures.v1.ProcedureState.GlobalFieldsEntryB\r\xbaH\n" +
 	"\x9a\x01\a\"\x05r\x03\xc8>\x01R\fglobalFields\x12L\n" +
@@ -10369,20 +10371,40 @@ const file_nominal_protos_procedures_v1_procedures_proto_rawDesc = "" +
 	"&PROCEDURES_SERVICE_ERROR_INVALID_GRAPH\x10\x05\x1a/\xb2\xb2\x1a+\n" +
 	"\x10INVALID_ARGUMENT\x12\x17Invalid procedure graph\x12_\n" +
 	"-PROCEDURES_SERVICE_ERROR_INVALID_SEARCH_TOKEN\x10\x06\x1a,\xb2\xb2\x1a(\n" +
-	"\x10INVALID_ARGUMENT\x12\x14Invalid search token2\x94\x10\n" +
-	"\x11ProceduresService\x12\x96\x01\n" +
-	"\x0fCreateProcedure\x12-.nominal.procedures.v1.CreateProcedureRequest\x1a..nominal.procedures.v1.CreateProcedureResponse\"$\x82\xd3\xe4\x93\x02\x1e:\x01*\"\x19/procedures/v1/procedures\x12\x90\x01\n" +
-	"\fGetProcedure\x12*.nominal.procedures.v1.GetProcedureRequest\x1a+.nominal.procedures.v1.GetProcedureResponse\"'\x82\xd3\xe4\x93\x02!\x12\x1f/procedures/v1/procedures/{rid}\x12\xc7\x01\n" +
-	"\x19BatchGetProcedureMetadata\x127.nominal.procedures.v1.BatchGetProcedureMetadataRequest\x1a8.nominal.procedures.v1.BatchGetProcedureMetadataResponse\"7\x82\xd3\xe4\x93\x021:\x01*\",/procedures/v1/procedures/batch-get-metadata\x12\xbd\x01\n" +
-	"\x17UpdateProcedureMetadata\x125.nominal.procedures.v1.UpdateProcedureMetadataRequest\x1a6.nominal.procedures.v1.UpdateProcedureMetadataResponse\"3\x82\xd3\xe4\x93\x02-:\x01*\x1a(/procedures/v1/procedures/{rid}/metadata\x12\xbc\x01\n" +
-	"\x14ParseNestedProcedure\x122.nominal.procedures.v1.ParseNestedProcedureRequest\x1a3.nominal.procedures.v1.ParseNestedProcedureResponse\";\x82\xd3\xe4\x93\x025:\x01*\"0/procedures/v1/procedures/parse-nested-procedure\x12\xaf\x01\n" +
-	"\x14GetProcedureAsNested\x122.nominal.procedures.v1.GetProcedureAsNestedRequest\x1a3.nominal.procedures.v1.GetProcedureAsNestedResponse\".\x82\xd3\xe4\x93\x02(\x12&/procedures/v1/procedures/nested/{rid}\x12\x9e\x01\n" +
-	"\vMergeToMain\x12).nominal.procedures.v1.MergeToMainRequest\x1a*.nominal.procedures.v1.MergeToMainResponse\"8\x82\xd3\xe4\x93\x022:\x01*\"-/procedures/v1/procedures/{rid}/merge-to-main\x12\xb2\x01\n" +
-	"\x10SaveWorkingState\x12..nominal.procedures.v1.SaveWorkingStateRequest\x1a/.nominal.procedures.v1.SaveWorkingStateResponse\"=\x82\xd3\xe4\x93\x027:\x01*\"2/procedures/v1/procedures/{rid}/save-working-state\x12\x88\x01\n" +
-	"\x06Commit\x12$.nominal.procedures.v1.CommitRequest\x1a%.nominal.procedures.v1.CommitResponse\"1\x82\xd3\xe4\x93\x02+:\x01*\"&/procedures/v1/procedures/{rid}/commit\x12\xa0\x01\n" +
-	"\x10SearchProcedures\x12..nominal.procedures.v1.SearchProceduresRequest\x1a/.nominal.procedures.v1.SearchProceduresResponse\"+\x82\xd3\xe4\x93\x02%:\x01*\" /procedures/v1/procedures/search\x12\xa4\x01\n" +
-	"\x11ArchiveProcedures\x12/.nominal.procedures.v1.ArchiveProceduresRequest\x1a0.nominal.procedures.v1.ArchiveProceduresResponse\",\x82\xd3\xe4\x93\x02&:\x01*\"!/procedures/v1/procedures/archive\x12\xac\x01\n" +
-	"\x13UnarchiveProcedures\x121.nominal.procedures.v1.UnarchiveProceduresRequest\x1a2.nominal.procedures.v1.UnarchiveProceduresResponse\".\x82\xd3\xe4\x93\x02(:\x01*\"#/procedures/v1/procedures/unarchiveB\xf9\x01\n" +
+	"\x10INVALID_ARGUMENT\x12\x14Invalid search token2\xdd\x12\n" +
+	"\x11ProceduresService\x12\xb9\x01\n" +
+	"\x0fCreateProcedure\x12-.nominal.procedures.v1.CreateProcedureRequest\x1a..nominal.procedures.v1.CreateProcedureResponse\"G\xba\xb2\x1a\x1f\n" +
+	"\x1d\n" +
+	"\x19workspace:edit_procedures\"\x00\x82\xd3\xe4\x93\x02\x1e:\x01*\"\x19/procedures/v1/procedures\x12\xa8\x01\n" +
+	"\fGetProcedure\x12*.nominal.procedures.v1.GetProcedureRequest\x1a+.nominal.procedures.v1.GetProcedureResponse\"?\xba\xb2\x1a\x14\n" +
+	"\x12\n" +
+	"\x0eworkspace:view\"\x00\x82\xd3\xe4\x93\x02!\x12\x1f/procedures/v1/procedures/{rid}\x12\xdf\x01\n" +
+	"\x19BatchGetProcedureMetadata\x127.nominal.procedures.v1.BatchGetProcedureMetadataRequest\x1a8.nominal.procedures.v1.BatchGetProcedureMetadataResponse\"O\xba\xb2\x1a\x14\n" +
+	"\x12\n" +
+	"\x0eworkspace:view\"\x00\x82\xd3\xe4\x93\x021:\x01*\",/procedures/v1/procedures/batch-get-metadata\x12\xe0\x01\n" +
+	"\x17UpdateProcedureMetadata\x125.nominal.procedures.v1.UpdateProcedureMetadataRequest\x1a6.nominal.procedures.v1.UpdateProcedureMetadataResponse\"V\xba\xb2\x1a\x1f\n" +
+	"\x1d\n" +
+	"\x19workspace:edit_procedures\"\x00\x82\xd3\xe4\x93\x02-:\x01*\x1a(/procedures/v1/procedures/{rid}/metadata\x12\xc4\x01\n" +
+	"\x14ParseNestedProcedure\x122.nominal.procedures.v1.ParseNestedProcedureRequest\x1a3.nominal.procedures.v1.ParseNestedProcedureResponse\"C\xba\xb2\x1a\x00\xc0\xb2\x1a\x01\x82\xd3\xe4\x93\x025:\x01*\"0/procedures/v1/procedures/parse-nested-procedure\x12\xc7\x01\n" +
+	"\x14GetProcedureAsNested\x122.nominal.procedures.v1.GetProcedureAsNestedRequest\x1a3.nominal.procedures.v1.GetProcedureAsNestedResponse\"F\xba\xb2\x1a\x14\n" +
+	"\x12\n" +
+	"\x0eworkspace:view\"\x00\x82\xd3\xe4\x93\x02(\x12&/procedures/v1/procedures/nested/{rid}\x12\xc1\x01\n" +
+	"\vMergeToMain\x12).nominal.procedures.v1.MergeToMainRequest\x1a*.nominal.procedures.v1.MergeToMainResponse\"[\xba\xb2\x1a\x1f\n" +
+	"\x1d\n" +
+	"\x19workspace:edit_procedures\"\x00\x82\xd3\xe4\x93\x022:\x01*\"-/procedures/v1/procedures/{rid}/merge-to-main\x12\xd5\x01\n" +
+	"\x10SaveWorkingState\x12..nominal.procedures.v1.SaveWorkingStateRequest\x1a/.nominal.procedures.v1.SaveWorkingStateResponse\"`\xba\xb2\x1a\x1f\n" +
+	"\x1d\n" +
+	"\x19workspace:edit_procedures\"\x00\x82\xd3\xe4\x93\x027:\x01*\"2/procedures/v1/procedures/{rid}/save-working-state\x12\xab\x01\n" +
+	"\x06Commit\x12$.nominal.procedures.v1.CommitRequest\x1a%.nominal.procedures.v1.CommitResponse\"T\xba\xb2\x1a\x1f\n" +
+	"\x1d\n" +
+	"\x19workspace:edit_procedures\"\x00\x82\xd3\xe4\x93\x02+:\x01*\"&/procedures/v1/procedures/{rid}/commit\x12\xa4\x01\n" +
+	"\x10SearchProcedures\x12..nominal.procedures.v1.SearchProceduresRequest\x1a/.nominal.procedures.v1.SearchProceduresResponse\"/\xba\xb2\x1a\x00\x82\xd3\xe4\x93\x02%:\x01*\" /procedures/v1/procedures/search\x12\xc7\x01\n" +
+	"\x11ArchiveProcedures\x12/.nominal.procedures.v1.ArchiveProceduresRequest\x1a0.nominal.procedures.v1.ArchiveProceduresResponse\"O\xba\xb2\x1a\x1f\n" +
+	"\x1d\n" +
+	"\x19workspace:edit_procedures\"\x00\x82\xd3\xe4\x93\x02&:\x01*\"!/procedures/v1/procedures/archive\x12\xcf\x01\n" +
+	"\x13UnarchiveProcedures\x121.nominal.procedures.v1.UnarchiveProceduresRequest\x1a2.nominal.procedures.v1.UnarchiveProceduresResponse\"Q\xba\xb2\x1a\x1f\n" +
+	"\x1d\n" +
+	"\x19workspace:edit_procedures\"\x00\x82\xd3\xe4\x93\x02(:\x01*\"#/procedures/v1/procedures/unarchiveB\xf9\x01\n" +
 	"\x19com.nominal.procedures.v1B\x0fProceduresProtoP\x01ZUgithub.com/nominal-io/nominal-api-protos-go/nominal/protos/procedures/v1;proceduresv1\xa2\x02\x03NPX\xaa\x02\x15Nominal.Procedures.V1\xca\x02\x15Nominal\\Procedures\\V1\xe2\x02!Nominal\\Procedures\\V1\\GPBMetadata\xea\x02\x17Nominal::Procedures::V1b\x06proto3"
 
 var (

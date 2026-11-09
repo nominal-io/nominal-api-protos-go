@@ -8,6 +8,7 @@ package file_storev1
 
 import (
 	_ "buf.build/gen/go/bufbuild/protovalidate/protocolbuffers/go/buf/validate"
+	_ "github.com/nominal-io/nominal-api-protos-go/nominal/protos/authz/v1"
 	_ "github.com/nominal-io/nominal-api-protos-go/nominal/protos/gen/v1"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
@@ -533,7 +534,7 @@ var File_nominal_protos_file_store_v1_file_content_proto protoreflect.FileDescri
 
 const file_nominal_protos_file_store_v1_file_content_proto_rawDesc = "" +
 	"\n" +
-	"/nominal/protos/file_store/v1/file_content.proto\x12\x15nominal.file_store.v1\x1a\x1bbuf/validate/validate.proto\x1a\x1cgoogle/api/annotations.proto\x1a!nominal/protos/gen/v1/alias.proto\x1a!nominal/protos/gen/v1/error.proto\"\xfb\x02\n" +
+	"/nominal/protos/file_store/v1/file_content.proto\x12\x15nominal.file_store.v1\x1a\x1bbuf/validate/validate.proto\x1a\x1cgoogle/api/annotations.proto\x1a)nominal/protos/authz/v1/annotations.proto\x1a!nominal/protos/gen/v1/alias.proto\x1a!nominal/protos/gen/v1/error.proto\"\xfb\x02\n" +
 	"%GetFileRevisionTextDiffPreviewRequest\x12_\n" +
 	"\x11from_revision_rid\x18\x01 \x01(\tB.\x9a\xb2\x1a*\n" +
 	"(io.nominal.api.rids.DriveFileRevisionRidH\x00R\x0ffromRevisionRid\x88\x01\x01\x12\\\n" +
@@ -585,9 +586,11 @@ const file_nominal_protos_file_store_v1_file_content_proto_rawDesc = "" +
 	" TEXT_DIFF_ERROR_PAGE_TOKEN_STALE\x10\x03\x1aF\xb2\xb2\x1aB\n" +
 	"\x13FAILED_PRECONDITION\x12+Diff page token refers to a superseded diff\x12m\n" +
 	"%TEXT_DIFF_ERROR_NO_PRECEDING_REVISION\x10\x04\x1aB\xb2\xb2\x1a>\n" +
-	"\x13FAILED_PRECONDITION\x12'File revision has no preceding revision2\xed\x01\n" +
-	"\x12FileContentService\x12\xd6\x01\n" +
-	"\x1eGetFileRevisionTextDiffPreview\x12<.nominal.file_store.v1.GetFileRevisionTextDiffPreviewRequest\x1a=.nominal.file_store.v1.GetFileRevisionTextDiffPreviewResponse\"7\x82\xd3\xe4\x93\x021\x12//file-store/v1/file-revisions/text-diff/previewB\xf6\x01\n" +
+	"\x13FAILED_PRECONDITION\x12'File revision has no preceding revision2\x85\x02\n" +
+	"\x12FileContentService\x12\xee\x01\n" +
+	"\x1eGetFileRevisionTextDiffPreview\x12<.nominal.file_store.v1.GetFileRevisionTextDiffPreviewRequest\x1a=.nominal.file_store.v1.GetFileRevisionTextDiffPreviewResponse\"O\xba\xb2\x1a\x14\n" +
+	"\x12\n" +
+	"\x0eworkspace:view\"\x00\x82\xd3\xe4\x93\x021\x12//file-store/v1/file-revisions/text-diff/previewB\xf6\x01\n" +
 	"\x19com.nominal.file_store.v1B\x10FileContentProtoP\x01ZUgithub.com/nominal-io/nominal-api-protos-go/nominal/protos/file_store/v1;file_storev1\xa2\x02\x03NFX\xaa\x02\x14Nominal.FileStore.V1\xca\x02\x14Nominal\\FileStore\\V1\xe2\x02 Nominal\\FileStore\\V1\\GPBMetadata\xea\x02\x16Nominal::FileStore::V1b\x06proto3"
 
 var (

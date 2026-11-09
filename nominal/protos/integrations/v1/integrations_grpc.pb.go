@@ -20,6 +20,8 @@ const _ = grpc.SupportPackageIsVersion9
 
 const (
 	IntegrationsService_CreateIntegration_FullMethodName                        = "/nominal.integrations.v1.IntegrationsService/CreateIntegration"
+	IntegrationsService_CreateSlackAuthorizationUrl_FullMethodName              = "/nominal.integrations.v1.IntegrationsService/CreateSlackAuthorizationUrl"
+	IntegrationsService_CreateSlackWebhookIntegration_FullMethodName            = "/nominal.integrations.v1.IntegrationsService/CreateSlackWebhookIntegration"
 	IntegrationsService_CreateSecureWebhookIntegration_FullMethodName           = "/nominal.integrations.v1.IntegrationsService/CreateSecureWebhookIntegration"
 	IntegrationsService_SendSecureWebhookMessage_FullMethodName                 = "/nominal.integrations.v1.IntegrationsService/SendSecureWebhookMessage"
 	IntegrationsService_DeleteIntegration_FullMethodName                        = "/nominal.integrations.v1.IntegrationsService/DeleteIntegration"
@@ -39,6 +41,11 @@ const (
 type IntegrationsServiceClient interface {
 	// Creates an integration and stores its supplied credentials as workspace-scoped secrets.
 	CreateIntegration(ctx context.Context, in *CreateIntegrationRequest, opts ...grpc.CallOption) (*CreateIntegrationResponse, error)
+	// Creates the Slack OAuth URL that grants Nominal an incoming webhook in a Slack workspace.
+	CreateSlackAuthorizationUrl(ctx context.Context, in *CreateSlackAuthorizationUrlRequest, opts ...grpc.CallOption) (*CreateSlackAuthorizationUrlResponse, error)
+	// Completes Slack OAuth with the code Slack returned and creates the Slack webhook integration. The caller must be
+	// the user who created the authorization URL.
+	CreateSlackWebhookIntegration(ctx context.Context, in *CreateSlackWebhookIntegrationRequest, opts ...grpc.CallOption) (*CreateSlackWebhookIntegrationResponse, error)
 	// Creates a secure webhook integration and returns its newly generated signing key.
 	CreateSecureWebhookIntegration(ctx context.Context, in *CreateSecureWebhookIntegrationRequest, opts ...grpc.CallOption) (*CreateSecureWebhookIntegrationResponse, error)
 	// Delivers a signed payload through a secure webhook integration.
@@ -51,7 +58,8 @@ type IntegrationsServiceClient interface {
 	UpdateIntegrationDetails(ctx context.Context, in *UpdateIntegrationDetailsRequest, opts ...grpc.CallOption) (*UpdateIntegrationDetailsResponse, error)
 	// Gets an integration by RID.
 	GetIntegration(ctx context.Context, in *GetIntegrationRequest, opts ...grpc.CallOption) (*GetIntegrationResponse, error)
-	// Lists integrations visible in the requested workspaces.
+	// Lists integrations visible in the requested workspaces. Workspaces the caller lacks
+	// workspace:view on are filtered out rather than failing the call.
 	ListIntegrations(ctx context.Context, in *ListIntegrationsRequest, opts ...grpc.CallOption) (*ListIntegrationsResponse, error)
 	// Sends a message through an integration.
 	SendMessage(ctx context.Context, in *SendMessageRequest, opts ...grpc.CallOption) (*SendMessageResponse, error)
@@ -71,6 +79,26 @@ func (c *integrationsServiceClient) CreateIntegration(ctx context.Context, in *C
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(CreateIntegrationResponse)
 	err := c.cc.Invoke(ctx, IntegrationsService_CreateIntegration_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *integrationsServiceClient) CreateSlackAuthorizationUrl(ctx context.Context, in *CreateSlackAuthorizationUrlRequest, opts ...grpc.CallOption) (*CreateSlackAuthorizationUrlResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(CreateSlackAuthorizationUrlResponse)
+	err := c.cc.Invoke(ctx, IntegrationsService_CreateSlackAuthorizationUrl_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *integrationsServiceClient) CreateSlackWebhookIntegration(ctx context.Context, in *CreateSlackWebhookIntegrationRequest, opts ...grpc.CallOption) (*CreateSlackWebhookIntegrationResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(CreateSlackWebhookIntegrationResponse)
+	err := c.cc.Invoke(ctx, IntegrationsService_CreateSlackWebhookIntegration_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -175,6 +203,11 @@ func (c *integrationsServiceClient) RotateSecureWebhookIntegrationSigningKey(ctx
 type IntegrationsServiceServer interface {
 	// Creates an integration and stores its supplied credentials as workspace-scoped secrets.
 	CreateIntegration(context.Context, *CreateIntegrationRequest) (*CreateIntegrationResponse, error)
+	// Creates the Slack OAuth URL that grants Nominal an incoming webhook in a Slack workspace.
+	CreateSlackAuthorizationUrl(context.Context, *CreateSlackAuthorizationUrlRequest) (*CreateSlackAuthorizationUrlResponse, error)
+	// Completes Slack OAuth with the code Slack returned and creates the Slack webhook integration. The caller must be
+	// the user who created the authorization URL.
+	CreateSlackWebhookIntegration(context.Context, *CreateSlackWebhookIntegrationRequest) (*CreateSlackWebhookIntegrationResponse, error)
 	// Creates a secure webhook integration and returns its newly generated signing key.
 	CreateSecureWebhookIntegration(context.Context, *CreateSecureWebhookIntegrationRequest) (*CreateSecureWebhookIntegrationResponse, error)
 	// Delivers a signed payload through a secure webhook integration.
@@ -187,7 +220,8 @@ type IntegrationsServiceServer interface {
 	UpdateIntegrationDetails(context.Context, *UpdateIntegrationDetailsRequest) (*UpdateIntegrationDetailsResponse, error)
 	// Gets an integration by RID.
 	GetIntegration(context.Context, *GetIntegrationRequest) (*GetIntegrationResponse, error)
-	// Lists integrations visible in the requested workspaces.
+	// Lists integrations visible in the requested workspaces. Workspaces the caller lacks
+	// workspace:view on are filtered out rather than failing the call.
 	ListIntegrations(context.Context, *ListIntegrationsRequest) (*ListIntegrationsResponse, error)
 	// Sends a message through an integration.
 	SendMessage(context.Context, *SendMessageRequest) (*SendMessageResponse, error)
@@ -205,6 +239,12 @@ type UnimplementedIntegrationsServiceServer struct{}
 
 func (UnimplementedIntegrationsServiceServer) CreateIntegration(context.Context, *CreateIntegrationRequest) (*CreateIntegrationResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method CreateIntegration not implemented")
+}
+func (UnimplementedIntegrationsServiceServer) CreateSlackAuthorizationUrl(context.Context, *CreateSlackAuthorizationUrlRequest) (*CreateSlackAuthorizationUrlResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method CreateSlackAuthorizationUrl not implemented")
+}
+func (UnimplementedIntegrationsServiceServer) CreateSlackWebhookIntegration(context.Context, *CreateSlackWebhookIntegrationRequest) (*CreateSlackWebhookIntegrationResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method CreateSlackWebhookIntegration not implemented")
 }
 func (UnimplementedIntegrationsServiceServer) CreateSecureWebhookIntegration(context.Context, *CreateSecureWebhookIntegrationRequest) (*CreateSecureWebhookIntegrationResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method CreateSecureWebhookIntegration not implemented")
@@ -268,6 +308,42 @@ func _IntegrationsService_CreateIntegration_Handler(srv interface{}, ctx context
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(IntegrationsServiceServer).CreateIntegration(ctx, req.(*CreateIntegrationRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _IntegrationsService_CreateSlackAuthorizationUrl_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CreateSlackAuthorizationUrlRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(IntegrationsServiceServer).CreateSlackAuthorizationUrl(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: IntegrationsService_CreateSlackAuthorizationUrl_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(IntegrationsServiceServer).CreateSlackAuthorizationUrl(ctx, req.(*CreateSlackAuthorizationUrlRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _IntegrationsService_CreateSlackWebhookIntegration_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CreateSlackWebhookIntegrationRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(IntegrationsServiceServer).CreateSlackWebhookIntegration(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: IntegrationsService_CreateSlackWebhookIntegration_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(IntegrationsServiceServer).CreateSlackWebhookIntegration(ctx, req.(*CreateSlackWebhookIntegrationRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -444,6 +520,14 @@ var IntegrationsService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "CreateIntegration",
 			Handler:    _IntegrationsService_CreateIntegration_Handler,
+		},
+		{
+			MethodName: "CreateSlackAuthorizationUrl",
+			Handler:    _IntegrationsService_CreateSlackAuthorizationUrl_Handler,
+		},
+		{
+			MethodName: "CreateSlackWebhookIntegration",
+			Handler:    _IntegrationsService_CreateSlackWebhookIntegration_Handler,
 		},
 		{
 			MethodName: "CreateSecureWebhookIntegration",

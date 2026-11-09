@@ -20,6 +20,8 @@ const _ = grpc.SupportPackageIsVersion9
 
 const (
 	InternalMeshService_UpdateRemoteConnectionStatus_FullMethodName = "/nominal.mesh.v1.internal.InternalMeshService/UpdateRemoteConnectionStatus"
+	InternalMeshService_GetMeshArtifactPayloads_FullMethodName      = "/nominal.mesh.v1.internal.InternalMeshService/GetMeshArtifactPayloads"
+	InternalMeshService_UpdateMeshArtifactAcks_FullMethodName       = "/nominal.mesh.v1.internal.InternalMeshService/UpdateMeshArtifactAcks"
 )
 
 // InternalMeshServiceClient is the client API for InternalMeshService service.
@@ -31,6 +33,10 @@ const (
 type InternalMeshServiceClient interface {
 	// Updates the health status of a remote connection. Internal-only (service-token auth).
 	UpdateRemoteConnectionStatus(ctx context.Context, in *UpdateRemoteConnectionStatusRequest, opts ...grpc.CallOption) (*UpdateRemoteConnectionStatusResponse, error)
+	// The payloads to send the connection's peer. Internal-only (service-token auth).
+	GetMeshArtifactPayloads(ctx context.Context, in *GetMeshArtifactPayloadsRequest, opts ...grpc.CallOption) (*GetMeshArtifactPayloadsResponse, error)
+	// Records what the connection's peer has acknowledged. Internal-only (service-token auth).
+	UpdateMeshArtifactAcks(ctx context.Context, in *UpdateMeshArtifactAcksRequest, opts ...grpc.CallOption) (*UpdateMeshArtifactAcksResponse, error)
 }
 
 type internalMeshServiceClient struct {
@@ -51,6 +57,26 @@ func (c *internalMeshServiceClient) UpdateRemoteConnectionStatus(ctx context.Con
 	return out, nil
 }
 
+func (c *internalMeshServiceClient) GetMeshArtifactPayloads(ctx context.Context, in *GetMeshArtifactPayloadsRequest, opts ...grpc.CallOption) (*GetMeshArtifactPayloadsResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(GetMeshArtifactPayloadsResponse)
+	err := c.cc.Invoke(ctx, InternalMeshService_GetMeshArtifactPayloads_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *internalMeshServiceClient) UpdateMeshArtifactAcks(ctx context.Context, in *UpdateMeshArtifactAcksRequest, opts ...grpc.CallOption) (*UpdateMeshArtifactAcksResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(UpdateMeshArtifactAcksResponse)
+	err := c.cc.Invoke(ctx, InternalMeshService_UpdateMeshArtifactAcks_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // InternalMeshServiceServer is the server API for InternalMeshService service.
 // All implementations must embed UnimplementedInternalMeshServiceServer
 // for forward compatibility.
@@ -60,6 +86,10 @@ func (c *internalMeshServiceClient) UpdateRemoteConnectionStatus(ctx context.Con
 type InternalMeshServiceServer interface {
 	// Updates the health status of a remote connection. Internal-only (service-token auth).
 	UpdateRemoteConnectionStatus(context.Context, *UpdateRemoteConnectionStatusRequest) (*UpdateRemoteConnectionStatusResponse, error)
+	// The payloads to send the connection's peer. Internal-only (service-token auth).
+	GetMeshArtifactPayloads(context.Context, *GetMeshArtifactPayloadsRequest) (*GetMeshArtifactPayloadsResponse, error)
+	// Records what the connection's peer has acknowledged. Internal-only (service-token auth).
+	UpdateMeshArtifactAcks(context.Context, *UpdateMeshArtifactAcksRequest) (*UpdateMeshArtifactAcksResponse, error)
 	mustEmbedUnimplementedInternalMeshServiceServer()
 }
 
@@ -72,6 +102,12 @@ type UnimplementedInternalMeshServiceServer struct{}
 
 func (UnimplementedInternalMeshServiceServer) UpdateRemoteConnectionStatus(context.Context, *UpdateRemoteConnectionStatusRequest) (*UpdateRemoteConnectionStatusResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method UpdateRemoteConnectionStatus not implemented")
+}
+func (UnimplementedInternalMeshServiceServer) GetMeshArtifactPayloads(context.Context, *GetMeshArtifactPayloadsRequest) (*GetMeshArtifactPayloadsResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method GetMeshArtifactPayloads not implemented")
+}
+func (UnimplementedInternalMeshServiceServer) UpdateMeshArtifactAcks(context.Context, *UpdateMeshArtifactAcksRequest) (*UpdateMeshArtifactAcksResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method UpdateMeshArtifactAcks not implemented")
 }
 func (UnimplementedInternalMeshServiceServer) mustEmbedUnimplementedInternalMeshServiceServer() {}
 func (UnimplementedInternalMeshServiceServer) testEmbeddedByValue()                             {}
@@ -112,6 +148,42 @@ func _InternalMeshService_UpdateRemoteConnectionStatus_Handler(srv interface{}, 
 	return interceptor(ctx, in, info, handler)
 }
 
+func _InternalMeshService_GetMeshArtifactPayloads_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetMeshArtifactPayloadsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(InternalMeshServiceServer).GetMeshArtifactPayloads(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: InternalMeshService_GetMeshArtifactPayloads_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(InternalMeshServiceServer).GetMeshArtifactPayloads(ctx, req.(*GetMeshArtifactPayloadsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _InternalMeshService_UpdateMeshArtifactAcks_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UpdateMeshArtifactAcksRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(InternalMeshServiceServer).UpdateMeshArtifactAcks(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: InternalMeshService_UpdateMeshArtifactAcks_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(InternalMeshServiceServer).UpdateMeshArtifactAcks(ctx, req.(*UpdateMeshArtifactAcksRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // InternalMeshService_ServiceDesc is the grpc.ServiceDesc for InternalMeshService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -122,6 +194,14 @@ var InternalMeshService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "UpdateRemoteConnectionStatus",
 			Handler:    _InternalMeshService_UpdateRemoteConnectionStatus_Handler,
+		},
+		{
+			MethodName: "GetMeshArtifactPayloads",
+			Handler:    _InternalMeshService_GetMeshArtifactPayloads_Handler,
+		},
+		{
+			MethodName: "UpdateMeshArtifactAcks",
+			Handler:    _InternalMeshService_UpdateMeshArtifactAcks_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

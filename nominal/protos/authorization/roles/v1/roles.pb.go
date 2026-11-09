@@ -8,6 +8,7 @@ package rolesv1
 
 import (
 	_ "buf.build/gen/go/bufbuild/protovalidate/protocolbuffers/go/buf/validate"
+	_ "github.com/nominal-io/nominal-api-protos-go/nominal/protos/authz/v1"
 	_ "github.com/nominal-io/nominal-api-protos-go/nominal/protos/gen/v1"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
@@ -543,7 +544,7 @@ var File_nominal_protos_authorization_roles_v1_roles_proto protoreflect.FileDesc
 
 const file_nominal_protos_authorization_roles_v1_roles_proto_rawDesc = "" +
 	"\n" +
-	"1nominal/protos/authorization/roles/v1/roles.proto\x12\x1enominal.authorization.roles.v1\x1a\x1bbuf/validate/validate.proto\x1a\x1cgoogle/api/annotations.proto\x1a!nominal/protos/gen/v1/alias.proto\"\xb8\x01\n" +
+	"1nominal/protos/authorization/roles/v1/roles.proto\x12\x1enominal.authorization.roles.v1\x1a\x1bbuf/validate/validate.proto\x1a\x1cgoogle/api/annotations.proto\x1a)nominal/protos/authz/v1/annotations.proto\x1a!nominal/protos/gen/v1/alias.proto\"\xb8\x01\n" +
 	"\x15RoleAssignmentRequest\x12B\n" +
 	"\x04role\x18\x01 \x01(\x0e2$.nominal.authorization.roles.v1.RoleB\b\xbaH\x05\x82\x01\x02\x10\x01R\x04role\x12H\n" +
 	"\buser_rid\x18\x02 \x01(\tB+\x9a\xb2\x1a'\n" +
@@ -578,11 +579,21 @@ const file_nominal_protos_authorization_roles_v1_roles_proto_rawDesc = "" +
 	"\x04Role\x12\x14\n" +
 	"\x10ROLE_UNSPECIFIED\x10\x00\x12\x0e\n" +
 	"\n" +
-	"ROLE_OWNER\x10\x012\xfc\x04\n" +
-	"\vRoleService\x12\xcf\x01\n" +
-	"\x13UpdateResourceRoles\x12:.nominal.authorization.roles.v1.UpdateResourceRolesRequest\x1a;.nominal.authorization.roles.v1.UpdateResourceRolesResponse\"?\x82\xd3\xe4\x93\x029:\x01*b\x01*\"1/authorization/roles/v1/resource/{resource}/roles\x12\xc3\x01\n" +
-	"\x10GetResourceRoles\x127.nominal.authorization.roles.v1.GetResourceRolesRequest\x1a8.nominal.authorization.roles.v1.GetResourceRolesResponse\"<\x82\xd3\xe4\x93\x026b\x01*\x121/authorization/roles/v1/resource/{resource}/roles\x12\xd4\x01\n" +
-	"\x15BatchGetResourceRoles\x12<.nominal.authorization.roles.v1.BatchGetResourceRolesRequest\x1a=.nominal.authorization.roles.v1.BatchGetResourceRolesResponse\">\x82\xd3\xe4\x93\x028:\x01*b\x01*\"0/authorization/roles/v1/batch-get-resource-rolesB\xa6\x02\n" +
+	"ROLE_OWNER\x10\x012\xfe\x05\n" +
+	"\vRoleService\x12\x9b\x02\n" +
+	"\x13UpdateResourceRoles\x12:.nominal.authorization.roles.v1.UpdateResourceRolesRequest\x1a;.nominal.authorization.roles.v1.UpdateResourceRolesResponse\"\x8a\x01\xba\xb2\x1aD\n" +
+	"%\n" +
+	"\x17datasource:update_roles\x12\n" +
+	"\n" +
+	"\bresource\n" +
+	"\x1b\n" +
+	"\x17organization:read_users\x1a\x00\x82\xd3\xe4\x93\x029:\x01*b\x01*\"1/authorization/roles/v1/resource/{resource}/roles\x90\x02\x02\x12\xf2\x01\n" +
+	"\x10GetResourceRoles\x127.nominal.authorization.roles.v1.GetResourceRolesRequest\x1a8.nominal.authorization.roles.v1.GetResourceRolesResponse\"k\xba\xb2\x1a(\n" +
+	"&\n" +
+	"\x18datasource:read_metadata\x12\n" +
+	"\n" +
+	"\bresource\x82\xd3\xe4\x93\x026b\x01*\x121/authorization/roles/v1/resource/{resource}/roles\x90\x02\x01\x12\xdb\x01\n" +
+	"\x15BatchGetResourceRoles\x12<.nominal.authorization.roles.v1.BatchGetResourceRolesRequest\x1a=.nominal.authorization.roles.v1.BatchGetResourceRolesResponse\"E\xba\xb2\x1a\x00\x82\xd3\xe4\x93\x028:\x01*b\x01*\"0/authorization/roles/v1/batch-get-resource-roles\x90\x02\x01B\xa6\x02\n" +
 	"\"com.nominal.authorization.roles.v1B\n" +
 	"RolesProtoP\x01ZYgithub.com/nominal-io/nominal-api-protos-go/nominal/protos/authorization/roles/v1;rolesv1\xa2\x02\x03NAR\xaa\x02\x1eNominal.Authorization.Roles.V1\xca\x02\x1eNominal\\Authorization\\Roles\\V1\xe2\x02*Nominal\\Authorization\\Roles\\V1\\GPBMetadata\xea\x02!Nominal::Authorization::Roles::V1b\x06proto3"
 

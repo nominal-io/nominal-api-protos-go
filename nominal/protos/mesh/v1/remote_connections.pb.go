@@ -87,8 +87,12 @@ type RemoteConnection struct {
 	Status RemoteConnectionStatus `protobuf:"varint,5,opt,name=status,proto3,enum=nominal.mesh.v1.RemoteConnectionStatus" json:"status,omitempty"`
 	// Timestamp of the last status update.
 	StatusUpdatedAt *timestamppb.Timestamp `protobuf:"bytes,6,opt,name=status_updated_at,json=statusUpdatedAt,proto3" json:"status_updated_at,omitempty"`
-	unknownFields   protoimpl.UnknownFields
-	sizeCache       protoimpl.SizeCache
+	// Flags on this connection. An artifact flows over the connection when it carries one of them.
+	FlagRids []string `protobuf:"bytes,7,rep,name=flag_rids,json=flagRids,proto3" json:"flag_rids,omitempty"`
+	// The remote workspace RID that this connection is associated with
+	RemoteWorkspaceRid *string `protobuf:"bytes,8,opt,name=remote_workspace_rid,json=remoteWorkspaceRid,proto3,oneof" json:"remote_workspace_rid,omitempty"`
+	unknownFields      protoimpl.UnknownFields
+	sizeCache          protoimpl.SizeCache
 }
 
 func (x *RemoteConnection) Reset() {
@@ -163,15 +167,30 @@ func (x *RemoteConnection) GetStatusUpdatedAt() *timestamppb.Timestamp {
 	return nil
 }
 
+func (x *RemoteConnection) GetFlagRids() []string {
+	if x != nil {
+		return x.FlagRids
+	}
+	return nil
+}
+
+func (x *RemoteConnection) GetRemoteWorkspaceRid() string {
+	if x != nil && x.RemoteWorkspaceRid != nil {
+		return *x.RemoteWorkspaceRid
+	}
+	return ""
+}
+
 type CreateRemoteConnectionRequest struct {
 	state     protoimpl.MessageState `protogen:"open.v1"`
 	Name      string                 `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	BaseUrl   string                 `protobuf:"bytes,2,opt,name=base_url,json=baseUrl,proto3" json:"base_url,omitempty"`
 	SecretRid string                 `protobuf:"bytes,3,opt,name=secret_rid,json=secretRid,proto3" json:"secret_rid,omitempty"`
 	// The workspace to register the remote connection in.
-	WorkspaceRid  string `protobuf:"bytes,4,opt,name=workspace_rid,json=workspaceRid,proto3" json:"workspace_rid,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	WorkspaceRid       string  `protobuf:"bytes,4,opt,name=workspace_rid,json=workspaceRid,proto3" json:"workspace_rid,omitempty"`
+	RemoteWorkspaceRid *string `protobuf:"bytes,5,opt,name=remote_workspace_rid,json=remoteWorkspaceRid,proto3,oneof" json:"remote_workspace_rid,omitempty"`
+	unknownFields      protoimpl.UnknownFields
+	sizeCache          protoimpl.SizeCache
 }
 
 func (x *CreateRemoteConnectionRequest) Reset() {
@@ -228,6 +247,13 @@ func (x *CreateRemoteConnectionRequest) GetSecretRid() string {
 func (x *CreateRemoteConnectionRequest) GetWorkspaceRid() string {
 	if x != nil {
 		return x.WorkspaceRid
+	}
+	return ""
+}
+
+func (x *CreateRemoteConnectionRequest) GetRemoteWorkspaceRid() string {
+	if x != nil && x.RemoteWorkspaceRid != nil {
+		return *x.RemoteWorkspaceRid
 	}
 	return ""
 }
@@ -370,8 +396,11 @@ type UpdateRemoteConnectionRequest struct {
 	Name                *string                `protobuf:"bytes,2,opt,name=name,proto3,oneof" json:"name,omitempty"`
 	BaseUrl             *string                `protobuf:"bytes,3,opt,name=base_url,json=baseUrl,proto3,oneof" json:"base_url,omitempty"`
 	SecretRid           *string                `protobuf:"bytes,4,opt,name=secret_rid,json=secretRid,proto3,oneof" json:"secret_rid,omitempty"`
-	unknownFields       protoimpl.UnknownFields
-	sizeCache           protoimpl.SizeCache
+	// Replaces the connection's flags when set.
+	FlagRids           *MeshFlagRidSet `protobuf:"bytes,5,opt,name=flag_rids,json=flagRids,proto3,oneof" json:"flag_rids,omitempty"`
+	RemoteWorkspaceRid *string         `protobuf:"bytes,6,opt,name=remote_workspace_rid,json=remoteWorkspaceRid,proto3,oneof" json:"remote_workspace_rid,omitempty"`
+	unknownFields      protoimpl.UnknownFields
+	sizeCache          protoimpl.SizeCache
 }
 
 func (x *UpdateRemoteConnectionRequest) Reset() {
@@ -428,6 +457,20 @@ func (x *UpdateRemoteConnectionRequest) GetBaseUrl() string {
 func (x *UpdateRemoteConnectionRequest) GetSecretRid() string {
 	if x != nil && x.SecretRid != nil {
 		return *x.SecretRid
+	}
+	return ""
+}
+
+func (x *UpdateRemoteConnectionRequest) GetFlagRids() *MeshFlagRidSet {
+	if x != nil {
+		return x.FlagRids
+	}
+	return nil
+}
+
+func (x *UpdateRemoteConnectionRequest) GetRemoteWorkspaceRid() string {
+	if x != nil && x.RemoteWorkspaceRid != nil {
+		return *x.RemoteWorkspaceRid
 	}
 	return ""
 }
@@ -676,7 +719,7 @@ var File_nominal_protos_mesh_v1_remote_connections_proto protoreflect.FileDescri
 
 const file_nominal_protos_mesh_v1_remote_connections_proto_rawDesc = "" +
 	"\n" +
-	"/nominal/protos/mesh/v1/remote_connections.proto\x12\x0fnominal.mesh.v1\x1a\x1bbuf/validate/validate.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a!nominal/protos/gen/v1/alias.proto\"\xde\x02\n" +
+	"/nominal/protos/mesh/v1/remote_connections.proto\x12\x0fnominal.mesh.v1\x1a\x1bbuf/validate/validate.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a!nominal/protos/gen/v1/alias.proto\x1a\"nominal/protos/mesh/v1/flags.proto\"\xa4\x04\n" +
 	"\x10RemoteConnection\x12E\n" +
 	"\x03rid\x18\x01 \x01(\tB3\xbaH\x03\xc8\x01\x01\x9a\xb2\x1a)\n" +
 	"'io.nominal.api.rids.RemoteConnectionRidR\x03rid\x12\x12\n" +
@@ -686,7 +729,12 @@ const file_nominal_protos_mesh_v1_remote_connections_proto_rawDesc = "" +
 	"secret_rid\x18\x04 \x01(\tB,\xbaH\x03\xc8\x01\x01\x9a\xb2\x1a\"\n" +
 	" io.nominal.secrets.api.SecretRidR\tsecretRid\x12?\n" +
 	"\x06status\x18\x05 \x01(\x0e2'.nominal.mesh.v1.RemoteConnectionStatusR\x06status\x12F\n" +
-	"\x11status_updated_at\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampR\x0fstatusUpdatedAt\"\xee\x01\n" +
+	"\x11status_updated_at\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampR\x0fstatusUpdatedAt\x12L\n" +
+	"\tflag_rids\x18\a \x03(\tB/\xbaH\a\x92\x01\x04\x10d\x18\x01\x9a\xb2\x1a!\n" +
+	"\x1fio.nominal.api.rids.MeshFlagRidR\bflagRids\x12]\n" +
+	"\x14remote_workspace_rid\x18\b \x01(\tB&\x9a\xb2\x1a\"\n" +
+	" io.nominal.api.rids.WorkspaceRidH\x00R\x12remoteWorkspaceRid\x88\x01\x01B\x17\n" +
+	"\x15_remote_workspace_rid\"\xe6\x02\n" +
 	"\x1dCreateRemoteConnectionRequest\x12\x12\n" +
 	"\x04name\x18\x01 \x01(\tR\x04name\x12\x19\n" +
 	"\bbase_url\x18\x02 \x01(\tR\abaseUrl\x12K\n" +
@@ -694,14 +742,17 @@ const file_nominal_protos_mesh_v1_remote_connections_proto_rawDesc = "" +
 	"secret_rid\x18\x03 \x01(\tB,\xbaH\x03\xc8\x01\x01\x9a\xb2\x1a\"\n" +
 	" io.nominal.secrets.api.SecretRidR\tsecretRid\x12Q\n" +
 	"\rworkspace_rid\x18\x04 \x01(\tB,\xbaH\x03\xc8\x01\x01\x9a\xb2\x1a\"\n" +
-	" io.nominal.api.rids.WorkspaceRidR\fworkspaceRid\"p\n" +
+	" io.nominal.api.rids.WorkspaceRidR\fworkspaceRid\x12]\n" +
+	"\x14remote_workspace_rid\x18\x05 \x01(\tB&\x9a\xb2\x1a\"\n" +
+	" io.nominal.api.rids.WorkspaceRidH\x00R\x12remoteWorkspaceRid\x88\x01\x01B\x17\n" +
+	"\x15_remote_workspace_rid\"p\n" +
 	"\x1eCreateRemoteConnectionResponse\x12N\n" +
 	"\x11remote_connection\x18\x01 \x01(\v2!.nominal.mesh.v1.RemoteConnectionR\x10remoteConnection\"\x85\x01\n" +
 	"\x1aGetRemoteConnectionRequest\x12g\n" +
 	"\x15remote_connection_rid\x18\x01 \x01(\tB3\xbaH\x03\xc8\x01\x01\x9a\xb2\x1a)\n" +
 	"'io.nominal.api.rids.RemoteConnectionRidR\x13remoteConnectionRid\"m\n" +
 	"\x1bGetRemoteConnectionResponse\x12N\n" +
-	"\x11remote_connection\x18\x01 \x01(\v2!.nominal.mesh.v1.RemoteConnectionR\x10remoteConnection\"\xb2\x02\n" +
+	"\x11remote_connection\x18\x01 \x01(\v2!.nominal.mesh.v1.RemoteConnectionR\x10remoteConnection\"\xfb\x03\n" +
 	"\x1dUpdateRemoteConnectionRequest\x12g\n" +
 	"\x15remote_connection_rid\x18\x01 \x01(\tB3\xbaH\x03\xc8\x01\x01\x9a\xb2\x1a)\n" +
 	"'io.nominal.api.rids.RemoteConnectionRidR\x13remoteConnectionRid\x12\x17\n" +
@@ -709,10 +760,16 @@ const file_nominal_protos_mesh_v1_remote_connections_proto_rawDesc = "" +
 	"\bbase_url\x18\x03 \x01(\tH\x01R\abaseUrl\x88\x01\x01\x12J\n" +
 	"\n" +
 	"secret_rid\x18\x04 \x01(\tB&\x9a\xb2\x1a\"\n" +
-	" io.nominal.secrets.api.SecretRidH\x02R\tsecretRid\x88\x01\x01B\a\n" +
+	" io.nominal.secrets.api.SecretRidH\x02R\tsecretRid\x88\x01\x01\x12A\n" +
+	"\tflag_rids\x18\x05 \x01(\v2\x1f.nominal.mesh.v1.MeshFlagRidSetH\x03R\bflagRids\x88\x01\x01\x12]\n" +
+	"\x14remote_workspace_rid\x18\x06 \x01(\tB&\x9a\xb2\x1a\"\n" +
+	" io.nominal.api.rids.WorkspaceRidH\x04R\x12remoteWorkspaceRid\x88\x01\x01B\a\n" +
 	"\x05_nameB\v\n" +
 	"\t_base_urlB\r\n" +
-	"\v_secret_rid\"p\n" +
+	"\v_secret_ridB\f\n" +
+	"\n" +
+	"_flag_ridsB\x17\n" +
+	"\x15_remote_workspace_rid\"p\n" +
 	"\x1eUpdateRemoteConnectionResponse\x12N\n" +
 	"\x11remote_connection\x18\x01 \x01(\v2!.nominal.mesh.v1.RemoteConnectionR\x10remoteConnection\"\x88\x01\n" +
 	"\x1dDeleteRemoteConnectionRequest\x12g\n" +
@@ -764,19 +821,21 @@ var file_nominal_protos_mesh_v1_remote_connections_proto_goTypes = []any{
 	(*ListRemoteConnectionsRequest)(nil),   // 10: nominal.mesh.v1.ListRemoteConnectionsRequest
 	(*ListRemoteConnectionsResponse)(nil),  // 11: nominal.mesh.v1.ListRemoteConnectionsResponse
 	(*timestamppb.Timestamp)(nil),          // 12: google.protobuf.Timestamp
+	(*MeshFlagRidSet)(nil),                 // 13: nominal.mesh.v1.MeshFlagRidSet
 }
 var file_nominal_protos_mesh_v1_remote_connections_proto_depIdxs = []int32{
 	0,  // 0: nominal.mesh.v1.RemoteConnection.status:type_name -> nominal.mesh.v1.RemoteConnectionStatus
 	12, // 1: nominal.mesh.v1.RemoteConnection.status_updated_at:type_name -> google.protobuf.Timestamp
 	1,  // 2: nominal.mesh.v1.CreateRemoteConnectionResponse.remote_connection:type_name -> nominal.mesh.v1.RemoteConnection
 	1,  // 3: nominal.mesh.v1.GetRemoteConnectionResponse.remote_connection:type_name -> nominal.mesh.v1.RemoteConnection
-	1,  // 4: nominal.mesh.v1.UpdateRemoteConnectionResponse.remote_connection:type_name -> nominal.mesh.v1.RemoteConnection
-	1,  // 5: nominal.mesh.v1.ListRemoteConnectionsResponse.remote_connections:type_name -> nominal.mesh.v1.RemoteConnection
-	6,  // [6:6] is the sub-list for method output_type
-	6,  // [6:6] is the sub-list for method input_type
-	6,  // [6:6] is the sub-list for extension type_name
-	6,  // [6:6] is the sub-list for extension extendee
-	0,  // [0:6] is the sub-list for field type_name
+	13, // 4: nominal.mesh.v1.UpdateRemoteConnectionRequest.flag_rids:type_name -> nominal.mesh.v1.MeshFlagRidSet
+	1,  // 5: nominal.mesh.v1.UpdateRemoteConnectionResponse.remote_connection:type_name -> nominal.mesh.v1.RemoteConnection
+	1,  // 6: nominal.mesh.v1.ListRemoteConnectionsResponse.remote_connections:type_name -> nominal.mesh.v1.RemoteConnection
+	7,  // [7:7] is the sub-list for method output_type
+	7,  // [7:7] is the sub-list for method input_type
+	7,  // [7:7] is the sub-list for extension type_name
+	7,  // [7:7] is the sub-list for extension extendee
+	0,  // [0:7] is the sub-list for field type_name
 }
 
 func init() { file_nominal_protos_mesh_v1_remote_connections_proto_init() }
@@ -784,6 +843,9 @@ func file_nominal_protos_mesh_v1_remote_connections_proto_init() {
 	if File_nominal_protos_mesh_v1_remote_connections_proto != nil {
 		return
 	}
+	file_nominal_protos_mesh_v1_flags_proto_init()
+	file_nominal_protos_mesh_v1_remote_connections_proto_msgTypes[0].OneofWrappers = []any{}
+	file_nominal_protos_mesh_v1_remote_connections_proto_msgTypes[1].OneofWrappers = []any{}
 	file_nominal_protos_mesh_v1_remote_connections_proto_msgTypes[5].OneofWrappers = []any{}
 	file_nominal_protos_mesh_v1_remote_connections_proto_msgTypes[9].OneofWrappers = []any{}
 	file_nominal_protos_mesh_v1_remote_connections_proto_msgTypes[10].OneofWrappers = []any{}

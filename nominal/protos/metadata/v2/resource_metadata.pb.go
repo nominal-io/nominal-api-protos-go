@@ -7,6 +7,7 @@
 package metadatav2
 
 import (
+	_ "github.com/nominal-io/nominal-api-protos-go/nominal/protos/authz/v1"
 	_ "github.com/nominal-io/nominal-api-protos-go/nominal/protos/gen/v1"
 	types "github.com/nominal-io/nominal-api-protos-go/nominal/protos/types"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
@@ -156,15 +157,20 @@ type MetadataError int32
 
 const (
 	MetadataError_METADATA_ERROR_INVALID_METADATA_REQUEST MetadataError = 0
+	// The query timed out, and its shape is one the service does not index for. The "hint" metadata entry says how to
+	// narrow it.
+	MetadataError_METADATA_ERROR_QUERY_TOO_BROAD MetadataError = 1
 )
 
 // Enum value maps for MetadataError.
 var (
 	MetadataError_name = map[int32]string{
 		0: "METADATA_ERROR_INVALID_METADATA_REQUEST",
+		1: "METADATA_ERROR_QUERY_TOO_BROAD",
 	}
 	MetadataError_value = map[string]int32{
 		"METADATA_ERROR_INVALID_METADATA_REQUEST": 0,
+		"METADATA_ERROR_QUERY_TOO_BROAD":          1,
 	}
 )
 
@@ -1768,7 +1774,7 @@ var File_nominal_protos_metadata_v2_resource_metadata_proto protoreflect.FileDes
 
 const file_nominal_protos_metadata_v2_resource_metadata_proto_rawDesc = "" +
 	"\n" +
-	"2nominal/protos/metadata/v2/resource_metadata.proto\x12\x13nominal.metadata.v2\x1a\x1cgoogle/api/annotations.proto\x1a!nominal/protos/gen/v1/alias.proto\x1a!nominal/protos/gen/v1/error.proto\x1a nominal/protos/types/types.proto\"I\n" +
+	"2nominal/protos/metadata/v2/resource_metadata.proto\x12\x13nominal.metadata.v2\x1a\x1cgoogle/api/annotations.proto\x1a)nominal/protos/authz/v1/annotations.proto\x1a!nominal/protos/gen/v1/alias.proto\x1a!nominal/protos/gen/v1/error.proto\x1a nominal/protos/types/types.proto\"I\n" +
 	"\n" +
 	"MatchCount\x12\x14\n" +
 	"\x05value\x18\x01 \x01(\tR\x05value\x12%\n" +
@@ -1938,19 +1944,21 @@ const file_nominal_protos_metadata_v2_resource_metadata_proto_rawDesc = "" +
 	"\x1fMETADATA_SORT_FIELD_UNSPECIFIED\x10\x00\x12\x10\n" +
 	"\fALPHABETICAL\x10\x01\x12\x0f\n" +
 	"\vUSAGE_COUNT\x10\x02\x12\x18\n" +
-	"\x14PROPERTY_VALUE_COUNT\x10\x03*l\n" +
+	"\x14PROPERTY_VALUE_COUNT\x10\x03*\xbf\x01\n" +
 	"\rMetadataError\x12[\n" +
 	"'METADATA_ERROR_INVALID_METADATA_REQUEST\x10\x00\x1a.\xb2\xb2\x1a*\n" +
-	"\x10INVALID_ARGUMENT\x12\x16InvalidMetadataRequest2\x9d\v\n" +
-	"\x17ResourceMetadataService\x12\xb4\x01\n" +
-	"\x17ListPropertiesAndLabels\x123.nominal.metadata.v2.ListPropertiesAndLabelsRequest\x1a4.nominal.metadata.v2.ListPropertiesAndLabelsResponse\".\x82\xd3\xe4\x93\x02(:\x01*\"#/metadata/v2/list-properties-labels\x12\xa3\x01\n" +
-	"\x15GetMetadataUsageCount\x121.nominal.metadata.v2.GetMetadataUsageCountRequest\x1a2.nominal.metadata.v2.GetMetadataUsageCountResponse\"#\x82\xd3\xe4\x93\x02\x1d:\x01*\"\x18/metadata/v2/usage-count\x12\xb0\x01\n" +
-	"\x17FindSimilarLabelMatches\x123.nominal.metadata.v2.FindSimilarLabelMatchesRequest\x1a4.nominal.metadata.v2.FindSimilarLabelMatchesResponse\"*\x82\xd3\xe4\x93\x02$:\x01*\"\x1f/metadata/v2/label/find-similar\x12\xc5\x01\n" +
-	"\x1dFindSimilarPropertyKeyMatches\x129.nominal.metadata.v2.FindSimilarPropertyKeyMatchesRequest\x1a:.nominal.metadata.v2.FindSimilarPropertyKeyMatchesResponse\"-\x82\xd3\xe4\x93\x02':\x01*\"\"/metadata/v2/property/find-similar\x12\x8a\x01\n" +
-	"\fSearchLabels\x12(.nominal.metadata.v2.SearchLabelsRequest\x1a).nominal.metadata.v2.SearchLabelsResponse\"%\x82\xd3\xe4\x93\x02\x1f:\x01*\"\x1a/metadata/v2/search-labels\x12\xa3\x01\n" +
-	"\x12SearchPropertyKeys\x12..nominal.metadata.v2.SearchPropertyKeysRequest\x1a/.nominal.metadata.v2.SearchPropertyKeysResponse\",\x82\xd3\xe4\x93\x02&:\x01*\"!/metadata/v2/search-property-keys\x12\xab\x01\n" +
-	"\x14SearchPropertyValues\x120.nominal.metadata.v2.SearchPropertyValuesRequest\x1a1.nominal.metadata.v2.SearchPropertyValuesResponse\".\x82\xd3\xe4\x93\x02(:\x01*\"#/metadata/v2/search-property-values\x12\xc8\x01\n" +
-	"\x1cGetNumericPropertyStatistics\x128.nominal.metadata.v2.GetNumericPropertyStatisticsRequest\x1a9.nominal.metadata.v2.GetNumericPropertyStatisticsResponse\"3\x82\xd3\xe4\x93\x02-:\x01*\"(/metadata/v2/numeric-property-statisticsB\xf1\x01\n" +
+	"\x10INVALID_ARGUMENT\x12\x16InvalidMetadataRequest\x12Q\n" +
+	"\x1eMETADATA_ERROR_QUERY_TOO_BROAD\x10\x01\x1a-\xb2\xb2\x1a)\n" +
+	"\x10INVALID_ARGUMENT\x12\x15MetadataQueryTooBroad2\xbd\v\n" +
+	"\x17ResourceMetadataService\x12\xb8\x01\n" +
+	"\x17ListPropertiesAndLabels\x123.nominal.metadata.v2.ListPropertiesAndLabelsRequest\x1a4.nominal.metadata.v2.ListPropertiesAndLabelsResponse\"2\xba\xb2\x1a\x00\x82\xd3\xe4\x93\x02(:\x01*\"#/metadata/v2/list-properties-labels\x12\xa7\x01\n" +
+	"\x15GetMetadataUsageCount\x121.nominal.metadata.v2.GetMetadataUsageCountRequest\x1a2.nominal.metadata.v2.GetMetadataUsageCountResponse\"'\xba\xb2\x1a\x00\x82\xd3\xe4\x93\x02\x1d:\x01*\"\x18/metadata/v2/usage-count\x12\xb4\x01\n" +
+	"\x17FindSimilarLabelMatches\x123.nominal.metadata.v2.FindSimilarLabelMatchesRequest\x1a4.nominal.metadata.v2.FindSimilarLabelMatchesResponse\".\xba\xb2\x1a\x00\x82\xd3\xe4\x93\x02$:\x01*\"\x1f/metadata/v2/label/find-similar\x12\xc9\x01\n" +
+	"\x1dFindSimilarPropertyKeyMatches\x129.nominal.metadata.v2.FindSimilarPropertyKeyMatchesRequest\x1a:.nominal.metadata.v2.FindSimilarPropertyKeyMatchesResponse\"1\xba\xb2\x1a\x00\x82\xd3\xe4\x93\x02':\x01*\"\"/metadata/v2/property/find-similar\x12\x8e\x01\n" +
+	"\fSearchLabels\x12(.nominal.metadata.v2.SearchLabelsRequest\x1a).nominal.metadata.v2.SearchLabelsResponse\")\xba\xb2\x1a\x00\x82\xd3\xe4\x93\x02\x1f:\x01*\"\x1a/metadata/v2/search-labels\x12\xa7\x01\n" +
+	"\x12SearchPropertyKeys\x12..nominal.metadata.v2.SearchPropertyKeysRequest\x1a/.nominal.metadata.v2.SearchPropertyKeysResponse\"0\xba\xb2\x1a\x00\x82\xd3\xe4\x93\x02&:\x01*\"!/metadata/v2/search-property-keys\x12\xaf\x01\n" +
+	"\x14SearchPropertyValues\x120.nominal.metadata.v2.SearchPropertyValuesRequest\x1a1.nominal.metadata.v2.SearchPropertyValuesResponse\"2\xba\xb2\x1a\x00\x82\xd3\xe4\x93\x02(:\x01*\"#/metadata/v2/search-property-values\x12\xcc\x01\n" +
+	"\x1cGetNumericPropertyStatistics\x128.nominal.metadata.v2.GetNumericPropertyStatisticsRequest\x1a9.nominal.metadata.v2.GetNumericPropertyStatisticsResponse\"7\xba\xb2\x1a\x00\x82\xd3\xe4\x93\x02-:\x01*\"(/metadata/v2/numeric-property-statisticsB\xf1\x01\n" +
 	"\x17com.nominal.metadata.v2B\x15ResourceMetadataProtoP\x01ZQgithub.com/nominal-io/nominal-api-protos-go/nominal/protos/metadata/v2;metadatav2\xa2\x02\x03NMX\xaa\x02\x13Nominal.Metadata.V2\xca\x02\x13Nominal\\Metadata\\V2\xe2\x02\x1fNominal\\Metadata\\V2\\GPBMetadata\xea\x02\x15Nominal::Metadata::V2b\x06proto3"
 
 var (

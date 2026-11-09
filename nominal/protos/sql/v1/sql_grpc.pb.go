@@ -32,8 +32,8 @@ const (
 type SqlServiceClient interface {
 	// Validate, authorize, lower, and execute a bounded SQL query.
 	Query(ctx context.Context, in *SqlServiceQueryRequest, opts ...grpc.CallOption) (grpc.ServerStreamingClient[SqlServiceQueryResponse], error)
-	// Validate, authorize, lower, and execute an unbounded SQL query, writing the full result to
-	// object storage as CSV and returning a presigned URL.
+	// Run an unbounded SQL query. Write the full result to object storage in the requested format, and return a
+	// presigned URL.
 	Export(ctx context.Context, in *SqlServiceExportRequest, opts ...grpc.CallOption) (*SqlServiceExportResponse, error)
 	// Get the queryable SQL surface: tables, columns, and allowed functions.
 	GetSqlCatalog(ctx context.Context, in *GetSqlCatalogRequest, opts ...grpc.CallOption) (*GetSqlCatalogResponse, error)
@@ -94,8 +94,8 @@ func (c *sqlServiceClient) GetSqlCatalog(ctx context.Context, in *GetSqlCatalogR
 type SqlServiceServer interface {
 	// Validate, authorize, lower, and execute a bounded SQL query.
 	Query(*SqlServiceQueryRequest, grpc.ServerStreamingServer[SqlServiceQueryResponse]) error
-	// Validate, authorize, lower, and execute an unbounded SQL query, writing the full result to
-	// object storage as CSV and returning a presigned URL.
+	// Run an unbounded SQL query. Write the full result to object storage in the requested format, and return a
+	// presigned URL.
 	Export(context.Context, *SqlServiceExportRequest) (*SqlServiceExportResponse, error)
 	// Get the queryable SQL surface: tables, columns, and allowed functions.
 	GetSqlCatalog(context.Context, *GetSqlCatalogRequest) (*GetSqlCatalogResponse, error)

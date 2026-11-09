@@ -8,6 +8,7 @@ package demo_appsv1
 
 import (
 	_ "buf.build/gen/go/bufbuild/protovalidate/protocolbuffers/go/buf/validate"
+	_ "github.com/nominal-io/nominal-api-protos-go/nominal/protos/authz/v1"
 	_ "github.com/nominal-io/nominal-api-protos-go/nominal/protos/gen/v1"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
@@ -169,7 +170,7 @@ var File_nominal_protos_connect_demo_apps_v1_connect_demo_apps_proto protoreflec
 
 const file_nominal_protos_connect_demo_apps_v1_connect_demo_apps_proto_rawDesc = "" +
 	"\n" +
-	";nominal/protos/connect/demo_apps/v1/connect_demo_apps.proto\x12\x1cnominal.connect.demo_apps.v1\x1a\x1bbuf/validate/validate.proto\x1a\x1cgoogle/api/annotations.proto\x1a!nominal/protos/gen/v1/error.proto\"^\n" +
+	";nominal/protos/connect/demo_apps/v1/connect_demo_apps.proto\x12\x1cnominal.connect.demo_apps.v1\x1a\x1bbuf/validate/validate.proto\x1a\x1cgoogle/api/annotations.proto\x1a)nominal/protos/authz/v1/annotations.proto\x1a!nominal/protos/gen/v1/error.proto\"^\n" +
 	"\x1cGetDemoAppDownloadUrlRequest\x12>\n" +
 	"\x0fsha256_checksum\x18\x01 \x01(\tB\x15\xbaH\x12r\x102\x0e^[a-f0-9]{64}$R\x0esha256Checksum\"1\n" +
 	"\x1dGetDemoAppDownloadUrlResponse\x12\x10\n" +
@@ -179,9 +180,9 @@ const file_nominal_protos_connect_demo_apps_v1_connect_demo_apps_proto_rawDesc =
 	";CONNECT_DEMO_APPS_SERVICE_ERROR_UNAVAILABLE_FOR_ENVIRONMENT\x10\x01\x1aC\xb2\xb2\x1a?\n" +
 	"\tNOT_FOUND\x122Demo apps not available for specified environment.\x12m\n" +
 	"0CONNECT_DEMO_APPS_SERVICE_ERROR_INVALID_CHECKSUM\x10\x02\x1a7\xb2\xb2\x1a3\n" +
-	"\x10INVALID_ARGUMENT\x12\x1fProvided checksum is not valid.2\xd6\x01\n" +
-	"\x16ConnectDemoAppsService\x12\xbb\x01\n" +
-	"\x15GetDemoAppDownloadUrl\x12:.nominal.connect.demo_apps.v1.GetDemoAppDownloadUrlRequest\x1a;.nominal.connect.demo_apps.v1.GetDemoAppDownloadUrlResponse\")\x82\xd3\xe4\x93\x02#:\x01*\"\x1e/connect/v1/demo-apps/downloadB\xa4\x02\n" +
+	"\x10INVALID_ARGUMENT\x12\x1fProvided checksum is not valid.2\xda\x01\n" +
+	"\x16ConnectDemoAppsService\x12\xbf\x01\n" +
+	"\x15GetDemoAppDownloadUrl\x12:.nominal.connect.demo_apps.v1.GetDemoAppDownloadUrlRequest\x1a;.nominal.connect.demo_apps.v1.GetDemoAppDownloadUrlResponse\"-\xba\xb2\x1a\x00\x82\xd3\xe4\x93\x02#:\x01*\"\x1e/connect/v1/demo-apps/downloadB\xa4\x02\n" +
 	" com.nominal.connect.demo_apps.v1B\x14ConnectDemoAppsProtoP\x01Z[github.com/nominal-io/nominal-api-protos-go/nominal/protos/connect/demo_apps/v1;demo_appsv1\xa2\x02\x03NCD\xaa\x02\x1bNominal.Connect.DemoApps.V1\xca\x02\x1bNominal\\Connect\\DemoApps\\V1\xe2\x02'Nominal\\Connect\\DemoApps\\V1\\GPBMetadata\xea\x02\x1eNominal::Connect::DemoApps::V1b\x06proto3"
 
 var (

@@ -27,25 +27,27 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	AssetService_CreateAsset_FullMethodName            = "/nominal.asset.v2.AssetService/CreateAsset"
-	AssetService_UpdateAsset_FullMethodName            = "/nominal.asset.v2.AssetService/UpdateAsset"
-	AssetService_AddDataScopesToAsset_FullMethodName   = "/nominal.asset.v2.AssetService/AddDataScopesToAsset"
-	AssetService_GetAssets_FullMethodName              = "/nominal.asset.v2.AssetService/GetAssets"
-	AssetService_GetAssetsByDataSource_FullMethodName  = "/nominal.asset.v2.AssetService/GetAssetsByDataSource"
-	AssetService_Archive_FullMethodName                = "/nominal.asset.v2.AssetService/Archive"
-	AssetService_Unarchive_FullMethodName              = "/nominal.asset.v2.AssetService/Unarchive"
-	AssetService_SearchAssets_FullMethodName           = "/nominal.asset.v2.AssetService/SearchAssets"
-	AssetService_BatchEditAssetMetadata_FullMethodName = "/nominal.asset.v2.AssetService/BatchEditAssetMetadata"
-	AssetService_SearchTypes_FullMethodName            = "/nominal.asset.v2.AssetService/SearchTypes"
-	AssetService_UpdateAssetAttachments_FullMethodName = "/nominal.asset.v2.AssetService/UpdateAssetAttachments"
-	AssetService_UpdateAssetRefNames_FullMethodName    = "/nominal.asset.v2.AssetService/UpdateAssetRefNames"
-	AssetService_CreateType_FullMethodName             = "/nominal.asset.v2.AssetService/CreateType"
-	AssetService_UpdateType_FullMethodName             = "/nominal.asset.v2.AssetService/UpdateType"
-	AssetService_GetTypes_FullMethodName               = "/nominal.asset.v2.AssetService/GetTypes"
-	AssetService_GetTypesForDatasource_FullMethodName  = "/nominal.asset.v2.AssetService/GetTypesForDatasource"
-	AssetService_DeleteType_FullMethodName             = "/nominal.asset.v2.AssetService/DeleteType"
-	AssetService_ArchiveType_FullMethodName            = "/nominal.asset.v2.AssetService/ArchiveType"
-	AssetService_UnarchiveType_FullMethodName          = "/nominal.asset.v2.AssetService/UnarchiveType"
+	AssetService_CreateAsset_FullMethodName                     = "/nominal.asset.v2.AssetService/CreateAsset"
+	AssetService_CreateOrUpdateAssetByPrimaryKey_FullMethodName = "/nominal.asset.v2.AssetService/CreateOrUpdateAssetByPrimaryKey"
+	AssetService_UpdateAsset_FullMethodName                     = "/nominal.asset.v2.AssetService/UpdateAsset"
+	AssetService_AddDataScopesToAsset_FullMethodName            = "/nominal.asset.v2.AssetService/AddDataScopesToAsset"
+	AssetService_GetAssets_FullMethodName                       = "/nominal.asset.v2.AssetService/GetAssets"
+	AssetService_GetAssetDataConformance_FullMethodName         = "/nominal.asset.v2.AssetService/GetAssetDataConformance"
+	AssetService_GetAssetsByDataSource_FullMethodName           = "/nominal.asset.v2.AssetService/GetAssetsByDataSource"
+	AssetService_Archive_FullMethodName                         = "/nominal.asset.v2.AssetService/Archive"
+	AssetService_Unarchive_FullMethodName                       = "/nominal.asset.v2.AssetService/Unarchive"
+	AssetService_SearchAssets_FullMethodName                    = "/nominal.asset.v2.AssetService/SearchAssets"
+	AssetService_BatchEditAssetMetadata_FullMethodName          = "/nominal.asset.v2.AssetService/BatchEditAssetMetadata"
+	AssetService_SearchTypes_FullMethodName                     = "/nominal.asset.v2.AssetService/SearchTypes"
+	AssetService_UpdateAssetAttachments_FullMethodName          = "/nominal.asset.v2.AssetService/UpdateAssetAttachments"
+	AssetService_UpdateAssetRefNames_FullMethodName             = "/nominal.asset.v2.AssetService/UpdateAssetRefNames"
+	AssetService_CreateType_FullMethodName                      = "/nominal.asset.v2.AssetService/CreateType"
+	AssetService_UpdateType_FullMethodName                      = "/nominal.asset.v2.AssetService/UpdateType"
+	AssetService_GetTypes_FullMethodName                        = "/nominal.asset.v2.AssetService/GetTypes"
+	AssetService_DeleteType_FullMethodName                      = "/nominal.asset.v2.AssetService/DeleteType"
+	AssetService_ArchiveType_FullMethodName                     = "/nominal.asset.v2.AssetService/ArchiveType"
+	AssetService_UnarchiveType_FullMethodName                   = "/nominal.asset.v2.AssetService/UnarchiveType"
+	AssetService_TraverseLinks_FullMethodName                   = "/nominal.asset.v2.AssetService/TraverseLinks"
 )
 
 // AssetServiceClient is the client API for AssetService service.
@@ -58,6 +60,12 @@ const (
 type AssetServiceClient interface {
 	// Creates a new asset.
 	CreateAsset(ctx context.Context, in *CreateAssetRequest, opts ...grpc.CallOption) (*CreateAssetResponse, error)
+	// Creates an asset identified by a type and its primary-key value, or resolves the active asset that already has
+	// that identity. Archived assets are ignored, so a key held only by an archived asset creates a new asset.
+	// Concurrent calls with the same identity resolve to one asset. Needs create permission in the workspace. Returning
+	// or updating an existing asset needs view permission on it, otherwise the call fails with AssetPermissionDenied;
+	// updating it also needs edit permission.
+	CreateOrUpdateAssetByPrimaryKey(ctx context.Context, in *CreateOrUpdateAssetByPrimaryKeyRequest, opts ...grpc.CallOption) (*CreateOrUpdateAssetByPrimaryKeyResponse, error)
 	// Updates an existing asset's metadata.
 	UpdateAsset(ctx context.Context, in *UpdateAssetRequest, opts ...grpc.CallOption) (*UpdateAssetResponse, error)
 	// Adds data scopes to an asset.
@@ -66,6 +74,10 @@ type AssetServiceClient interface {
 	AddDataScopesToAsset(ctx context.Context, in *AddDataScopesToAssetRequest, opts ...grpc.CallOption) (*AddDataScopesToAssetResponse, error)
 	// Returns the assets for the given asset RIDs.
 	GetAssets(ctx context.Context, in *GetAssetsRequest, opts ...grpc.CallOption) (*GetAssetsResponse, error)
+	// Reports, for each asset, whether its current data meets the data requirements of its types. Requirements are only
+	// enforced when a type is attached, so an asset whose data changed since may no longer meet them. Needs view
+	// permission on each asset; assets that are missing or not viewable are left out of the response.
+	GetAssetDataConformance(ctx context.Context, in *GetAssetDataConformanceRequest, opts ...grpc.CallOption) (*GetAssetDataConformanceResponse, error)
 	// Returns all assets with the given data source as a data scope.
 	GetAssetsByDataSource(ctx context.Context, in *GetAssetsByDataSourceRequest, opts ...grpc.CallOption) (*GetAssetsByDataSourceResponse, error)
 	// Archives the asset with the given RID.
@@ -90,14 +102,18 @@ type AssetServiceClient interface {
 	UpdateType(ctx context.Context, in *UpdateTypeRequest, opts ...grpc.CallOption) (*UpdateTypeResponse, error)
 	// Returns the asset types for the given type RIDs.
 	GetTypes(ctx context.Context, in *GetTypesRequest, opts ...grpc.CallOption) (*GetTypesResponse, error)
-	// Returns the asset types associated with the given data source.
-	GetTypesForDatasource(ctx context.Context, in *GetTypesForDatasourceRequest, opts ...grpc.CallOption) (*GetTypesForDatasourceResponse, error)
 	// Deletes a type. The type must not be referenced by any assets.
 	DeleteType(ctx context.Context, in *DeleteTypeRequest, opts ...grpc.CallOption) (*DeleteTypeResponse, error)
 	// Archives the asset type with the given RID.
 	ArchiveType(ctx context.Context, in *ArchiveTypeRequest, opts ...grpc.CallOption) (*ArchiveTypeResponse, error)
 	// Unarchives the asset type with the given RID.
 	UnarchiveType(ctx context.Context, in *UnarchiveTypeRequest, opts ...grpc.CallOption) (*UnarchiveTypeResponse, error)
+	// Follows a link from a batch of assets to the assets it reaches. Fails with LinkNotFound when the link does
+	// not exist or its source type is in a workspace the caller cannot view, and with AssetNotFound when a requested
+	// asset does not exist or the caller cannot view it. A custom method rather than an asset
+	// search, since each edge pairs a requested asset with what it reaches, and forward edges can end in a value
+	// that names no asset.
+	TraverseLinks(ctx context.Context, in *TraverseLinksRequest, opts ...grpc.CallOption) (*TraverseLinksResponse, error)
 }
 
 type assetServiceClient struct {
@@ -112,6 +128,16 @@ func (c *assetServiceClient) CreateAsset(ctx context.Context, in *CreateAssetReq
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(CreateAssetResponse)
 	err := c.cc.Invoke(ctx, AssetService_CreateAsset_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *assetServiceClient) CreateOrUpdateAssetByPrimaryKey(ctx context.Context, in *CreateOrUpdateAssetByPrimaryKeyRequest, opts ...grpc.CallOption) (*CreateOrUpdateAssetByPrimaryKeyResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(CreateOrUpdateAssetByPrimaryKeyResponse)
+	err := c.cc.Invoke(ctx, AssetService_CreateOrUpdateAssetByPrimaryKey_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -142,6 +168,16 @@ func (c *assetServiceClient) GetAssets(ctx context.Context, in *GetAssetsRequest
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(GetAssetsResponse)
 	err := c.cc.Invoke(ctx, AssetService_GetAssets_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *assetServiceClient) GetAssetDataConformance(ctx context.Context, in *GetAssetDataConformanceRequest, opts ...grpc.CallOption) (*GetAssetDataConformanceResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(GetAssetDataConformanceResponse)
+	err := c.cc.Invoke(ctx, AssetService_GetAssetDataConformance_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -258,16 +294,6 @@ func (c *assetServiceClient) GetTypes(ctx context.Context, in *GetTypesRequest, 
 	return out, nil
 }
 
-func (c *assetServiceClient) GetTypesForDatasource(ctx context.Context, in *GetTypesForDatasourceRequest, opts ...grpc.CallOption) (*GetTypesForDatasourceResponse, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(GetTypesForDatasourceResponse)
-	err := c.cc.Invoke(ctx, AssetService_GetTypesForDatasource_FullMethodName, in, out, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
 func (c *assetServiceClient) DeleteType(ctx context.Context, in *DeleteTypeRequest, opts ...grpc.CallOption) (*DeleteTypeResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(DeleteTypeResponse)
@@ -298,6 +324,16 @@ func (c *assetServiceClient) UnarchiveType(ctx context.Context, in *UnarchiveTyp
 	return out, nil
 }
 
+func (c *assetServiceClient) TraverseLinks(ctx context.Context, in *TraverseLinksRequest, opts ...grpc.CallOption) (*TraverseLinksResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(TraverseLinksResponse)
+	err := c.cc.Invoke(ctx, AssetService_TraverseLinks_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // AssetServiceServer is the server API for AssetService service.
 // All implementations must embed UnimplementedAssetServiceServer
 // for forward compatibility.
@@ -308,6 +344,12 @@ func (c *assetServiceClient) UnarchiveType(ctx context.Context, in *UnarchiveTyp
 type AssetServiceServer interface {
 	// Creates a new asset.
 	CreateAsset(context.Context, *CreateAssetRequest) (*CreateAssetResponse, error)
+	// Creates an asset identified by a type and its primary-key value, or resolves the active asset that already has
+	// that identity. Archived assets are ignored, so a key held only by an archived asset creates a new asset.
+	// Concurrent calls with the same identity resolve to one asset. Needs create permission in the workspace. Returning
+	// or updating an existing asset needs view permission on it, otherwise the call fails with AssetPermissionDenied;
+	// updating it also needs edit permission.
+	CreateOrUpdateAssetByPrimaryKey(context.Context, *CreateOrUpdateAssetByPrimaryKeyRequest) (*CreateOrUpdateAssetByPrimaryKeyResponse, error)
 	// Updates an existing asset's metadata.
 	UpdateAsset(context.Context, *UpdateAssetRequest) (*UpdateAssetResponse, error)
 	// Adds data scopes to an asset.
@@ -316,6 +358,10 @@ type AssetServiceServer interface {
 	AddDataScopesToAsset(context.Context, *AddDataScopesToAssetRequest) (*AddDataScopesToAssetResponse, error)
 	// Returns the assets for the given asset RIDs.
 	GetAssets(context.Context, *GetAssetsRequest) (*GetAssetsResponse, error)
+	// Reports, for each asset, whether its current data meets the data requirements of its types. Requirements are only
+	// enforced when a type is attached, so an asset whose data changed since may no longer meet them. Needs view
+	// permission on each asset; assets that are missing or not viewable are left out of the response.
+	GetAssetDataConformance(context.Context, *GetAssetDataConformanceRequest) (*GetAssetDataConformanceResponse, error)
 	// Returns all assets with the given data source as a data scope.
 	GetAssetsByDataSource(context.Context, *GetAssetsByDataSourceRequest) (*GetAssetsByDataSourceResponse, error)
 	// Archives the asset with the given RID.
@@ -340,14 +386,18 @@ type AssetServiceServer interface {
 	UpdateType(context.Context, *UpdateTypeRequest) (*UpdateTypeResponse, error)
 	// Returns the asset types for the given type RIDs.
 	GetTypes(context.Context, *GetTypesRequest) (*GetTypesResponse, error)
-	// Returns the asset types associated with the given data source.
-	GetTypesForDatasource(context.Context, *GetTypesForDatasourceRequest) (*GetTypesForDatasourceResponse, error)
 	// Deletes a type. The type must not be referenced by any assets.
 	DeleteType(context.Context, *DeleteTypeRequest) (*DeleteTypeResponse, error)
 	// Archives the asset type with the given RID.
 	ArchiveType(context.Context, *ArchiveTypeRequest) (*ArchiveTypeResponse, error)
 	// Unarchives the asset type with the given RID.
 	UnarchiveType(context.Context, *UnarchiveTypeRequest) (*UnarchiveTypeResponse, error)
+	// Follows a link from a batch of assets to the assets it reaches. Fails with LinkNotFound when the link does
+	// not exist or its source type is in a workspace the caller cannot view, and with AssetNotFound when a requested
+	// asset does not exist or the caller cannot view it. A custom method rather than an asset
+	// search, since each edge pairs a requested asset with what it reaches, and forward edges can end in a value
+	// that names no asset.
+	TraverseLinks(context.Context, *TraverseLinksRequest) (*TraverseLinksResponse, error)
 	mustEmbedUnimplementedAssetServiceServer()
 }
 
@@ -361,6 +411,9 @@ type UnimplementedAssetServiceServer struct{}
 func (UnimplementedAssetServiceServer) CreateAsset(context.Context, *CreateAssetRequest) (*CreateAssetResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method CreateAsset not implemented")
 }
+func (UnimplementedAssetServiceServer) CreateOrUpdateAssetByPrimaryKey(context.Context, *CreateOrUpdateAssetByPrimaryKeyRequest) (*CreateOrUpdateAssetByPrimaryKeyResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method CreateOrUpdateAssetByPrimaryKey not implemented")
+}
 func (UnimplementedAssetServiceServer) UpdateAsset(context.Context, *UpdateAssetRequest) (*UpdateAssetResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method UpdateAsset not implemented")
 }
@@ -369,6 +422,9 @@ func (UnimplementedAssetServiceServer) AddDataScopesToAsset(context.Context, *Ad
 }
 func (UnimplementedAssetServiceServer) GetAssets(context.Context, *GetAssetsRequest) (*GetAssetsResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method GetAssets not implemented")
+}
+func (UnimplementedAssetServiceServer) GetAssetDataConformance(context.Context, *GetAssetDataConformanceRequest) (*GetAssetDataConformanceResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method GetAssetDataConformance not implemented")
 }
 func (UnimplementedAssetServiceServer) GetAssetsByDataSource(context.Context, *GetAssetsByDataSourceRequest) (*GetAssetsByDataSourceResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method GetAssetsByDataSource not implemented")
@@ -403,9 +459,6 @@ func (UnimplementedAssetServiceServer) UpdateType(context.Context, *UpdateTypeRe
 func (UnimplementedAssetServiceServer) GetTypes(context.Context, *GetTypesRequest) (*GetTypesResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method GetTypes not implemented")
 }
-func (UnimplementedAssetServiceServer) GetTypesForDatasource(context.Context, *GetTypesForDatasourceRequest) (*GetTypesForDatasourceResponse, error) {
-	return nil, status.Error(codes.Unimplemented, "method GetTypesForDatasource not implemented")
-}
 func (UnimplementedAssetServiceServer) DeleteType(context.Context, *DeleteTypeRequest) (*DeleteTypeResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method DeleteType not implemented")
 }
@@ -414,6 +467,9 @@ func (UnimplementedAssetServiceServer) ArchiveType(context.Context, *ArchiveType
 }
 func (UnimplementedAssetServiceServer) UnarchiveType(context.Context, *UnarchiveTypeRequest) (*UnarchiveTypeResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method UnarchiveType not implemented")
+}
+func (UnimplementedAssetServiceServer) TraverseLinks(context.Context, *TraverseLinksRequest) (*TraverseLinksResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method TraverseLinks not implemented")
 }
 func (UnimplementedAssetServiceServer) mustEmbedUnimplementedAssetServiceServer() {}
 func (UnimplementedAssetServiceServer) testEmbeddedByValue()                      {}
@@ -450,6 +506,24 @@ func _AssetService_CreateAsset_Handler(srv interface{}, ctx context.Context, dec
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(AssetServiceServer).CreateAsset(ctx, req.(*CreateAssetRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _AssetService_CreateOrUpdateAssetByPrimaryKey_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CreateOrUpdateAssetByPrimaryKeyRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AssetServiceServer).CreateOrUpdateAssetByPrimaryKey(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: AssetService_CreateOrUpdateAssetByPrimaryKey_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AssetServiceServer).CreateOrUpdateAssetByPrimaryKey(ctx, req.(*CreateOrUpdateAssetByPrimaryKeyRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -504,6 +578,24 @@ func _AssetService_GetAssets_Handler(srv interface{}, ctx context.Context, dec f
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(AssetServiceServer).GetAssets(ctx, req.(*GetAssetsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _AssetService_GetAssetDataConformance_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetAssetDataConformanceRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AssetServiceServer).GetAssetDataConformance(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: AssetService_GetAssetDataConformance_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AssetServiceServer).GetAssetDataConformance(ctx, req.(*GetAssetDataConformanceRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -706,24 +798,6 @@ func _AssetService_GetTypes_Handler(srv interface{}, ctx context.Context, dec fu
 	return interceptor(ctx, in, info, handler)
 }
 
-func _AssetService_GetTypesForDatasource_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(GetTypesForDatasourceRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(AssetServiceServer).GetTypesForDatasource(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: AssetService_GetTypesForDatasource_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(AssetServiceServer).GetTypesForDatasource(ctx, req.(*GetTypesForDatasourceRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
 func _AssetService_DeleteType_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(DeleteTypeRequest)
 	if err := dec(in); err != nil {
@@ -778,6 +852,24 @@ func _AssetService_UnarchiveType_Handler(srv interface{}, ctx context.Context, d
 	return interceptor(ctx, in, info, handler)
 }
 
+func _AssetService_TraverseLinks_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(TraverseLinksRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AssetServiceServer).TraverseLinks(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: AssetService_TraverseLinks_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AssetServiceServer).TraverseLinks(ctx, req.(*TraverseLinksRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // AssetService_ServiceDesc is the grpc.ServiceDesc for AssetService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -790,6 +882,10 @@ var AssetService_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _AssetService_CreateAsset_Handler,
 		},
 		{
+			MethodName: "CreateOrUpdateAssetByPrimaryKey",
+			Handler:    _AssetService_CreateOrUpdateAssetByPrimaryKey_Handler,
+		},
+		{
 			MethodName: "UpdateAsset",
 			Handler:    _AssetService_UpdateAsset_Handler,
 		},
@@ -800,6 +896,10 @@ var AssetService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetAssets",
 			Handler:    _AssetService_GetAssets_Handler,
+		},
+		{
+			MethodName: "GetAssetDataConformance",
+			Handler:    _AssetService_GetAssetDataConformance_Handler,
 		},
 		{
 			MethodName: "GetAssetsByDataSource",
@@ -846,10 +946,6 @@ var AssetService_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _AssetService_GetTypes_Handler,
 		},
 		{
-			MethodName: "GetTypesForDatasource",
-			Handler:    _AssetService_GetTypesForDatasource_Handler,
-		},
-		{
 			MethodName: "DeleteType",
 			Handler:    _AssetService_DeleteType_Handler,
 		},
@@ -860,6 +956,10 @@ var AssetService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "UnarchiveType",
 			Handler:    _AssetService_UnarchiveType_Handler,
+		},
+		{
+			MethodName: "TraverseLinks",
+			Handler:    _AssetService_TraverseLinks_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

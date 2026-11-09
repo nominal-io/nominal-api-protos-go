@@ -8,6 +8,7 @@ package permissionsv1
 
 import (
 	_ "buf.build/gen/go/bufbuild/protovalidate/protocolbuffers/go/buf/validate"
+	_ "github.com/nominal-io/nominal-api-protos-go/nominal/protos/authz/v1"
 	_ "github.com/nominal-io/nominal-api-protos-go/nominal/protos/gen/v1"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
@@ -221,20 +222,20 @@ var File_nominal_protos_authorization_permissions_v1_permissions_proto protorefl
 
 const file_nominal_protos_authorization_permissions_v1_permissions_proto_rawDesc = "" +
 	"\n" +
-	"=nominal/protos/authorization/permissions/v1/permissions.proto\x12$nominal.authorization.permissions.v1\x1a\x1bbuf/validate/validate.proto\x1a\x1cgoogle/api/annotations.proto\x1a!nominal/protos/gen/v1/alias.proto\"\xdd\x01\n" +
+	"=nominal/protos/authorization/permissions/v1/permissions.proto\x12$nominal.authorization.permissions.v1\x1a\x1bbuf/validate/validate.proto\x1a\x1cgoogle/api/annotations.proto\x1a)nominal/protos/authz/v1/annotations.proto\x1a!nominal/protos/gen/v1/alias.proto\"\xdd\x01\n" +
 	"\x16CheckPermissionRequest\x12\x1e\n" +
 	"\x06action\x18\x01 \x01(\tB\x06\xbaH\x03\xc8\x01\x01R\x06action\x12\xa2\x01\n" +
 	"\bresource\x18\x02 \x01(\tB\x85\x01\xbaHZ\xc8\x01\x01rU2S^ri\\.[a-z][a-z0-9\\-]*\\.([a-z0-9][a-z0-9\\-]*)?\\.[a-z][a-z0-9\\-]*\\.[a-zA-Z0-9\\-\\._]+$\x9a\xb2\x1a$\n" +
 	"\"com.palantir.ri.ResourceIdentifierR\bresource\"s\n" +
 	"\x17CheckPermissionsRequest\x12X\n" +
-	"\brequests\x18\x01 \x03(\v2<.nominal.authorization.permissions.v1.CheckPermissionRequestR\brequests\"\xbf\x01\n" +
-	"\x17CheckPermissionResponse\x12+\n" +
-	"\ris_authorized\x18\x01 \x01(\bB\x06\xbaH\x03\xc8\x01\x01R\fisAuthorized\x12w\n" +
+	"\brequests\x18\x01 \x03(\v2<.nominal.authorization.permissions.v1.CheckPermissionRequestR\brequests\"\xb7\x01\n" +
+	"\x17CheckPermissionResponse\x12#\n" +
+	"\ris_authorized\x18\x01 \x01(\bR\fisAuthorized\x12w\n" +
 	"\x14requested_permission\x18\x02 \x01(\v2<.nominal.authorization.permissions.v1.CheckPermissionRequestB\x06\xbaH\x03\xc8\x01\x01R\x13requestedPermission\"w\n" +
 	"\x18CheckPermissionsResponse\x12[\n" +
-	"\tresponses\x18\x01 \x03(\v2=.nominal.authorization.permissions.v1.CheckPermissionResponseR\tresponses2\xd7\x01\n" +
-	"\x11PermissionService\x12\xc1\x01\n" +
-	"\x10CheckPermissions\x12=.nominal.authorization.permissions.v1.CheckPermissionsRequest\x1a>.nominal.authorization.permissions.v1.CheckPermissionsResponse\".\x82\xd3\xe4\x93\x02(:\x01*\"#/authorization/permissions/v1/checkB\xd6\x02\n" +
+	"\tresponses\x18\x01 \x03(\v2=.nominal.authorization.permissions.v1.CheckPermissionResponseR\tresponses2\xde\x01\n" +
+	"\x11PermissionService\x12\xc8\x01\n" +
+	"\x10CheckPermissions\x12=.nominal.authorization.permissions.v1.CheckPermissionsRequest\x1a>.nominal.authorization.permissions.v1.CheckPermissionsResponse\"5\xba\xb2\x1a\x00\x82\xd3\xe4\x93\x02(:\x01*\"#/authorization/permissions/v1/check\x90\x02\x01B\xd6\x02\n" +
 	"(com.nominal.authorization.permissions.v1B\x10PermissionsProtoP\x01Zegithub.com/nominal-io/nominal-api-protos-go/nominal/protos/authorization/permissions/v1;permissionsv1\xa2\x02\x03NAP\xaa\x02$Nominal.Authorization.Permissions.V1\xca\x02$Nominal\\Authorization\\Permissions\\V1\xe2\x020Nominal\\Authorization\\Permissions\\V1\\GPBMetadata\xea\x02'Nominal::Authorization::Permissions::V1b\x06proto3"
 
 var (

@@ -8,6 +8,7 @@ package integrationsv1
 
 import (
 	_ "buf.build/gen/go/bufbuild/protovalidate/protocolbuffers/go/buf/validate"
+	_ "github.com/nominal-io/nominal-api-protos-go/nominal/protos/authz/v1"
 	_ "github.com/nominal-io/nominal-api-protos-go/nominal/protos/gen/v1"
 	types "github.com/nominal-io/nominal-api-protos-go/nominal/protos/types"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
@@ -2648,11 +2649,209 @@ func (x *RotateSecureWebhookIntegrationSigningKeyResponse) GetSigningKey() strin
 	return ""
 }
 
+type CreateSlackAuthorizationUrlRequest struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Workspace the resulting integration belongs to. Defaults to the organization's default workspace.
+	Workspace *string `protobuf:"bytes,1,opt,name=workspace,proto3,oneof" json:"workspace,omitempty"`
+	// Slack deployment to authorize against. Defaults to commercial Slack.
+	SlackInstance *SlackInstance `protobuf:"varint,2,opt,name=slack_instance,json=slackInstance,proto3,enum=nominal.integrations.v1.SlackInstance,oneof" json:"slack_instance,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *CreateSlackAuthorizationUrlRequest) Reset() {
+	*x = CreateSlackAuthorizationUrlRequest{}
+	mi := &file_nominal_protos_integrations_v1_integrations_proto_msgTypes[40]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *CreateSlackAuthorizationUrlRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*CreateSlackAuthorizationUrlRequest) ProtoMessage() {}
+
+func (x *CreateSlackAuthorizationUrlRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_nominal_protos_integrations_v1_integrations_proto_msgTypes[40]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use CreateSlackAuthorizationUrlRequest.ProtoReflect.Descriptor instead.
+func (*CreateSlackAuthorizationUrlRequest) Descriptor() ([]byte, []int) {
+	return file_nominal_protos_integrations_v1_integrations_proto_rawDescGZIP(), []int{40}
+}
+
+func (x *CreateSlackAuthorizationUrlRequest) GetWorkspace() string {
+	if x != nil && x.Workspace != nil {
+		return *x.Workspace
+	}
+	return ""
+}
+
+func (x *CreateSlackAuthorizationUrlRequest) GetSlackInstance() SlackInstance {
+	if x != nil && x.SlackInstance != nil {
+		return *x.SlackInstance
+	}
+	return SlackInstance_SLACK_INSTANCE_UNSPECIFIED
+}
+
+type CreateSlackAuthorizationUrlResponse struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Slack OAuth URL to open in the user's browser. Its state parameter is a single-use token that expires.
+	AuthorizationUrl string `protobuf:"bytes,1,opt,name=authorization_url,json=authorizationUrl,proto3" json:"authorization_url,omitempty"`
+	unknownFields    protoimpl.UnknownFields
+	sizeCache        protoimpl.SizeCache
+}
+
+func (x *CreateSlackAuthorizationUrlResponse) Reset() {
+	*x = CreateSlackAuthorizationUrlResponse{}
+	mi := &file_nominal_protos_integrations_v1_integrations_proto_msgTypes[41]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *CreateSlackAuthorizationUrlResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*CreateSlackAuthorizationUrlResponse) ProtoMessage() {}
+
+func (x *CreateSlackAuthorizationUrlResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_nominal_protos_integrations_v1_integrations_proto_msgTypes[41]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use CreateSlackAuthorizationUrlResponse.ProtoReflect.Descriptor instead.
+func (*CreateSlackAuthorizationUrlResponse) Descriptor() ([]byte, []int) {
+	return file_nominal_protos_integrations_v1_integrations_proto_rawDescGZIP(), []int{41}
+}
+
+func (x *CreateSlackAuthorizationUrlResponse) GetAuthorizationUrl() string {
+	if x != nil {
+		return x.AuthorizationUrl
+	}
+	return ""
+}
+
+type CreateSlackWebhookIntegrationRequest struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// SENSITIVE: temporary Slack OAuth authorization code. Proto3 has no equivalent of safety annotations — never log
+	// this value or serialize this message into a log/error payload.
+	Code string `protobuf:"bytes,1,opt,name=code,proto3" json:"code,omitempty"`
+	// SENSITIVE: the single-use state token from CreateSlackAuthorizationUrl. Never log this value.
+	State         string `protobuf:"bytes,2,opt,name=state,proto3" json:"state,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *CreateSlackWebhookIntegrationRequest) Reset() {
+	*x = CreateSlackWebhookIntegrationRequest{}
+	mi := &file_nominal_protos_integrations_v1_integrations_proto_msgTypes[42]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *CreateSlackWebhookIntegrationRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*CreateSlackWebhookIntegrationRequest) ProtoMessage() {}
+
+func (x *CreateSlackWebhookIntegrationRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_nominal_protos_integrations_v1_integrations_proto_msgTypes[42]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use CreateSlackWebhookIntegrationRequest.ProtoReflect.Descriptor instead.
+func (*CreateSlackWebhookIntegrationRequest) Descriptor() ([]byte, []int) {
+	return file_nominal_protos_integrations_v1_integrations_proto_rawDescGZIP(), []int{42}
+}
+
+func (x *CreateSlackWebhookIntegrationRequest) GetCode() string {
+	if x != nil {
+		return x.Code
+	}
+	return ""
+}
+
+func (x *CreateSlackWebhookIntegrationRequest) GetState() string {
+	if x != nil {
+		return x.State
+	}
+	return ""
+}
+
+type CreateSlackWebhookIntegrationResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Integration   *Integration           `protobuf:"bytes,1,opt,name=integration,proto3" json:"integration,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *CreateSlackWebhookIntegrationResponse) Reset() {
+	*x = CreateSlackWebhookIntegrationResponse{}
+	mi := &file_nominal_protos_integrations_v1_integrations_proto_msgTypes[43]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *CreateSlackWebhookIntegrationResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*CreateSlackWebhookIntegrationResponse) ProtoMessage() {}
+
+func (x *CreateSlackWebhookIntegrationResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_nominal_protos_integrations_v1_integrations_proto_msgTypes[43]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use CreateSlackWebhookIntegrationResponse.ProtoReflect.Descriptor instead.
+func (*CreateSlackWebhookIntegrationResponse) Descriptor() ([]byte, []int) {
+	return file_nominal_protos_integrations_v1_integrations_proto_rawDescGZIP(), []int{43}
+}
+
+func (x *CreateSlackWebhookIntegrationResponse) GetIntegration() *Integration {
+	if x != nil {
+		return x.Integration
+	}
+	return nil
+}
+
 var File_nominal_protos_integrations_v1_integrations_proto protoreflect.FileDescriptor
 
 const file_nominal_protos_integrations_v1_integrations_proto_rawDesc = "" +
 	"\n" +
-	"1nominal/protos/integrations/v1/integrations.proto\x12\x17nominal.integrations.v1\x1a\x1bbuf/validate/validate.proto\x1a\x1cgoogle/api/annotations.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a!nominal/protos/gen/v1/alias.proto\x1a!nominal/protos/gen/v1/error.proto\x1a!nominal/protos/types/common.proto\"\xf4\x01\n" +
+	"1nominal/protos/integrations/v1/integrations.proto\x12\x17nominal.integrations.v1\x1a\x1bbuf/validate/validate.proto\x1a\x1cgoogle/api/annotations.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a)nominal/protos/authz/v1/annotations.proto\x1a!nominal/protos/gen/v1/alias.proto\x1a!nominal/protos/gen/v1/error.proto\x1a!nominal/protos/types/common.proto\"\xf4\x01\n" +
 	"\x17SlackWebhookIntegration\x12%\n" +
 	"\tteam_name\x18\x01 \x01(\tB\b\xbaH\x05r\x03\x18\x80\bR\bteamName\x12\"\n" +
 	"\achannel\x18\x02 \x01(\tB\b\xbaH\x05r\x03\x18\x80\bR\achannel\x12'\n" +
@@ -2878,7 +3077,21 @@ const file_nominal_protos_integrations_v1_integrations_proto_rawDesc = "" +
 	"0io.nominal.scout.integrations.api.IntegrationRidR\x0eintegrationRid\"^\n" +
 	"0RotateSecureWebhookIntegrationSigningKeyResponse\x12*\n" +
 	"\vsigning_key\x18\x01 \x01(\tB\t\xbaH\x06r\x04\x18\x80\x80\x04R\n" +
-	"signingKey*f\n" +
+	"signingKey\"\xec\x01\n" +
+	"\"CreateSlackAuthorizationUrlRequest\x12Q\n" +
+	"\tworkspace\x18\x01 \x01(\tB.\xbaH\x05r\x03\x18\x80\b\x9a\xb2\x1a\"\n" +
+	" io.nominal.api.rids.WorkspaceRidH\x00R\tworkspace\x88\x01\x01\x12R\n" +
+	"\x0eslack_instance\x18\x02 \x01(\x0e2&.nominal.integrations.v1.SlackInstanceH\x01R\rslackInstance\x88\x01\x01B\f\n" +
+	"\n" +
+	"_workspaceB\x11\n" +
+	"\x0f_slack_instance\"\\\n" +
+	"#CreateSlackAuthorizationUrlResponse\x125\n" +
+	"\x11authorization_url\x18\x01 \x01(\tB\b\xbaH\x05r\x03\x18\x80@R\x10authorizationUrl\"d\n" +
+	"$CreateSlackWebhookIntegrationRequest\x12\x1c\n" +
+	"\x04code\x18\x01 \x01(\tB\b\xbaH\x05r\x03\x18\x80\bR\x04code\x12\x1e\n" +
+	"\x05state\x18\x02 \x01(\tB\b\xbaH\x05r\x03\x18\x80\bR\x05state\"o\n" +
+	"%CreateSlackWebhookIntegrationResponse\x12F\n" +
+	"\vintegration\x18\x01 \x01(\v2$.nominal.integrations.v1.IntegrationR\vintegration*f\n" +
 	"\rSlackInstance\x12\x1e\n" +
 	"\x1aSLACK_INSTANCE_UNSPECIFIED\x10\x00\x12\x1d\n" +
 	"\x19SLACK_INSTANCE_COMMERCIAL\x10\x01\x12\x16\n" +
@@ -2893,18 +3106,42 @@ const file_nominal_protos_integrations_v1_integrations_proto_rawDesc = "" +
 	"\x12OPSGENIE_REGION_EU\x10\x02*c\n" +
 	"\x11IntegrationsError\x12N\n" +
 	"\"INTEGRATIONS_ERROR_INVALID_REQUEST\x10\x00\x1a&\xb2\xb2\x1a\"\n" +
-	"\x10INVALID_ARGUMENT\x12\x0eInvalidRequest2\xe8\x0f\n" +
-	"\x13IntegrationsService\x12\xa4\x01\n" +
-	"\x11CreateIntegration\x121.nominal.integrations.v1.CreateIntegrationRequest\x1a2.nominal.integrations.v1.CreateIntegrationResponse\"(\x82\xd3\xe4\x93\x02\":\x01*\"\x1d/integrations/v1/integrations\x12\xda\x01\n" +
-	"\x1eCreateSecureWebhookIntegration\x12>.nominal.integrations.v1.CreateSecureWebhookIntegrationRequest\x1a?.nominal.integrations.v1.CreateSecureWebhookIntegrationResponse\"7\x82\xd3\xe4\x93\x021:\x01*\",/integrations/v1/secure-webhook-integrations\x12\xdf\x01\n" +
-	"\x18SendSecureWebhookMessage\x128.nominal.integrations.v1.SendSecureWebhookMessageRequest\x1a9.nominal.integrations.v1.SendSecureWebhookMessageResponse\"N\x82\xd3\xe4\x93\x02H:\x01*\"C/integrations/v1/integrations/{integration_rid}/send-secure-webhook\x12\xb3\x01\n" +
-	"\x11DeleteIntegration\x121.nominal.integrations.v1.DeleteIntegrationRequest\x1a2.nominal.integrations.v1.DeleteIntegrationResponse\"7\x82\xd3\xe4\x93\x021*//integrations/v1/integrations/{integration_rid}\x12\xce\x01\n" +
-	"\x19UpdateIntegrationMetadata\x129.nominal.integrations.v1.UpdateIntegrationMetadataRequest\x1a:.nominal.integrations.v1.UpdateIntegrationMetadataResponse\":\x82\xd3\xe4\x93\x024:\x01*2//integrations/v1/integrations/{integration_rid}\x12\xd3\x01\n" +
-	"\x18UpdateIntegrationDetails\x128.nominal.integrations.v1.UpdateIntegrationDetailsRequest\x1a9.nominal.integrations.v1.UpdateIntegrationDetailsResponse\"B\x82\xd3\xe4\x93\x02<:\x01*\x1a7/integrations/v1/integrations/{integration_rid}/details\x12\xaa\x01\n" +
-	"\x0eGetIntegration\x12..nominal.integrations.v1.GetIntegrationRequest\x1a/.nominal.integrations.v1.GetIntegrationResponse\"7\x82\xd3\xe4\x93\x021\x12//integrations/v1/integrations/{integration_rid}\x12\x9e\x01\n" +
-	"\x10ListIntegrations\x120.nominal.integrations.v1.ListIntegrationsRequest\x1a1.nominal.integrations.v1.ListIntegrationsResponse\"%\x82\xd3\xe4\x93\x02\x1f\x12\x1d/integrations/v1/integrations\x12\xb1\x01\n" +
-	"\vSendMessage\x12+.nominal.integrations.v1.SendMessageRequest\x1a,.nominal.integrations.v1.SendMessageResponse\"G\x82\xd3\xe4\x93\x02A:\x01*\"</integrations/v1/integrations/{integration_rid}/send-message\x12\x8b\x02\n" +
-	"(RotateSecureWebhookIntegrationSigningKey\x12H.nominal.integrations.v1.RotateSecureWebhookIntegrationSigningKeyRequest\x1aI.nominal.integrations.v1.RotateSecureWebhookIntegrationSigningKeyResponse\"J\x82\xd3\xe4\x93\x02D\"B/integrations/v1/integrations/{integration_rid}/rotate-signing-keyB\x89\x02\n" +
+	"\x10INVALID_ARGUMENT\x12\x0eInvalidRequest2\xa0\x16\n" +
+	"\x13IntegrationsService\x12\xc9\x01\n" +
+	"\x11CreateIntegration\x121.nominal.integrations.v1.CreateIntegrationRequest\x1a2.nominal.integrations.v1.CreateIntegrationResponse\"M\xba\xb2\x1a!\n" +
+	"\x1f\n" +
+	"\x1bworkspace:edit_integrations\"\x00\x82\xd3\xe4\x93\x02\":\x01*\"\x1d/integrations/v1/integrations\x12\xf3\x01\n" +
+	"\x1bCreateSlackAuthorizationUrl\x12;.nominal.integrations.v1.CreateSlackAuthorizationUrlRequest\x1a<.nominal.integrations.v1.CreateSlackAuthorizationUrlResponse\"Y\xba\xb2\x1a!\n" +
+	"\x1f\n" +
+	"\x1bworkspace:edit_integrations\"\x00\x82\xd3\xe4\x93\x02.:\x01*\")/integrations/v1/slack-authorization-urls\x12\xfb\x01\n" +
+	"\x1dCreateSlackWebhookIntegration\x12=.nominal.integrations.v1.CreateSlackWebhookIntegrationRequest\x1a>.nominal.integrations.v1.CreateSlackWebhookIntegrationResponse\"[\xba\xb2\x1a!\n" +
+	"\x1f\n" +
+	"\x1bworkspace:edit_integrations\"\x00\x82\xd3\xe4\x93\x020:\x01*\"+/integrations/v1/slack-webhook-integrations\x12\xff\x01\n" +
+	"\x1eCreateSecureWebhookIntegration\x12>.nominal.integrations.v1.CreateSecureWebhookIntegrationRequest\x1a?.nominal.integrations.v1.CreateSecureWebhookIntegrationResponse\"\\\xba\xb2\x1a!\n" +
+	"\x1f\n" +
+	"\x1bworkspace:edit_integrations\"\x00\x82\xd3\xe4\x93\x021:\x01*\",/integrations/v1/secure-webhook-integrations\x12\x84\x02\n" +
+	"\x18SendSecureWebhookMessage\x128.nominal.integrations.v1.SendSecureWebhookMessageRequest\x1a9.nominal.integrations.v1.SendSecureWebhookMessageResponse\"s\xba\xb2\x1a!\n" +
+	"\x1f\n" +
+	"\x1bworkspace:edit_integrations\"\x00\x82\xd3\xe4\x93\x02H:\x01*\"C/integrations/v1/integrations/{integration_rid}/send-secure-webhook\x12\xd8\x01\n" +
+	"\x11DeleteIntegration\x121.nominal.integrations.v1.DeleteIntegrationRequest\x1a2.nominal.integrations.v1.DeleteIntegrationResponse\"\\\xba\xb2\x1a!\n" +
+	"\x1f\n" +
+	"\x1bworkspace:edit_integrations\"\x00\x82\xd3\xe4\x93\x021*//integrations/v1/integrations/{integration_rid}\x12\xf3\x01\n" +
+	"\x19UpdateIntegrationMetadata\x129.nominal.integrations.v1.UpdateIntegrationMetadataRequest\x1a:.nominal.integrations.v1.UpdateIntegrationMetadataResponse\"_\xba\xb2\x1a!\n" +
+	"\x1f\n" +
+	"\x1bworkspace:edit_integrations\"\x00\x82\xd3\xe4\x93\x024:\x01*2//integrations/v1/integrations/{integration_rid}\x12\xf8\x01\n" +
+	"\x18UpdateIntegrationDetails\x128.nominal.integrations.v1.UpdateIntegrationDetailsRequest\x1a9.nominal.integrations.v1.UpdateIntegrationDetailsResponse\"g\xba\xb2\x1a!\n" +
+	"\x1f\n" +
+	"\x1bworkspace:edit_integrations\"\x00\x82\xd3\xe4\x93\x02<:\x01*\x1a7/integrations/v1/integrations/{integration_rid}/details\x12\xc2\x01\n" +
+	"\x0eGetIntegration\x12..nominal.integrations.v1.GetIntegrationRequest\x1a/.nominal.integrations.v1.GetIntegrationResponse\"O\xba\xb2\x1a\x14\n" +
+	"\x12\n" +
+	"\x0eworkspace:view\"\x00\x82\xd3\xe4\x93\x021\x12//integrations/v1/integrations/{integration_rid}\x12\xa2\x01\n" +
+	"\x10ListIntegrations\x120.nominal.integrations.v1.ListIntegrationsRequest\x1a1.nominal.integrations.v1.ListIntegrationsResponse\")\xba\xb2\x1a\x00\x82\xd3\xe4\x93\x02\x1f\x12\x1d/integrations/v1/integrations\x12\xd6\x01\n" +
+	"\vSendMessage\x12+.nominal.integrations.v1.SendMessageRequest\x1a,.nominal.integrations.v1.SendMessageResponse\"l\xba\xb2\x1a!\n" +
+	"\x1f\n" +
+	"\x1bworkspace:edit_integrations\"\x00\x82\xd3\xe4\x93\x02A:\x01*\"</integrations/v1/integrations/{integration_rid}/send-message\x12\xb0\x02\n" +
+	"(RotateSecureWebhookIntegrationSigningKey\x12H.nominal.integrations.v1.RotateSecureWebhookIntegrationSigningKeyRequest\x1aI.nominal.integrations.v1.RotateSecureWebhookIntegrationSigningKeyResponse\"o\xba\xb2\x1a!\n" +
+	"\x1f\n" +
+	"\x1bworkspace:edit_integrations\"\x00\x82\xd3\xe4\x93\x02D\"B/integrations/v1/integrations/{integration_rid}/rotate-signing-keyB\x89\x02\n" +
 	"\x1bcom.nominal.integrations.v1B\x11IntegrationsProtoP\x01ZYgithub.com/nominal-io/nominal-api-protos-go/nominal/protos/integrations/v1;integrationsv1\xa2\x02\x03NIX\xaa\x02\x17Nominal.Integrations.V1\xca\x02\x17Nominal\\Integrations\\V1\xe2\x02#Nominal\\Integrations\\V1\\GPBMetadata\xea\x02\x19Nominal::Integrations::V1b\x06proto3"
 
 var (
@@ -2920,7 +3157,7 @@ func file_nominal_protos_integrations_v1_integrations_proto_rawDescGZIP() []byte
 }
 
 var file_nominal_protos_integrations_v1_integrations_proto_enumTypes = make([]protoimpl.EnumInfo, 4)
-var file_nominal_protos_integrations_v1_integrations_proto_msgTypes = make([]protoimpl.MessageInfo, 46)
+var file_nominal_protos_integrations_v1_integrations_proto_msgTypes = make([]protoimpl.MessageInfo, 50)
 var file_nominal_protos_integrations_v1_integrations_proto_goTypes = []any{
 	(SlackInstance)(0),                                       // 0: nominal.integrations.v1.SlackInstance
 	(WebhookContentType)(0),                                  // 1: nominal.integrations.v1.WebhookContentType
@@ -2966,20 +3203,24 @@ var file_nominal_protos_integrations_v1_integrations_proto_goTypes = []any{
 	(*SendMessageResponse)(nil),                              // 41: nominal.integrations.v1.SendMessageResponse
 	(*RotateSecureWebhookIntegrationSigningKeyRequest)(nil),  // 42: nominal.integrations.v1.RotateSecureWebhookIntegrationSigningKeyRequest
 	(*RotateSecureWebhookIntegrationSigningKeyResponse)(nil), // 43: nominal.integrations.v1.RotateSecureWebhookIntegrationSigningKeyResponse
-	nil,                           // 44: nominal.integrations.v1.SimpleWebhookIntegration.CustomHeadersEntry
-	nil,                           // 45: nominal.integrations.v1.SecureWebhookIntegration.CustomHeadersEntry
-	nil,                           // 46: nominal.integrations.v1.CreateSimpleWebhookDetails.CustomHeadersEntry
-	nil,                           // 47: nominal.integrations.v1.UpdateSimpleWebhookDetails.CustomHeadersEntry
-	nil,                           // 48: nominal.integrations.v1.UpdateSecureWebhookDetails.CustomHeadersEntry
-	nil,                           // 49: nominal.integrations.v1.SendSecureWebhookMessageRequest.CustomHeadersEntry
-	(*timestamppb.Timestamp)(nil), // 50: google.protobuf.Timestamp
-	(types.Priority)(0),           // 51: nominal.types.Priority
+	(*CreateSlackAuthorizationUrlRequest)(nil),               // 44: nominal.integrations.v1.CreateSlackAuthorizationUrlRequest
+	(*CreateSlackAuthorizationUrlResponse)(nil),              // 45: nominal.integrations.v1.CreateSlackAuthorizationUrlResponse
+	(*CreateSlackWebhookIntegrationRequest)(nil),             // 46: nominal.integrations.v1.CreateSlackWebhookIntegrationRequest
+	(*CreateSlackWebhookIntegrationResponse)(nil),            // 47: nominal.integrations.v1.CreateSlackWebhookIntegrationResponse
+	nil,                           // 48: nominal.integrations.v1.SimpleWebhookIntegration.CustomHeadersEntry
+	nil,                           // 49: nominal.integrations.v1.SecureWebhookIntegration.CustomHeadersEntry
+	nil,                           // 50: nominal.integrations.v1.CreateSimpleWebhookDetails.CustomHeadersEntry
+	nil,                           // 51: nominal.integrations.v1.UpdateSimpleWebhookDetails.CustomHeadersEntry
+	nil,                           // 52: nominal.integrations.v1.UpdateSecureWebhookDetails.CustomHeadersEntry
+	nil,                           // 53: nominal.integrations.v1.SendSecureWebhookMessageRequest.CustomHeadersEntry
+	(*timestamppb.Timestamp)(nil), // 54: google.protobuf.Timestamp
+	(types.Priority)(0),           // 55: nominal.types.Priority
 }
 var file_nominal_protos_integrations_v1_integrations_proto_depIdxs = []int32{
 	0,  // 0: nominal.integrations.v1.SlackWebhookIntegration.slack_instance:type_name -> nominal.integrations.v1.SlackInstance
 	1,  // 1: nominal.integrations.v1.SimpleWebhookIntegration.content_type:type_name -> nominal.integrations.v1.WebhookContentType
-	44, // 2: nominal.integrations.v1.SimpleWebhookIntegration.custom_headers:type_name -> nominal.integrations.v1.SimpleWebhookIntegration.CustomHeadersEntry
-	45, // 3: nominal.integrations.v1.SecureWebhookIntegration.custom_headers:type_name -> nominal.integrations.v1.SecureWebhookIntegration.CustomHeadersEntry
+	48, // 2: nominal.integrations.v1.SimpleWebhookIntegration.custom_headers:type_name -> nominal.integrations.v1.SimpleWebhookIntegration.CustomHeadersEntry
+	49, // 3: nominal.integrations.v1.SecureWebhookIntegration.custom_headers:type_name -> nominal.integrations.v1.SecureWebhookIntegration.CustomHeadersEntry
 	6,  // 4: nominal.integrations.v1.SecureWebhookIntegration.delivery_config:type_name -> nominal.integrations.v1.WebhookDeliveryConfig
 	2,  // 5: nominal.integrations.v1.OpsgenieIntegration.region:type_name -> nominal.integrations.v1.OpsgenieRegion
 	4,  // 6: nominal.integrations.v1.IntegrationDetails.slack_webhook:type_name -> nominal.integrations.v1.SlackWebhookIntegration
@@ -2989,17 +3230,17 @@ var file_nominal_protos_integrations_v1_integrations_proto_depIdxs = []int32{
 	9,  // 10: nominal.integrations.v1.IntegrationDetails.teams_webhook:type_name -> nominal.integrations.v1.TeamsWebhookIntegration
 	10, // 11: nominal.integrations.v1.IntegrationDetails.pager_duty:type_name -> nominal.integrations.v1.PagerDutyIntegration
 	11, // 12: nominal.integrations.v1.Integration.details:type_name -> nominal.integrations.v1.IntegrationDetails
-	50, // 13: nominal.integrations.v1.Integration.created_at:type_name -> google.protobuf.Timestamp
+	54, // 13: nominal.integrations.v1.Integration.created_at:type_name -> google.protobuf.Timestamp
 	1,  // 14: nominal.integrations.v1.CreateSimpleWebhookDetails.content_type:type_name -> nominal.integrations.v1.WebhookContentType
-	46, // 15: nominal.integrations.v1.CreateSimpleWebhookDetails.custom_headers:type_name -> nominal.integrations.v1.CreateSimpleWebhookDetails.CustomHeadersEntry
+	50, // 15: nominal.integrations.v1.CreateSimpleWebhookDetails.custom_headers:type_name -> nominal.integrations.v1.CreateSimpleWebhookDetails.CustomHeadersEntry
 	2,  // 16: nominal.integrations.v1.CreateOpsgenieDetails.region:type_name -> nominal.integrations.v1.OpsgenieRegion
 	13, // 17: nominal.integrations.v1.CreateIntegrationDetails.simple_webhook:type_name -> nominal.integrations.v1.CreateSimpleWebhookDetails
 	14, // 18: nominal.integrations.v1.CreateIntegrationDetails.opsgenie:type_name -> nominal.integrations.v1.CreateOpsgenieDetails
 	15, // 19: nominal.integrations.v1.CreateIntegrationDetails.teams_webhook:type_name -> nominal.integrations.v1.CreateTeamsWebhookDetails
 	16, // 20: nominal.integrations.v1.CreateIntegrationDetails.pager_duty:type_name -> nominal.integrations.v1.CreatePagerDutyDetails
 	1,  // 21: nominal.integrations.v1.UpdateSimpleWebhookDetails.content_type:type_name -> nominal.integrations.v1.WebhookContentType
-	47, // 22: nominal.integrations.v1.UpdateSimpleWebhookDetails.custom_headers:type_name -> nominal.integrations.v1.UpdateSimpleWebhookDetails.CustomHeadersEntry
-	48, // 23: nominal.integrations.v1.UpdateSecureWebhookDetails.custom_headers:type_name -> nominal.integrations.v1.UpdateSecureWebhookDetails.CustomHeadersEntry
+	51, // 22: nominal.integrations.v1.UpdateSimpleWebhookDetails.custom_headers:type_name -> nominal.integrations.v1.UpdateSimpleWebhookDetails.CustomHeadersEntry
+	52, // 23: nominal.integrations.v1.UpdateSecureWebhookDetails.custom_headers:type_name -> nominal.integrations.v1.UpdateSecureWebhookDetails.CustomHeadersEntry
 	6,  // 24: nominal.integrations.v1.UpdateSecureWebhookDetails.delivery_config:type_name -> nominal.integrations.v1.WebhookDeliveryConfig
 	2,  // 25: nominal.integrations.v1.UpdateOpsgenieDetails.region:type_name -> nominal.integrations.v1.OpsgenieRegion
 	18, // 26: nominal.integrations.v1.UpdateIntegrationDetails.simple_webhook:type_name -> nominal.integrations.v1.UpdateSimpleWebhookDetails
@@ -3011,39 +3252,45 @@ var file_nominal_protos_integrations_v1_integrations_proto_depIdxs = []int32{
 	12, // 32: nominal.integrations.v1.CreateIntegrationResponse.integration:type_name -> nominal.integrations.v1.Integration
 	7,  // 33: nominal.integrations.v1.CreateSecureWebhookIntegrationRequest.integration:type_name -> nominal.integrations.v1.SecureWebhookIntegration
 	12, // 34: nominal.integrations.v1.CreateSecureWebhookIntegrationResponse.integration:type_name -> nominal.integrations.v1.Integration
-	49, // 35: nominal.integrations.v1.SendSecureWebhookMessageRequest.custom_headers:type_name -> nominal.integrations.v1.SendSecureWebhookMessageRequest.CustomHeadersEntry
+	53, // 35: nominal.integrations.v1.SendSecureWebhookMessageRequest.custom_headers:type_name -> nominal.integrations.v1.SendSecureWebhookMessageRequest.CustomHeadersEntry
 	6,  // 36: nominal.integrations.v1.SendSecureWebhookMessageRequest.delivery_config:type_name -> nominal.integrations.v1.WebhookDeliveryConfig
 	12, // 37: nominal.integrations.v1.UpdateIntegrationMetadataResponse.integration:type_name -> nominal.integrations.v1.Integration
 	23, // 38: nominal.integrations.v1.UpdateIntegrationDetailsRequest.details:type_name -> nominal.integrations.v1.UpdateIntegrationDetails
 	12, // 39: nominal.integrations.v1.UpdateIntegrationDetailsResponse.integration:type_name -> nominal.integrations.v1.Integration
 	12, // 40: nominal.integrations.v1.GetIntegrationResponse.integration:type_name -> nominal.integrations.v1.Integration
 	12, // 41: nominal.integrations.v1.ListIntegrationsResponse.integrations:type_name -> nominal.integrations.v1.Integration
-	51, // 42: nominal.integrations.v1.SendMessageRequest.priority:type_name -> nominal.types.Priority
-	24, // 43: nominal.integrations.v1.IntegrationsService.CreateIntegration:input_type -> nominal.integrations.v1.CreateIntegrationRequest
-	26, // 44: nominal.integrations.v1.IntegrationsService.CreateSecureWebhookIntegration:input_type -> nominal.integrations.v1.CreateSecureWebhookIntegrationRequest
-	28, // 45: nominal.integrations.v1.IntegrationsService.SendSecureWebhookMessage:input_type -> nominal.integrations.v1.SendSecureWebhookMessageRequest
-	30, // 46: nominal.integrations.v1.IntegrationsService.DeleteIntegration:input_type -> nominal.integrations.v1.DeleteIntegrationRequest
-	32, // 47: nominal.integrations.v1.IntegrationsService.UpdateIntegrationMetadata:input_type -> nominal.integrations.v1.UpdateIntegrationMetadataRequest
-	34, // 48: nominal.integrations.v1.IntegrationsService.UpdateIntegrationDetails:input_type -> nominal.integrations.v1.UpdateIntegrationDetailsRequest
-	36, // 49: nominal.integrations.v1.IntegrationsService.GetIntegration:input_type -> nominal.integrations.v1.GetIntegrationRequest
-	38, // 50: nominal.integrations.v1.IntegrationsService.ListIntegrations:input_type -> nominal.integrations.v1.ListIntegrationsRequest
-	40, // 51: nominal.integrations.v1.IntegrationsService.SendMessage:input_type -> nominal.integrations.v1.SendMessageRequest
-	42, // 52: nominal.integrations.v1.IntegrationsService.RotateSecureWebhookIntegrationSigningKey:input_type -> nominal.integrations.v1.RotateSecureWebhookIntegrationSigningKeyRequest
-	25, // 53: nominal.integrations.v1.IntegrationsService.CreateIntegration:output_type -> nominal.integrations.v1.CreateIntegrationResponse
-	27, // 54: nominal.integrations.v1.IntegrationsService.CreateSecureWebhookIntegration:output_type -> nominal.integrations.v1.CreateSecureWebhookIntegrationResponse
-	29, // 55: nominal.integrations.v1.IntegrationsService.SendSecureWebhookMessage:output_type -> nominal.integrations.v1.SendSecureWebhookMessageResponse
-	31, // 56: nominal.integrations.v1.IntegrationsService.DeleteIntegration:output_type -> nominal.integrations.v1.DeleteIntegrationResponse
-	33, // 57: nominal.integrations.v1.IntegrationsService.UpdateIntegrationMetadata:output_type -> nominal.integrations.v1.UpdateIntegrationMetadataResponse
-	35, // 58: nominal.integrations.v1.IntegrationsService.UpdateIntegrationDetails:output_type -> nominal.integrations.v1.UpdateIntegrationDetailsResponse
-	37, // 59: nominal.integrations.v1.IntegrationsService.GetIntegration:output_type -> nominal.integrations.v1.GetIntegrationResponse
-	39, // 60: nominal.integrations.v1.IntegrationsService.ListIntegrations:output_type -> nominal.integrations.v1.ListIntegrationsResponse
-	41, // 61: nominal.integrations.v1.IntegrationsService.SendMessage:output_type -> nominal.integrations.v1.SendMessageResponse
-	43, // 62: nominal.integrations.v1.IntegrationsService.RotateSecureWebhookIntegrationSigningKey:output_type -> nominal.integrations.v1.RotateSecureWebhookIntegrationSigningKeyResponse
-	53, // [53:63] is the sub-list for method output_type
-	43, // [43:53] is the sub-list for method input_type
-	43, // [43:43] is the sub-list for extension type_name
-	43, // [43:43] is the sub-list for extension extendee
-	0,  // [0:43] is the sub-list for field type_name
+	55, // 42: nominal.integrations.v1.SendMessageRequest.priority:type_name -> nominal.types.Priority
+	0,  // 43: nominal.integrations.v1.CreateSlackAuthorizationUrlRequest.slack_instance:type_name -> nominal.integrations.v1.SlackInstance
+	12, // 44: nominal.integrations.v1.CreateSlackWebhookIntegrationResponse.integration:type_name -> nominal.integrations.v1.Integration
+	24, // 45: nominal.integrations.v1.IntegrationsService.CreateIntegration:input_type -> nominal.integrations.v1.CreateIntegrationRequest
+	44, // 46: nominal.integrations.v1.IntegrationsService.CreateSlackAuthorizationUrl:input_type -> nominal.integrations.v1.CreateSlackAuthorizationUrlRequest
+	46, // 47: nominal.integrations.v1.IntegrationsService.CreateSlackWebhookIntegration:input_type -> nominal.integrations.v1.CreateSlackWebhookIntegrationRequest
+	26, // 48: nominal.integrations.v1.IntegrationsService.CreateSecureWebhookIntegration:input_type -> nominal.integrations.v1.CreateSecureWebhookIntegrationRequest
+	28, // 49: nominal.integrations.v1.IntegrationsService.SendSecureWebhookMessage:input_type -> nominal.integrations.v1.SendSecureWebhookMessageRequest
+	30, // 50: nominal.integrations.v1.IntegrationsService.DeleteIntegration:input_type -> nominal.integrations.v1.DeleteIntegrationRequest
+	32, // 51: nominal.integrations.v1.IntegrationsService.UpdateIntegrationMetadata:input_type -> nominal.integrations.v1.UpdateIntegrationMetadataRequest
+	34, // 52: nominal.integrations.v1.IntegrationsService.UpdateIntegrationDetails:input_type -> nominal.integrations.v1.UpdateIntegrationDetailsRequest
+	36, // 53: nominal.integrations.v1.IntegrationsService.GetIntegration:input_type -> nominal.integrations.v1.GetIntegrationRequest
+	38, // 54: nominal.integrations.v1.IntegrationsService.ListIntegrations:input_type -> nominal.integrations.v1.ListIntegrationsRequest
+	40, // 55: nominal.integrations.v1.IntegrationsService.SendMessage:input_type -> nominal.integrations.v1.SendMessageRequest
+	42, // 56: nominal.integrations.v1.IntegrationsService.RotateSecureWebhookIntegrationSigningKey:input_type -> nominal.integrations.v1.RotateSecureWebhookIntegrationSigningKeyRequest
+	25, // 57: nominal.integrations.v1.IntegrationsService.CreateIntegration:output_type -> nominal.integrations.v1.CreateIntegrationResponse
+	45, // 58: nominal.integrations.v1.IntegrationsService.CreateSlackAuthorizationUrl:output_type -> nominal.integrations.v1.CreateSlackAuthorizationUrlResponse
+	47, // 59: nominal.integrations.v1.IntegrationsService.CreateSlackWebhookIntegration:output_type -> nominal.integrations.v1.CreateSlackWebhookIntegrationResponse
+	27, // 60: nominal.integrations.v1.IntegrationsService.CreateSecureWebhookIntegration:output_type -> nominal.integrations.v1.CreateSecureWebhookIntegrationResponse
+	29, // 61: nominal.integrations.v1.IntegrationsService.SendSecureWebhookMessage:output_type -> nominal.integrations.v1.SendSecureWebhookMessageResponse
+	31, // 62: nominal.integrations.v1.IntegrationsService.DeleteIntegration:output_type -> nominal.integrations.v1.DeleteIntegrationResponse
+	33, // 63: nominal.integrations.v1.IntegrationsService.UpdateIntegrationMetadata:output_type -> nominal.integrations.v1.UpdateIntegrationMetadataResponse
+	35, // 64: nominal.integrations.v1.IntegrationsService.UpdateIntegrationDetails:output_type -> nominal.integrations.v1.UpdateIntegrationDetailsResponse
+	37, // 65: nominal.integrations.v1.IntegrationsService.GetIntegration:output_type -> nominal.integrations.v1.GetIntegrationResponse
+	39, // 66: nominal.integrations.v1.IntegrationsService.ListIntegrations:output_type -> nominal.integrations.v1.ListIntegrationsResponse
+	41, // 67: nominal.integrations.v1.IntegrationsService.SendMessage:output_type -> nominal.integrations.v1.SendMessageResponse
+	43, // 68: nominal.integrations.v1.IntegrationsService.RotateSecureWebhookIntegrationSigningKey:output_type -> nominal.integrations.v1.RotateSecureWebhookIntegrationSigningKeyResponse
+	57, // [57:69] is the sub-list for method output_type
+	45, // [45:57] is the sub-list for method input_type
+	45, // [45:45] is the sub-list for extension type_name
+	45, // [45:45] is the sub-list for extension extendee
+	0,  // [0:45] is the sub-list for field type_name
 }
 
 func init() { file_nominal_protos_integrations_v1_integrations_proto_init() }
@@ -3085,13 +3332,14 @@ func file_nominal_protos_integrations_v1_integrations_proto_init() {
 	file_nominal_protos_integrations_v1_integrations_proto_msgTypes[34].OneofWrappers = []any{}
 	file_nominal_protos_integrations_v1_integrations_proto_msgTypes[35].OneofWrappers = []any{}
 	file_nominal_protos_integrations_v1_integrations_proto_msgTypes[36].OneofWrappers = []any{}
+	file_nominal_protos_integrations_v1_integrations_proto_msgTypes[40].OneofWrappers = []any{}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_nominal_protos_integrations_v1_integrations_proto_rawDesc), len(file_nominal_protos_integrations_v1_integrations_proto_rawDesc)),
 			NumEnums:      4,
-			NumMessages:   46,
+			NumMessages:   50,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

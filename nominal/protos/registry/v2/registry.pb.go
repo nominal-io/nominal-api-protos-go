@@ -31,6 +31,7 @@ package registryv2
 
 import (
 	_ "buf.build/gen/go/bufbuild/protovalidate/protocolbuffers/go/buf/validate"
+	_ "github.com/nominal-io/nominal-api-protos-go/nominal/protos/authz/v1"
 	_ "github.com/nominal-io/nominal-api-protos-go/nominal/protos/gen/v1"
 	time "github.com/nominal-io/nominal-api-protos-go/nominal/protos/types/time"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
@@ -1569,7 +1570,7 @@ var File_nominal_protos_registry_v2_registry_proto protoreflect.FileDescriptor
 
 const file_nominal_protos_registry_v2_registry_proto_rawDesc = "" +
 	"\n" +
-	")nominal/protos/registry/v2/registry.proto\x12\x13nominal.registry.v2\x1a\x1bbuf/validate/validate.proto\x1a\x1cgoogle/api/annotations.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a!nominal/protos/gen/v1/alias.proto\x1a1nominal/protos/types/time/timestamp_parsers.proto\",\n" +
+	")nominal/protos/registry/v2/registry.proto\x12\x13nominal.registry.v2\x1a\x1bbuf/validate/validate.proto\x1a\x1cgoogle/api/annotations.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a)nominal/protos/authz/v1/annotations.proto\x1a!nominal/protos/gen/v1/alias.proto\x1a1nominal/protos/types/time/timestamp_parsers.proto\",\n" +
 	"\n" +
 	"FileSuffix\x12\x1e\n" +
 	"\x06suffix\x18\x01 \x01(\tB\x06\xbaH\x03\xc8\x01\x01R\x06suffix\"X\n" +
@@ -1719,12 +1720,20 @@ const file_nominal_protos_registry_v2_registry_proto_rawDesc = "" +
 	"\x1eFILE_OUTPUT_FORMAT_PARQUET_TAR\x10\x03\x12\"\n" +
 	"\x1eFILE_OUTPUT_FORMAT_AVRO_STREAM\x10\x04\x12\x1d\n" +
 	"\x19FILE_OUTPUT_FORMAT_JSON_L\x10\x05\x12\x1f\n" +
-	"\x1bFILE_OUTPUT_FORMAT_MANIFEST\x10\x062\xa3\x04\n" +
-	"\x0fRegistryService\x12\x80\x01\n" +
-	"\vCreateImage\x12'.nominal.registry.v2.CreateImageRequest\x1a(.nominal.registry.v2.CreateImageResponse\"\x1e\x82\xd3\xe4\x93\x02\x18:\x01*\"\x13/registry/v2/images\x12z\n" +
-	"\bGetImage\x12$.nominal.registry.v2.GetImageRequest\x1a%.nominal.registry.v2.GetImageResponse\"!\x82\xd3\xe4\x93\x02\x1b\x12\x19/registry/v2/images/{rid}\x12\x83\x01\n" +
-	"\vDeleteImage\x12'.nominal.registry.v2.DeleteImageRequest\x1a(.nominal.registry.v2.DeleteImageResponse\"!\x82\xd3\xe4\x93\x02\x1b*\x19/registry/v2/images/{rid}\x12\x8a\x01\n" +
-	"\fSearchImages\x12(.nominal.registry.v2.SearchImagesRequest\x1a).nominal.registry.v2.SearchImagesResponse\"%\x82\xd3\xe4\x93\x02\x1f:\x01*\"\x1a/registry/v2/images/searchB\xe9\x01\n" +
+	"\x1bFILE_OUTPUT_FORMAT_MANIFEST\x10\x062\x9e\x05\n" +
+	"\x0fRegistryService\x12\xa5\x01\n" +
+	"\vCreateImage\x12'.nominal.registry.v2.CreateImageRequest\x1a(.nominal.registry.v2.CreateImageResponse\"C\xba\xb2\x1a!\n" +
+	"\x1f\n" +
+	"\x1bworkspace:edit_connectivity\"\x00\x82\xd3\xe4\x93\x02\x18:\x01*\"\x13/registry/v2/images\x12\x92\x01\n" +
+	"\bGetImage\x12$.nominal.registry.v2.GetImageRequest\x1a%.nominal.registry.v2.GetImageResponse\"9\xba\xb2\x1a\x14\n" +
+	"\x12\n" +
+	"\x0eworkspace:view\"\x00\x82\xd3\xe4\x93\x02\x1b\x12\x19/registry/v2/images/{rid}\x12\xa8\x01\n" +
+	"\vDeleteImage\x12'.nominal.registry.v2.DeleteImageRequest\x1a(.nominal.registry.v2.DeleteImageResponse\"F\xba\xb2\x1a!\n" +
+	"\x1f\n" +
+	"\x1bworkspace:edit_connectivity\"\x00\x82\xd3\xe4\x93\x02\x1b*\x19/registry/v2/images/{rid}\x12\xa2\x01\n" +
+	"\fSearchImages\x12(.nominal.registry.v2.SearchImagesRequest\x1a).nominal.registry.v2.SearchImagesResponse\"=\xba\xb2\x1a\x14\n" +
+	"\x12\n" +
+	"\x0eworkspace:view\"\x00\x82\xd3\xe4\x93\x02\x1f:\x01*\"\x1a/registry/v2/images/searchB\xe9\x01\n" +
 	"\x17com.nominal.registry.v2B\rRegistryProtoP\x01ZQgithub.com/nominal-io/nominal-api-protos-go/nominal/protos/registry/v2;registryv2\xa2\x02\x03NRX\xaa\x02\x13Nominal.Registry.V2\xca\x02\x13Nominal\\Registry\\V2\xe2\x02\x1fNominal\\Registry\\V2\\GPBMetadata\xea\x02\x15Nominal::Registry::V2b\x06proto3"
 
 var (

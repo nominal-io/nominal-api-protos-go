@@ -47,7 +47,8 @@ type SecretServiceClient interface {
 	Get(ctx context.Context, in *GetRequest, opts ...grpc.CallOption) (*GetResponse, error)
 	// buf:lint:ignore RPC_REQUEST_STANDARD_NAME
 	// buf:lint:ignore RPC_RESPONSE_STANDARD_NAME
-	// Get secrets by a set of rids.
+	// Get secrets by a set of rids. Secrets in workspaces the caller lacks workspace:view on are omitted
+	// rather than failing the call.
 	GetBatch(ctx context.Context, in *GetSecretsRequest, opts ...grpc.CallOption) (*GetSecretsResponse, error)
 	// Update a secret by rid.
 	Update(ctx context.Context, in *UpdateRequest, opts ...grpc.CallOption) (*UpdateResponse, error)
@@ -60,7 +61,8 @@ type SecretServiceClient interface {
 	Unarchive(ctx context.Context, in *UnarchiveRequest, opts ...grpc.CallOption) (*UnarchiveResponse, error)
 	// buf:lint:ignore RPC_REQUEST_STANDARD_NAME
 	// buf:lint:ignore RPC_RESPONSE_STANDARD_NAME
-	// Returns metadata about secrets that match a given query.
+	// Returns metadata about secrets that match a given query. Workspaces the caller lacks
+	// workspace:view on are filtered out rather than failing the call.
 	Search(ctx context.Context, in *SearchSecretsRequest, opts ...grpc.CallOption) (*SearchSecretsResponse, error)
 }
 
@@ -165,7 +167,8 @@ type SecretServiceServer interface {
 	Get(context.Context, *GetRequest) (*GetResponse, error)
 	// buf:lint:ignore RPC_REQUEST_STANDARD_NAME
 	// buf:lint:ignore RPC_RESPONSE_STANDARD_NAME
-	// Get secrets by a set of rids.
+	// Get secrets by a set of rids. Secrets in workspaces the caller lacks workspace:view on are omitted
+	// rather than failing the call.
 	GetBatch(context.Context, *GetSecretsRequest) (*GetSecretsResponse, error)
 	// Update a secret by rid.
 	Update(context.Context, *UpdateRequest) (*UpdateResponse, error)
@@ -178,7 +181,8 @@ type SecretServiceServer interface {
 	Unarchive(context.Context, *UnarchiveRequest) (*UnarchiveResponse, error)
 	// buf:lint:ignore RPC_REQUEST_STANDARD_NAME
 	// buf:lint:ignore RPC_RESPONSE_STANDARD_NAME
-	// Returns metadata about secrets that match a given query.
+	// Returns metadata about secrets that match a given query. Workspaces the caller lacks
+	// workspace:view on are filtered out rather than failing the call.
 	Search(context.Context, *SearchSecretsRequest) (*SearchSecretsResponse, error)
 	mustEmbedUnimplementedSecretServiceServer()
 }

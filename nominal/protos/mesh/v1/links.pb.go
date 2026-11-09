@@ -79,6 +79,10 @@ const (
 	MeshServiceError_MESH_SERVICE_ERROR_REMOTE_CONNECTION_ALREADY_EXISTS      MeshServiceError = 3
 	MeshServiceError_MESH_SERVICE_ERROR_REMOTE_CONNECTION_HAS_DEPENDENT_LINKS MeshServiceError = 4
 	MeshServiceError_MESH_SERVICE_ERROR_INVALID_API_TOKEN                     MeshServiceError = 5
+	MeshServiceError_MESH_SERVICE_ERROR_FLAG_ALREADY_EXISTS                   MeshServiceError = 6
+	MeshServiceError_MESH_SERVICE_ERROR_FLAG_NOT_FOUND                        MeshServiceError = 7
+	MeshServiceError_MESH_SERVICE_ERROR_ARTIFACT_NOT_FOUND                    MeshServiceError = 8
+	MeshServiceError_MESH_SERVICE_ERROR_UNSUPPORTED_ARTIFACT_TYPE             MeshServiceError = 9
 )
 
 // Enum value maps for MeshServiceError.
@@ -90,6 +94,10 @@ var (
 		3: "MESH_SERVICE_ERROR_REMOTE_CONNECTION_ALREADY_EXISTS",
 		4: "MESH_SERVICE_ERROR_REMOTE_CONNECTION_HAS_DEPENDENT_LINKS",
 		5: "MESH_SERVICE_ERROR_INVALID_API_TOKEN",
+		6: "MESH_SERVICE_ERROR_FLAG_ALREADY_EXISTS",
+		7: "MESH_SERVICE_ERROR_FLAG_NOT_FOUND",
+		8: "MESH_SERVICE_ERROR_ARTIFACT_NOT_FOUND",
+		9: "MESH_SERVICE_ERROR_UNSUPPORTED_ARTIFACT_TYPE",
 	}
 	MeshServiceError_value = map[string]int32{
 		"MESH_SERVICE_ERROR_LINK_NOT_FOUND":                        0,
@@ -98,6 +106,10 @@ var (
 		"MESH_SERVICE_ERROR_REMOTE_CONNECTION_ALREADY_EXISTS":      3,
 		"MESH_SERVICE_ERROR_REMOTE_CONNECTION_HAS_DEPENDENT_LINKS": 4,
 		"MESH_SERVICE_ERROR_INVALID_API_TOKEN":                     5,
+		"MESH_SERVICE_ERROR_FLAG_ALREADY_EXISTS":                   6,
+		"MESH_SERVICE_ERROR_FLAG_NOT_FOUND":                        7,
+		"MESH_SERVICE_ERROR_ARTIFACT_NOT_FOUND":                    8,
+		"MESH_SERVICE_ERROR_UNSUPPORTED_ARTIFACT_TYPE":             9,
 	}
 )
 
@@ -846,7 +858,7 @@ const file_nominal_protos_mesh_v1_links_proto_rawDesc = "" +
 	"\x10_next_page_token*H\n" +
 	"\fResourceType\x12\x1d\n" +
 	"\x19RESOURCE_TYPE_UNSPECIFIED\x10\x00\x12\x19\n" +
-	"\x15RESOURCE_TYPE_DATASET\x10\x01*\xc9\x04\n" +
+	"\x15RESOURCE_TYPE_DATASET\x10\x01*\xa5\a\n" +
 	"\x10MeshServiceError\x12D\n" +
 	"!MESH_SERVICE_ERROR_LINK_NOT_FOUND\x10\x00\x1a\x1d\xb2\xb2\x1a\x19\n" +
 	"\tNOT_FOUND\x12\fLinkNotFound\x12S\n" +
@@ -859,7 +871,15 @@ const file_nominal_protos_mesh_v1_links_proto_rawDesc = "" +
 	"8MESH_SERVICE_ERROR_REMOTE_CONNECTION_HAS_DEPENDENT_LINKS\x10\x04\x1a<\xb2\xb2\x1a8\n" +
 	"\x13FAILED_PRECONDITION\x12!RemoteConnectionHasDependentLinks\x12Q\n" +
 	"$MESH_SERVICE_ERROR_INVALID_API_TOKEN\x10\x05\x1a'\xb2\xb2\x1a#\n" +
-	"\x10INVALID_ARGUMENT\x12\x0fInvalidApiTokenB\xca\x01\n" +
+	"\x10INVALID_ARGUMENT\x12\x0fInvalidApiToken\x12W\n" +
+	"&MESH_SERVICE_ERROR_FLAG_ALREADY_EXISTS\x10\x06\x1a+\xb2\xb2\x1a'\n" +
+	"\x0eALREADY_EXISTS\x12\x15MeshFlagAlreadyExists\x12H\n" +
+	"!MESH_SERVICE_ERROR_FLAG_NOT_FOUND\x10\a\x1a!\xb2\xb2\x1a\x1d\n" +
+	"\tNOT_FOUND\x12\x10MeshFlagNotFound\x12P\n" +
+	"%MESH_SERVICE_ERROR_ARTIFACT_NOT_FOUND\x10\b\x1a%\xb2\xb2\x1a!\n" +
+	"\tNOT_FOUND\x12\x14MeshArtifactNotFound\x12e\n" +
+	",MESH_SERVICE_ERROR_UNSUPPORTED_ARTIFACT_TYPE\x10\t\x1a3\xb2\xb2\x1a/\n" +
+	"\x10INVALID_ARGUMENT\x12\x1bUnsupportedMeshArtifactTypeB\xca\x01\n" +
 	"\x13com.nominal.mesh.v1B\n" +
 	"LinksProtoP\x01ZIgithub.com/nominal-io/nominal-api-protos-go/nominal/protos/mesh/v1;meshv1\xa2\x02\x03NMX\xaa\x02\x0fNominal.Mesh.V1\xca\x02\x0fNominal\\Mesh\\V1\xe2\x02\x1bNominal\\Mesh\\V1\\GPBMetadata\xea\x02\x11Nominal::Mesh::V1b\x06proto3"
 

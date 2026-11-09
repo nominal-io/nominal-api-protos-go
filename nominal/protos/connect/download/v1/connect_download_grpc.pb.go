@@ -30,8 +30,10 @@ const (
 // Service for downloading Connect binaries
 type ConnectDownloadServiceClient interface {
 	// Get a pre-signed URL for downloading the latest version of Connect for a given platform
+	// Scoped to the caller's org, which picks the release channel. Any session may call it.
 	GetLatestConnectUri(ctx context.Context, in *GetLatestConnectUriRequest, opts ...grpc.CallOption) (*GetLatestConnectUriResponse, error)
 	// Get the latest version string of Connect for a given platform
+	// Scoped to the caller's org, which picks the release channel. Any session may call it.
 	GetLatestVersion(ctx context.Context, in *GetLatestVersionRequest, opts ...grpc.CallOption) (*GetLatestVersionResponse, error)
 }
 
@@ -70,8 +72,10 @@ func (c *connectDownloadServiceClient) GetLatestVersion(ctx context.Context, in 
 // Service for downloading Connect binaries
 type ConnectDownloadServiceServer interface {
 	// Get a pre-signed URL for downloading the latest version of Connect for a given platform
+	// Scoped to the caller's org, which picks the release channel. Any session may call it.
 	GetLatestConnectUri(context.Context, *GetLatestConnectUriRequest) (*GetLatestConnectUriResponse, error)
 	// Get the latest version string of Connect for a given platform
+	// Scoped to the caller's org, which picks the release channel. Any session may call it.
 	GetLatestVersion(context.Context, *GetLatestVersionRequest) (*GetLatestVersionResponse, error)
 	mustEmbedUnimplementedConnectDownloadServiceServer()
 }

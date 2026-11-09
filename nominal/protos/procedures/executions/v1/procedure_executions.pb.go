@@ -8,6 +8,7 @@ package executionsv1
 
 import (
 	_ "buf.build/gen/go/bufbuild/protovalidate/protocolbuffers/go/buf/validate"
+	_ "github.com/nominal-io/nominal-api-protos-go/nominal/protos/authz/v1"
 	_ "github.com/nominal-io/nominal-api-protos-go/nominal/protos/gen/v1"
 	v1 "github.com/nominal-io/nominal-api-protos-go/nominal/protos/procedures/v1"
 	types "github.com/nominal-io/nominal-api-protos-go/nominal/protos/types"
@@ -7355,7 +7356,7 @@ var File_nominal_protos_procedures_executions_v1_procedure_executions_proto prot
 
 const file_nominal_protos_procedures_executions_v1_procedure_executions_proto_rawDesc = "" +
 	"\n" +
-	"Bnominal/protos/procedures/executions/v1/procedure_executions.proto\x12 nominal.procedures.executions.v1\x1a\x1bbuf/validate/validate.proto\x1a\x1cgoogle/api/annotations.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a!nominal/protos/gen/v1/alias.proto\x1a!nominal/protos/gen/v1/error.proto\x1a-nominal/protos/procedures/v1/procedures.proto\x1a nominal/protos/types/types.proto\"\xd8\x01\n" +
+	"Bnominal/protos/procedures/executions/v1/procedure_executions.proto\x12 nominal.procedures.executions.v1\x1a\x1bbuf/validate/validate.proto\x1a\x1cgoogle/api/annotations.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a)nominal/protos/authz/v1/annotations.proto\x1a!nominal/protos/gen/v1/alias.proto\x1a!nominal/protos/gen/v1/error.proto\x1a-nominal/protos/procedures/v1/procedures.proto\x1a nominal/protos/types/types.proto\"\xd8\x01\n" +
 	"\x16ProcedureExecutionNode\x12[\n" +
 	"\asection\x18\x01 \x01(\v2?.nominal.procedures.executions.v1.ProcedureExecutionSectionNodeH\x00R\asection\x12R\n" +
 	"\x04step\x18\x02 \x01(\v2<.nominal.procedures.executions.v1.ProcedureExecutionStepNodeH\x00R\x04stepB\r\n" +
@@ -8069,23 +8070,47 @@ const file_nominal_protos_procedures_executions_v1_procedure_executions_proto_ra
 	"7PROCEDURE_EXECUTIONS_SERVICE_ERROR_INVALID_SEARCH_TOKEN\x10\a\x1a,\xb2\xb2\x1a(\n" +
 	"\x10INVALID_ARGUMENT\x12\x14Invalid search token\x12g\n" +
 	"6PROCEDURE_EXECUTIONS_SERVICE_ERROR_INVALID_STEP_UPDATE\x10\b\x1a+\xb2\xb2\x1a'\n" +
-	"\x10INVALID_ARGUMENT\x12\x13Invalid step update2\xf4\x18\n" +
-	"\x1aProcedureExecutionsService\x12\xe2\x01\n" +
-	"\x18CreateProcedureExecution\x12A.nominal.procedures.executions.v1.CreateProcedureExecutionRequest\x1aB.nominal.procedures.executions.v1.CreateProcedureExecutionResponse\"?\x82\xd3\xe4\x93\x029:\x01*\"4/procedures/v1/executions/procedures/{procedure_rid}\x12\xce\x01\n" +
-	"\x19SearchProcedureExecutions\x12B.nominal.procedures.executions.v1.SearchProcedureExecutionsRequest\x1aC.nominal.procedures.executions.v1.SearchProcedureExecutionsResponse\"(\x82\xd3\xe4\x93\x02\"\x12 /procedures/v1/executions/search\x12\xd5\x01\n" +
-	"\x15GetProcedureExecution\x12>.nominal.procedures.executions.v1.GetProcedureExecutionRequest\x1a?.nominal.procedures.executions.v1.GetProcedureExecutionResponse\";\x82\xd3\xe4\x93\x025\x123/procedures/v1/executions/{procedure_execution_rid}\x12\xe4\x01\n" +
-	"\x1fBatchArchiveProcedureExecutions\x12H.nominal.procedures.executions.v1.BatchArchiveProcedureExecutionsRequest\x1aI.nominal.procedures.executions.v1.BatchArchiveProcedureExecutionsResponse\",\x82\xd3\xe4\x93\x02&:\x01*\"!/procedures/v1/executions/archive\x12\xec\x01\n" +
-	"!BatchUnarchiveProcedureExecutions\x12J.nominal.procedures.executions.v1.BatchUnarchiveProcedureExecutionsRequest\x1aK.nominal.procedures.executions.v1.BatchUnarchiveProcedureExecutionsResponse\".\x82\xd3\xe4\x93\x02(:\x01*\"#/procedures/v1/executions/unarchive\x12\x82\x02\n" +
-	" UpdateProcedureExecutionMetadata\x12I.nominal.procedures.executions.v1.UpdateProcedureExecutionMetadataRequest\x1aJ.nominal.procedures.executions.v1.UpdateProcedureExecutionMetadataResponse\"G\x82\xd3\xe4\x93\x02A:\x01*\x1a</procedures/v1/executions/{procedure_execution_rid}/metadata\x12\xe8\x01\n" +
-	"\x18UpdateProcedureExecution\x12A.nominal.procedures.executions.v1.UpdateProcedureExecutionRequest\x1aB.nominal.procedures.executions.v1.UpdateProcedureExecutionResponse\"E\x82\xd3\xe4\x93\x02?:\x01*\x1a:/procedures/v1/executions/{procedure_execution_rid}/update\x12\xce\x01\n" +
+	"\x10INVALID_ARGUMENT\x12\x13Invalid step update2\xa7\x1c\n" +
+	"\x1aProcedureExecutionsService\x12\x88\x02\n" +
+	"\x18CreateProcedureExecution\x12A.nominal.procedures.executions.v1.CreateProcedureExecutionRequest\x1aB.nominal.procedures.executions.v1.CreateProcedureExecutionResponse\"e\xba\xb2\x1a\"\n" +
+	" \n" +
+	"\x1cworkspace:execute_procedures\"\x00\x82\xd3\xe4\x93\x029:\x01*\"4/procedures/v1/executions/procedures/{procedure_rid}\x12\xd2\x01\n" +
+	"\x19SearchProcedureExecutions\x12B.nominal.procedures.executions.v1.SearchProcedureExecutionsRequest\x1aC.nominal.procedures.executions.v1.SearchProcedureExecutionsResponse\",\xba\xb2\x1a\x00\x82\xd3\xe4\x93\x02\"\x12 /procedures/v1/executions/search\x12\xed\x01\n" +
+	"\x15GetProcedureExecution\x12>.nominal.procedures.executions.v1.GetProcedureExecutionRequest\x1a?.nominal.procedures.executions.v1.GetProcedureExecutionResponse\"S\xba\xb2\x1a\x14\n" +
+	"\x12\n" +
+	"\x0eworkspace:view\"\x00\x82\xd3\xe4\x93\x025\x123/procedures/v1/executions/{procedure_execution_rid}\x12\x8a\x02\n" +
+	"\x1fBatchArchiveProcedureExecutions\x12H.nominal.procedures.executions.v1.BatchArchiveProcedureExecutionsRequest\x1aI.nominal.procedures.executions.v1.BatchArchiveProcedureExecutionsResponse\"R\xba\xb2\x1a\"\n" +
+	" \n" +
+	"\x1cworkspace:execute_procedures\"\x00\x82\xd3\xe4\x93\x02&:\x01*\"!/procedures/v1/executions/archive\x12\x92\x02\n" +
+	"!BatchUnarchiveProcedureExecutions\x12J.nominal.procedures.executions.v1.BatchUnarchiveProcedureExecutionsRequest\x1aK.nominal.procedures.executions.v1.BatchUnarchiveProcedureExecutionsResponse\"T\xba\xb2\x1a\"\n" +
+	" \n" +
+	"\x1cworkspace:execute_procedures\"\x00\x82\xd3\xe4\x93\x02(:\x01*\"#/procedures/v1/executions/unarchive\x12\xa8\x02\n" +
+	" UpdateProcedureExecutionMetadata\x12I.nominal.procedures.executions.v1.UpdateProcedureExecutionMetadataRequest\x1aJ.nominal.procedures.executions.v1.UpdateProcedureExecutionMetadataResponse\"m\xba\xb2\x1a\"\n" +
+	" \n" +
+	"\x1cworkspace:execute_procedures\"\x00\x82\xd3\xe4\x93\x02A:\x01*\x1a</procedures/v1/executions/{procedure_execution_rid}/metadata\x12\x8e\x02\n" +
+	"\x18UpdateProcedureExecution\x12A.nominal.procedures.executions.v1.UpdateProcedureExecutionRequest\x1aB.nominal.procedures.executions.v1.UpdateProcedureExecutionResponse\"k\xba\xb2\x1a\"\n" +
+	" \n" +
+	"\x1cworkspace:execute_procedures\"\x00\x82\xd3\xe4\x93\x02?:\x01*\x1a:/procedures/v1/executions/{procedure_execution_rid}/update\x12\xf4\x01\n" +
 	"\n" +
-	"UpdateStep\x123.nominal.procedures.executions.v1.UpdateStepRequest\x1a4.nominal.procedures.executions.v1.UpdateStepResponse\"U\x82\xd3\xe4\x93\x02O:\x01*\x1aJ/procedures/v1/executions/{procedure_execution_rid}/steps/{step_id}/update\x12\xa2\x02\n" +
-	" UpdateStepSuccessConditionStatus\x12I.nominal.procedures.executions.v1.UpdateStepSuccessConditionStatusRequest\x1aJ.nominal.procedures.executions.v1.UpdateStepSuccessConditionStatusResponse\"g\x82\xd3\xe4\x93\x02a:\x01*\x1a\\/procedures/v1/executions/{procedure_execution_rid}/steps/{step_id}/success-condition-status\x12\xa2\x02\n" +
-	" UpdateStepCompletionActionStatus\x12I.nominal.procedures.executions.v1.UpdateStepCompletionActionStatusRequest\x1aJ.nominal.procedures.executions.v1.UpdateStepCompletionActionStatusResponse\"g\x82\xd3\xe4\x93\x02a:\x01*\x1a\\/procedures/v1/executions/{procedure_execution_rid}/steps/{step_id}/completion-action-status\x12\x9a\x02\n" +
-	"\x1eUpdateStepChannelCaptureStatus\x12G.nominal.procedures.executions.v1.UpdateStepChannelCaptureStatusRequest\x1aH.nominal.procedures.executions.v1.UpdateStepChannelCaptureStatusResponse\"e\x82\xd3\xe4\x93\x02_:\x01*\x1aZ/procedures/v1/executions/{procedure_execution_rid}/steps/{step_id}/channel-capture-status\x12\xce\x01\n" +
+	"UpdateStep\x123.nominal.procedures.executions.v1.UpdateStepRequest\x1a4.nominal.procedures.executions.v1.UpdateStepResponse\"{\xba\xb2\x1a\"\n" +
+	" \n" +
+	"\x1cworkspace:execute_procedures\"\x00\x82\xd3\xe4\x93\x02O:\x01*\x1aJ/procedures/v1/executions/{procedure_execution_rid}/steps/{step_id}/update\x12\xc9\x02\n" +
+	" UpdateStepSuccessConditionStatus\x12I.nominal.procedures.executions.v1.UpdateStepSuccessConditionStatusRequest\x1aJ.nominal.procedures.executions.v1.UpdateStepSuccessConditionStatusResponse\"\x8d\x01\xba\xb2\x1a\"\n" +
+	" \n" +
+	"\x1cworkspace:execute_procedures\"\x00\x82\xd3\xe4\x93\x02a:\x01*\x1a\\/procedures/v1/executions/{procedure_execution_rid}/steps/{step_id}/success-condition-status\x12\xc9\x02\n" +
+	" UpdateStepCompletionActionStatus\x12I.nominal.procedures.executions.v1.UpdateStepCompletionActionStatusRequest\x1aJ.nominal.procedures.executions.v1.UpdateStepCompletionActionStatusResponse\"\x8d\x01\xba\xb2\x1a\"\n" +
+	" \n" +
+	"\x1cworkspace:execute_procedures\"\x00\x82\xd3\xe4\x93\x02a:\x01*\x1a\\/procedures/v1/executions/{procedure_execution_rid}/steps/{step_id}/completion-action-status\x12\xc1\x02\n" +
+	"\x1eUpdateStepChannelCaptureStatus\x12G.nominal.procedures.executions.v1.UpdateStepChannelCaptureStatusRequest\x1aH.nominal.procedures.executions.v1.UpdateStepChannelCaptureStatusResponse\"\x8b\x01\xba\xb2\x1a\"\n" +
+	" \n" +
+	"\x1cworkspace:execute_procedures\"\x00\x82\xd3\xe4\x93\x02_:\x01*\x1aZ/procedures/v1/executions/{procedure_execution_rid}/steps/{step_id}/channel-capture-status\x12\xf4\x01\n" +
 	"\n" +
-	"RepeatStep\x123.nominal.procedures.executions.v1.RepeatStepRequest\x1a4.nominal.procedures.executions.v1.RepeatStepResponse\"U\x82\xd3\xe4\x93\x02O:\x01*\x1aJ/procedures/v1/executions/{procedure_execution_rid}/steps/{step_id}/repeat\x12\xf8\x01\n" +
-	"\"BatchGetProcedureExecutionMetadata\x12K.nominal.procedures.executions.v1.BatchGetProcedureExecutionMetadataRequest\x1aL.nominal.procedures.executions.v1.BatchGetProcedureExecutionMetadataResponse\"7\x82\xd3\xe4\x93\x021:\x01*\",/procedures/v1/executions/batch-get-metadataB\xc5\x02\n" +
+	"RepeatStep\x123.nominal.procedures.executions.v1.RepeatStepRequest\x1a4.nominal.procedures.executions.v1.RepeatStepResponse\"{\xba\xb2\x1a\"\n" +
+	" \n" +
+	"\x1cworkspace:execute_procedures\"\x00\x82\xd3\xe4\x93\x02O:\x01*\x1aJ/procedures/v1/executions/{procedure_execution_rid}/steps/{step_id}/repeat\x12\x90\x02\n" +
+	"\"BatchGetProcedureExecutionMetadata\x12K.nominal.procedures.executions.v1.BatchGetProcedureExecutionMetadataRequest\x1aL.nominal.procedures.executions.v1.BatchGetProcedureExecutionMetadataResponse\"O\xba\xb2\x1a\x14\n" +
+	"\x12\n" +
+	"\x0eworkspace:view\"\x00\x82\xd3\xe4\x93\x021:\x01*\",/procedures/v1/executions/batch-get-metadataB\xc5\x02\n" +
 	"$com.nominal.procedures.executions.v1B\x18ProcedureExecutionsProtoP\x01Z`github.com/nominal-io/nominal-api-protos-go/nominal/protos/procedures/executions/v1;executionsv1\xa2\x02\x03NPE\xaa\x02 Nominal.Procedures.Executions.V1\xca\x02 Nominal\\Procedures\\Executions\\V1\xe2\x02,Nominal\\Procedures\\Executions\\V1\\GPBMetadata\xea\x02#Nominal::Procedures::Executions::V1b\x06proto3"
 
 var (

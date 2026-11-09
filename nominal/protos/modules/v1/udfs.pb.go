@@ -8,6 +8,7 @@ package modulesv1
 
 import (
 	_ "buf.build/gen/go/bufbuild/protovalidate/protocolbuffers/go/buf/validate"
+	_ "github.com/nominal-io/nominal-api-protos-go/nominal/protos/authz/v1"
 	_ "github.com/nominal-io/nominal-api-protos-go/nominal/protos/gen/v1"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
@@ -512,7 +513,7 @@ var File_nominal_protos_modules_v1_udfs_proto protoreflect.FileDescriptor
 
 const file_nominal_protos_modules_v1_udfs_proto_rawDesc = "" +
 	"\n" +
-	"$nominal/protos/modules/v1/udfs.proto\x12\x12nominal.modules.v1\x1a\x1bbuf/validate/validate.proto\x1a\x1cgoogle/api/annotations.proto\x1a!nominal/protos/gen/v1/alias.proto\"\x8e\x03\n" +
+	"$nominal/protos/modules/v1/udfs.proto\x12\x12nominal.modules.v1\x1a\x1bbuf/validate/validate.proto\x1a\x1cgoogle/api/annotations.proto\x1a)nominal/protos/authz/v1/annotations.proto\x1a!nominal/protos/gen/v1/alias.proto\"\x8e\x03\n" +
 	"\x11CompileUdfRequest\x12P\n" +
 	"\rworkspace_rid\x18\x01 \x01(\tB&\x9a\xb2\x1a\"\n" +
 	" io.nominal.api.rids.WorkspaceRidH\x00R\fworkspaceRid\x88\x01\x01\x12D\n" +
@@ -556,11 +557,13 @@ const file_nominal_protos_modules_v1_udfs_proto_rawDesc = "" +
 	"\x1cUDF_OUTPUT_SHAPE_UNSPECIFIED\x10\x00\x12\x1b\n" +
 	"\x17UDF_OUTPUT_SHAPE_SCALAR\x10\x01\x12&\n" +
 	"\"UDF_OUTPUT_SHAPE_TIMESTAMPED_VALUE\x10\x02\x12'\n" +
-	"#UDF_OUTPUT_SHAPE_TIMESTAMPED_VALUES\x10\x032\x8f\x01\n" +
+	"#UDF_OUTPUT_SHAPE_TIMESTAMPED_VALUES\x10\x032\xb5\x01\n" +
 	"\n" +
-	"UdfService\x12\x80\x01\n" +
+	"UdfService\x12\xa6\x01\n" +
 	"\n" +
-	"CompileUdf\x12%.nominal.modules.v1.CompileUdfRequest\x1a&.nominal.modules.v1.CompileUdfResponse\"#\x82\xd3\xe4\x93\x02\x1d:\x01*\"\x18/modules/v1/udfs/compileB\xde\x01\n" +
+	"CompileUdf\x12%.nominal.modules.v1.CompileUdfRequest\x1a&.nominal.modules.v1.CompileUdfResponse\"I\xba\xb2\x1a\"\n" +
+	" \n" +
+	"\x1cworkspace:edit_configuration\"\x00\x82\xd3\xe4\x93\x02\x1d:\x01*\"\x18/modules/v1/udfs/compileB\xde\x01\n" +
 	"\x16com.nominal.modules.v1B\tUdfsProtoP\x01ZOgithub.com/nominal-io/nominal-api-protos-go/nominal/protos/modules/v1;modulesv1\xa2\x02\x03NMX\xaa\x02\x12Nominal.Modules.V1\xca\x02\x12Nominal\\Modules\\V1\xe2\x02\x1eNominal\\Modules\\V1\\GPBMetadata\xea\x02\x14Nominal::Modules::V1b\x06proto3"
 
 var (

@@ -8,6 +8,7 @@ package knowledgev1
 
 import (
 	_ "buf.build/gen/go/bufbuild/protovalidate/protocolbuffers/go/buf/validate"
+	_ "github.com/nominal-io/nominal-api-protos-go/nominal/protos/authz/v1"
 	_ "github.com/nominal-io/nominal-api-protos-go/nominal/protos/gen/v1"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
@@ -312,9 +313,13 @@ func (x *GetDriveIndexJobResponse) GetDriveIndexJob() *DriveIndexJob {
 }
 
 type ListDriveIndexJobsRequest struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	PageSize      *int32                 `protobuf:"varint,1,opt,name=page_size,json=pageSize,proto3,oneof" json:"page_size,omitempty"`
-	PageToken     string                 `protobuf:"bytes,2,opt,name=page_token,json=pageToken,proto3" json:"page_token,omitempty"`
+	state     protoimpl.MessageState `protogen:"open.v1"`
+	PageSize  *int32                 `protobuf:"varint,1,opt,name=page_size,json=pageSize,proto3,oneof" json:"page_size,omitempty"`
+	PageToken string                 `protobuf:"bytes,2,opt,name=page_token,json=pageToken,proto3" json:"page_token,omitempty"`
+	// Debug-only. Unstable: may change or be removed without notice. Production and API callers must not rely on it.
+	// Selects the drive-scoped form: the service authorizes this drive before any read and lists only its
+	// execution. Unset keeps the workspace-wide list.
+	DriveRid      *string `protobuf:"bytes,10,opt,name=drive_rid,json=driveRid,proto3,oneof" json:"drive_rid,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -359,6 +364,13 @@ func (x *ListDriveIndexJobsRequest) GetPageSize() int32 {
 func (x *ListDriveIndexJobsRequest) GetPageToken() string {
 	if x != nil {
 		return x.PageToken
+	}
+	return ""
+}
+
+func (x *ListDriveIndexJobsRequest) GetDriveRid() string {
+	if x != nil && x.DriveRid != nil {
+		return *x.DriveRid
 	}
 	return ""
 }
@@ -540,8 +552,11 @@ type DriveIndexJobSummary struct {
 	AdmittedSourceCount uint64 `protobuf:"varint,7,opt,name=admitted_source_count,json=admittedSourceCount,proto3" json:"admitted_source_count,omitempty"`
 	// Whether every source has been enumerated. Until then admitted_source_count is a floor.
 	EnumerationComplete bool `protobuf:"varint,8,opt,name=enumeration_complete,json=enumerationComplete,proto3" json:"enumeration_complete,omitempty"`
-	unknownFields       protoimpl.UnknownFields
-	sizeCache           protoimpl.SizeCache
+	// Debug-only. Unstable: may change or be removed without notice. Production and API callers must not rely on it.
+	// Set on every ListDriveIndexJobs entry.
+	Debug         *DriveIndexJobSummaryDebug `protobuf:"bytes,10,opt,name=debug,proto3,oneof" json:"debug,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
 }
 
 func (x *DriveIndexJobSummary) Reset() {
@@ -630,6 +645,13 @@ func (x *DriveIndexJobSummary) GetEnumerationComplete() bool {
 	return false
 }
 
+func (x *DriveIndexJobSummary) GetDebug() *DriveIndexJobSummaryDebug {
+	if x != nil {
+		return x.Debug
+	}
+	return nil
+}
+
 type DriveIndexJob struct {
 	state                protoimpl.MessageState `protogen:"open.v1"`
 	DriveIndexJobRid     string                 `protobuf:"bytes,1,opt,name=drive_index_job_rid,json=driveIndexJobRid,proto3" json:"drive_index_job_rid,omitempty"`
@@ -654,8 +676,11 @@ type DriveIndexJob struct {
 	// namespace retention window, which is far shorter than how long Scout keeps this row, so a job can be
 	// readable here while its Temporal history is gone.
 	TemporalHistoryAvailable bool `protobuf:"varint,11,opt,name=temporal_history_available,json=temporalHistoryAvailable,proto3" json:"temporal_history_available,omitempty"`
-	unknownFields            protoimpl.UnknownFields
-	sizeCache                protoimpl.SizeCache
+	// Debug-only. Unstable: may change or be removed without notice. Production and API callers must not rely on it.
+	// Set on GetDriveIndexJob. Absent on CreateDriveIndexJob, which builds its response without a read of the row.
+	Debug         *DriveIndexJobDebug `protobuf:"bytes,20,opt,name=debug,proto3,oneof" json:"debug,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
 }
 
 func (x *DriveIndexJob) Reset() {
@@ -765,6 +790,13 @@ func (x *DriveIndexJob) GetTemporalHistoryAvailable() bool {
 	return false
 }
 
+func (x *DriveIndexJob) GetDebug() *DriveIndexJobDebug {
+	if x != nil {
+		return x.Debug
+	}
+	return nil
+}
+
 type DriveIndexSourceExecution struct {
 	state     protoimpl.MessageState         `protogen:"open.v1"`
 	SourceRid string                         `protobuf:"bytes,1,opt,name=source_rid,json=sourceRid,proto3" json:"source_rid,omitempty"`
@@ -779,8 +811,11 @@ type DriveIndexSourceExecution struct {
 	// Both are empty together, for the same legacy rows as revision_rid.
 	ChildWorkflowId string `protobuf:"bytes,5,opt,name=child_workflow_id,json=childWorkflowId,proto3" json:"child_workflow_id,omitempty"`
 	ChildRunId      string `protobuf:"bytes,6,opt,name=child_run_id,json=childRunId,proto3" json:"child_run_id,omitempty"`
-	unknownFields   protoimpl.UnknownFields
-	sizeCache       protoimpl.SizeCache
+	// Debug-only. Unstable: may change or be removed without notice. Production and API callers must not rely on it.
+	// Set on every ListDriveIndexJobSources entry.
+	Debug         *DriveIndexSourceExecutionDebug `protobuf:"bytes,10,opt,name=debug,proto3,oneof" json:"debug,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
 }
 
 func (x *DriveIndexSourceExecution) Reset() {
@@ -853,6 +888,13 @@ func (x *DriveIndexSourceExecution) GetChildRunId() string {
 		return x.ChildRunId
 	}
 	return ""
+}
+
+func (x *DriveIndexSourceExecution) GetDebug() *DriveIndexSourceExecutionDebug {
+	if x != nil {
+		return x.Debug
+	}
+	return nil
 }
 
 type KnowledgeChunk struct {
@@ -934,7 +976,10 @@ type QueryRequest struct {
 	// latency and response size before launch.
 	PageSize *int32 `protobuf:"varint,2,opt,name=page_size,json=pageSize,proto3,oneof" json:"page_size,omitempty"`
 	// An opaque token returned by a prior Query response. At most 32 bytes.
-	PageToken     string `protobuf:"bytes,3,opt,name=page_token,json=pageToken,proto3" json:"page_token,omitempty"`
+	PageToken string `protobuf:"bytes,3,opt,name=page_token,json=pageToken,proto3" json:"page_token,omitempty"`
+	// Debug-only. Unstable: may change or be removed without notice. Production and API callers must not rely on it.
+	// Requests QueryResponse.debug. Does not change chunks or next_page_token.
+	IncludeDebug  *bool `protobuf:"varint,10,opt,name=include_debug,json=includeDebug,proto3,oneof" json:"include_debug,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -997,11 +1042,21 @@ func (x *QueryRequest) GetPageToken() string {
 	return ""
 }
 
+func (x *QueryRequest) GetIncludeDebug() bool {
+	if x != nil && x.IncludeDebug != nil {
+		return *x.IncludeDebug
+	}
+	return false
+}
+
 type QueryResponse struct {
 	state  protoimpl.MessageState `protogen:"open.v1"`
 	Chunks []*KnowledgeChunk      `protobuf:"bytes,1,rep,name=chunks,proto3" json:"chunks,omitempty"`
 	// Opaque token for the following page; absent when this is the final page.
 	NextPageToken string `protobuf:"bytes,2,opt,name=next_page_token,json=nextPageToken,proto3" json:"next_page_token,omitempty"`
+	// Debug-only. Unstable: may change or be removed without notice. Production and API callers must not rely on it.
+	// Set only when QueryRequest.include_debug is set.
+	Debug         *QueryDebug `protobuf:"bytes,10,opt,name=debug,proto3,oneof" json:"debug,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -1050,11 +1105,1409 @@ func (x *QueryResponse) GetNextPageToken() string {
 	return ""
 }
 
+func (x *QueryResponse) GetDebug() *QueryDebug {
+	if x != nil {
+		return x.Debug
+	}
+	return nil
+}
+
+// Debug-only. Unstable: may change or be removed without notice. Production and API callers must not rely on it.
+// Row-derived values of one ListDriveIndexJobs entry. Always set.
+type DriveIndexJobSummaryDebug struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// The workspace of the stored execution row.
+	WorkspaceRid *string `protobuf:"bytes,1,opt,name=workspace_rid,json=workspaceRid,proto3,oneof" json:"workspace_rid,omitempty"`
+	// Absent while the job is running.
+	CompletedAt   *timestamppb.Timestamp `protobuf:"bytes,2,opt,name=completed_at,json=completedAt,proto3,oneof" json:"completed_at,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *DriveIndexJobSummaryDebug) Reset() {
+	*x = DriveIndexJobSummaryDebug{}
+	mi := &file_nominal_protos_knowledge_v1_knowledge_proto_msgTypes[14]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *DriveIndexJobSummaryDebug) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*DriveIndexJobSummaryDebug) ProtoMessage() {}
+
+func (x *DriveIndexJobSummaryDebug) ProtoReflect() protoreflect.Message {
+	mi := &file_nominal_protos_knowledge_v1_knowledge_proto_msgTypes[14]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use DriveIndexJobSummaryDebug.ProtoReflect.Descriptor instead.
+func (*DriveIndexJobSummaryDebug) Descriptor() ([]byte, []int) {
+	return file_nominal_protos_knowledge_v1_knowledge_proto_rawDescGZIP(), []int{14}
+}
+
+func (x *DriveIndexJobSummaryDebug) GetWorkspaceRid() string {
+	if x != nil && x.WorkspaceRid != nil {
+		return *x.WorkspaceRid
+	}
+	return ""
+}
+
+func (x *DriveIndexJobSummaryDebug) GetCompletedAt() *timestamppb.Timestamp {
+	if x != nil {
+		return x.CompletedAt
+	}
+	return nil
+}
+
+// Debug-only. Unstable: may change or be removed without notice. Production and API callers must not rely on it.
+// Row-derived values of one drive-index job. Set on GetDriveIndexJob; absent on CreateDriveIndexJob.
+type DriveIndexJobDebug struct {
+	state     protoimpl.MessageState `protogen:"open.v1"`
+	CreatedAt *timestamppb.Timestamp `protobuf:"bytes,1,opt,name=created_at,json=createdAt,proto3,oneof" json:"created_at,omitempty"`
+	// Absent while the job is running.
+	CompletedAt *timestamppb.Timestamp `protobuf:"bytes,2,opt,name=completed_at,json=completedAt,proto3,oneof" json:"completed_at,omitempty"`
+	// The workspace of the stored execution row.
+	WorkspaceRid *string `protobuf:"bytes,3,opt,name=workspace_rid,json=workspaceRid,proto3,oneof" json:"workspace_rid,omitempty"`
+	// The workspace that owns the job's drive, which the call authorized against.
+	CallerWorkspaceRid   *string `protobuf:"bytes,4,opt,name=caller_workspace_rid,json=callerWorkspaceRid,proto3,oneof" json:"caller_workspace_rid,omitempty"`
+	RunningSourceCount   *uint32 `protobuf:"varint,5,opt,name=running_source_count,json=runningSourceCount,proto3,oneof" json:"running_source_count,omitempty"`
+	SucceededSourceCount *uint32 `protobuf:"varint,6,opt,name=succeeded_source_count,json=succeededSourceCount,proto3,oneof" json:"succeeded_source_count,omitempty"`
+	FailedSourceCount    *uint32 `protobuf:"varint,7,opt,name=failed_source_count,json=failedSourceCount,proto3,oneof" json:"failed_source_count,omitempty"`
+	// Failed sources by failure category. The empty category counts legacy rows without a category.
+	FailedSourceCounts []*FailedSourceCategoryCount `protobuf:"bytes,8,rep,name=failed_source_counts,json=failedSourceCounts,proto3" json:"failed_source_counts,omitempty"`
+	// At most 100 failed or running sources, failed first, then running. ListDriveIndexJobSources has no state
+	// filter, so this list is the only way to reach these sources directly.
+	AttentionList []*DriveIndexSourceExecution `protobuf:"bytes,9,rep,name=attention_list,json=attentionList,proto3" json:"attention_list,omitempty"`
+	// Set when more failed or running sources exist than attention_list holds.
+	AttentionListTruncated *bool `protobuf:"varint,10,opt,name=attention_list_truncated,json=attentionListTruncated,proto3,oneof" json:"attention_list_truncated,omitempty"`
+	unknownFields          protoimpl.UnknownFields
+	sizeCache              protoimpl.SizeCache
+}
+
+func (x *DriveIndexJobDebug) Reset() {
+	*x = DriveIndexJobDebug{}
+	mi := &file_nominal_protos_knowledge_v1_knowledge_proto_msgTypes[15]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *DriveIndexJobDebug) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*DriveIndexJobDebug) ProtoMessage() {}
+
+func (x *DriveIndexJobDebug) ProtoReflect() protoreflect.Message {
+	mi := &file_nominal_protos_knowledge_v1_knowledge_proto_msgTypes[15]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use DriveIndexJobDebug.ProtoReflect.Descriptor instead.
+func (*DriveIndexJobDebug) Descriptor() ([]byte, []int) {
+	return file_nominal_protos_knowledge_v1_knowledge_proto_rawDescGZIP(), []int{15}
+}
+
+func (x *DriveIndexJobDebug) GetCreatedAt() *timestamppb.Timestamp {
+	if x != nil {
+		return x.CreatedAt
+	}
+	return nil
+}
+
+func (x *DriveIndexJobDebug) GetCompletedAt() *timestamppb.Timestamp {
+	if x != nil {
+		return x.CompletedAt
+	}
+	return nil
+}
+
+func (x *DriveIndexJobDebug) GetWorkspaceRid() string {
+	if x != nil && x.WorkspaceRid != nil {
+		return *x.WorkspaceRid
+	}
+	return ""
+}
+
+func (x *DriveIndexJobDebug) GetCallerWorkspaceRid() string {
+	if x != nil && x.CallerWorkspaceRid != nil {
+		return *x.CallerWorkspaceRid
+	}
+	return ""
+}
+
+func (x *DriveIndexJobDebug) GetRunningSourceCount() uint32 {
+	if x != nil && x.RunningSourceCount != nil {
+		return *x.RunningSourceCount
+	}
+	return 0
+}
+
+func (x *DriveIndexJobDebug) GetSucceededSourceCount() uint32 {
+	if x != nil && x.SucceededSourceCount != nil {
+		return *x.SucceededSourceCount
+	}
+	return 0
+}
+
+func (x *DriveIndexJobDebug) GetFailedSourceCount() uint32 {
+	if x != nil && x.FailedSourceCount != nil {
+		return *x.FailedSourceCount
+	}
+	return 0
+}
+
+func (x *DriveIndexJobDebug) GetFailedSourceCounts() []*FailedSourceCategoryCount {
+	if x != nil {
+		return x.FailedSourceCounts
+	}
+	return nil
+}
+
+func (x *DriveIndexJobDebug) GetAttentionList() []*DriveIndexSourceExecution {
+	if x != nil {
+		return x.AttentionList
+	}
+	return nil
+}
+
+func (x *DriveIndexJobDebug) GetAttentionListTruncated() bool {
+	if x != nil && x.AttentionListTruncated != nil {
+		return *x.AttentionListTruncated
+	}
+	return false
+}
+
+// Debug-only. Unstable: may change or be removed without notice. Production and API callers must not rely on it.
+// The count of failed sources for one failure category.
+type FailedSourceCategoryCount struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Stable lowercase failure category, as DriveIndexSourceExecution.failure_category. Empty for legacy rows.
+	FailureCategory *string `protobuf:"bytes,1,opt,name=failure_category,json=failureCategory,proto3,oneof" json:"failure_category,omitempty"`
+	Count           *uint32 `protobuf:"varint,2,opt,name=count,proto3,oneof" json:"count,omitempty"`
+	unknownFields   protoimpl.UnknownFields
+	sizeCache       protoimpl.SizeCache
+}
+
+func (x *FailedSourceCategoryCount) Reset() {
+	*x = FailedSourceCategoryCount{}
+	mi := &file_nominal_protos_knowledge_v1_knowledge_proto_msgTypes[16]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *FailedSourceCategoryCount) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*FailedSourceCategoryCount) ProtoMessage() {}
+
+func (x *FailedSourceCategoryCount) ProtoReflect() protoreflect.Message {
+	mi := &file_nominal_protos_knowledge_v1_knowledge_proto_msgTypes[16]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use FailedSourceCategoryCount.ProtoReflect.Descriptor instead.
+func (*FailedSourceCategoryCount) Descriptor() ([]byte, []int) {
+	return file_nominal_protos_knowledge_v1_knowledge_proto_rawDescGZIP(), []int{16}
+}
+
+func (x *FailedSourceCategoryCount) GetFailureCategory() string {
+	if x != nil && x.FailureCategory != nil {
+		return *x.FailureCategory
+	}
+	return ""
+}
+
+func (x *FailedSourceCategoryCount) GetCount() uint32 {
+	if x != nil && x.Count != nil {
+		return *x.Count
+	}
+	return 0
+}
+
+// Debug-only. Unstable: may change or be removed without notice. Production and API callers must not rely on it.
+// Row-derived values of one per-source outcome. Always set.
+type DriveIndexSourceExecutionDebug struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Three limits apply. A retried or restarted child workflow moves this time forward. A legacy row carries the
+	// migration time of changeset 0005. A terminal row written without a running row carries its completion time.
+	StartedAt *timestamppb.Timestamp `protobuf:"bytes,1,opt,name=started_at,json=startedAt,proto3,oneof" json:"started_at,omitempty"`
+	// Absent while the source is running.
+	CompletedAt *timestamppb.Timestamp `protobuf:"bytes,2,opt,name=completed_at,json=completedAt,proto3,oneof" json:"completed_at,omitempty"`
+	// The successful chunk count of the source.
+	ChunkCount    *uint32 `protobuf:"varint,3,opt,name=chunk_count,json=chunkCount,proto3,oneof" json:"chunk_count,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *DriveIndexSourceExecutionDebug) Reset() {
+	*x = DriveIndexSourceExecutionDebug{}
+	mi := &file_nominal_protos_knowledge_v1_knowledge_proto_msgTypes[17]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *DriveIndexSourceExecutionDebug) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*DriveIndexSourceExecutionDebug) ProtoMessage() {}
+
+func (x *DriveIndexSourceExecutionDebug) ProtoReflect() protoreflect.Message {
+	mi := &file_nominal_protos_knowledge_v1_knowledge_proto_msgTypes[17]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use DriveIndexSourceExecutionDebug.ProtoReflect.Descriptor instead.
+func (*DriveIndexSourceExecutionDebug) Descriptor() ([]byte, []int) {
+	return file_nominal_protos_knowledge_v1_knowledge_proto_rawDescGZIP(), []int{17}
+}
+
+func (x *DriveIndexSourceExecutionDebug) GetStartedAt() *timestamppb.Timestamp {
+	if x != nil {
+		return x.StartedAt
+	}
+	return nil
+}
+
+func (x *DriveIndexSourceExecutionDebug) GetCompletedAt() *timestamppb.Timestamp {
+	if x != nil {
+		return x.CompletedAt
+	}
+	return nil
+}
+
+func (x *DriveIndexSourceExecutionDebug) GetChunkCount() uint32 {
+	if x != nil && x.ChunkCount != nil {
+		return *x.ChunkCount
+	}
+	return 0
+}
+
+// Debug-only. Unstable: may change or be removed without notice. Production and API callers must not rely on it.
+// How one Query call searched and ranked. Set only with QueryRequest.include_debug, because this data has a
+// compute and payload cost.
+type QueryDebug struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// The searched partition: the workspace that owns the queried drive.
+	SearchedWorkspaceRid *string                `protobuf:"bytes,1,opt,name=searched_workspace_rid,json=searchedWorkspaceRid,proto3,oneof" json:"searched_workspace_rid,omitempty"`
+	Retrievers           []*QueryRetrieverDebug `protobuf:"bytes,2,rep,name=retrievers,proto3" json:"retrievers,omitempty"`
+	// Stable lowercase string.
+	FusionRule *string `protobuf:"bytes,3,opt,name=fusion_rule,json=fusionRule,proto3,oneof" json:"fusion_rule,omitempty"`
+	// Stable lowercase string.
+	NormalizationRule *string `protobuf:"bytes,4,opt,name=normalization_rule,json=normalizationRule,proto3,oneof" json:"normalization_rule,omitempty"`
+	// Stable lowercase string.
+	TieBreakRule           *string `protobuf:"bytes,5,opt,name=tie_break_rule,json=tieBreakRule,proto3,oneof" json:"tie_break_rule,omitempty"`
+	DistinctCandidateCount *uint32 `protobuf:"varint,6,opt,name=distinct_candidate_count,json=distinctCandidateCount,proto3,oneof" json:"distinct_candidate_count,omitempty"`
+	// The query terms after tokenization.
+	QueryTerms []string `protobuf:"bytes,7,rep,name=query_terms,json=queryTerms,proto3" json:"query_terms,omitempty"`
+	// The full count of query terms, also when query_terms is truncated.
+	QueryTermCount      *uint32 `protobuf:"varint,8,opt,name=query_term_count,json=queryTermCount,proto3,oneof" json:"query_term_count,omitempty"`
+	QueryTermsTruncated *bool   `protobuf:"varint,9,opt,name=query_terms_truncated,json=queryTermsTruncated,proto3,oneof" json:"query_terms_truncated,omitempty"`
+	// One entry per returned chunk, in response order.
+	Candidates []*QueryCandidateDebug `protobuf:"bytes,10,rep,name=candidates,proto3" json:"candidates,omitempty"`
+	// Readable candidates that one retriever ranked high and that fall below this page: at most the page size for
+	// each retriever.
+	ExcludedCandidates          []*QueryCandidateDebug   `protobuf:"bytes,11,rep,name=excluded_candidates,json=excludedCandidates,proto3" json:"excluded_candidates,omitempty"`
+	ExcludedCandidatesTruncated *bool                    `protobuf:"varint,12,opt,name=excluded_candidates_truncated,json=excludedCandidatesTruncated,proto3,oneof" json:"excluded_candidates_truncated,omitempty"`
+	Embedding                   *KnowledgeEmbeddingDebug `protobuf:"bytes,13,opt,name=embedding,proto3,oneof" json:"embedding,omitempty"`
+	unknownFields               protoimpl.UnknownFields
+	sizeCache                   protoimpl.SizeCache
+}
+
+func (x *QueryDebug) Reset() {
+	*x = QueryDebug{}
+	mi := &file_nominal_protos_knowledge_v1_knowledge_proto_msgTypes[18]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *QueryDebug) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*QueryDebug) ProtoMessage() {}
+
+func (x *QueryDebug) ProtoReflect() protoreflect.Message {
+	mi := &file_nominal_protos_knowledge_v1_knowledge_proto_msgTypes[18]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use QueryDebug.ProtoReflect.Descriptor instead.
+func (*QueryDebug) Descriptor() ([]byte, []int) {
+	return file_nominal_protos_knowledge_v1_knowledge_proto_rawDescGZIP(), []int{18}
+}
+
+func (x *QueryDebug) GetSearchedWorkspaceRid() string {
+	if x != nil && x.SearchedWorkspaceRid != nil {
+		return *x.SearchedWorkspaceRid
+	}
+	return ""
+}
+
+func (x *QueryDebug) GetRetrievers() []*QueryRetrieverDebug {
+	if x != nil {
+		return x.Retrievers
+	}
+	return nil
+}
+
+func (x *QueryDebug) GetFusionRule() string {
+	if x != nil && x.FusionRule != nil {
+		return *x.FusionRule
+	}
+	return ""
+}
+
+func (x *QueryDebug) GetNormalizationRule() string {
+	if x != nil && x.NormalizationRule != nil {
+		return *x.NormalizationRule
+	}
+	return ""
+}
+
+func (x *QueryDebug) GetTieBreakRule() string {
+	if x != nil && x.TieBreakRule != nil {
+		return *x.TieBreakRule
+	}
+	return ""
+}
+
+func (x *QueryDebug) GetDistinctCandidateCount() uint32 {
+	if x != nil && x.DistinctCandidateCount != nil {
+		return *x.DistinctCandidateCount
+	}
+	return 0
+}
+
+func (x *QueryDebug) GetQueryTerms() []string {
+	if x != nil {
+		return x.QueryTerms
+	}
+	return nil
+}
+
+func (x *QueryDebug) GetQueryTermCount() uint32 {
+	if x != nil && x.QueryTermCount != nil {
+		return *x.QueryTermCount
+	}
+	return 0
+}
+
+func (x *QueryDebug) GetQueryTermsTruncated() bool {
+	if x != nil && x.QueryTermsTruncated != nil {
+		return *x.QueryTermsTruncated
+	}
+	return false
+}
+
+func (x *QueryDebug) GetCandidates() []*QueryCandidateDebug {
+	if x != nil {
+		return x.Candidates
+	}
+	return nil
+}
+
+func (x *QueryDebug) GetExcludedCandidates() []*QueryCandidateDebug {
+	if x != nil {
+		return x.ExcludedCandidates
+	}
+	return nil
+}
+
+func (x *QueryDebug) GetExcludedCandidatesTruncated() bool {
+	if x != nil && x.ExcludedCandidatesTruncated != nil {
+		return *x.ExcludedCandidatesTruncated
+	}
+	return false
+}
+
+func (x *QueryDebug) GetEmbedding() *KnowledgeEmbeddingDebug {
+	if x != nil {
+		return x.Embedding
+	}
+	return nil
+}
+
+// Debug-only. Unstable: may change or be removed without notice. Production and API callers must not rely on it.
+// One retriever of one Query call.
+type QueryRetrieverDebug struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Stable lowercase string.
+	RetrieverName *string `protobuf:"bytes,1,opt,name=retriever_name,json=retrieverName,proto3,oneof" json:"retriever_name,omitempty"`
+	// The representation searched. Absent for a lexical retriever.
+	RepresentationId *string  `protobuf:"bytes,2,opt,name=representation_id,json=representationId,proto3,oneof" json:"representation_id,omitempty"`
+	Weight           *float64 `protobuf:"fixed64,3,opt,name=weight,proto3,oneof" json:"weight,omitempty"`
+	// Stable lowercase string, for example "no_query_terms" or "no_query_embedding". Absent when the retriever ran.
+	SkipReason     *string `protobuf:"bytes,4,opt,name=skip_reason,json=skipReason,proto3,oneof" json:"skip_reason,omitempty"`
+	CandidateCount *uint32 `protobuf:"varint,5,opt,name=candidate_count,json=candidateCount,proto3,oneof" json:"candidate_count,omitempty"`
+	CandidateLimit *uint32 `protobuf:"varint,6,opt,name=candidate_limit,json=candidateLimit,proto3,oneof" json:"candidate_limit,omitempty"`
+	LimitReached   *bool   `protobuf:"varint,7,opt,name=limit_reached,json=limitReached,proto3,oneof" json:"limit_reached,omitempty"`
+	// The order in which the limit applied: "sample_rid" (not a relevance order) or "similarity_desc".
+	LimitOrder *string `protobuf:"bytes,8,opt,name=limit_order,json=limitOrder,proto3,oneof" json:"limit_order,omitempty"`
+	// The raw minimum that normalization used. Absent when the retriever was skipped.
+	NormalizationMin *float64 `protobuf:"fixed64,9,opt,name=normalization_min,json=normalizationMin,proto3,oneof" json:"normalization_min,omitempty"`
+	// The raw maximum that normalization used. Absent when the retriever was skipped.
+	NormalizationMax *float64 `protobuf:"fixed64,10,opt,name=normalization_max,json=normalizationMax,proto3,oneof" json:"normalization_max,omitempty"`
+	// Set when the excluded candidates of this retriever are truncated.
+	ExcludedListTruncated *bool `protobuf:"varint,11,opt,name=excluded_list_truncated,json=excludedListTruncated,proto3,oneof" json:"excluded_list_truncated,omitempty"`
+	// Numeric parameters of the retriever, for example k1 and b for BM25.
+	Parameters    map[string]float64 `protobuf:"bytes,12,rep,name=parameters,proto3" json:"parameters,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"fixed64,2,opt,name=value"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *QueryRetrieverDebug) Reset() {
+	*x = QueryRetrieverDebug{}
+	mi := &file_nominal_protos_knowledge_v1_knowledge_proto_msgTypes[19]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *QueryRetrieverDebug) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*QueryRetrieverDebug) ProtoMessage() {}
+
+func (x *QueryRetrieverDebug) ProtoReflect() protoreflect.Message {
+	mi := &file_nominal_protos_knowledge_v1_knowledge_proto_msgTypes[19]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use QueryRetrieverDebug.ProtoReflect.Descriptor instead.
+func (*QueryRetrieverDebug) Descriptor() ([]byte, []int) {
+	return file_nominal_protos_knowledge_v1_knowledge_proto_rawDescGZIP(), []int{19}
+}
+
+func (x *QueryRetrieverDebug) GetRetrieverName() string {
+	if x != nil && x.RetrieverName != nil {
+		return *x.RetrieverName
+	}
+	return ""
+}
+
+func (x *QueryRetrieverDebug) GetRepresentationId() string {
+	if x != nil && x.RepresentationId != nil {
+		return *x.RepresentationId
+	}
+	return ""
+}
+
+func (x *QueryRetrieverDebug) GetWeight() float64 {
+	if x != nil && x.Weight != nil {
+		return *x.Weight
+	}
+	return 0
+}
+
+func (x *QueryRetrieverDebug) GetSkipReason() string {
+	if x != nil && x.SkipReason != nil {
+		return *x.SkipReason
+	}
+	return ""
+}
+
+func (x *QueryRetrieverDebug) GetCandidateCount() uint32 {
+	if x != nil && x.CandidateCount != nil {
+		return *x.CandidateCount
+	}
+	return 0
+}
+
+func (x *QueryRetrieverDebug) GetCandidateLimit() uint32 {
+	if x != nil && x.CandidateLimit != nil {
+		return *x.CandidateLimit
+	}
+	return 0
+}
+
+func (x *QueryRetrieverDebug) GetLimitReached() bool {
+	if x != nil && x.LimitReached != nil {
+		return *x.LimitReached
+	}
+	return false
+}
+
+func (x *QueryRetrieverDebug) GetLimitOrder() string {
+	if x != nil && x.LimitOrder != nil {
+		return *x.LimitOrder
+	}
+	return ""
+}
+
+func (x *QueryRetrieverDebug) GetNormalizationMin() float64 {
+	if x != nil && x.NormalizationMin != nil {
+		return *x.NormalizationMin
+	}
+	return 0
+}
+
+func (x *QueryRetrieverDebug) GetNormalizationMax() float64 {
+	if x != nil && x.NormalizationMax != nil {
+		return *x.NormalizationMax
+	}
+	return 0
+}
+
+func (x *QueryRetrieverDebug) GetExcludedListTruncated() bool {
+	if x != nil && x.ExcludedListTruncated != nil {
+		return *x.ExcludedListTruncated
+	}
+	return false
+}
+
+func (x *QueryRetrieverDebug) GetParameters() map[string]float64 {
+	if x != nil {
+		return x.Parameters
+	}
+	return nil
+}
+
+// Debug-only. Unstable: may change or be removed without notice. Production and API callers must not rely on it.
+// One candidate chunk of one Query call.
+type QueryCandidateDebug struct {
+	state     protoimpl.MessageState `protogen:"open.v1"`
+	SampleRid *string                `protobuf:"bytes,1,opt,name=sample_rid,json=sampleRid,proto3,oneof" json:"sample_rid,omitempty"`
+	// The fused rank over all pages.
+	FusedRank *uint32 `protobuf:"varint,2,opt,name=fused_rank,json=fusedRank,proto3,oneof" json:"fused_rank,omitempty"`
+	// Set only for a candidate whose source the caller can read.
+	FusedScore *float64 `protobuf:"fixed64,3,opt,name=fused_score,json=fusedScore,proto3,oneof" json:"fused_score,omitempty"`
+	// One entry per retriever that ran. Set only for a candidate whose source the caller can read.
+	Scores []*QueryRetrieverScoreDebug `protobuf:"bytes,4,rep,name=scores,proto3" json:"scores,omitempty"`
+	// Stable lowercase string: "not_readable". Set only for a candidate whose source the caller cannot read.
+	WithheldReason *string `protobuf:"bytes,5,opt,name=withheld_reason,json=withheldReason,proto3,oneof" json:"withheld_reason,omitempty"`
+	// The chunk identity. Set only for excluded candidates.
+	ChunkPointer  *KnowledgeChunk `protobuf:"bytes,6,opt,name=chunk_pointer,json=chunkPointer,proto3,oneof" json:"chunk_pointer,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *QueryCandidateDebug) Reset() {
+	*x = QueryCandidateDebug{}
+	mi := &file_nominal_protos_knowledge_v1_knowledge_proto_msgTypes[20]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *QueryCandidateDebug) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*QueryCandidateDebug) ProtoMessage() {}
+
+func (x *QueryCandidateDebug) ProtoReflect() protoreflect.Message {
+	mi := &file_nominal_protos_knowledge_v1_knowledge_proto_msgTypes[20]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use QueryCandidateDebug.ProtoReflect.Descriptor instead.
+func (*QueryCandidateDebug) Descriptor() ([]byte, []int) {
+	return file_nominal_protos_knowledge_v1_knowledge_proto_rawDescGZIP(), []int{20}
+}
+
+func (x *QueryCandidateDebug) GetSampleRid() string {
+	if x != nil && x.SampleRid != nil {
+		return *x.SampleRid
+	}
+	return ""
+}
+
+func (x *QueryCandidateDebug) GetFusedRank() uint32 {
+	if x != nil && x.FusedRank != nil {
+		return *x.FusedRank
+	}
+	return 0
+}
+
+func (x *QueryCandidateDebug) GetFusedScore() float64 {
+	if x != nil && x.FusedScore != nil {
+		return *x.FusedScore
+	}
+	return 0
+}
+
+func (x *QueryCandidateDebug) GetScores() []*QueryRetrieverScoreDebug {
+	if x != nil {
+		return x.Scores
+	}
+	return nil
+}
+
+func (x *QueryCandidateDebug) GetWithheldReason() string {
+	if x != nil && x.WithheldReason != nil {
+		return *x.WithheldReason
+	}
+	return ""
+}
+
+func (x *QueryCandidateDebug) GetChunkPointer() *KnowledgeChunk {
+	if x != nil {
+		return x.ChunkPointer
+	}
+	return nil
+}
+
+// Debug-only. Unstable: may change or be removed without notice. Production and API callers must not rely on it.
+// The score of one candidate from one retriever.
+type QueryRetrieverScoreDebug struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	RetrieverName *string                `protobuf:"bytes,1,opt,name=retriever_name,json=retrieverName,proto3,oneof" json:"retriever_name,omitempty"`
+	Matched       *bool                  `protobuf:"varint,2,opt,name=matched,proto3,oneof" json:"matched,omitempty"`
+	// The rank among the candidates of this retriever. Absent when not matched.
+	Rank *uint32 `protobuf:"varint,3,opt,name=rank,proto3,oneof" json:"rank,omitempty"`
+	// For BM25, IDF and average document length are computed over this retriever's candidate pool, not the whole
+	// partition, so the value is not a corpus-level BM25 score.
+	RawScore        *float64 `protobuf:"fixed64,4,opt,name=raw_score,json=rawScore,proto3,oneof" json:"raw_score,omitempty"`
+	NormalizedScore *float64 `protobuf:"fixed64,5,opt,name=normalized_score,json=normalizedScore,proto3,oneof" json:"normalized_score,omitempty"`
+	WeightedScore   *float64 `protobuf:"fixed64,6,opt,name=weighted_score,json=weightedScore,proto3,oneof" json:"weighted_score,omitempty"`
+	unknownFields   protoimpl.UnknownFields
+	sizeCache       protoimpl.SizeCache
+}
+
+func (x *QueryRetrieverScoreDebug) Reset() {
+	*x = QueryRetrieverScoreDebug{}
+	mi := &file_nominal_protos_knowledge_v1_knowledge_proto_msgTypes[21]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *QueryRetrieverScoreDebug) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*QueryRetrieverScoreDebug) ProtoMessage() {}
+
+func (x *QueryRetrieverScoreDebug) ProtoReflect() protoreflect.Message {
+	mi := &file_nominal_protos_knowledge_v1_knowledge_proto_msgTypes[21]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use QueryRetrieverScoreDebug.ProtoReflect.Descriptor instead.
+func (*QueryRetrieverScoreDebug) Descriptor() ([]byte, []int) {
+	return file_nominal_protos_knowledge_v1_knowledge_proto_rawDescGZIP(), []int{21}
+}
+
+func (x *QueryRetrieverScoreDebug) GetRetrieverName() string {
+	if x != nil && x.RetrieverName != nil {
+		return *x.RetrieverName
+	}
+	return ""
+}
+
+func (x *QueryRetrieverScoreDebug) GetMatched() bool {
+	if x != nil && x.Matched != nil {
+		return *x.Matched
+	}
+	return false
+}
+
+func (x *QueryRetrieverScoreDebug) GetRank() uint32 {
+	if x != nil && x.Rank != nil {
+		return *x.Rank
+	}
+	return 0
+}
+
+func (x *QueryRetrieverScoreDebug) GetRawScore() float64 {
+	if x != nil && x.RawScore != nil {
+		return *x.RawScore
+	}
+	return 0
+}
+
+func (x *QueryRetrieverScoreDebug) GetNormalizedScore() float64 {
+	if x != nil && x.NormalizedScore != nil {
+		return *x.NormalizedScore
+	}
+	return 0
+}
+
+func (x *QueryRetrieverScoreDebug) GetWeightedScore() float64 {
+	if x != nil && x.WeightedScore != nil {
+		return *x.WeightedScore
+	}
+	return 0
+}
+
+// Debug-only. Unstable: may change or be removed without notice. Production and API callers must not rely on it.
+// The embedding configuration of the running service, not the configuration at index time.
+type KnowledgeEmbeddingDebug struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Stable lowercase string, for example "none" or "bedrock".
+	Provider                         *string `protobuf:"bytes,1,opt,name=provider,proto3,oneof" json:"provider,omitempty"`
+	TextEmbedderActive               *bool   `protobuf:"varint,2,opt,name=text_embedder_active,json=textEmbedderActive,proto3,oneof" json:"text_embedder_active,omitempty"`
+	ActiveTextRepresentationId       *string `protobuf:"bytes,3,opt,name=active_text_representation_id,json=activeTextRepresentationId,proto3,oneof" json:"active_text_representation_id,omitempty"`
+	ActiveMultimodalRepresentationId *string `protobuf:"bytes,4,opt,name=active_multimodal_representation_id,json=activeMultimodalRepresentationId,proto3,oneof" json:"active_multimodal_representation_id,omitempty"`
+	// The representation IDs selected by the running service for indexing. A model may refuse
+	// an embedding request, so an indexed chunk may lack a selected representation.
+	WrittenRepresentationIds []string `protobuf:"bytes,5,rep,name=written_representation_ids,json=writtenRepresentationIds,proto3" json:"written_representation_ids,omitempty"`
+	unknownFields            protoimpl.UnknownFields
+	sizeCache                protoimpl.SizeCache
+}
+
+func (x *KnowledgeEmbeddingDebug) Reset() {
+	*x = KnowledgeEmbeddingDebug{}
+	mi := &file_nominal_protos_knowledge_v1_knowledge_proto_msgTypes[22]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *KnowledgeEmbeddingDebug) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*KnowledgeEmbeddingDebug) ProtoMessage() {}
+
+func (x *KnowledgeEmbeddingDebug) ProtoReflect() protoreflect.Message {
+	mi := &file_nominal_protos_knowledge_v1_knowledge_proto_msgTypes[22]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use KnowledgeEmbeddingDebug.ProtoReflect.Descriptor instead.
+func (*KnowledgeEmbeddingDebug) Descriptor() ([]byte, []int) {
+	return file_nominal_protos_knowledge_v1_knowledge_proto_rawDescGZIP(), []int{22}
+}
+
+func (x *KnowledgeEmbeddingDebug) GetProvider() string {
+	if x != nil && x.Provider != nil {
+		return *x.Provider
+	}
+	return ""
+}
+
+func (x *KnowledgeEmbeddingDebug) GetTextEmbedderActive() bool {
+	if x != nil && x.TextEmbedderActive != nil {
+		return *x.TextEmbedderActive
+	}
+	return false
+}
+
+func (x *KnowledgeEmbeddingDebug) GetActiveTextRepresentationId() string {
+	if x != nil && x.ActiveTextRepresentationId != nil {
+		return *x.ActiveTextRepresentationId
+	}
+	return ""
+}
+
+func (x *KnowledgeEmbeddingDebug) GetActiveMultimodalRepresentationId() string {
+	if x != nil && x.ActiveMultimodalRepresentationId != nil {
+		return *x.ActiveMultimodalRepresentationId
+	}
+	return ""
+}
+
+func (x *KnowledgeEmbeddingDebug) GetWrittenRepresentationIds() []string {
+	if x != nil {
+		return x.WrittenRepresentationIds
+	}
+	return nil
+}
+
+// Debug-only. Unstable: may change or be removed without notice. Production and API callers must not rely on it.
+type ListSourceChunkDebugRequest struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Debug-only. Unstable: may change or be removed without notice. Production and API callers must not rely on it.
+	// The drive of the source. The service authorizes this drive before any read.
+	DriveRid string `protobuf:"bytes,1,opt,name=drive_rid,json=driveRid,proto3" json:"drive_rid,omitempty"`
+	// Debug-only. Unstable: may change or be removed without notice. Production and API callers must not rely on it.
+	// The indexed source, as KnowledgeChunk.source_rid.
+	SourceRid string `protobuf:"bytes,2,opt,name=source_rid,json=sourceRid,proto3" json:"source_rid,omitempty"`
+	// The service uses 20 when this field is not set.
+	PageSize *uint32 `protobuf:"varint,3,opt,name=page_size,json=pageSize,proto3,oneof" json:"page_size,omitempty"`
+	// An opaque token returned by a prior ListSourceChunkDebug response.
+	PageToken     *string `protobuf:"bytes,4,opt,name=page_token,json=pageToken,proto3,oneof" json:"page_token,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ListSourceChunkDebugRequest) Reset() {
+	*x = ListSourceChunkDebugRequest{}
+	mi := &file_nominal_protos_knowledge_v1_knowledge_proto_msgTypes[23]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ListSourceChunkDebugRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ListSourceChunkDebugRequest) ProtoMessage() {}
+
+func (x *ListSourceChunkDebugRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_nominal_protos_knowledge_v1_knowledge_proto_msgTypes[23]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ListSourceChunkDebugRequest.ProtoReflect.Descriptor instead.
+func (*ListSourceChunkDebugRequest) Descriptor() ([]byte, []int) {
+	return file_nominal_protos_knowledge_v1_knowledge_proto_rawDescGZIP(), []int{23}
+}
+
+func (x *ListSourceChunkDebugRequest) GetDriveRid() string {
+	if x != nil {
+		return x.DriveRid
+	}
+	return ""
+}
+
+func (x *ListSourceChunkDebugRequest) GetSourceRid() string {
+	if x != nil {
+		return x.SourceRid
+	}
+	return ""
+}
+
+func (x *ListSourceChunkDebugRequest) GetPageSize() uint32 {
+	if x != nil && x.PageSize != nil {
+		return *x.PageSize
+	}
+	return 0
+}
+
+func (x *ListSourceChunkDebugRequest) GetPageToken() string {
+	if x != nil && x.PageToken != nil {
+		return *x.PageToken
+	}
+	return ""
+}
+
+// Debug-only. Unstable: may change or be removed without notice. Production and API callers must not rely on it.
+type ListSourceChunkDebugResponse struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// The stored chunks of the source, in document order.
+	Chunks []*KnowledgeChunkDebug `protobuf:"bytes,1,rep,name=chunks,proto3" json:"chunks,omitempty"`
+	// Opaque token for the following page; absent when this is the final page.
+	NextPageToken *string `protobuf:"bytes,2,opt,name=next_page_token,json=nextPageToken,proto3,oneof" json:"next_page_token,omitempty"`
+	// Set on every page.
+	Source        *KnowledgeSourceDebug `protobuf:"bytes,3,opt,name=source,proto3,oneof" json:"source,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ListSourceChunkDebugResponse) Reset() {
+	*x = ListSourceChunkDebugResponse{}
+	mi := &file_nominal_protos_knowledge_v1_knowledge_proto_msgTypes[24]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ListSourceChunkDebugResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ListSourceChunkDebugResponse) ProtoMessage() {}
+
+func (x *ListSourceChunkDebugResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_nominal_protos_knowledge_v1_knowledge_proto_msgTypes[24]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ListSourceChunkDebugResponse.ProtoReflect.Descriptor instead.
+func (*ListSourceChunkDebugResponse) Descriptor() ([]byte, []int) {
+	return file_nominal_protos_knowledge_v1_knowledge_proto_rawDescGZIP(), []int{24}
+}
+
+func (x *ListSourceChunkDebugResponse) GetChunks() []*KnowledgeChunkDebug {
+	if x != nil {
+		return x.Chunks
+	}
+	return nil
+}
+
+func (x *ListSourceChunkDebugResponse) GetNextPageToken() string {
+	if x != nil && x.NextPageToken != nil {
+		return *x.NextPageToken
+	}
+	return ""
+}
+
+func (x *ListSourceChunkDebugResponse) GetSource() *KnowledgeSourceDebug {
+	if x != nil {
+		return x.Source
+	}
+	return nil
+}
+
+// Debug-only. Unstable: may change or be removed without notice. Production and API callers must not rely on it.
+// A summary of the stored chunks of one source.
+type KnowledgeSourceDebug struct {
+	state            protoimpl.MessageState `protogen:"open.v1"`
+	StoredChunkCount *uint32                `protobuf:"varint,1,opt,name=stored_chunk_count,json=storedChunkCount,proto3,oneof" json:"stored_chunk_count,omitempty"`
+	// The partitions (WorkspaceRid values) of the stored chunks.
+	Partitions          []string                 `protobuf:"bytes,2,rep,name=partitions,proto3" json:"partitions,omitempty"`
+	PartitionsTruncated *bool                    `protobuf:"varint,3,opt,name=partitions_truncated,json=partitionsTruncated,proto3,oneof" json:"partitions_truncated,omitempty"`
+	Embedding           *KnowledgeEmbeddingDebug `protobuf:"bytes,4,opt,name=embedding,proto3,oneof" json:"embedding,omitempty"`
+	// The count of chunks for each expected or stored representation ID, up to 16 IDs.
+	RepresentationChunkCounts []*RepresentationChunkCount `protobuf:"bytes,5,rep,name=representation_chunk_counts,json=representationChunkCounts,proto3" json:"representation_chunk_counts,omitempty"`
+	// The row of this source in the latest execution of the drive, with its debug timestamps. Absent when that
+	// execution has no row for the source.
+	LatestExecution *DriveIndexSourceExecution `protobuf:"bytes,6,opt,name=latest_execution,json=latestExecution,proto3,oneof" json:"latest_execution,omitempty"`
+	// Set when more than 16 expected or stored representation IDs exist.
+	RepresentationChunkCountsTruncated *bool `protobuf:"varint,7,opt,name=representation_chunk_counts_truncated,json=representationChunkCountsTruncated,proto3,oneof" json:"representation_chunk_counts_truncated,omitempty"`
+	unknownFields                      protoimpl.UnknownFields
+	sizeCache                          protoimpl.SizeCache
+}
+
+func (x *KnowledgeSourceDebug) Reset() {
+	*x = KnowledgeSourceDebug{}
+	mi := &file_nominal_protos_knowledge_v1_knowledge_proto_msgTypes[25]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *KnowledgeSourceDebug) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*KnowledgeSourceDebug) ProtoMessage() {}
+
+func (x *KnowledgeSourceDebug) ProtoReflect() protoreflect.Message {
+	mi := &file_nominal_protos_knowledge_v1_knowledge_proto_msgTypes[25]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use KnowledgeSourceDebug.ProtoReflect.Descriptor instead.
+func (*KnowledgeSourceDebug) Descriptor() ([]byte, []int) {
+	return file_nominal_protos_knowledge_v1_knowledge_proto_rawDescGZIP(), []int{25}
+}
+
+func (x *KnowledgeSourceDebug) GetStoredChunkCount() uint32 {
+	if x != nil && x.StoredChunkCount != nil {
+		return *x.StoredChunkCount
+	}
+	return 0
+}
+
+func (x *KnowledgeSourceDebug) GetPartitions() []string {
+	if x != nil {
+		return x.Partitions
+	}
+	return nil
+}
+
+func (x *KnowledgeSourceDebug) GetPartitionsTruncated() bool {
+	if x != nil && x.PartitionsTruncated != nil {
+		return *x.PartitionsTruncated
+	}
+	return false
+}
+
+func (x *KnowledgeSourceDebug) GetEmbedding() *KnowledgeEmbeddingDebug {
+	if x != nil {
+		return x.Embedding
+	}
+	return nil
+}
+
+func (x *KnowledgeSourceDebug) GetRepresentationChunkCounts() []*RepresentationChunkCount {
+	if x != nil {
+		return x.RepresentationChunkCounts
+	}
+	return nil
+}
+
+func (x *KnowledgeSourceDebug) GetLatestExecution() *DriveIndexSourceExecution {
+	if x != nil {
+		return x.LatestExecution
+	}
+	return nil
+}
+
+func (x *KnowledgeSourceDebug) GetRepresentationChunkCountsTruncated() bool {
+	if x != nil && x.RepresentationChunkCountsTruncated != nil {
+		return *x.RepresentationChunkCountsTruncated
+	}
+	return false
+}
+
+// Debug-only. Unstable: may change or be removed without notice. Production and API callers must not rely on it.
+// The count of stored chunks of one source that have one representation.
+type RepresentationChunkCount struct {
+	state            protoimpl.MessageState `protogen:"open.v1"`
+	RepresentationId *string                `protobuf:"bytes,1,opt,name=representation_id,json=representationId,proto3,oneof" json:"representation_id,omitempty"`
+	ChunkCount       *uint32                `protobuf:"varint,2,opt,name=chunk_count,json=chunkCount,proto3,oneof" json:"chunk_count,omitempty"`
+	unknownFields    protoimpl.UnknownFields
+	sizeCache        protoimpl.SizeCache
+}
+
+func (x *RepresentationChunkCount) Reset() {
+	*x = RepresentationChunkCount{}
+	mi := &file_nominal_protos_knowledge_v1_knowledge_proto_msgTypes[26]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *RepresentationChunkCount) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*RepresentationChunkCount) ProtoMessage() {}
+
+func (x *RepresentationChunkCount) ProtoReflect() protoreflect.Message {
+	mi := &file_nominal_protos_knowledge_v1_knowledge_proto_msgTypes[26]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use RepresentationChunkCount.ProtoReflect.Descriptor instead.
+func (*RepresentationChunkCount) Descriptor() ([]byte, []int) {
+	return file_nominal_protos_knowledge_v1_knowledge_proto_rawDescGZIP(), []int{26}
+}
+
+func (x *RepresentationChunkCount) GetRepresentationId() string {
+	if x != nil && x.RepresentationId != nil {
+		return *x.RepresentationId
+	}
+	return ""
+}
+
+func (x *RepresentationChunkCount) GetChunkCount() uint32 {
+	if x != nil && x.ChunkCount != nil {
+		return *x.ChunkCount
+	}
+	return 0
+}
+
+// Debug-only. Unstable: may change or be removed without notice. Production and API callers must not rely on it.
+// The stored index data of one chunk.
+type KnowledgeChunkDebug struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// The chunk identity.
+	ChunkPointer *KnowledgeChunk `protobuf:"bytes,1,opt,name=chunk_pointer,json=chunkPointer,proto3,oneof" json:"chunk_pointer,omitempty"`
+	// Up to 256 lexemes of the chunk, count descending, then term ascending.
+	Lexemes []*KnowledgeLexemeDebug `protobuf:"bytes,2,rep,name=lexemes,proto3" json:"lexemes,omitempty"`
+	// Set when more than 256 lexemes exist or any returned term is shortened to 256 UTF-8 bytes.
+	LexemesTruncated     *bool   `protobuf:"varint,3,opt,name=lexemes_truncated,json=lexemesTruncated,proto3,oneof" json:"lexemes_truncated,omitempty"`
+	StoredDocumentLength *uint32 `protobuf:"varint,4,opt,name=stored_document_length,json=storedDocumentLength,proto3,oneof" json:"stored_document_length,omitempty"`
+	// Up to 16 stored representations of the chunk.
+	Representations []*KnowledgeRepresentationDebug `protobuf:"bytes,5,rep,name=representations,proto3" json:"representations,omitempty"`
+	// Set when the chunk has more than 16 stored representations.
+	RepresentationsTruncated *bool `protobuf:"varint,6,opt,name=representations_truncated,json=representationsTruncated,proto3,oneof" json:"representations_truncated,omitempty"`
+	unknownFields            protoimpl.UnknownFields
+	sizeCache                protoimpl.SizeCache
+}
+
+func (x *KnowledgeChunkDebug) Reset() {
+	*x = KnowledgeChunkDebug{}
+	mi := &file_nominal_protos_knowledge_v1_knowledge_proto_msgTypes[27]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *KnowledgeChunkDebug) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*KnowledgeChunkDebug) ProtoMessage() {}
+
+func (x *KnowledgeChunkDebug) ProtoReflect() protoreflect.Message {
+	mi := &file_nominal_protos_knowledge_v1_knowledge_proto_msgTypes[27]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use KnowledgeChunkDebug.ProtoReflect.Descriptor instead.
+func (*KnowledgeChunkDebug) Descriptor() ([]byte, []int) {
+	return file_nominal_protos_knowledge_v1_knowledge_proto_rawDescGZIP(), []int{27}
+}
+
+func (x *KnowledgeChunkDebug) GetChunkPointer() *KnowledgeChunk {
+	if x != nil {
+		return x.ChunkPointer
+	}
+	return nil
+}
+
+func (x *KnowledgeChunkDebug) GetLexemes() []*KnowledgeLexemeDebug {
+	if x != nil {
+		return x.Lexemes
+	}
+	return nil
+}
+
+func (x *KnowledgeChunkDebug) GetLexemesTruncated() bool {
+	if x != nil && x.LexemesTruncated != nil {
+		return *x.LexemesTruncated
+	}
+	return false
+}
+
+func (x *KnowledgeChunkDebug) GetStoredDocumentLength() uint32 {
+	if x != nil && x.StoredDocumentLength != nil {
+		return *x.StoredDocumentLength
+	}
+	return 0
+}
+
+func (x *KnowledgeChunkDebug) GetRepresentations() []*KnowledgeRepresentationDebug {
+	if x != nil {
+		return x.Representations
+	}
+	return nil
+}
+
+func (x *KnowledgeChunkDebug) GetRepresentationsTruncated() bool {
+	if x != nil && x.RepresentationsTruncated != nil {
+		return *x.RepresentationsTruncated
+	}
+	return false
+}
+
+// Debug-only. Unstable: may change or be removed without notice. Production and API callers must not rely on it.
+// One lexeme of one chunk.
+type KnowledgeLexemeDebug struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// At most 256 UTF-8 bytes; a shortened term is signaled by KnowledgeChunkDebug.lexemes_truncated.
+	Term          *string `protobuf:"bytes,1,opt,name=term,proto3,oneof" json:"term,omitempty"`
+	Count         *uint32 `protobuf:"varint,2,opt,name=count,proto3,oneof" json:"count,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *KnowledgeLexemeDebug) Reset() {
+	*x = KnowledgeLexemeDebug{}
+	mi := &file_nominal_protos_knowledge_v1_knowledge_proto_msgTypes[28]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *KnowledgeLexemeDebug) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*KnowledgeLexemeDebug) ProtoMessage() {}
+
+func (x *KnowledgeLexemeDebug) ProtoReflect() protoreflect.Message {
+	mi := &file_nominal_protos_knowledge_v1_knowledge_proto_msgTypes[28]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use KnowledgeLexemeDebug.ProtoReflect.Descriptor instead.
+func (*KnowledgeLexemeDebug) Descriptor() ([]byte, []int) {
+	return file_nominal_protos_knowledge_v1_knowledge_proto_rawDescGZIP(), []int{28}
+}
+
+func (x *KnowledgeLexemeDebug) GetTerm() string {
+	if x != nil && x.Term != nil {
+		return *x.Term
+	}
+	return ""
+}
+
+func (x *KnowledgeLexemeDebug) GetCount() uint32 {
+	if x != nil && x.Count != nil {
+		return *x.Count
+	}
+	return 0
+}
+
+// Debug-only. Unstable: may change or be removed without notice. Production and API callers must not rely on it.
+// One stored representation of one chunk. No RPC returns a full vector.
+type KnowledgeRepresentationDebug struct {
+	state            protoimpl.MessageState `protogen:"open.v1"`
+	RepresentationId *string                `protobuf:"bytes,1,opt,name=representation_id,json=representationId,proto3,oneof" json:"representation_id,omitempty"`
+	Family           *string                `protobuf:"bytes,2,opt,name=family,proto3,oneof" json:"family,omitempty"`
+	// Stable lowercase string.
+	Provider   *string  `protobuf:"bytes,3,opt,name=provider,proto3,oneof" json:"provider,omitempty"`
+	Model      *string  `protobuf:"bytes,4,opt,name=model,proto3,oneof" json:"model,omitempty"`
+	Dimensions *uint32  `protobuf:"varint,5,opt,name=dimensions,proto3,oneof" json:"dimensions,omitempty"`
+	L2Norm     *float64 `protobuf:"fixed64,6,opt,name=l2_norm,json=l2Norm,proto3,oneof" json:"l2_norm,omitempty"`
+	// The first values of the vector.
+	FirstValues   []float64 `protobuf:"fixed64,7,rep,packed,name=first_values,json=firstValues,proto3" json:"first_values,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *KnowledgeRepresentationDebug) Reset() {
+	*x = KnowledgeRepresentationDebug{}
+	mi := &file_nominal_protos_knowledge_v1_knowledge_proto_msgTypes[29]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *KnowledgeRepresentationDebug) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*KnowledgeRepresentationDebug) ProtoMessage() {}
+
+func (x *KnowledgeRepresentationDebug) ProtoReflect() protoreflect.Message {
+	mi := &file_nominal_protos_knowledge_v1_knowledge_proto_msgTypes[29]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use KnowledgeRepresentationDebug.ProtoReflect.Descriptor instead.
+func (*KnowledgeRepresentationDebug) Descriptor() ([]byte, []int) {
+	return file_nominal_protos_knowledge_v1_knowledge_proto_rawDescGZIP(), []int{29}
+}
+
+func (x *KnowledgeRepresentationDebug) GetRepresentationId() string {
+	if x != nil && x.RepresentationId != nil {
+		return *x.RepresentationId
+	}
+	return ""
+}
+
+func (x *KnowledgeRepresentationDebug) GetFamily() string {
+	if x != nil && x.Family != nil {
+		return *x.Family
+	}
+	return ""
+}
+
+func (x *KnowledgeRepresentationDebug) GetProvider() string {
+	if x != nil && x.Provider != nil {
+		return *x.Provider
+	}
+	return ""
+}
+
+func (x *KnowledgeRepresentationDebug) GetModel() string {
+	if x != nil && x.Model != nil {
+		return *x.Model
+	}
+	return ""
+}
+
+func (x *KnowledgeRepresentationDebug) GetDimensions() uint32 {
+	if x != nil && x.Dimensions != nil {
+		return *x.Dimensions
+	}
+	return 0
+}
+
+func (x *KnowledgeRepresentationDebug) GetL2Norm() float64 {
+	if x != nil && x.L2Norm != nil {
+		return *x.L2Norm
+	}
+	return 0
+}
+
+func (x *KnowledgeRepresentationDebug) GetFirstValues() []float64 {
+	if x != nil {
+		return x.FirstValues
+	}
+	return nil
+}
+
 var File_nominal_protos_knowledge_v1_knowledge_proto protoreflect.FileDescriptor
 
 const file_nominal_protos_knowledge_v1_knowledge_proto_rawDesc = "" +
 	"\n" +
-	"+nominal/protos/knowledge/v1/knowledge.proto\x12\x14nominal.knowledge.v1\x1a\x1bbuf/validate/validate.proto\x1a\x1cgoogle/api/annotations.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a!nominal/protos/gen/v1/alias.proto\"c\n" +
+	"+nominal/protos/knowledge/v1/knowledge.proto\x12\x14nominal.knowledge.v1\x1a\x1bbuf/validate/validate.proto\x1a\x1cgoogle/api/annotations.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a)nominal/protos/authz/v1/annotations.proto\x1a!nominal/protos/gen/v1/alias.proto\"c\n" +
 	"\x1aCreateDriveIndexJobRequest\x12E\n" +
 	"\tdrive_rid\x18\x01 \x01(\tB(\xbaH\x03\xc8\x01\x01\x9a\xb2\x1a\x1e\n" +
 	"\x1cio.nominal.api.rids.DriveRidR\bdriveRid\"r\n" +
@@ -1064,13 +2517,18 @@ const file_nominal_protos_knowledge_v1_knowledge_proto_rawDesc = "" +
 	"\x13drive_index_job_rid\x18\x01 \x01(\tB2\xbaH\ar\x05\x10\x01(\x80\b\x9a\xb2\x1a$\n" +
 	"\"com.palantir.ri.ResourceIdentifierR\x10driveIndexJobRid\"o\n" +
 	"\x18GetDriveIndexJobResponse\x12S\n" +
-	"\x0fdrive_index_job\x18\x01 \x01(\v2#.nominal.knowledge.v1.DriveIndexJobB\x06\xbaH\x03\xc8\x01\x01R\rdriveIndexJob\"~\n" +
+	"\x0fdrive_index_job\x18\x01 \x01(\v2#.nominal.knowledge.v1.DriveIndexJobB\x06\xbaH\x03\xc8\x01\x01R\rdriveIndexJob\"\xda\x01\n" +
 	"\x19ListDriveIndexJobsRequest\x12+\n" +
 	"\tpage_size\x18\x01 \x01(\x05B\t\xbaH\x06\x1a\x04\x18d(\x01H\x00R\bpageSize\x88\x01\x01\x12&\n" +
 	"\n" +
-	"page_token\x18\x02 \x01(\tB\a\xbaH\x04r\x02( R\tpageTokenB\f\n" +
+	"page_token\x18\x02 \x01(\tB\a\xbaH\x04r\x02( R\tpageToken\x12L\n" +
+	"\tdrive_rid\x18\n" +
+	" \x01(\tB*\xbaH\x05r\x03(\x80\b\x9a\xb2\x1a\x1e\n" +
+	"\x1cio.nominal.api.rids.DriveRidH\x01R\bdriveRid\x88\x01\x01B\f\n" +
 	"\n" +
-	"_page_size\"\xad\x01\n" +
+	"_page_sizeB\f\n" +
+	"\n" +
+	"_drive_rid\"\xad\x01\n" +
 	"\x1aListDriveIndexJobsResponse\x12^\n" +
 	"\x10drive_index_jobs\x18\x01 \x03(\v2*.nominal.knowledge.v1.DriveIndexJobSummaryB\b\xbaH\x05\x92\x01\x02\x10dR\x0edriveIndexJobs\x12/\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tB\a\xbaH\x04r\x02( R\rnextPageToken\"\xe7\x01\n" +
@@ -1084,7 +2542,7 @@ const file_nominal_protos_knowledge_v1_knowledge_proto_rawDesc = "" +
 	"_page_size\"\xa8\x01\n" +
 	" ListDriveIndexJobSourcesResponse\x12S\n" +
 	"\asources\x18\x01 \x03(\v2/.nominal.knowledge.v1.DriveIndexSourceExecutionB\b\xbaH\x05\x92\x01\x02\x10dR\asources\x12/\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tB\a\xbaH\x04r\x02( R\rnextPageToken\"\xa0\x04\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tB\a\xbaH\x04r\x02( R\rnextPageToken\"\xf6\x04\n" +
 	"\x14DriveIndexJobSummary\x12a\n" +
 	"\x13drive_index_job_rid\x18\x01 \x01(\tB2\xbaH\ar\x05\x10\x01(\x80\b\x9a\xb2\x1a$\n" +
 	"\"com.palantir.ri.ResourceIdentifierR\x10driveIndexJobRid\x12E\n" +
@@ -1096,7 +2554,10 @@ const file_nominal_protos_knowledge_v1_knowledge_proto_rawDesc = "" +
 	"\n" +
 	"created_at\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampB\x06\xbaH\x03\xc8\x01\x01R\tcreatedAt\x122\n" +
 	"\x15admitted_source_count\x18\a \x01(\x04R\x13admittedSourceCount\x121\n" +
-	"\x14enumeration_complete\x18\b \x01(\bR\x13enumerationComplete\"\xb9\x05\n" +
+	"\x14enumeration_complete\x18\b \x01(\bR\x13enumerationComplete\x12J\n" +
+	"\x05debug\x18\n" +
+	" \x01(\v2/.nominal.knowledge.v1.DriveIndexJobSummaryDebugH\x00R\x05debug\x88\x01\x01B\b\n" +
+	"\x06_debug\"\x88\x06\n" +
 	"\rDriveIndexJob\x12a\n" +
 	"\x13drive_index_job_rid\x18\x01 \x01(\tB2\xbaH\ar\x05\x10\x01(\x80\b\x9a\xb2\x1a$\n" +
 	"\"com.palantir.ri.ResourceIdentifierR\x10driveIndexJobRid\x12E\n" +
@@ -1111,7 +2572,9 @@ const file_nominal_protos_knowledge_v1_knowledge_proto_rawDesc = "" +
 	"\x14enumeration_complete\x18\t \x01(\bR\x13enumerationComplete\x12!\n" +
 	"\arun_ids\x18\n" +
 	" \x03(\tB\b\xbaH\x05\x92\x01\x02\x10dR\x06runIds\x12<\n" +
-	"\x1atemporal_history_available\x18\v \x01(\bR\x18temporalHistoryAvailable\"\xac\x03\n" +
+	"\x1atemporal_history_available\x18\v \x01(\bR\x18temporalHistoryAvailable\x12C\n" +
+	"\x05debug\x18\x14 \x01(\v2(.nominal.knowledge.v1.DriveIndexJobDebugH\x00R\x05debug\x88\x01\x01B\b\n" +
+	"\x06_debug\"\x87\x04\n" +
 	"\x19DriveIndexSourceExecution\x12Q\n" +
 	"\n" +
 	"source_rid\x18\x01 \x01(\tB2\xbaH\ar\x05\x10\x01(\x80\b\x9a\xb2\x1a$\n" +
@@ -1122,7 +2585,10 @@ const file_nominal_protos_knowledge_v1_knowledge_proto_rawDesc = "" +
 	"(io.nominal.api.rids.DriveFileRevisionRidR\vrevisionRid\x124\n" +
 	"\x11child_workflow_id\x18\x05 \x01(\tB\b\xbaH\x05r\x03(\x80\bR\x0fchildWorkflowId\x12)\n" +
 	"\fchild_run_id\x18\x06 \x01(\tB\a\xbaH\x04r\x02(@R\n" +
-	"childRunId\"\x92\x02\n" +
+	"childRunId\x12O\n" +
+	"\x05debug\x18\n" +
+	" \x01(\v24.nominal.knowledge.v1.DriveIndexSourceExecutionDebugH\x00R\x05debug\x88\x01\x01B\b\n" +
+	"\x06_debug\"\x92\x02\n" +
 	"\x0eKnowledgeChunk\x12M\n" +
 	"\n" +
 	"sample_rid\x18\x01 \x01(\tB.\xbaH\x03\xc8\x01\x01\x9a\xb2\x1a$\n" +
@@ -1133,7 +2599,7 @@ const file_nominal_protos_knowledge_v1_knowledge_proto_rawDesc = "" +
 	"\x0esource_locator\x18\x03 \x01(\tB\n" +
 	"\xbaH\ar\x05\x10\x01(\x80\x10R\rsourceLocator\x12/\n" +
 	"\rpartition_key\x18\x04 \x01(\tB\n" +
-	"\xbaH\ar\x05\x10\x01(\x80\bR\fpartitionKey\"\xda\x01\n" +
+	"\xbaH\ar\x05\x10\x01(\x80\bR\fpartitionKey\"\x96\x02\n" +
 	"\fQueryRequest\x12 \n" +
 	"\x05query\x18\x01 \x01(\tB\n" +
 	"\xbaH\ar\x05\x10\x01(\x80 R\x05query\x12E\n" +
@@ -1141,12 +2607,241 @@ const file_nominal_protos_knowledge_v1_knowledge_proto_rawDesc = "" +
 	"\x1cio.nominal.api.rids.DriveRidR\bdriveRid\x12+\n" +
 	"\tpage_size\x18\x02 \x01(\x05B\t\xbaH\x06\x1a\x04\x18\x14(\x01H\x00R\bpageSize\x88\x01\x01\x12&\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\a\xbaH\x04r\x02( R\tpageTokenB\f\n" +
+	"page_token\x18\x03 \x01(\tB\a\xbaH\x04r\x02( R\tpageToken\x12(\n" +
+	"\rinclude_debug\x18\n" +
+	" \x01(\bH\x01R\fincludeDebug\x88\x01\x01B\f\n" +
 	"\n" +
-	"_page_size\"\x88\x01\n" +
+	"_page_sizeB\x10\n" +
+	"\x0e_include_debug\"\xcf\x01\n" +
 	"\rQueryResponse\x12F\n" +
 	"\x06chunks\x18\x01 \x03(\v2$.nominal.knowledge.v1.KnowledgeChunkB\b\xbaH\x05\x92\x01\x02\x10\x14R\x06chunks\x12/\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tB\a\xbaH\x04r\x02( R\rnextPageToken*\xd8\x01\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tB\a\xbaH\x04r\x02( R\rnextPageToken\x12;\n" +
+	"\x05debug\x18\n" +
+	" \x01(\v2 .nominal.knowledge.v1.QueryDebugH\x00R\x05debug\x88\x01\x01B\b\n" +
+	"\x06_debug\"\xdc\x01\n" +
+	"\x19DriveIndexJobSummaryDebug\x12X\n" +
+	"\rworkspace_rid\x18\x01 \x01(\tB.\xbaH\x05r\x03(\x80\b\x9a\xb2\x1a\"\n" +
+	" io.nominal.api.rids.WorkspaceRidH\x00R\fworkspaceRid\x88\x01\x01\x12B\n" +
+	"\fcompleted_at\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampH\x01R\vcompletedAt\x88\x01\x01B\x10\n" +
+	"\x0e_workspace_ridB\x0f\n" +
+	"\r_completed_at\"\xc2\a\n" +
+	"\x12DriveIndexJobDebug\x12>\n" +
+	"\n" +
+	"created_at\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampH\x00R\tcreatedAt\x88\x01\x01\x12B\n" +
+	"\fcompleted_at\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampH\x01R\vcompletedAt\x88\x01\x01\x12X\n" +
+	"\rworkspace_rid\x18\x03 \x01(\tB.\xbaH\x05r\x03(\x80\b\x9a\xb2\x1a\"\n" +
+	" io.nominal.api.rids.WorkspaceRidH\x02R\fworkspaceRid\x88\x01\x01\x12e\n" +
+	"\x14caller_workspace_rid\x18\x04 \x01(\tB.\xbaH\x05r\x03(\x80\b\x9a\xb2\x1a\"\n" +
+	" io.nominal.api.rids.WorkspaceRidH\x03R\x12callerWorkspaceRid\x88\x01\x01\x125\n" +
+	"\x14running_source_count\x18\x05 \x01(\rH\x04R\x12runningSourceCount\x88\x01\x01\x129\n" +
+	"\x16succeeded_source_count\x18\x06 \x01(\rH\x05R\x14succeededSourceCount\x88\x01\x01\x123\n" +
+	"\x13failed_source_count\x18\a \x01(\rH\x06R\x11failedSourceCount\x88\x01\x01\x12k\n" +
+	"\x14failed_source_counts\x18\b \x03(\v2/.nominal.knowledge.v1.FailedSourceCategoryCountB\b\xbaH\x05\x92\x01\x02\x10\x10R\x12failedSourceCounts\x12`\n" +
+	"\x0eattention_list\x18\t \x03(\v2/.nominal.knowledge.v1.DriveIndexSourceExecutionB\b\xbaH\x05\x92\x01\x02\x10dR\rattentionList\x12=\n" +
+	"\x18attention_list_truncated\x18\n" +
+	" \x01(\bH\aR\x16attentionListTruncated\x88\x01\x01B\r\n" +
+	"\v_created_atB\x0f\n" +
+	"\r_completed_atB\x10\n" +
+	"\x0e_workspace_ridB\x17\n" +
+	"\x15_caller_workspace_ridB\x17\n" +
+	"\x15_running_source_countB\x19\n" +
+	"\x17_succeeded_source_countB\x16\n" +
+	"\x14_failed_source_countB\x1b\n" +
+	"\x19_attention_list_truncated\"\x8e\x01\n" +
+	"\x19FailedSourceCategoryCount\x127\n" +
+	"\x10failure_category\x18\x01 \x01(\tB\a\xbaH\x04r\x02(@H\x00R\x0ffailureCategory\x88\x01\x01\x12\x19\n" +
+	"\x05count\x18\x02 \x01(\rH\x01R\x05count\x88\x01\x01B\x13\n" +
+	"\x11_failure_categoryB\b\n" +
+	"\x06_count\"\xfa\x01\n" +
+	"\x1eDriveIndexSourceExecutionDebug\x12>\n" +
+	"\n" +
+	"started_at\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampH\x00R\tstartedAt\x88\x01\x01\x12B\n" +
+	"\fcompleted_at\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampH\x01R\vcompletedAt\x88\x01\x01\x12$\n" +
+	"\vchunk_count\x18\x03 \x01(\rH\x02R\n" +
+	"chunkCount\x88\x01\x01B\r\n" +
+	"\v_started_atB\x0f\n" +
+	"\r_completed_atB\x0e\n" +
+	"\f_chunk_count\"\xed\b\n" +
+	"\n" +
+	"QueryDebug\x12i\n" +
+	"\x16searched_workspace_rid\x18\x01 \x01(\tB.\xbaH\x05r\x03(\x80\b\x9a\xb2\x1a\"\n" +
+	" io.nominal.api.rids.WorkspaceRidH\x00R\x14searchedWorkspaceRid\x88\x01\x01\x12S\n" +
+	"\n" +
+	"retrievers\x18\x02 \x03(\v2).nominal.knowledge.v1.QueryRetrieverDebugB\b\xbaH\x05\x92\x01\x02\x10\bR\n" +
+	"retrievers\x12-\n" +
+	"\vfusion_rule\x18\x03 \x01(\tB\a\xbaH\x04r\x02(@H\x01R\n" +
+	"fusionRule\x88\x01\x01\x12;\n" +
+	"\x12normalization_rule\x18\x04 \x01(\tB\a\xbaH\x04r\x02(@H\x02R\x11normalizationRule\x88\x01\x01\x122\n" +
+	"\x0etie_break_rule\x18\x05 \x01(\tB\a\xbaH\x04r\x02(@H\x03R\ftieBreakRule\x88\x01\x01\x12=\n" +
+	"\x18distinct_candidate_count\x18\x06 \x01(\rH\x04R\x16distinctCandidateCount\x88\x01\x01\x120\n" +
+	"\vquery_terms\x18\a \x03(\tB\x0f\xbaH\f\x92\x01\t\x10@\"\x05r\x03(\x80\x02R\n" +
+	"queryTerms\x12-\n" +
+	"\x10query_term_count\x18\b \x01(\rH\x05R\x0equeryTermCount\x88\x01\x01\x127\n" +
+	"\x15query_terms_truncated\x18\t \x01(\bH\x06R\x13queryTermsTruncated\x88\x01\x01\x12S\n" +
+	"\n" +
+	"candidates\x18\n" +
+	" \x03(\v2).nominal.knowledge.v1.QueryCandidateDebugB\b\xbaH\x05\x92\x01\x02\x10\x14R\n" +
+	"candidates\x12e\n" +
+	"\x13excluded_candidates\x18\v \x03(\v2).nominal.knowledge.v1.QueryCandidateDebugB\t\xbaH\x06\x92\x01\x03\x10\xa0\x01R\x12excludedCandidates\x12G\n" +
+	"\x1dexcluded_candidates_truncated\x18\f \x01(\bH\aR\x1bexcludedCandidatesTruncated\x88\x01\x01\x12P\n" +
+	"\tembedding\x18\r \x01(\v2-.nominal.knowledge.v1.KnowledgeEmbeddingDebugH\bR\tembedding\x88\x01\x01B\x19\n" +
+	"\x17_searched_workspace_ridB\x0e\n" +
+	"\f_fusion_ruleB\x15\n" +
+	"\x13_normalization_ruleB\x11\n" +
+	"\x0f_tie_break_ruleB\x1b\n" +
+	"\x19_distinct_candidate_countB\x13\n" +
+	"\x11_query_term_countB\x18\n" +
+	"\x16_query_terms_truncatedB \n" +
+	"\x1e_excluded_candidates_truncatedB\f\n" +
+	"\n" +
+	"_embedding\"\xa8\a\n" +
+	"\x13QueryRetrieverDebug\x123\n" +
+	"\x0eretriever_name\x18\x01 \x01(\tB\a\xbaH\x04r\x02(@H\x00R\rretrieverName\x88\x01\x01\x12:\n" +
+	"\x11representation_id\x18\x02 \x01(\tB\b\xbaH\x05r\x03(\x80\x01H\x01R\x10representationId\x88\x01\x01\x12\x1b\n" +
+	"\x06weight\x18\x03 \x01(\x01H\x02R\x06weight\x88\x01\x01\x12-\n" +
+	"\vskip_reason\x18\x04 \x01(\tB\a\xbaH\x04r\x02(@H\x03R\n" +
+	"skipReason\x88\x01\x01\x12,\n" +
+	"\x0fcandidate_count\x18\x05 \x01(\rH\x04R\x0ecandidateCount\x88\x01\x01\x12,\n" +
+	"\x0fcandidate_limit\x18\x06 \x01(\rH\x05R\x0ecandidateLimit\x88\x01\x01\x12(\n" +
+	"\rlimit_reached\x18\a \x01(\bH\x06R\flimitReached\x88\x01\x01\x12-\n" +
+	"\vlimit_order\x18\b \x01(\tB\a\xbaH\x04r\x02(@H\aR\n" +
+	"limitOrder\x88\x01\x01\x120\n" +
+	"\x11normalization_min\x18\t \x01(\x01H\bR\x10normalizationMin\x88\x01\x01\x120\n" +
+	"\x11normalization_max\x18\n" +
+	" \x01(\x01H\tR\x10normalizationMax\x88\x01\x01\x12;\n" +
+	"\x17excluded_list_truncated\x18\v \x01(\bH\n" +
+	"R\x15excludedListTruncated\x88\x01\x01\x12i\n" +
+	"\n" +
+	"parameters\x18\f \x03(\v29.nominal.knowledge.v1.QueryRetrieverDebug.ParametersEntryB\x0e\xbaH\v\x9a\x01\b\x10\x10\"\x04r\x02(@R\n" +
+	"parameters\x1a=\n" +
+	"\x0fParametersEntry\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
+	"\x05value\x18\x02 \x01(\x01R\x05value:\x028\x01B\x11\n" +
+	"\x0f_retriever_nameB\x14\n" +
+	"\x12_representation_idB\t\n" +
+	"\a_weightB\x0e\n" +
+	"\f_skip_reasonB\x12\n" +
+	"\x10_candidate_countB\x12\n" +
+	"\x10_candidate_limitB\x10\n" +
+	"\x0e_limit_reachedB\x0e\n" +
+	"\f_limit_orderB\x14\n" +
+	"\x12_normalization_minB\x14\n" +
+	"\x12_normalization_maxB\x1a\n" +
+	"\x18_excluded_list_truncated\"\xe2\x03\n" +
+	"\x13QueryCandidateDebug\x12T\n" +
+	"\n" +
+	"sample_rid\x18\x01 \x01(\tB0\xbaH\x05r\x03(\x80\b\x9a\xb2\x1a$\n" +
+	"\"com.palantir.ri.ResourceIdentifierH\x00R\tsampleRid\x88\x01\x01\x12\"\n" +
+	"\n" +
+	"fused_rank\x18\x02 \x01(\rH\x01R\tfusedRank\x88\x01\x01\x12$\n" +
+	"\vfused_score\x18\x03 \x01(\x01H\x02R\n" +
+	"fusedScore\x88\x01\x01\x12P\n" +
+	"\x06scores\x18\x04 \x03(\v2..nominal.knowledge.v1.QueryRetrieverScoreDebugB\b\xbaH\x05\x92\x01\x02\x10\bR\x06scores\x125\n" +
+	"\x0fwithheld_reason\x18\x05 \x01(\tB\a\xbaH\x04r\x02(@H\x03R\x0ewithheldReason\x88\x01\x01\x12N\n" +
+	"\rchunk_pointer\x18\x06 \x01(\v2$.nominal.knowledge.v1.KnowledgeChunkH\x04R\fchunkPointer\x88\x01\x01B\r\n" +
+	"\v_sample_ridB\r\n" +
+	"\v_fused_rankB\x0e\n" +
+	"\f_fused_scoreB\x12\n" +
+	"\x10_withheld_reasonB\x10\n" +
+	"\x0e_chunk_pointer\"\xe3\x02\n" +
+	"\x18QueryRetrieverScoreDebug\x123\n" +
+	"\x0eretriever_name\x18\x01 \x01(\tB\a\xbaH\x04r\x02(@H\x00R\rretrieverName\x88\x01\x01\x12\x1d\n" +
+	"\amatched\x18\x02 \x01(\bH\x01R\amatched\x88\x01\x01\x12\x17\n" +
+	"\x04rank\x18\x03 \x01(\rH\x02R\x04rank\x88\x01\x01\x12 \n" +
+	"\traw_score\x18\x04 \x01(\x01H\x03R\brawScore\x88\x01\x01\x12.\n" +
+	"\x10normalized_score\x18\x05 \x01(\x01H\x04R\x0fnormalizedScore\x88\x01\x01\x12*\n" +
+	"\x0eweighted_score\x18\x06 \x01(\x01H\x05R\rweightedScore\x88\x01\x01B\x11\n" +
+	"\x0f_retriever_nameB\n" +
+	"\n" +
+	"\b_matchedB\a\n" +
+	"\x05_rankB\f\n" +
+	"\n" +
+	"_raw_scoreB\x13\n" +
+	"\x11_normalized_scoreB\x11\n" +
+	"\x0f_weighted_score\"\xe9\x03\n" +
+	"\x17KnowledgeEmbeddingDebug\x12(\n" +
+	"\bprovider\x18\x01 \x01(\tB\a\xbaH\x04r\x02(@H\x00R\bprovider\x88\x01\x01\x125\n" +
+	"\x14text_embedder_active\x18\x02 \x01(\bH\x01R\x12textEmbedderActive\x88\x01\x01\x12P\n" +
+	"\x1dactive_text_representation_id\x18\x03 \x01(\tB\b\xbaH\x05r\x03(\x80\x01H\x02R\x1aactiveTextRepresentationId\x88\x01\x01\x12\\\n" +
+	"#active_multimodal_representation_id\x18\x04 \x01(\tB\b\xbaH\x05r\x03(\x80\x01H\x03R activeMultimodalRepresentationId\x88\x01\x01\x12M\n" +
+	"\x1awritten_representation_ids\x18\x05 \x03(\tB\x0f\xbaH\f\x92\x01\t\x10\x10\"\x05r\x03(\x80\x01R\x18writtenRepresentationIdsB\v\n" +
+	"\t_providerB\x17\n" +
+	"\x15_text_embedder_activeB \n" +
+	"\x1e_active_text_representation_idB&\n" +
+	"$_active_multimodal_representation_id\"\xb4\x02\n" +
+	"\x1bListSourceChunkDebugRequest\x12J\n" +
+	"\tdrive_rid\x18\x01 \x01(\tB-\xbaH\b\xc8\x01\x01r\x03(\x80\b\x9a\xb2\x1a\x1e\n" +
+	"\x1cio.nominal.api.rids.DriveRidR\bdriveRid\x12R\n" +
+	"\n" +
+	"source_rid\x18\x02 \x01(\tB3\xbaH\b\xc8\x01\x01r\x03(\x80\b\x9a\xb2\x1a$\n" +
+	"\"com.palantir.ri.ResourceIdentifierR\tsourceRid\x12+\n" +
+	"\tpage_size\x18\x03 \x01(\rB\t\xbaH\x06*\x04\x182(\x01H\x00R\bpageSize\x88\x01\x01\x12+\n" +
+	"\n" +
+	"page_token\x18\x04 \x01(\tB\a\xbaH\x04r\x02( H\x01R\tpageToken\x88\x01\x01B\f\n" +
+	"\n" +
+	"_page_sizeB\r\n" +
+	"\v_page_token\"\x89\x02\n" +
+	"\x1cListSourceChunkDebugResponse\x12K\n" +
+	"\x06chunks\x18\x01 \x03(\v2).nominal.knowledge.v1.KnowledgeChunkDebugB\b\xbaH\x05\x92\x01\x02\x102R\x06chunks\x124\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tB\a\xbaH\x04r\x02( H\x00R\rnextPageToken\x88\x01\x01\x12G\n" +
+	"\x06source\x18\x03 \x01(\v2*.nominal.knowledge.v1.KnowledgeSourceDebugH\x01R\x06source\x88\x01\x01B\x12\n" +
+	"\x10_next_page_tokenB\t\n" +
+	"\a_source\"\xb4\x05\n" +
+	"\x14KnowledgeSourceDebug\x121\n" +
+	"\x12stored_chunk_count\x18\x01 \x01(\rH\x00R\x10storedChunkCount\x88\x01\x01\x12/\n" +
+	"\n" +
+	"partitions\x18\x02 \x03(\tB\x0f\xbaH\f\x92\x01\t\x10\b\"\x05r\x03(\x80\bR\n" +
+	"partitions\x126\n" +
+	"\x14partitions_truncated\x18\x03 \x01(\bH\x01R\x13partitionsTruncated\x88\x01\x01\x12P\n" +
+	"\tembedding\x18\x04 \x01(\v2-.nominal.knowledge.v1.KnowledgeEmbeddingDebugH\x02R\tembedding\x88\x01\x01\x12x\n" +
+	"\x1brepresentation_chunk_counts\x18\x05 \x03(\v2..nominal.knowledge.v1.RepresentationChunkCountB\b\xbaH\x05\x92\x01\x02\x10\x10R\x19representationChunkCounts\x12_\n" +
+	"\x10latest_execution\x18\x06 \x01(\v2/.nominal.knowledge.v1.DriveIndexSourceExecutionH\x03R\x0flatestExecution\x88\x01\x01\x12V\n" +
+	"%representation_chunk_counts_truncated\x18\a \x01(\bH\x04R\"representationChunkCountsTruncated\x88\x01\x01B\x15\n" +
+	"\x13_stored_chunk_countB\x17\n" +
+	"\x15_partitions_truncatedB\f\n" +
+	"\n" +
+	"_embeddingB\x13\n" +
+	"\x11_latest_executionB(\n" +
+	"&_representation_chunk_counts_truncated\"\xa2\x01\n" +
+	"\x18RepresentationChunkCount\x12:\n" +
+	"\x11representation_id\x18\x01 \x01(\tB\b\xbaH\x05r\x03(\x80\x01H\x00R\x10representationId\x88\x01\x01\x12$\n" +
+	"\vchunk_count\x18\x02 \x01(\rH\x01R\n" +
+	"chunkCount\x88\x01\x01B\x14\n" +
+	"\x12_representation_idB\x0e\n" +
+	"\f_chunk_count\"\xae\x04\n" +
+	"\x13KnowledgeChunkDebug\x12N\n" +
+	"\rchunk_pointer\x18\x01 \x01(\v2$.nominal.knowledge.v1.KnowledgeChunkH\x00R\fchunkPointer\x88\x01\x01\x12O\n" +
+	"\alexemes\x18\x02 \x03(\v2*.nominal.knowledge.v1.KnowledgeLexemeDebugB\t\xbaH\x06\x92\x01\x03\x10\x80\x02R\alexemes\x120\n" +
+	"\x11lexemes_truncated\x18\x03 \x01(\bH\x01R\x10lexemesTruncated\x88\x01\x01\x129\n" +
+	"\x16stored_document_length\x18\x04 \x01(\rH\x02R\x14storedDocumentLength\x88\x01\x01\x12f\n" +
+	"\x0frepresentations\x18\x05 \x03(\v22.nominal.knowledge.v1.KnowledgeRepresentationDebugB\b\xbaH\x05\x92\x01\x02\x10\x10R\x0frepresentations\x12@\n" +
+	"\x19representations_truncated\x18\x06 \x01(\bH\x03R\x18representationsTruncated\x88\x01\x01B\x10\n" +
+	"\x0e_chunk_pointerB\x14\n" +
+	"\x12_lexemes_truncatedB\x19\n" +
+	"\x17_stored_document_lengthB\x1c\n" +
+	"\x1a_representations_truncated\"g\n" +
+	"\x14KnowledgeLexemeDebug\x12!\n" +
+	"\x04term\x18\x01 \x01(\tB\b\xbaH\x05r\x03(\x80\x02H\x00R\x04term\x88\x01\x01\x12\x19\n" +
+	"\x05count\x18\x02 \x01(\rH\x01R\x05count\x88\x01\x01B\a\n" +
+	"\x05_termB\b\n" +
+	"\x06_count\"\x92\x03\n" +
+	"\x1cKnowledgeRepresentationDebug\x12:\n" +
+	"\x11representation_id\x18\x01 \x01(\tB\b\xbaH\x05r\x03(\x80\x01H\x00R\x10representationId\x88\x01\x01\x12$\n" +
+	"\x06family\x18\x02 \x01(\tB\a\xbaH\x04r\x02(@H\x01R\x06family\x88\x01\x01\x12(\n" +
+	"\bprovider\x18\x03 \x01(\tB\a\xbaH\x04r\x02(@H\x02R\bprovider\x88\x01\x01\x12#\n" +
+	"\x05model\x18\x04 \x01(\tB\b\xbaH\x05r\x03(\x80\x02H\x03R\x05model\x88\x01\x01\x12#\n" +
+	"\n" +
+	"dimensions\x18\x05 \x01(\rH\x04R\n" +
+	"dimensions\x88\x01\x01\x12\x1c\n" +
+	"\al2_norm\x18\x06 \x01(\x01H\x05R\x06l2Norm\x88\x01\x01\x12+\n" +
+	"\ffirst_values\x18\a \x03(\x01B\b\xbaH\x05\x92\x01\x02\x10\bR\vfirstValuesB\x14\n" +
+	"\x12_representation_idB\t\n" +
+	"\a_familyB\v\n" +
+	"\t_providerB\b\n" +
+	"\x06_modelB\r\n" +
+	"\v_dimensionsB\n" +
+	"\n" +
+	"\b_l2_norm*\xd8\x01\n" +
 	"\x12DriveIndexJobState\x12%\n" +
 	"!DRIVE_INDEX_JOB_STATE_UNSPECIFIED\x10\x00\x12 \n" +
 	"\x1cDRIVE_INDEX_JOB_STATE_QUEUED\x10\x01\x12!\n" +
@@ -1157,13 +2852,29 @@ const file_nominal_protos_knowledge_v1_knowledge_proto_rawDesc = "" +
 	".DRIVE_INDEX_SOURCE_EXECUTION_STATE_UNSPECIFIED\x10\x00\x120\n" +
 	",DRIVE_INDEX_SOURCE_EXECUTION_STATE_SUCCEEDED\x10\x01\x129\n" +
 	"5DRIVE_INDEX_SOURCE_EXECUTION_STATE_PERMANENTLY_FAILED\x10\x02\x12.\n" +
-	"*DRIVE_INDEX_SOURCE_EXECUTION_STATE_RUNNING\x10\x032\xd9\x06\n" +
-	"\x10KnowledgeService\x12\xa5\x01\n" +
-	"\x13CreateDriveIndexJob\x120.nominal.knowledge.v1.CreateDriveIndexJobRequest\x1a1.nominal.knowledge.v1.CreateDriveIndexJobResponse\")\x82\xd3\xe4\x93\x02#:\x01*\"\x1e/knowledge/v1/drive-index-jobs\x12\xaf\x01\n" +
-	"\x10GetDriveIndexJob\x12-.nominal.knowledge.v1.GetDriveIndexJobRequest\x1a..nominal.knowledge.v1.GetDriveIndexJobResponse\"<\x82\xd3\xe4\x93\x026\x124/knowledge/v1/drive-index-jobs/{drive_index_job_rid}\x12\x9f\x01\n" +
-	"\x12ListDriveIndexJobs\x12/.nominal.knowledge.v1.ListDriveIndexJobsRequest\x1a0.nominal.knowledge.v1.ListDriveIndexJobsResponse\"&\x82\xd3\xe4\x93\x02 \x12\x1e/knowledge/v1/drive-index-jobs\x12\xcf\x01\n" +
-	"\x18ListDriveIndexJobSources\x125.nominal.knowledge.v1.ListDriveIndexJobSourcesRequest\x1a6.nominal.knowledge.v1.ListDriveIndexJobSourcesResponse\"D\x82\xd3\xe4\x93\x02>\x12</knowledge/v1/drive-index-jobs/{drive_index_job_rid}/sources\x12w\n" +
-	"\x05Query\x12\".nominal.knowledge.v1.QueryRequest\x1a#.nominal.knowledge.v1.QueryResponse\"%\x82\xd3\xe4\x93\x02\x1f:\x01*\"\x1a/knowledge/v1/chunks/queryB\xf1\x01\n" +
+	"*DRIVE_INDEX_SOURCE_EXECUTION_STATE_RUNNING\x10\x032\xa6\t\n" +
+	"\x10KnowledgeService\x12\xef\x01\n" +
+	"\x13CreateDriveIndexJob\x120.nominal.knowledge.v1.CreateDriveIndexJobRequest\x1a1.nominal.knowledge.v1.CreateDriveIndexJobResponse\"s\xba\xb2\x1aF\n" +
+	"\"\n" +
+	"\x13drive:read_metadata\x12\v\n" +
+	"\tdrive_rid\n" +
+	" \n" +
+	"\x1cworkspace:edit_configuration\"\x00\x82\xd3\xe4\x93\x02#:\x01*\"\x1e/knowledge/v1/drive-index-jobs\x12\xc7\x01\n" +
+	"\x10GetDriveIndexJob\x12-.nominal.knowledge.v1.GetDriveIndexJobRequest\x1a..nominal.knowledge.v1.GetDriveIndexJobResponse\"T\xba\xb2\x1a\x14\n" +
+	"\x12\n" +
+	"\x0eworkspace:view\"\x00\x82\xd3\xe4\x93\x026\x124/knowledge/v1/drive-index-jobs/{drive_index_job_rid}\x12\xa3\x01\n" +
+	"\x12ListDriveIndexJobs\x12/.nominal.knowledge.v1.ListDriveIndexJobsRequest\x1a0.nominal.knowledge.v1.ListDriveIndexJobsResponse\"*\xba\xb2\x1a\x00\x82\xd3\xe4\x93\x02 \x12\x1e/knowledge/v1/drive-index-jobs\x12\xe7\x01\n" +
+	"\x18ListDriveIndexJobSources\x125.nominal.knowledge.v1.ListDriveIndexJobSourcesRequest\x1a6.nominal.knowledge.v1.ListDriveIndexJobSourcesResponse\"\\\xba\xb2\x1a\x14\n" +
+	"\x12\n" +
+	"\x0eworkspace:view\"\x00\x82\xd3\xe4\x93\x02>\x12</knowledge/v1/drive-index-jobs/{drive_index_job_rid}/sources\x12\x9f\x01\n" +
+	"\x05Query\x12\".nominal.knowledge.v1.QueryRequest\x1a#.nominal.knowledge.v1.QueryResponse\"M\xba\xb2\x1a$\n" +
+	"\"\n" +
+	"\x13drive:read_metadata\x12\v\n" +
+	"\tdrive_rid\x82\xd3\xe4\x93\x02\x1f:\x01*\"\x1a/knowledge/v1/chunks/query\x12\xa3\x01\n" +
+	"\x14ListSourceChunkDebug\x121.nominal.knowledge.v1.ListSourceChunkDebugRequest\x1a2.nominal.knowledge.v1.ListSourceChunkDebugResponse\"$\xba\xb2\x1a \n" +
+	"\x1e\n" +
+	"\x0fdrive:read_file\x12\v\n" +
+	"\tdrive_ridB\xf1\x01\n" +
 	"\x18com.nominal.knowledge.v1B\x0eKnowledgeProtoP\x01ZSgithub.com/nominal-io/nominal-api-protos-go/nominal/protos/knowledge/v1;knowledgev1\xa2\x02\x03NKX\xaa\x02\x14Nominal.Knowledge.V1\xca\x02\x14Nominal\\Knowledge\\V1\xe2\x02 Nominal\\Knowledge\\V1\\GPBMetadata\xea\x02\x16Nominal::Knowledge::V1b\x06proto3"
 
 var (
@@ -1179,7 +2890,7 @@ func file_nominal_protos_knowledge_v1_knowledge_proto_rawDescGZIP() []byte {
 }
 
 var file_nominal_protos_knowledge_v1_knowledge_proto_enumTypes = make([]protoimpl.EnumInfo, 2)
-var file_nominal_protos_knowledge_v1_knowledge_proto_msgTypes = make([]protoimpl.MessageInfo, 14)
+var file_nominal_protos_knowledge_v1_knowledge_proto_msgTypes = make([]protoimpl.MessageInfo, 31)
 var file_nominal_protos_knowledge_v1_knowledge_proto_goTypes = []any{
 	(DriveIndexJobState)(0),                  // 0: nominal.knowledge.v1.DriveIndexJobState
 	(DriveIndexSourceExecutionState)(0),      // 1: nominal.knowledge.v1.DriveIndexSourceExecutionState
@@ -1197,7 +2908,24 @@ var file_nominal_protos_knowledge_v1_knowledge_proto_goTypes = []any{
 	(*KnowledgeChunk)(nil),                   // 13: nominal.knowledge.v1.KnowledgeChunk
 	(*QueryRequest)(nil),                     // 14: nominal.knowledge.v1.QueryRequest
 	(*QueryResponse)(nil),                    // 15: nominal.knowledge.v1.QueryResponse
-	(*timestamppb.Timestamp)(nil),            // 16: google.protobuf.Timestamp
+	(*DriveIndexJobSummaryDebug)(nil),        // 16: nominal.knowledge.v1.DriveIndexJobSummaryDebug
+	(*DriveIndexJobDebug)(nil),               // 17: nominal.knowledge.v1.DriveIndexJobDebug
+	(*FailedSourceCategoryCount)(nil),        // 18: nominal.knowledge.v1.FailedSourceCategoryCount
+	(*DriveIndexSourceExecutionDebug)(nil),   // 19: nominal.knowledge.v1.DriveIndexSourceExecutionDebug
+	(*QueryDebug)(nil),                       // 20: nominal.knowledge.v1.QueryDebug
+	(*QueryRetrieverDebug)(nil),              // 21: nominal.knowledge.v1.QueryRetrieverDebug
+	(*QueryCandidateDebug)(nil),              // 22: nominal.knowledge.v1.QueryCandidateDebug
+	(*QueryRetrieverScoreDebug)(nil),         // 23: nominal.knowledge.v1.QueryRetrieverScoreDebug
+	(*KnowledgeEmbeddingDebug)(nil),          // 24: nominal.knowledge.v1.KnowledgeEmbeddingDebug
+	(*ListSourceChunkDebugRequest)(nil),      // 25: nominal.knowledge.v1.ListSourceChunkDebugRequest
+	(*ListSourceChunkDebugResponse)(nil),     // 26: nominal.knowledge.v1.ListSourceChunkDebugResponse
+	(*KnowledgeSourceDebug)(nil),             // 27: nominal.knowledge.v1.KnowledgeSourceDebug
+	(*RepresentationChunkCount)(nil),         // 28: nominal.knowledge.v1.RepresentationChunkCount
+	(*KnowledgeChunkDebug)(nil),              // 29: nominal.knowledge.v1.KnowledgeChunkDebug
+	(*KnowledgeLexemeDebug)(nil),             // 30: nominal.knowledge.v1.KnowledgeLexemeDebug
+	(*KnowledgeRepresentationDebug)(nil),     // 31: nominal.knowledge.v1.KnowledgeRepresentationDebug
+	nil,                                      // 32: nominal.knowledge.v1.QueryRetrieverDebug.ParametersEntry
+	(*timestamppb.Timestamp)(nil),            // 33: google.protobuf.Timestamp
 }
 var file_nominal_protos_knowledge_v1_knowledge_proto_depIdxs = []int32{
 	11, // 0: nominal.knowledge.v1.CreateDriveIndexJobResponse.drive_index_job:type_name -> nominal.knowledge.v1.DriveIndexJob
@@ -1205,26 +2933,54 @@ var file_nominal_protos_knowledge_v1_knowledge_proto_depIdxs = []int32{
 	10, // 2: nominal.knowledge.v1.ListDriveIndexJobsResponse.drive_index_jobs:type_name -> nominal.knowledge.v1.DriveIndexJobSummary
 	12, // 3: nominal.knowledge.v1.ListDriveIndexJobSourcesResponse.sources:type_name -> nominal.knowledge.v1.DriveIndexSourceExecution
 	0,  // 4: nominal.knowledge.v1.DriveIndexJobSummary.state:type_name -> nominal.knowledge.v1.DriveIndexJobState
-	16, // 5: nominal.knowledge.v1.DriveIndexJobSummary.created_at:type_name -> google.protobuf.Timestamp
-	0,  // 6: nominal.knowledge.v1.DriveIndexJob.state:type_name -> nominal.knowledge.v1.DriveIndexJobState
-	12, // 7: nominal.knowledge.v1.DriveIndexJob.sources:type_name -> nominal.knowledge.v1.DriveIndexSourceExecution
-	1,  // 8: nominal.knowledge.v1.DriveIndexSourceExecution.state:type_name -> nominal.knowledge.v1.DriveIndexSourceExecutionState
-	13, // 9: nominal.knowledge.v1.QueryResponse.chunks:type_name -> nominal.knowledge.v1.KnowledgeChunk
-	2,  // 10: nominal.knowledge.v1.KnowledgeService.CreateDriveIndexJob:input_type -> nominal.knowledge.v1.CreateDriveIndexJobRequest
-	4,  // 11: nominal.knowledge.v1.KnowledgeService.GetDriveIndexJob:input_type -> nominal.knowledge.v1.GetDriveIndexJobRequest
-	6,  // 12: nominal.knowledge.v1.KnowledgeService.ListDriveIndexJobs:input_type -> nominal.knowledge.v1.ListDriveIndexJobsRequest
-	8,  // 13: nominal.knowledge.v1.KnowledgeService.ListDriveIndexJobSources:input_type -> nominal.knowledge.v1.ListDriveIndexJobSourcesRequest
-	14, // 14: nominal.knowledge.v1.KnowledgeService.Query:input_type -> nominal.knowledge.v1.QueryRequest
-	3,  // 15: nominal.knowledge.v1.KnowledgeService.CreateDriveIndexJob:output_type -> nominal.knowledge.v1.CreateDriveIndexJobResponse
-	5,  // 16: nominal.knowledge.v1.KnowledgeService.GetDriveIndexJob:output_type -> nominal.knowledge.v1.GetDriveIndexJobResponse
-	7,  // 17: nominal.knowledge.v1.KnowledgeService.ListDriveIndexJobs:output_type -> nominal.knowledge.v1.ListDriveIndexJobsResponse
-	9,  // 18: nominal.knowledge.v1.KnowledgeService.ListDriveIndexJobSources:output_type -> nominal.knowledge.v1.ListDriveIndexJobSourcesResponse
-	15, // 19: nominal.knowledge.v1.KnowledgeService.Query:output_type -> nominal.knowledge.v1.QueryResponse
-	15, // [15:20] is the sub-list for method output_type
-	10, // [10:15] is the sub-list for method input_type
-	10, // [10:10] is the sub-list for extension type_name
-	10, // [10:10] is the sub-list for extension extendee
-	0,  // [0:10] is the sub-list for field type_name
+	33, // 5: nominal.knowledge.v1.DriveIndexJobSummary.created_at:type_name -> google.protobuf.Timestamp
+	16, // 6: nominal.knowledge.v1.DriveIndexJobSummary.debug:type_name -> nominal.knowledge.v1.DriveIndexJobSummaryDebug
+	0,  // 7: nominal.knowledge.v1.DriveIndexJob.state:type_name -> nominal.knowledge.v1.DriveIndexJobState
+	12, // 8: nominal.knowledge.v1.DriveIndexJob.sources:type_name -> nominal.knowledge.v1.DriveIndexSourceExecution
+	17, // 9: nominal.knowledge.v1.DriveIndexJob.debug:type_name -> nominal.knowledge.v1.DriveIndexJobDebug
+	1,  // 10: nominal.knowledge.v1.DriveIndexSourceExecution.state:type_name -> nominal.knowledge.v1.DriveIndexSourceExecutionState
+	19, // 11: nominal.knowledge.v1.DriveIndexSourceExecution.debug:type_name -> nominal.knowledge.v1.DriveIndexSourceExecutionDebug
+	13, // 12: nominal.knowledge.v1.QueryResponse.chunks:type_name -> nominal.knowledge.v1.KnowledgeChunk
+	20, // 13: nominal.knowledge.v1.QueryResponse.debug:type_name -> nominal.knowledge.v1.QueryDebug
+	33, // 14: nominal.knowledge.v1.DriveIndexJobSummaryDebug.completed_at:type_name -> google.protobuf.Timestamp
+	33, // 15: nominal.knowledge.v1.DriveIndexJobDebug.created_at:type_name -> google.protobuf.Timestamp
+	33, // 16: nominal.knowledge.v1.DriveIndexJobDebug.completed_at:type_name -> google.protobuf.Timestamp
+	18, // 17: nominal.knowledge.v1.DriveIndexJobDebug.failed_source_counts:type_name -> nominal.knowledge.v1.FailedSourceCategoryCount
+	12, // 18: nominal.knowledge.v1.DriveIndexJobDebug.attention_list:type_name -> nominal.knowledge.v1.DriveIndexSourceExecution
+	33, // 19: nominal.knowledge.v1.DriveIndexSourceExecutionDebug.started_at:type_name -> google.protobuf.Timestamp
+	33, // 20: nominal.knowledge.v1.DriveIndexSourceExecutionDebug.completed_at:type_name -> google.protobuf.Timestamp
+	21, // 21: nominal.knowledge.v1.QueryDebug.retrievers:type_name -> nominal.knowledge.v1.QueryRetrieverDebug
+	22, // 22: nominal.knowledge.v1.QueryDebug.candidates:type_name -> nominal.knowledge.v1.QueryCandidateDebug
+	22, // 23: nominal.knowledge.v1.QueryDebug.excluded_candidates:type_name -> nominal.knowledge.v1.QueryCandidateDebug
+	24, // 24: nominal.knowledge.v1.QueryDebug.embedding:type_name -> nominal.knowledge.v1.KnowledgeEmbeddingDebug
+	32, // 25: nominal.knowledge.v1.QueryRetrieverDebug.parameters:type_name -> nominal.knowledge.v1.QueryRetrieverDebug.ParametersEntry
+	23, // 26: nominal.knowledge.v1.QueryCandidateDebug.scores:type_name -> nominal.knowledge.v1.QueryRetrieverScoreDebug
+	13, // 27: nominal.knowledge.v1.QueryCandidateDebug.chunk_pointer:type_name -> nominal.knowledge.v1.KnowledgeChunk
+	29, // 28: nominal.knowledge.v1.ListSourceChunkDebugResponse.chunks:type_name -> nominal.knowledge.v1.KnowledgeChunkDebug
+	27, // 29: nominal.knowledge.v1.ListSourceChunkDebugResponse.source:type_name -> nominal.knowledge.v1.KnowledgeSourceDebug
+	24, // 30: nominal.knowledge.v1.KnowledgeSourceDebug.embedding:type_name -> nominal.knowledge.v1.KnowledgeEmbeddingDebug
+	28, // 31: nominal.knowledge.v1.KnowledgeSourceDebug.representation_chunk_counts:type_name -> nominal.knowledge.v1.RepresentationChunkCount
+	12, // 32: nominal.knowledge.v1.KnowledgeSourceDebug.latest_execution:type_name -> nominal.knowledge.v1.DriveIndexSourceExecution
+	13, // 33: nominal.knowledge.v1.KnowledgeChunkDebug.chunk_pointer:type_name -> nominal.knowledge.v1.KnowledgeChunk
+	30, // 34: nominal.knowledge.v1.KnowledgeChunkDebug.lexemes:type_name -> nominal.knowledge.v1.KnowledgeLexemeDebug
+	31, // 35: nominal.knowledge.v1.KnowledgeChunkDebug.representations:type_name -> nominal.knowledge.v1.KnowledgeRepresentationDebug
+	2,  // 36: nominal.knowledge.v1.KnowledgeService.CreateDriveIndexJob:input_type -> nominal.knowledge.v1.CreateDriveIndexJobRequest
+	4,  // 37: nominal.knowledge.v1.KnowledgeService.GetDriveIndexJob:input_type -> nominal.knowledge.v1.GetDriveIndexJobRequest
+	6,  // 38: nominal.knowledge.v1.KnowledgeService.ListDriveIndexJobs:input_type -> nominal.knowledge.v1.ListDriveIndexJobsRequest
+	8,  // 39: nominal.knowledge.v1.KnowledgeService.ListDriveIndexJobSources:input_type -> nominal.knowledge.v1.ListDriveIndexJobSourcesRequest
+	14, // 40: nominal.knowledge.v1.KnowledgeService.Query:input_type -> nominal.knowledge.v1.QueryRequest
+	25, // 41: nominal.knowledge.v1.KnowledgeService.ListSourceChunkDebug:input_type -> nominal.knowledge.v1.ListSourceChunkDebugRequest
+	3,  // 42: nominal.knowledge.v1.KnowledgeService.CreateDriveIndexJob:output_type -> nominal.knowledge.v1.CreateDriveIndexJobResponse
+	5,  // 43: nominal.knowledge.v1.KnowledgeService.GetDriveIndexJob:output_type -> nominal.knowledge.v1.GetDriveIndexJobResponse
+	7,  // 44: nominal.knowledge.v1.KnowledgeService.ListDriveIndexJobs:output_type -> nominal.knowledge.v1.ListDriveIndexJobsResponse
+	9,  // 45: nominal.knowledge.v1.KnowledgeService.ListDriveIndexJobSources:output_type -> nominal.knowledge.v1.ListDriveIndexJobSourcesResponse
+	15, // 46: nominal.knowledge.v1.KnowledgeService.Query:output_type -> nominal.knowledge.v1.QueryResponse
+	26, // 47: nominal.knowledge.v1.KnowledgeService.ListSourceChunkDebug:output_type -> nominal.knowledge.v1.ListSourceChunkDebugResponse
+	42, // [42:48] is the sub-list for method output_type
+	36, // [36:42] is the sub-list for method input_type
+	36, // [36:36] is the sub-list for extension type_name
+	36, // [36:36] is the sub-list for extension extendee
+	0,  // [0:36] is the sub-list for field type_name
 }
 
 func init() { file_nominal_protos_knowledge_v1_knowledge_proto_init() }
@@ -1234,14 +2990,34 @@ func file_nominal_protos_knowledge_v1_knowledge_proto_init() {
 	}
 	file_nominal_protos_knowledge_v1_knowledge_proto_msgTypes[4].OneofWrappers = []any{}
 	file_nominal_protos_knowledge_v1_knowledge_proto_msgTypes[6].OneofWrappers = []any{}
+	file_nominal_protos_knowledge_v1_knowledge_proto_msgTypes[8].OneofWrappers = []any{}
+	file_nominal_protos_knowledge_v1_knowledge_proto_msgTypes[9].OneofWrappers = []any{}
+	file_nominal_protos_knowledge_v1_knowledge_proto_msgTypes[10].OneofWrappers = []any{}
 	file_nominal_protos_knowledge_v1_knowledge_proto_msgTypes[12].OneofWrappers = []any{}
+	file_nominal_protos_knowledge_v1_knowledge_proto_msgTypes[13].OneofWrappers = []any{}
+	file_nominal_protos_knowledge_v1_knowledge_proto_msgTypes[14].OneofWrappers = []any{}
+	file_nominal_protos_knowledge_v1_knowledge_proto_msgTypes[15].OneofWrappers = []any{}
+	file_nominal_protos_knowledge_v1_knowledge_proto_msgTypes[16].OneofWrappers = []any{}
+	file_nominal_protos_knowledge_v1_knowledge_proto_msgTypes[17].OneofWrappers = []any{}
+	file_nominal_protos_knowledge_v1_knowledge_proto_msgTypes[18].OneofWrappers = []any{}
+	file_nominal_protos_knowledge_v1_knowledge_proto_msgTypes[19].OneofWrappers = []any{}
+	file_nominal_protos_knowledge_v1_knowledge_proto_msgTypes[20].OneofWrappers = []any{}
+	file_nominal_protos_knowledge_v1_knowledge_proto_msgTypes[21].OneofWrappers = []any{}
+	file_nominal_protos_knowledge_v1_knowledge_proto_msgTypes[22].OneofWrappers = []any{}
+	file_nominal_protos_knowledge_v1_knowledge_proto_msgTypes[23].OneofWrappers = []any{}
+	file_nominal_protos_knowledge_v1_knowledge_proto_msgTypes[24].OneofWrappers = []any{}
+	file_nominal_protos_knowledge_v1_knowledge_proto_msgTypes[25].OneofWrappers = []any{}
+	file_nominal_protos_knowledge_v1_knowledge_proto_msgTypes[26].OneofWrappers = []any{}
+	file_nominal_protos_knowledge_v1_knowledge_proto_msgTypes[27].OneofWrappers = []any{}
+	file_nominal_protos_knowledge_v1_knowledge_proto_msgTypes[28].OneofWrappers = []any{}
+	file_nominal_protos_knowledge_v1_knowledge_proto_msgTypes[29].OneofWrappers = []any{}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_nominal_protos_knowledge_v1_knowledge_proto_rawDesc), len(file_nominal_protos_knowledge_v1_knowledge_proto_rawDesc)),
 			NumEnums:      2,
-			NumMessages:   14,
+			NumMessages:   31,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

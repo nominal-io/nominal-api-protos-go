@@ -8,6 +8,7 @@ package sqlv1
 
 import (
 	_ "buf.build/gen/go/bufbuild/protovalidate/protocolbuffers/go/buf/validate"
+	_ "github.com/nominal-io/nominal-api-protos-go/nominal/protos/authz/v1"
 	_ "github.com/nominal-io/nominal-api-protos-go/nominal/protos/gen/v1"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
@@ -40,7 +41,8 @@ const (
 	SqlError_SQL_ERROR_RESULT_SIZE_EXCEEDED               SqlError = 10
 	SqlError_SQL_ERROR_QUERY_SCOPE_TOO_LARGE              SqlError = 11
 	SqlError_SQL_ERROR_QUERY_CANCELLED                    SqlError = 12
-	SqlError_SQL_ERROR_MEMORY_LIMIT_EXCEEDED              SqlError = 13
+	SqlError_SQL_ERROR_UNAUTHENTICATED                    SqlError = 14
+	SqlError_SQL_ERROR_PERMISSION_DENIED                  SqlError = 15
 )
 
 // Enum value maps for SqlError.
@@ -59,7 +61,8 @@ var (
 		10: "SQL_ERROR_RESULT_SIZE_EXCEEDED",
 		11: "SQL_ERROR_QUERY_SCOPE_TOO_LARGE",
 		12: "SQL_ERROR_QUERY_CANCELLED",
-		13: "SQL_ERROR_MEMORY_LIMIT_EXCEEDED",
+		14: "SQL_ERROR_UNAUTHENTICATED",
+		15: "SQL_ERROR_PERMISSION_DENIED",
 	}
 	SqlError_value = map[string]int32{
 		"SQL_ERROR_UNSPECIFIED":                        0,
@@ -75,7 +78,8 @@ var (
 		"SQL_ERROR_RESULT_SIZE_EXCEEDED":               10,
 		"SQL_ERROR_QUERY_SCOPE_TOO_LARGE":              11,
 		"SQL_ERROR_QUERY_CANCELLED":                    12,
-		"SQL_ERROR_MEMORY_LIMIT_EXCEEDED":              13,
+		"SQL_ERROR_UNAUTHENTICATED":                    14,
+		"SQL_ERROR_PERMISSION_DENIED":                  15,
 	}
 )
 
@@ -158,6 +162,115 @@ func (SqlServiceQueryResultFormat) EnumDescriptor() ([]byte, []int) {
 	return file_nominal_protos_sql_v1_sql_proto_rawDescGZIP(), []int{1}
 }
 
+// File format of an exported result. Unspecified means CSV.
+type SqlServiceExportFormat int32
+
+const (
+	SqlServiceExportFormat_SQL_SERVICE_EXPORT_FORMAT_UNSPECIFIED SqlServiceExportFormat = 0
+	// CSV with a header row; nulls are empty fields.
+	SqlServiceExportFormat_SQL_SERVICE_EXPORT_FORMAT_CSV SqlServiceExportFormat = 1
+	// A single Parquet file. Arrow-based readers can read it from the presigned URL. Configure it with
+	// SqlServiceExportRequest.parquet_options.
+	SqlServiceExportFormat_SQL_SERVICE_EXPORT_FORMAT_PARQUET SqlServiceExportFormat = 2
+)
+
+// Enum value maps for SqlServiceExportFormat.
+var (
+	SqlServiceExportFormat_name = map[int32]string{
+		0: "SQL_SERVICE_EXPORT_FORMAT_UNSPECIFIED",
+		1: "SQL_SERVICE_EXPORT_FORMAT_CSV",
+		2: "SQL_SERVICE_EXPORT_FORMAT_PARQUET",
+	}
+	SqlServiceExportFormat_value = map[string]int32{
+		"SQL_SERVICE_EXPORT_FORMAT_UNSPECIFIED": 0,
+		"SQL_SERVICE_EXPORT_FORMAT_CSV":         1,
+		"SQL_SERVICE_EXPORT_FORMAT_PARQUET":     2,
+	}
+)
+
+func (x SqlServiceExportFormat) Enum() *SqlServiceExportFormat {
+	p := new(SqlServiceExportFormat)
+	*p = x
+	return p
+}
+
+func (x SqlServiceExportFormat) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (SqlServiceExportFormat) Descriptor() protoreflect.EnumDescriptor {
+	return file_nominal_protos_sql_v1_sql_proto_enumTypes[2].Descriptor()
+}
+
+func (SqlServiceExportFormat) Type() protoreflect.EnumType {
+	return &file_nominal_protos_sql_v1_sql_proto_enumTypes[2]
+}
+
+func (x SqlServiceExportFormat) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use SqlServiceExportFormat.Descriptor instead.
+func (SqlServiceExportFormat) EnumDescriptor() ([]byte, []int) {
+	return file_nominal_protos_sql_v1_sql_proto_rawDescGZIP(), []int{2}
+}
+
+// Column compression codec for a Parquet export. Unspecified is zstd.
+type SqlServiceParquetCompression int32
+
+const (
+	SqlServiceParquetCompression_SQL_SERVICE_PARQUET_COMPRESSION_UNSPECIFIED SqlServiceParquetCompression = 0
+	SqlServiceParquetCompression_SQL_SERVICE_PARQUET_COMPRESSION_ZSTD        SqlServiceParquetCompression = 1
+	SqlServiceParquetCompression_SQL_SERVICE_PARQUET_COMPRESSION_LZ4         SqlServiceParquetCompression = 2
+	SqlServiceParquetCompression_SQL_SERVICE_PARQUET_COMPRESSION_SNAPPY      SqlServiceParquetCompression = 3
+	SqlServiceParquetCompression_SQL_SERVICE_PARQUET_COMPRESSION_NONE        SqlServiceParquetCompression = 4
+)
+
+// Enum value maps for SqlServiceParquetCompression.
+var (
+	SqlServiceParquetCompression_name = map[int32]string{
+		0: "SQL_SERVICE_PARQUET_COMPRESSION_UNSPECIFIED",
+		1: "SQL_SERVICE_PARQUET_COMPRESSION_ZSTD",
+		2: "SQL_SERVICE_PARQUET_COMPRESSION_LZ4",
+		3: "SQL_SERVICE_PARQUET_COMPRESSION_SNAPPY",
+		4: "SQL_SERVICE_PARQUET_COMPRESSION_NONE",
+	}
+	SqlServiceParquetCompression_value = map[string]int32{
+		"SQL_SERVICE_PARQUET_COMPRESSION_UNSPECIFIED": 0,
+		"SQL_SERVICE_PARQUET_COMPRESSION_ZSTD":        1,
+		"SQL_SERVICE_PARQUET_COMPRESSION_LZ4":         2,
+		"SQL_SERVICE_PARQUET_COMPRESSION_SNAPPY":      3,
+		"SQL_SERVICE_PARQUET_COMPRESSION_NONE":        4,
+	}
+)
+
+func (x SqlServiceParquetCompression) Enum() *SqlServiceParquetCompression {
+	p := new(SqlServiceParquetCompression)
+	*p = x
+	return p
+}
+
+func (x SqlServiceParquetCompression) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (SqlServiceParquetCompression) Descriptor() protoreflect.EnumDescriptor {
+	return file_nominal_protos_sql_v1_sql_proto_enumTypes[3].Descriptor()
+}
+
+func (SqlServiceParquetCompression) Type() protoreflect.EnumType {
+	return &file_nominal_protos_sql_v1_sql_proto_enumTypes[3]
+}
+
+func (x SqlServiceParquetCompression) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use SqlServiceParquetCompression.Descriptor instead.
+func (SqlServiceParquetCompression) EnumDescriptor() ([]byte, []int) {
+	return file_nominal_protos_sql_v1_sql_proto_rawDescGZIP(), []int{3}
+}
+
 type SqlCatalogScalarType int32
 
 const (
@@ -206,11 +319,11 @@ func (x SqlCatalogScalarType) String() string {
 }
 
 func (SqlCatalogScalarType) Descriptor() protoreflect.EnumDescriptor {
-	return file_nominal_protos_sql_v1_sql_proto_enumTypes[2].Descriptor()
+	return file_nominal_protos_sql_v1_sql_proto_enumTypes[4].Descriptor()
 }
 
 func (SqlCatalogScalarType) Type() protoreflect.EnumType {
-	return &file_nominal_protos_sql_v1_sql_proto_enumTypes[2]
+	return &file_nominal_protos_sql_v1_sql_proto_enumTypes[4]
 }
 
 func (x SqlCatalogScalarType) Number() protoreflect.EnumNumber {
@@ -219,7 +332,7 @@ func (x SqlCatalogScalarType) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use SqlCatalogScalarType.Descriptor instead.
 func (SqlCatalogScalarType) EnumDescriptor() ([]byte, []int) {
-	return file_nominal_protos_sql_v1_sql_proto_rawDescGZIP(), []int{2}
+	return file_nominal_protos_sql_v1_sql_proto_rawDescGZIP(), []int{4}
 }
 
 type SqlCatalogFunctionKind int32
@@ -262,11 +375,11 @@ func (x SqlCatalogFunctionKind) String() string {
 }
 
 func (SqlCatalogFunctionKind) Descriptor() protoreflect.EnumDescriptor {
-	return file_nominal_protos_sql_v1_sql_proto_enumTypes[3].Descriptor()
+	return file_nominal_protos_sql_v1_sql_proto_enumTypes[5].Descriptor()
 }
 
 func (SqlCatalogFunctionKind) Type() protoreflect.EnumType {
-	return &file_nominal_protos_sql_v1_sql_proto_enumTypes[3]
+	return &file_nominal_protos_sql_v1_sql_proto_enumTypes[5]
 }
 
 func (x SqlCatalogFunctionKind) Number() protoreflect.EnumNumber {
@@ -275,7 +388,7 @@ func (x SqlCatalogFunctionKind) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use SqlCatalogFunctionKind.Descriptor instead.
 func (SqlCatalogFunctionKind) EnumDescriptor() ([]byte, []int) {
-	return file_nominal_protos_sql_v1_sql_proto_rawDescGZIP(), []int{3}
+	return file_nominal_protos_sql_v1_sql_proto_rawDescGZIP(), []int{5}
 }
 
 type SqlServiceQueryRequest struct {
@@ -283,6 +396,7 @@ type SqlServiceQueryRequest struct {
 	Query string                 `protobuf:"bytes,1,opt,name=query,proto3" json:"query,omitempty"`
 	// Optional cap on the number of rows returned. When unset, results are unbounded (subject to the
 	// server-side byte/time limits); ClickHouse and mixed queries stream, pure Postgres materializes.
+	// Zero returns only the result's schema.
 	MaxRows      *int32 `protobuf:"varint,2,opt,name=max_rows,json=maxRows,proto3,oneof" json:"max_rows,omitempty"`
 	WorkspaceRid string `protobuf:"bytes,3,opt,name=workspace_rid,json=workspaceRid,proto3" json:"workspace_rid,omitempty"`
 	// Encoding for the streamed response payload. Defaults to Arrow IPC stream for backward compatibility.
@@ -404,17 +518,78 @@ func (x *SqlServiceQueryResponse) GetPayload() []byte {
 	return nil
 }
 
-type SqlServiceExportRequest struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Query         string                 `protobuf:"bytes,1,opt,name=query,proto3" json:"query,omitempty"`
-	WorkspaceRid  string                 `protobuf:"bytes,2,opt,name=workspace_rid,json=workspaceRid,proto3" json:"workspace_rid,omitempty"`
+// How a Parquet export is written.
+type SqlServiceParquetOptions struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Rows per row group, from 1,000 to 100,000,000. A reader skips or fetches whole row groups. Add an ORDER BY to
+	// the query so that each group holds a contiguous range of rows. A group closes early if it reaches the server's
+	// byte limit. Unset uses the server default.
+	RowGroupRows *uint64 `protobuf:"varint,1,opt,name=row_group_rows,json=rowGroupRows,proto3,oneof" json:"row_group_rows,omitempty"`
+	// Defaults to zstd.
+	Compression   SqlServiceParquetCompression `protobuf:"varint,2,opt,name=compression,proto3,enum=nominal.sql.v1.SqlServiceParquetCompression" json:"compression,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
+func (x *SqlServiceParquetOptions) Reset() {
+	*x = SqlServiceParquetOptions{}
+	mi := &file_nominal_protos_sql_v1_sql_proto_msgTypes[2]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *SqlServiceParquetOptions) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*SqlServiceParquetOptions) ProtoMessage() {}
+
+func (x *SqlServiceParquetOptions) ProtoReflect() protoreflect.Message {
+	mi := &file_nominal_protos_sql_v1_sql_proto_msgTypes[2]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use SqlServiceParquetOptions.ProtoReflect.Descriptor instead.
+func (*SqlServiceParquetOptions) Descriptor() ([]byte, []int) {
+	return file_nominal_protos_sql_v1_sql_proto_rawDescGZIP(), []int{2}
+}
+
+func (x *SqlServiceParquetOptions) GetRowGroupRows() uint64 {
+	if x != nil && x.RowGroupRows != nil {
+		return *x.RowGroupRows
+	}
+	return 0
+}
+
+func (x *SqlServiceParquetOptions) GetCompression() SqlServiceParquetCompression {
+	if x != nil {
+		return x.Compression
+	}
+	return SqlServiceParquetCompression_SQL_SERVICE_PARQUET_COMPRESSION_UNSPECIFIED
+}
+
+type SqlServiceExportRequest struct {
+	state        protoimpl.MessageState `protogen:"open.v1"`
+	Query        string                 `protobuf:"bytes,1,opt,name=query,proto3" json:"query,omitempty"`
+	WorkspaceRid string                 `protobuf:"bytes,2,opt,name=workspace_rid,json=workspaceRid,proto3" json:"workspace_rid,omitempty"`
+	// File format written to object storage. Defaults to CSV.
+	Format SqlServiceExportFormat `protobuf:"varint,3,opt,name=format,proto3,enum=nominal.sql.v1.SqlServiceExportFormat" json:"format,omitempty"`
+	// Only valid with format PARQUET. Unset writes zstd with the server's default row group size.
+	ParquetOptions *SqlServiceParquetOptions `protobuf:"bytes,4,opt,name=parquet_options,json=parquetOptions,proto3" json:"parquet_options,omitempty"`
+	unknownFields  protoimpl.UnknownFields
+	sizeCache      protoimpl.SizeCache
+}
+
 func (x *SqlServiceExportRequest) Reset() {
 	*x = SqlServiceExportRequest{}
-	mi := &file_nominal_protos_sql_v1_sql_proto_msgTypes[2]
+	mi := &file_nominal_protos_sql_v1_sql_proto_msgTypes[3]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -426,7 +601,7 @@ func (x *SqlServiceExportRequest) String() string {
 func (*SqlServiceExportRequest) ProtoMessage() {}
 
 func (x *SqlServiceExportRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_sql_v1_sql_proto_msgTypes[2]
+	mi := &file_nominal_protos_sql_v1_sql_proto_msgTypes[3]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -439,7 +614,7 @@ func (x *SqlServiceExportRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SqlServiceExportRequest.ProtoReflect.Descriptor instead.
 func (*SqlServiceExportRequest) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_sql_v1_sql_proto_rawDescGZIP(), []int{2}
+	return file_nominal_protos_sql_v1_sql_proto_rawDescGZIP(), []int{3}
 }
 
 func (x *SqlServiceExportRequest) GetQuery() string {
@@ -456,9 +631,23 @@ func (x *SqlServiceExportRequest) GetWorkspaceRid() string {
 	return ""
 }
 
+func (x *SqlServiceExportRequest) GetFormat() SqlServiceExportFormat {
+	if x != nil {
+		return x.Format
+	}
+	return SqlServiceExportFormat_SQL_SERVICE_EXPORT_FORMAT_UNSPECIFIED
+}
+
+func (x *SqlServiceExportRequest) GetParquetOptions() *SqlServiceParquetOptions {
+	if x != nil {
+		return x.ParquetOptions
+	}
+	return nil
+}
+
 type SqlServiceExportResponse struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
-	// Presigned URL for the exported CSV, written to object storage.
+	// Presigned URL for the exported file, written to object storage in the requested format.
 	PresignedUrl string `protobuf:"bytes,1,opt,name=presigned_url,json=presignedUrl,proto3" json:"presigned_url,omitempty"`
 	// Server-generated id for this query execution, also used as the ClickHouse query_id.
 	QueryId       string `protobuf:"bytes,2,opt,name=query_id,json=queryId,proto3" json:"query_id,omitempty"`
@@ -468,7 +657,7 @@ type SqlServiceExportResponse struct {
 
 func (x *SqlServiceExportResponse) Reset() {
 	*x = SqlServiceExportResponse{}
-	mi := &file_nominal_protos_sql_v1_sql_proto_msgTypes[3]
+	mi := &file_nominal_protos_sql_v1_sql_proto_msgTypes[4]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -480,7 +669,7 @@ func (x *SqlServiceExportResponse) String() string {
 func (*SqlServiceExportResponse) ProtoMessage() {}
 
 func (x *SqlServiceExportResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_sql_v1_sql_proto_msgTypes[3]
+	mi := &file_nominal_protos_sql_v1_sql_proto_msgTypes[4]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -493,7 +682,7 @@ func (x *SqlServiceExportResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SqlServiceExportResponse.ProtoReflect.Descriptor instead.
 func (*SqlServiceExportResponse) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_sql_v1_sql_proto_rawDescGZIP(), []int{3}
+	return file_nominal_protos_sql_v1_sql_proto_rawDescGZIP(), []int{4}
 }
 
 func (x *SqlServiceExportResponse) GetPresignedUrl() string {
@@ -518,7 +707,7 @@ type GetSqlCatalogRequest struct {
 
 func (x *GetSqlCatalogRequest) Reset() {
 	*x = GetSqlCatalogRequest{}
-	mi := &file_nominal_protos_sql_v1_sql_proto_msgTypes[4]
+	mi := &file_nominal_protos_sql_v1_sql_proto_msgTypes[5]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -530,7 +719,7 @@ func (x *GetSqlCatalogRequest) String() string {
 func (*GetSqlCatalogRequest) ProtoMessage() {}
 
 func (x *GetSqlCatalogRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_sql_v1_sql_proto_msgTypes[4]
+	mi := &file_nominal_protos_sql_v1_sql_proto_msgTypes[5]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -543,7 +732,7 @@ func (x *GetSqlCatalogRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetSqlCatalogRequest.ProtoReflect.Descriptor instead.
 func (*GetSqlCatalogRequest) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_sql_v1_sql_proto_rawDescGZIP(), []int{4}
+	return file_nominal_protos_sql_v1_sql_proto_rawDescGZIP(), []int{5}
 }
 
 type SqlCatalogMapType struct {
@@ -556,7 +745,7 @@ type SqlCatalogMapType struct {
 
 func (x *SqlCatalogMapType) Reset() {
 	*x = SqlCatalogMapType{}
-	mi := &file_nominal_protos_sql_v1_sql_proto_msgTypes[5]
+	mi := &file_nominal_protos_sql_v1_sql_proto_msgTypes[6]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -568,7 +757,7 @@ func (x *SqlCatalogMapType) String() string {
 func (*SqlCatalogMapType) ProtoMessage() {}
 
 func (x *SqlCatalogMapType) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_sql_v1_sql_proto_msgTypes[5]
+	mi := &file_nominal_protos_sql_v1_sql_proto_msgTypes[6]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -581,7 +770,7 @@ func (x *SqlCatalogMapType) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SqlCatalogMapType.ProtoReflect.Descriptor instead.
 func (*SqlCatalogMapType) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_sql_v1_sql_proto_rawDescGZIP(), []int{5}
+	return file_nominal_protos_sql_v1_sql_proto_rawDescGZIP(), []int{6}
 }
 
 func (x *SqlCatalogMapType) GetKey() *SqlCatalogDataType {
@@ -613,7 +802,7 @@ type SqlCatalogDataType struct {
 
 func (x *SqlCatalogDataType) Reset() {
 	*x = SqlCatalogDataType{}
-	mi := &file_nominal_protos_sql_v1_sql_proto_msgTypes[6]
+	mi := &file_nominal_protos_sql_v1_sql_proto_msgTypes[7]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -625,7 +814,7 @@ func (x *SqlCatalogDataType) String() string {
 func (*SqlCatalogDataType) ProtoMessage() {}
 
 func (x *SqlCatalogDataType) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_sql_v1_sql_proto_msgTypes[6]
+	mi := &file_nominal_protos_sql_v1_sql_proto_msgTypes[7]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -638,7 +827,7 @@ func (x *SqlCatalogDataType) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SqlCatalogDataType.ProtoReflect.Descriptor instead.
 func (*SqlCatalogDataType) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_sql_v1_sql_proto_rawDescGZIP(), []int{6}
+	return file_nominal_protos_sql_v1_sql_proto_rawDescGZIP(), []int{7}
 }
 
 func (x *SqlCatalogDataType) GetKind() isSqlCatalogDataType_Kind {
@@ -711,7 +900,7 @@ type SqlCatalogColumn struct {
 
 func (x *SqlCatalogColumn) Reset() {
 	*x = SqlCatalogColumn{}
-	mi := &file_nominal_protos_sql_v1_sql_proto_msgTypes[7]
+	mi := &file_nominal_protos_sql_v1_sql_proto_msgTypes[8]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -723,7 +912,7 @@ func (x *SqlCatalogColumn) String() string {
 func (*SqlCatalogColumn) ProtoMessage() {}
 
 func (x *SqlCatalogColumn) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_sql_v1_sql_proto_msgTypes[7]
+	mi := &file_nominal_protos_sql_v1_sql_proto_msgTypes[8]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -736,7 +925,7 @@ func (x *SqlCatalogColumn) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SqlCatalogColumn.ProtoReflect.Descriptor instead.
 func (*SqlCatalogColumn) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_sql_v1_sql_proto_rawDescGZIP(), []int{7}
+	return file_nominal_protos_sql_v1_sql_proto_rawDescGZIP(), []int{8}
 }
 
 func (x *SqlCatalogColumn) GetName() string {
@@ -777,7 +966,7 @@ type SqlCatalogTable struct {
 
 func (x *SqlCatalogTable) Reset() {
 	*x = SqlCatalogTable{}
-	mi := &file_nominal_protos_sql_v1_sql_proto_msgTypes[8]
+	mi := &file_nominal_protos_sql_v1_sql_proto_msgTypes[9]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -789,7 +978,7 @@ func (x *SqlCatalogTable) String() string {
 func (*SqlCatalogTable) ProtoMessage() {}
 
 func (x *SqlCatalogTable) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_sql_v1_sql_proto_msgTypes[8]
+	mi := &file_nominal_protos_sql_v1_sql_proto_msgTypes[9]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -802,7 +991,7 @@ func (x *SqlCatalogTable) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SqlCatalogTable.ProtoReflect.Descriptor instead.
 func (*SqlCatalogTable) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_sql_v1_sql_proto_rawDescGZIP(), []int{8}
+	return file_nominal_protos_sql_v1_sql_proto_rawDescGZIP(), []int{9}
 }
 
 func (x *SqlCatalogTable) GetName() string {
@@ -842,7 +1031,7 @@ type SqlCatalogFunction struct {
 
 func (x *SqlCatalogFunction) Reset() {
 	*x = SqlCatalogFunction{}
-	mi := &file_nominal_protos_sql_v1_sql_proto_msgTypes[9]
+	mi := &file_nominal_protos_sql_v1_sql_proto_msgTypes[10]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -854,7 +1043,7 @@ func (x *SqlCatalogFunction) String() string {
 func (*SqlCatalogFunction) ProtoMessage() {}
 
 func (x *SqlCatalogFunction) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_sql_v1_sql_proto_msgTypes[9]
+	mi := &file_nominal_protos_sql_v1_sql_proto_msgTypes[10]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -867,7 +1056,7 @@ func (x *SqlCatalogFunction) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SqlCatalogFunction.ProtoReflect.Descriptor instead.
 func (*SqlCatalogFunction) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_sql_v1_sql_proto_rawDescGZIP(), []int{9}
+	return file_nominal_protos_sql_v1_sql_proto_rawDescGZIP(), []int{10}
 }
 
 func (x *SqlCatalogFunction) GetName() string {
@@ -930,7 +1119,7 @@ type SqlCatalog struct {
 
 func (x *SqlCatalog) Reset() {
 	*x = SqlCatalog{}
-	mi := &file_nominal_protos_sql_v1_sql_proto_msgTypes[10]
+	mi := &file_nominal_protos_sql_v1_sql_proto_msgTypes[11]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -942,7 +1131,7 @@ func (x *SqlCatalog) String() string {
 func (*SqlCatalog) ProtoMessage() {}
 
 func (x *SqlCatalog) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_sql_v1_sql_proto_msgTypes[10]
+	mi := &file_nominal_protos_sql_v1_sql_proto_msgTypes[11]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -955,7 +1144,7 @@ func (x *SqlCatalog) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SqlCatalog.ProtoReflect.Descriptor instead.
 func (*SqlCatalog) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_sql_v1_sql_proto_rawDescGZIP(), []int{10}
+	return file_nominal_protos_sql_v1_sql_proto_rawDescGZIP(), []int{11}
 }
 
 func (x *SqlCatalog) GetTables() []*SqlCatalogTable {
@@ -981,7 +1170,7 @@ type GetSqlCatalogResponse struct {
 
 func (x *GetSqlCatalogResponse) Reset() {
 	*x = GetSqlCatalogResponse{}
-	mi := &file_nominal_protos_sql_v1_sql_proto_msgTypes[11]
+	mi := &file_nominal_protos_sql_v1_sql_proto_msgTypes[12]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -993,7 +1182,7 @@ func (x *GetSqlCatalogResponse) String() string {
 func (*GetSqlCatalogResponse) ProtoMessage() {}
 
 func (x *GetSqlCatalogResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_sql_v1_sql_proto_msgTypes[11]
+	mi := &file_nominal_protos_sql_v1_sql_proto_msgTypes[12]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1006,7 +1195,7 @@ func (x *GetSqlCatalogResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetSqlCatalogResponse.ProtoReflect.Descriptor instead.
 func (*GetSqlCatalogResponse) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_sql_v1_sql_proto_rawDescGZIP(), []int{11}
+	return file_nominal_protos_sql_v1_sql_proto_rawDescGZIP(), []int{12}
 }
 
 func (x *GetSqlCatalogResponse) GetSqlCatalog() *SqlCatalog {
@@ -1020,22 +1209,30 @@ var File_nominal_protos_sql_v1_sql_proto protoreflect.FileDescriptor
 
 const file_nominal_protos_sql_v1_sql_proto_rawDesc = "" +
 	"\n" +
-	"\x1fnominal/protos/sql/v1/sql.proto\x12\x0enominal.sql.v1\x1a\x1bbuf/validate/validate.proto\x1a\x1cgoogle/api/annotations.proto\x1a!nominal/protos/gen/v1/alias.proto\x1a!nominal/protos/gen/v1/error.proto\"\xa4\x02\n" +
+	"\x1fnominal/protos/sql/v1/sql.proto\x12\x0enominal.sql.v1\x1a\x1bbuf/validate/validate.proto\x1a\x1cgoogle/api/annotations.proto\x1a)nominal/protos/authz/v1/annotations.proto\x1a!nominal/protos/gen/v1/alias.proto\x1a!nominal/protos/gen/v1/error.proto\"\xa4\x02\n" +
 	"\x16SqlServiceQueryRequest\x12\"\n" +
 	"\x05query\x18\x01 \x01(\tB\f\xbaH\t\xc8\x01\x01r\x04\x18\xa0\x8d\x06R\x05query\x12*\n" +
 	"\bmax_rows\x18\x02 \x01(\x05B\n" +
-	"\xbaH\a\x1a\x05\x18\x88'(\x01H\x00R\amaxRows\x88\x01\x01\x12Q\n" +
+	"\xbaH\a\x1a\x05\x18\x88'(\x00H\x00R\amaxRows\x88\x01\x01\x12Q\n" +
 	"\rworkspace_rid\x18\x03 \x01(\tB,\xbaH\x03\xc8\x01\x01\x9a\xb2\x1a\"\n" +
 	" io.nominal.api.rids.WorkspaceRidR\fworkspaceRid\x12Z\n" +
 	"\rresult_format\x18\x04 \x01(\x0e2+.nominal.sql.v1.SqlServiceQueryResultFormatB\b\xbaH\x05\x82\x01\x02\x10\x01R\fresultFormatB\v\n" +
 	"\t_max_rows\"c\n" +
 	"\x17SqlServiceQueryResponse\x12\x19\n" +
 	"\bquery_id\x18\x02 \x01(\tR\aqueryId\x12\x18\n" +
-	"\apayload\x18\x03 \x01(\fR\apayloadJ\x04\b\x01\x10\x02R\rarrow_payload\"\x90\x01\n" +
+	"\apayload\x18\x03 \x01(\fR\apayloadJ\x04\b\x01\x10\x02R\rarrow_payload\"\xc1\x01\n" +
+	"\x18SqlServiceParquetOptions\x128\n" +
+	"\x0erow_group_rows\x18\x01 \x01(\x04B\r\xbaH\n" +
+	"2\b\x18\x80\xc2\xd7/(\xe8\aH\x00R\frowGroupRows\x88\x01\x01\x12X\n" +
+	"\vcompression\x18\x02 \x01(\x0e2,.nominal.sql.v1.SqlServiceParquetCompressionB\b\xbaH\x05\x82\x01\x02\x10\x01R\vcompressionB\x11\n" +
+	"\x0f_row_group_rows\"\xdb\x03\n" +
 	"\x17SqlServiceExportRequest\x12\"\n" +
 	"\x05query\x18\x01 \x01(\tB\f\xbaH\t\xc8\x01\x01r\x04\x18\xa0\x8d\x06R\x05query\x12Q\n" +
 	"\rworkspace_rid\x18\x02 \x01(\tB,\xbaH\x03\xc8\x01\x01\x9a\xb2\x1a\"\n" +
-	" io.nominal.api.rids.WorkspaceRidR\fworkspaceRid\"Z\n" +
+	" io.nominal.api.rids.WorkspaceRidR\fworkspaceRid\x12H\n" +
+	"\x06format\x18\x03 \x01(\x0e2&.nominal.sql.v1.SqlServiceExportFormatB\b\xbaH\x05\x82\x01\x02\x10\x01R\x06format\x12Q\n" +
+	"\x0fparquet_options\x18\x04 \x01(\v2(.nominal.sql.v1.SqlServiceParquetOptionsR\x0eparquetOptions:\xab\x01\xbaH\xa7\x01\x1a\xa4\x01\n" +
+	" parquet_options_requires_parquet\x12Pparquet_options can only be set when format is SQL_SERVICE_EXPORT_FORMAT_PARQUET\x1a.!has(this.parquet_options) || this.format == 2\"Z\n" +
 	"\x18SqlServiceExportResponse\x12#\n" +
 	"\rpresigned_url\x18\x01 \x01(\tR\fpresignedUrl\x12\x19\n" +
 	"\bquery_id\x18\x02 \x01(\tR\aqueryId\"\x16\n" +
@@ -1072,7 +1269,7 @@ const file_nominal_protos_sql_v1_sql_proto_rawDesc = "" +
 	"\tfunctions\x18\x02 \x03(\v2\".nominal.sql.v1.SqlCatalogFunctionR\tfunctions\"T\n" +
 	"\x15GetSqlCatalogResponse\x12;\n" +
 	"\vsql_catalog\x18\x01 \x01(\v2\x1a.nominal.sql.v1.SqlCatalogR\n" +
-	"sqlCatalog*\xbe\v\n" +
+	"sqlCatalog*\xd6\f\n" +
 	"\bSqlError\x12\x19\n" +
 	"\x15SQL_ERROR_UNSPECIFIED\x10\x00\x12I\n" +
 	"\x17SQL_ERROR_INVALID_QUERY\x10\x01\x1a,\xb2\xb2\x1a(\n" +
@@ -1099,14 +1296,26 @@ const file_nominal_protos_sql_v1_sql_proto_rawDesc = "" +
 	"\x1fSQL_ERROR_QUERY_SCOPE_TOO_LARGE\x10\v\x1aI\xb2\xb2\x1aE\n" +
 	"\bINTERNAL\x129The query spans more datasets than can be planned at once\x12G\n" +
 	"\x19SQL_ERROR_QUERY_CANCELLED\x10\f\x1a(\xb2\xb2\x1a$\n" +
-	"\tCANCELLED\x12\x17The query was cancelled\x12b\n" +
-	"\x1fSQL_ERROR_MEMORY_LIMIT_EXCEEDED\x10\r\x1a=\xb2\xb2\x1a9\n" +
-	"\x12RESOURCE_EXHAUSTED\x12#The query exceeded the memory limit*\xd9\x01\n" +
+	"\tCANCELLED\x12\x17The query was cancelled\x12\\\n" +
+	"\x19SQL_ERROR_UNAUTHENTICATED\x10\x0e\x1a=\xb2\xb2\x1a9\n" +
+	"\x0fUNAUTHENTICATED\x12&The request could not be authenticated\x12u\n" +
+	"\x1bSQL_ERROR_PERMISSION_DENIED\x10\x0f\x1aT\xb2\xb2\x1aP\n" +
+	"\x11PERMISSION_DENIED\x12;The caller does not have permission to perform this request\"\x04\b\r\x10\r*\x1fSQL_ERROR_MEMORY_LIMIT_EXCEEDED*\xd9\x01\n" +
 	"\x1bSqlServiceQueryResultFormat\x12/\n" +
 	"+SQL_SERVICE_QUERY_RESULT_FORMAT_UNSPECIFIED\x10\x00\x120\n" +
 	",SQL_SERVICE_QUERY_RESULT_FORMAT_ARROW_STREAM\x10\x01\x12.\n" +
 	"*SQL_SERVICE_QUERY_RESULT_FORMAT_JSON_LINES\x10\x02\x12'\n" +
-	"#SQL_SERVICE_QUERY_RESULT_FORMAT_CSV\x10\x03*\xbe\x02\n" +
+	"#SQL_SERVICE_QUERY_RESULT_FORMAT_CSV\x10\x03*\x8d\x01\n" +
+	"\x16SqlServiceExportFormat\x12)\n" +
+	"%SQL_SERVICE_EXPORT_FORMAT_UNSPECIFIED\x10\x00\x12!\n" +
+	"\x1dSQL_SERVICE_EXPORT_FORMAT_CSV\x10\x01\x12%\n" +
+	"!SQL_SERVICE_EXPORT_FORMAT_PARQUET\x10\x02*\xf8\x01\n" +
+	"\x1cSqlServiceParquetCompression\x12/\n" +
+	"+SQL_SERVICE_PARQUET_COMPRESSION_UNSPECIFIED\x10\x00\x12(\n" +
+	"$SQL_SERVICE_PARQUET_COMPRESSION_ZSTD\x10\x01\x12'\n" +
+	"#SQL_SERVICE_PARQUET_COMPRESSION_LZ4\x10\x02\x12*\n" +
+	"&SQL_SERVICE_PARQUET_COMPRESSION_SNAPPY\x10\x03\x12(\n" +
+	"$SQL_SERVICE_PARQUET_COMPRESSION_NONE\x10\x04*\xbe\x02\n" +
 	"\x14SqlCatalogScalarType\x12'\n" +
 	"#SQL_CATALOG_SCALAR_TYPE_UNSPECIFIED\x10\x00\x12#\n" +
 	"\x1fSQL_CATALOG_SCALAR_TYPE_VARCHAR\x10\x01\x12#\n" +
@@ -1121,12 +1330,16 @@ const file_nominal_protos_sql_v1_sql_proto_rawDesc = "" +
 	" SQL_CATALOG_FUNCTION_KIND_SCALAR\x10\x01\x12'\n" +
 	"#SQL_CATALOG_FUNCTION_KIND_AGGREGATE\x10\x02\x12$\n" +
 	" SQL_CATALOG_FUNCTION_KIND_WINDOW\x10\x03\x12#\n" +
-	"\x1fSQL_CATALOG_FUNCTION_KIND_TABLE\x10\x042\x80\x03\n" +
+	"\x1fSQL_CATALOG_FUNCTION_KIND_TABLE\x10\x042\xb6\x03\n" +
 	"\n" +
-	"SqlService\x12}\n" +
-	"\x05Query\x12&.nominal.sql.v1.SqlServiceQueryRequest\x1a'.nominal.sql.v1.SqlServiceQueryResponse\"!\x82\xd3\xe4\x93\x02\x1b:\x01*b\apayload\"\r/sql/v1/query0\x01\x12|\n" +
-	"\x06Export\x12'.nominal.sql.v1.SqlServiceExportRequest\x1a(.nominal.sql.v1.SqlServiceExportResponse\"\x1f\x82\xd3\xe4\x93\x02\x19:\x01*\"\x14/sql/v1/query/export\x12u\n" +
-	"\rGetSqlCatalog\x12$.nominal.sql.v1.GetSqlCatalogRequest\x1a%.nominal.sql.v1.GetSqlCatalogResponse\"\x17\x82\xd3\xe4\x93\x02\x11\x12\x0f/sql/v1/catalogB\xc1\x01\n" +
+	"SqlService\x12\x95\x01\n" +
+	"\x05Query\x12&.nominal.sql.v1.SqlServiceQueryRequest\x1a'.nominal.sql.v1.SqlServiceQueryResponse\"9\xba\xb2\x1a\x14\n" +
+	"\x12\n" +
+	"\x0eworkspace:view\"\x00\x82\xd3\xe4\x93\x02\x1b:\x01*b\apayload\"\r/sql/v1/query0\x01\x12\x94\x01\n" +
+	"\x06Export\x12'.nominal.sql.v1.SqlServiceExportRequest\x1a(.nominal.sql.v1.SqlServiceExportResponse\"7\xba\xb2\x1a\x14\n" +
+	"\x12\n" +
+	"\x0eworkspace:view\"\x00\x82\xd3\xe4\x93\x02\x19:\x01*\"\x14/sql/v1/query/export\x12y\n" +
+	"\rGetSqlCatalog\x12$.nominal.sql.v1.GetSqlCatalogRequest\x1a%.nominal.sql.v1.GetSqlCatalogResponse\"\x1b\xba\xb2\x1a\x00\x82\xd3\xe4\x93\x02\x11\x12\x0f/sql/v1/catalogB\xc1\x01\n" +
 	"\x12com.nominal.sql.v1B\bSqlProtoP\x01ZGgithub.com/nominal-io/nominal-api-protos-go/nominal/protos/sql/v1;sqlv1\xa2\x02\x03NSX\xaa\x02\x0eNominal.Sql.V1\xca\x02\x0eNominal\\Sql\\V1\xe2\x02\x1aNominal\\Sql\\V1\\GPBMetadata\xea\x02\x10Nominal::Sql::V1b\x06proto3"
 
 var (
@@ -1141,50 +1354,56 @@ func file_nominal_protos_sql_v1_sql_proto_rawDescGZIP() []byte {
 	return file_nominal_protos_sql_v1_sql_proto_rawDescData
 }
 
-var file_nominal_protos_sql_v1_sql_proto_enumTypes = make([]protoimpl.EnumInfo, 4)
-var file_nominal_protos_sql_v1_sql_proto_msgTypes = make([]protoimpl.MessageInfo, 12)
+var file_nominal_protos_sql_v1_sql_proto_enumTypes = make([]protoimpl.EnumInfo, 6)
+var file_nominal_protos_sql_v1_sql_proto_msgTypes = make([]protoimpl.MessageInfo, 13)
 var file_nominal_protos_sql_v1_sql_proto_goTypes = []any{
-	(SqlError)(0),                    // 0: nominal.sql.v1.SqlError
-	(SqlServiceQueryResultFormat)(0), // 1: nominal.sql.v1.SqlServiceQueryResultFormat
-	(SqlCatalogScalarType)(0),        // 2: nominal.sql.v1.SqlCatalogScalarType
-	(SqlCatalogFunctionKind)(0),      // 3: nominal.sql.v1.SqlCatalogFunctionKind
-	(*SqlServiceQueryRequest)(nil),   // 4: nominal.sql.v1.SqlServiceQueryRequest
-	(*SqlServiceQueryResponse)(nil),  // 5: nominal.sql.v1.SqlServiceQueryResponse
-	(*SqlServiceExportRequest)(nil),  // 6: nominal.sql.v1.SqlServiceExportRequest
-	(*SqlServiceExportResponse)(nil), // 7: nominal.sql.v1.SqlServiceExportResponse
-	(*GetSqlCatalogRequest)(nil),     // 8: nominal.sql.v1.GetSqlCatalogRequest
-	(*SqlCatalogMapType)(nil),        // 9: nominal.sql.v1.SqlCatalogMapType
-	(*SqlCatalogDataType)(nil),       // 10: nominal.sql.v1.SqlCatalogDataType
-	(*SqlCatalogColumn)(nil),         // 11: nominal.sql.v1.SqlCatalogColumn
-	(*SqlCatalogTable)(nil),          // 12: nominal.sql.v1.SqlCatalogTable
-	(*SqlCatalogFunction)(nil),       // 13: nominal.sql.v1.SqlCatalogFunction
-	(*SqlCatalog)(nil),               // 14: nominal.sql.v1.SqlCatalog
-	(*GetSqlCatalogResponse)(nil),    // 15: nominal.sql.v1.GetSqlCatalogResponse
+	(SqlError)(0),                     // 0: nominal.sql.v1.SqlError
+	(SqlServiceQueryResultFormat)(0),  // 1: nominal.sql.v1.SqlServiceQueryResultFormat
+	(SqlServiceExportFormat)(0),       // 2: nominal.sql.v1.SqlServiceExportFormat
+	(SqlServiceParquetCompression)(0), // 3: nominal.sql.v1.SqlServiceParquetCompression
+	(SqlCatalogScalarType)(0),         // 4: nominal.sql.v1.SqlCatalogScalarType
+	(SqlCatalogFunctionKind)(0),       // 5: nominal.sql.v1.SqlCatalogFunctionKind
+	(*SqlServiceQueryRequest)(nil),    // 6: nominal.sql.v1.SqlServiceQueryRequest
+	(*SqlServiceQueryResponse)(nil),   // 7: nominal.sql.v1.SqlServiceQueryResponse
+	(*SqlServiceParquetOptions)(nil),  // 8: nominal.sql.v1.SqlServiceParquetOptions
+	(*SqlServiceExportRequest)(nil),   // 9: nominal.sql.v1.SqlServiceExportRequest
+	(*SqlServiceExportResponse)(nil),  // 10: nominal.sql.v1.SqlServiceExportResponse
+	(*GetSqlCatalogRequest)(nil),      // 11: nominal.sql.v1.GetSqlCatalogRequest
+	(*SqlCatalogMapType)(nil),         // 12: nominal.sql.v1.SqlCatalogMapType
+	(*SqlCatalogDataType)(nil),        // 13: nominal.sql.v1.SqlCatalogDataType
+	(*SqlCatalogColumn)(nil),          // 14: nominal.sql.v1.SqlCatalogColumn
+	(*SqlCatalogTable)(nil),           // 15: nominal.sql.v1.SqlCatalogTable
+	(*SqlCatalogFunction)(nil),        // 16: nominal.sql.v1.SqlCatalogFunction
+	(*SqlCatalog)(nil),                // 17: nominal.sql.v1.SqlCatalog
+	(*GetSqlCatalogResponse)(nil),     // 18: nominal.sql.v1.GetSqlCatalogResponse
 }
 var file_nominal_protos_sql_v1_sql_proto_depIdxs = []int32{
 	1,  // 0: nominal.sql.v1.SqlServiceQueryRequest.result_format:type_name -> nominal.sql.v1.SqlServiceQueryResultFormat
-	10, // 1: nominal.sql.v1.SqlCatalogMapType.key:type_name -> nominal.sql.v1.SqlCatalogDataType
-	10, // 2: nominal.sql.v1.SqlCatalogMapType.value:type_name -> nominal.sql.v1.SqlCatalogDataType
-	2,  // 3: nominal.sql.v1.SqlCatalogDataType.scalar:type_name -> nominal.sql.v1.SqlCatalogScalarType
-	10, // 4: nominal.sql.v1.SqlCatalogDataType.array_element:type_name -> nominal.sql.v1.SqlCatalogDataType
-	9,  // 5: nominal.sql.v1.SqlCatalogDataType.map:type_name -> nominal.sql.v1.SqlCatalogMapType
-	10, // 6: nominal.sql.v1.SqlCatalogColumn.data_type:type_name -> nominal.sql.v1.SqlCatalogDataType
-	11, // 7: nominal.sql.v1.SqlCatalogTable.columns:type_name -> nominal.sql.v1.SqlCatalogColumn
-	3,  // 8: nominal.sql.v1.SqlCatalogFunction.kind:type_name -> nominal.sql.v1.SqlCatalogFunctionKind
-	12, // 9: nominal.sql.v1.SqlCatalog.tables:type_name -> nominal.sql.v1.SqlCatalogTable
-	13, // 10: nominal.sql.v1.SqlCatalog.functions:type_name -> nominal.sql.v1.SqlCatalogFunction
-	14, // 11: nominal.sql.v1.GetSqlCatalogResponse.sql_catalog:type_name -> nominal.sql.v1.SqlCatalog
-	4,  // 12: nominal.sql.v1.SqlService.Query:input_type -> nominal.sql.v1.SqlServiceQueryRequest
-	6,  // 13: nominal.sql.v1.SqlService.Export:input_type -> nominal.sql.v1.SqlServiceExportRequest
-	8,  // 14: nominal.sql.v1.SqlService.GetSqlCatalog:input_type -> nominal.sql.v1.GetSqlCatalogRequest
-	5,  // 15: nominal.sql.v1.SqlService.Query:output_type -> nominal.sql.v1.SqlServiceQueryResponse
-	7,  // 16: nominal.sql.v1.SqlService.Export:output_type -> nominal.sql.v1.SqlServiceExportResponse
-	15, // 17: nominal.sql.v1.SqlService.GetSqlCatalog:output_type -> nominal.sql.v1.GetSqlCatalogResponse
-	15, // [15:18] is the sub-list for method output_type
-	12, // [12:15] is the sub-list for method input_type
-	12, // [12:12] is the sub-list for extension type_name
-	12, // [12:12] is the sub-list for extension extendee
-	0,  // [0:12] is the sub-list for field type_name
+	3,  // 1: nominal.sql.v1.SqlServiceParquetOptions.compression:type_name -> nominal.sql.v1.SqlServiceParquetCompression
+	2,  // 2: nominal.sql.v1.SqlServiceExportRequest.format:type_name -> nominal.sql.v1.SqlServiceExportFormat
+	8,  // 3: nominal.sql.v1.SqlServiceExportRequest.parquet_options:type_name -> nominal.sql.v1.SqlServiceParquetOptions
+	13, // 4: nominal.sql.v1.SqlCatalogMapType.key:type_name -> nominal.sql.v1.SqlCatalogDataType
+	13, // 5: nominal.sql.v1.SqlCatalogMapType.value:type_name -> nominal.sql.v1.SqlCatalogDataType
+	4,  // 6: nominal.sql.v1.SqlCatalogDataType.scalar:type_name -> nominal.sql.v1.SqlCatalogScalarType
+	13, // 7: nominal.sql.v1.SqlCatalogDataType.array_element:type_name -> nominal.sql.v1.SqlCatalogDataType
+	12, // 8: nominal.sql.v1.SqlCatalogDataType.map:type_name -> nominal.sql.v1.SqlCatalogMapType
+	13, // 9: nominal.sql.v1.SqlCatalogColumn.data_type:type_name -> nominal.sql.v1.SqlCatalogDataType
+	14, // 10: nominal.sql.v1.SqlCatalogTable.columns:type_name -> nominal.sql.v1.SqlCatalogColumn
+	5,  // 11: nominal.sql.v1.SqlCatalogFunction.kind:type_name -> nominal.sql.v1.SqlCatalogFunctionKind
+	15, // 12: nominal.sql.v1.SqlCatalog.tables:type_name -> nominal.sql.v1.SqlCatalogTable
+	16, // 13: nominal.sql.v1.SqlCatalog.functions:type_name -> nominal.sql.v1.SqlCatalogFunction
+	17, // 14: nominal.sql.v1.GetSqlCatalogResponse.sql_catalog:type_name -> nominal.sql.v1.SqlCatalog
+	6,  // 15: nominal.sql.v1.SqlService.Query:input_type -> nominal.sql.v1.SqlServiceQueryRequest
+	9,  // 16: nominal.sql.v1.SqlService.Export:input_type -> nominal.sql.v1.SqlServiceExportRequest
+	11, // 17: nominal.sql.v1.SqlService.GetSqlCatalog:input_type -> nominal.sql.v1.GetSqlCatalogRequest
+	7,  // 18: nominal.sql.v1.SqlService.Query:output_type -> nominal.sql.v1.SqlServiceQueryResponse
+	10, // 19: nominal.sql.v1.SqlService.Export:output_type -> nominal.sql.v1.SqlServiceExportResponse
+	18, // 20: nominal.sql.v1.SqlService.GetSqlCatalog:output_type -> nominal.sql.v1.GetSqlCatalogResponse
+	18, // [18:21] is the sub-list for method output_type
+	15, // [15:18] is the sub-list for method input_type
+	15, // [15:15] is the sub-list for extension type_name
+	15, // [15:15] is the sub-list for extension extendee
+	0,  // [0:15] is the sub-list for field type_name
 }
 
 func init() { file_nominal_protos_sql_v1_sql_proto_init() }
@@ -1193,19 +1412,20 @@ func file_nominal_protos_sql_v1_sql_proto_init() {
 		return
 	}
 	file_nominal_protos_sql_v1_sql_proto_msgTypes[0].OneofWrappers = []any{}
-	file_nominal_protos_sql_v1_sql_proto_msgTypes[6].OneofWrappers = []any{
+	file_nominal_protos_sql_v1_sql_proto_msgTypes[2].OneofWrappers = []any{}
+	file_nominal_protos_sql_v1_sql_proto_msgTypes[7].OneofWrappers = []any{
 		(*SqlCatalogDataType_Scalar)(nil),
 		(*SqlCatalogDataType_ArrayElement)(nil),
 		(*SqlCatalogDataType_Map)(nil),
 	}
-	file_nominal_protos_sql_v1_sql_proto_msgTypes[9].OneofWrappers = []any{}
+	file_nominal_protos_sql_v1_sql_proto_msgTypes[10].OneofWrappers = []any{}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_nominal_protos_sql_v1_sql_proto_rawDesc), len(file_nominal_protos_sql_v1_sql_proto_rawDesc)),
-			NumEnums:      4,
-			NumMessages:   12,
+			NumEnums:      6,
+			NumMessages:   13,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

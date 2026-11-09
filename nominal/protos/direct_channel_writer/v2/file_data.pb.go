@@ -28,7 +28,8 @@ const (
 // the staged batch in object storage by handle so consumers fetch the batch directly
 // instead of receiving the full payload over Kafka.
 type WriteFileDataRequest struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Deprecated: Marked as deprecated in nominal/protos/direct_channel_writer/v2/file_data.proto.
 	BatchHandle   *object_storage.Handle `protobuf:"bytes,1,opt,name=batch_handle,json=batchHandle,proto3" json:"batch_handle,omitempty"`
 	IngestJobRid  string                 `protobuf:"bytes,2,opt,name=ingest_job_rid,json=ingestJobRid,proto3" json:"ingest_job_rid,omitempty"`
 	DatasetFileId string                 `protobuf:"bytes,3,opt,name=dataset_file_id,json=datasetFileId,proto3" json:"dataset_file_id,omitempty"`
@@ -36,11 +37,19 @@ type WriteFileDataRequest struct {
 	BatchId       int32                  `protobuf:"varint,5,opt,name=batch_id,json=batchId,proto3" json:"batch_id,omitempty"`
 	// Format of the bytes at batch_handle. Required so consumers can pick the right
 	// deserializer without inspecting the object.
+	//
+	// Deprecated: Marked as deprecated in nominal/protos/direct_channel_writer/v2/file_data.proto.
 	BatchFormat v2.BatchFormat `protobuf:"varint,7,opt,name=batch_format,json=batchFormat,proto3,enum=nominal.direct_channel_writer.v2.BatchFormat" json:"batch_format,omitempty"`
 	// Shape of the object at batch_handle.
-	BatchSummary  *v2.BatchSummary `protobuf:"bytes,8,opt,name=batch_summary,json=batchSummary,proto3" json:"batch_summary,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	BatchSummary *v2.BatchSummary `protobuf:"bytes,8,opt,name=batch_summary,json=batchSummary,proto3" json:"batch_summary,omitempty"`
+	// Types that are valid to be assigned to Batch:
+	//
+	//	*WriteFileDataRequest_StagedBatchObject
+	Batch isWriteFileDataRequest_Batch `protobuf_oneof:"batch"`
+	// The (channel, type, unit) series first seen in this shredder batch of the file; empty when none are new.
+	SeriesMetadata []*v2.BatchSeriesMetadata `protobuf:"bytes,11,rep,name=series_metadata,json=seriesMetadata,proto3" json:"series_metadata,omitempty"`
+	unknownFields  protoimpl.UnknownFields
+	sizeCache      protoimpl.SizeCache
 }
 
 func (x *WriteFileDataRequest) Reset() {
@@ -73,6 +82,7 @@ func (*WriteFileDataRequest) Descriptor() ([]byte, []int) {
 	return file_nominal_protos_direct_channel_writer_v2_file_data_proto_rawDescGZIP(), []int{0}
 }
 
+// Deprecated: Marked as deprecated in nominal/protos/direct_channel_writer/v2/file_data.proto.
 func (x *WriteFileDataRequest) GetBatchHandle() *object_storage.Handle {
 	if x != nil {
 		return x.BatchHandle
@@ -108,6 +118,7 @@ func (x *WriteFileDataRequest) GetBatchId() int32 {
 	return 0
 }
 
+// Deprecated: Marked as deprecated in nominal/protos/direct_channel_writer/v2/file_data.proto.
 func (x *WriteFileDataRequest) GetBatchFormat() v2.BatchFormat {
 	if x != nil {
 		return x.BatchFormat
@@ -122,22 +133,59 @@ func (x *WriteFileDataRequest) GetBatchSummary() *v2.BatchSummary {
 	return nil
 }
 
+func (x *WriteFileDataRequest) GetBatch() isWriteFileDataRequest_Batch {
+	if x != nil {
+		return x.Batch
+	}
+	return nil
+}
+
+func (x *WriteFileDataRequest) GetStagedBatchObject() *v2.StagedBatchObject {
+	if x != nil {
+		if x, ok := x.Batch.(*WriteFileDataRequest_StagedBatchObject); ok {
+			return x.StagedBatchObject
+		}
+	}
+	return nil
+}
+
+func (x *WriteFileDataRequest) GetSeriesMetadata() []*v2.BatchSeriesMetadata {
+	if x != nil {
+		return x.SeriesMetadata
+	}
+	return nil
+}
+
+type isWriteFileDataRequest_Batch interface {
+	isWriteFileDataRequest_Batch()
+}
+
+type WriteFileDataRequest_StagedBatchObject struct {
+	StagedBatchObject *v2.StagedBatchObject `protobuf:"bytes,9,opt,name=staged_batch_object,json=stagedBatchObject,proto3,oneof"`
+}
+
+func (*WriteFileDataRequest_StagedBatchObject) isWriteFileDataRequest_Batch() {}
+
 var File_nominal_protos_direct_channel_writer_v2_file_data_proto protoreflect.FileDescriptor
 
 const file_nominal_protos_direct_channel_writer_v2_file_data_proto_rawDesc = "" +
 	"\n" +
-	"7nominal/protos/direct_channel_writer/v2/file_data.proto\x12 nominal.direct_channel_writer.v2\x1aQnominal/protos/direct_channel_writer_common/v2/direct_channel_writer_common.proto\x1a!nominal/protos/gen/v1/alias.proto\x1a0nominal/protos/types/object_storage/handle.proto\"\x89\x04\n" +
-	"\x14WriteFileDataRequest\x12G\n" +
-	"\fbatch_handle\x18\x01 \x01(\v2$.nominal.types.object_storage.HandleR\vbatchHandle\x12N\n" +
+	"7nominal/protos/direct_channel_writer/v2/file_data.proto\x12 nominal.direct_channel_writer.v2\x1aQnominal/protos/direct_channel_writer_common/v2/direct_channel_writer_common.proto\x1a!nominal/protos/gen/v1/alias.proto\x1a0nominal/protos/types/object_storage/handle.proto\"\xfd\x05\n" +
+	"\x14WriteFileDataRequest\x12K\n" +
+	"\fbatch_handle\x18\x01 \x01(\v2$.nominal.types.object_storage.HandleB\x02\x18\x01R\vbatchHandle\x12N\n" +
 	"\x0eingest_job_rid\x18\x02 \x01(\tB(\x9a\xb2\x1a$\n" +
 	"\"io.nominal.ingest.api.IngestJobRidR\fingestJobRid\x12Q\n" +
 	"\x0fdataset_file_id\x18\x03 \x01(\tB)\x9a\xb2\x1a%\n" +
 	"#io.nominal.datasource.DatasetFileIdR\rdatasetFileId\x12C\n" +
 	"\aorg_rid\x18\x04 \x01(\tB*\x9a\xb2\x1a&\n" +
 	"$io.nominal.authentication.api.OrgRidR\x06orgRid\x12\x19\n" +
-	"\bbatch_id\x18\x05 \x01(\x05R\abatchId\x12P\n" +
-	"\fbatch_format\x18\a \x01(\x0e2-.nominal.direct_channel_writer.v2.BatchFormatR\vbatchFormat\x12S\n" +
-	"\rbatch_summary\x18\b \x01(\v2..nominal.direct_channel_writer.v2.BatchSummaryR\fbatchSummaryB\xbc\x02\n" +
+	"\bbatch_id\x18\x05 \x01(\x05R\abatchId\x12T\n" +
+	"\fbatch_format\x18\a \x01(\x0e2-.nominal.direct_channel_writer.v2.BatchFormatB\x02\x18\x01R\vbatchFormat\x12S\n" +
+	"\rbatch_summary\x18\b \x01(\v2..nominal.direct_channel_writer.v2.BatchSummaryR\fbatchSummary\x12e\n" +
+	"\x13staged_batch_object\x18\t \x01(\v23.nominal.direct_channel_writer.v2.StagedBatchObjectH\x00R\x11stagedBatchObject\x12^\n" +
+	"\x0fseries_metadata\x18\v \x03(\v25.nominal.direct_channel_writer.v2.BatchSeriesMetadataR\x0eseriesMetadataB\a\n" +
+	"\x05batchJ\x04\b\n" +
+	"\x10\vR\x14iceberg_parquet_fileB\xbc\x02\n" +
 	"$com.nominal.direct_channel_writer.v2B\rFileDataProtoP\x01Zkgithub.com/nominal-io/nominal-api-protos-go/nominal/protos/direct_channel_writer/v2;direct_channel_writerv2\xa2\x02\x03NDX\xaa\x02\x1eNominal.DirectChannelWriter.V2\xca\x02\x1eNominal\\DirectChannelWriter\\V2\xe2\x02*Nominal\\DirectChannelWriter\\V2\\GPBMetadata\xea\x02 Nominal::DirectChannelWriter::V2b\x06proto3"
 
 var (
@@ -154,26 +202,33 @@ func file_nominal_protos_direct_channel_writer_v2_file_data_proto_rawDescGZIP() 
 
 var file_nominal_protos_direct_channel_writer_v2_file_data_proto_msgTypes = make([]protoimpl.MessageInfo, 1)
 var file_nominal_protos_direct_channel_writer_v2_file_data_proto_goTypes = []any{
-	(*WriteFileDataRequest)(nil),  // 0: nominal.direct_channel_writer.v2.WriteFileDataRequest
-	(*object_storage.Handle)(nil), // 1: nominal.types.object_storage.Handle
-	(v2.BatchFormat)(0),           // 2: nominal.direct_channel_writer.v2.BatchFormat
-	(*v2.BatchSummary)(nil),       // 3: nominal.direct_channel_writer.v2.BatchSummary
+	(*WriteFileDataRequest)(nil),   // 0: nominal.direct_channel_writer.v2.WriteFileDataRequest
+	(*object_storage.Handle)(nil),  // 1: nominal.types.object_storage.Handle
+	(v2.BatchFormat)(0),            // 2: nominal.direct_channel_writer.v2.BatchFormat
+	(*v2.BatchSummary)(nil),        // 3: nominal.direct_channel_writer.v2.BatchSummary
+	(*v2.StagedBatchObject)(nil),   // 4: nominal.direct_channel_writer.v2.StagedBatchObject
+	(*v2.BatchSeriesMetadata)(nil), // 5: nominal.direct_channel_writer.v2.BatchSeriesMetadata
 }
 var file_nominal_protos_direct_channel_writer_v2_file_data_proto_depIdxs = []int32{
 	1, // 0: nominal.direct_channel_writer.v2.WriteFileDataRequest.batch_handle:type_name -> nominal.types.object_storage.Handle
 	2, // 1: nominal.direct_channel_writer.v2.WriteFileDataRequest.batch_format:type_name -> nominal.direct_channel_writer.v2.BatchFormat
 	3, // 2: nominal.direct_channel_writer.v2.WriteFileDataRequest.batch_summary:type_name -> nominal.direct_channel_writer.v2.BatchSummary
-	3, // [3:3] is the sub-list for method output_type
-	3, // [3:3] is the sub-list for method input_type
-	3, // [3:3] is the sub-list for extension type_name
-	3, // [3:3] is the sub-list for extension extendee
-	0, // [0:3] is the sub-list for field type_name
+	4, // 3: nominal.direct_channel_writer.v2.WriteFileDataRequest.staged_batch_object:type_name -> nominal.direct_channel_writer.v2.StagedBatchObject
+	5, // 4: nominal.direct_channel_writer.v2.WriteFileDataRequest.series_metadata:type_name -> nominal.direct_channel_writer.v2.BatchSeriesMetadata
+	5, // [5:5] is the sub-list for method output_type
+	5, // [5:5] is the sub-list for method input_type
+	5, // [5:5] is the sub-list for extension type_name
+	5, // [5:5] is the sub-list for extension extendee
+	0, // [0:5] is the sub-list for field type_name
 }
 
 func init() { file_nominal_protos_direct_channel_writer_v2_file_data_proto_init() }
 func file_nominal_protos_direct_channel_writer_v2_file_data_proto_init() {
 	if File_nominal_protos_direct_channel_writer_v2_file_data_proto != nil {
 		return
+	}
+	file_nominal_protos_direct_channel_writer_v2_file_data_proto_msgTypes[0].OneofWrappers = []any{
+		(*WriteFileDataRequest_StagedBatchObject)(nil),
 	}
 	type x struct{}
 	out := protoimpl.TypeBuilder{

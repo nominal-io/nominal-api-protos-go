@@ -29,6 +29,7 @@ const (
 // Service for downloading demo Connect apps
 type ConnectDemoAppsServiceClient interface {
 	// Get a pre-signed URL for downloading a demo Connect app
+	// Not workspace-scoped: any session may call it.
 	GetDemoAppDownloadUrl(ctx context.Context, in *GetDemoAppDownloadUrlRequest, opts ...grpc.CallOption) (*GetDemoAppDownloadUrlResponse, error)
 }
 
@@ -57,6 +58,7 @@ func (c *connectDemoAppsServiceClient) GetDemoAppDownloadUrl(ctx context.Context
 // Service for downloading demo Connect apps
 type ConnectDemoAppsServiceServer interface {
 	// Get a pre-signed URL for downloading a demo Connect app
+	// Not workspace-scoped: any session may call it.
 	GetDemoAppDownloadUrl(context.Context, *GetDemoAppDownloadUrlRequest) (*GetDemoAppDownloadUrlResponse, error)
 	mustEmbedUnimplementedConnectDemoAppsServiceServer()
 }

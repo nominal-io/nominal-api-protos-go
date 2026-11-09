@@ -8,9 +8,12 @@ package direct_channel_writerv2
 
 import (
 	_ "github.com/nominal-io/nominal-api-protos-go/nominal/protos/gen/v1"
+	v1 "github.com/nominal-io/nominal-api-protos-go/nominal/protos/iceberg/v1"
+	object_storage "github.com/nominal-io/nominal-api-protos-go/nominal/protos/types/object_storage"
 	time "github.com/nominal-io/nominal-api-protos-go/nominal/protos/types/time"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
+	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
 	reflect "reflect"
 	sync "sync"
 	unsafe "unsafe"
@@ -69,6 +72,79 @@ func (x BatchFormat) Number() protoreflect.EnumNumber {
 // Deprecated: Use BatchFormat.Descriptor instead.
 func (BatchFormat) EnumDescriptor() ([]byte, []int) {
 	return file_nominal_protos_direct_channel_writer_common_v2_direct_channel_writer_common_proto_rawDescGZIP(), []int{0}
+}
+
+type SeriesValueType int32
+
+const (
+	SeriesValueType_SERIES_VALUE_TYPE_UNSPECIFIED  SeriesValueType = 0
+	SeriesValueType_SERIES_VALUE_TYPE_DOUBLE       SeriesValueType = 1
+	SeriesValueType_SERIES_VALUE_TYPE_STRING       SeriesValueType = 2
+	SeriesValueType_SERIES_VALUE_TYPE_LOG          SeriesValueType = 3
+	SeriesValueType_SERIES_VALUE_TYPE_INT64        SeriesValueType = 4
+	SeriesValueType_SERIES_VALUE_TYPE_UINT64       SeriesValueType = 5
+	SeriesValueType_SERIES_VALUE_TYPE_DOUBLE_ARRAY SeriesValueType = 6
+	SeriesValueType_SERIES_VALUE_TYPE_STRING_ARRAY SeriesValueType = 7
+	SeriesValueType_SERIES_VALUE_TYPE_STRUCT       SeriesValueType = 8
+	SeriesValueType_SERIES_VALUE_TYPE_VIDEO        SeriesValueType = 9
+	SeriesValueType_SERIES_VALUE_TYPE_SPATIAL      SeriesValueType = 10
+)
+
+// Enum value maps for SeriesValueType.
+var (
+	SeriesValueType_name = map[int32]string{
+		0:  "SERIES_VALUE_TYPE_UNSPECIFIED",
+		1:  "SERIES_VALUE_TYPE_DOUBLE",
+		2:  "SERIES_VALUE_TYPE_STRING",
+		3:  "SERIES_VALUE_TYPE_LOG",
+		4:  "SERIES_VALUE_TYPE_INT64",
+		5:  "SERIES_VALUE_TYPE_UINT64",
+		6:  "SERIES_VALUE_TYPE_DOUBLE_ARRAY",
+		7:  "SERIES_VALUE_TYPE_STRING_ARRAY",
+		8:  "SERIES_VALUE_TYPE_STRUCT",
+		9:  "SERIES_VALUE_TYPE_VIDEO",
+		10: "SERIES_VALUE_TYPE_SPATIAL",
+	}
+	SeriesValueType_value = map[string]int32{
+		"SERIES_VALUE_TYPE_UNSPECIFIED":  0,
+		"SERIES_VALUE_TYPE_DOUBLE":       1,
+		"SERIES_VALUE_TYPE_STRING":       2,
+		"SERIES_VALUE_TYPE_LOG":          3,
+		"SERIES_VALUE_TYPE_INT64":        4,
+		"SERIES_VALUE_TYPE_UINT64":       5,
+		"SERIES_VALUE_TYPE_DOUBLE_ARRAY": 6,
+		"SERIES_VALUE_TYPE_STRING_ARRAY": 7,
+		"SERIES_VALUE_TYPE_STRUCT":       8,
+		"SERIES_VALUE_TYPE_VIDEO":        9,
+		"SERIES_VALUE_TYPE_SPATIAL":      10,
+	}
+)
+
+func (x SeriesValueType) Enum() *SeriesValueType {
+	p := new(SeriesValueType)
+	*p = x
+	return p
+}
+
+func (x SeriesValueType) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (SeriesValueType) Descriptor() protoreflect.EnumDescriptor {
+	return file_nominal_protos_direct_channel_writer_common_v2_direct_channel_writer_common_proto_enumTypes[1].Descriptor()
+}
+
+func (SeriesValueType) Type() protoreflect.EnumType {
+	return &file_nominal_protos_direct_channel_writer_common_v2_direct_channel_writer_common_proto_enumTypes[1]
+}
+
+func (x SeriesValueType) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use SeriesValueType.Descriptor instead.
+func (SeriesValueType) EnumDescriptor() ([]byte, []int) {
+	return file_nominal_protos_direct_channel_writer_common_v2_direct_channel_writer_common_proto_rawDescGZIP(), []int{1}
 }
 
 // Internal write request. Used internally by the channel writer, Kafka consumers, and mesh.
@@ -441,8 +517,11 @@ func (x *CustomStreamingSessionSourceInfo) GetSourceName() string {
 	return ""
 }
 
+// A column of arrays, all with the same element type.
 type ArrayPoints struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
+	// The arrays' element type. Exactly one is set.
+	//
 	// Types that are valid to be assigned to ArrayType:
 	//
 	//	*ArrayPoints_DoubleArrayPoints
@@ -524,8 +603,9 @@ func (*ArrayPoints_DoubleArrayPoints) isArrayPoints_ArrayType() {}
 func (*ArrayPoints_StringArrayPoints) isArrayPoints_ArrayType() {}
 
 type StringArrayPoints struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Points        []*StringArrayPoint    `protobuf:"bytes,1,rep,name=points,proto3" json:"points,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Arrays only, one per entry of the enclosing batch's timestamps.
+	Points        []*StringArrayPoint `protobuf:"bytes,1,rep,name=points,proto3" json:"points,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -568,8 +648,9 @@ func (x *StringArrayPoints) GetPoints() []*StringArrayPoint {
 }
 
 type StringArrayPoint struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Value         []string               `protobuf:"bytes,2,rep,name=value,proto3" json:"value,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// The array's elements.
+	Value         []string `protobuf:"bytes,2,rep,name=value,proto3" json:"value,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -612,8 +693,9 @@ func (x *StringArrayPoint) GetValue() []string {
 }
 
 type DoubleArrayPoints struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Points        []*DoubleArrayPoint    `protobuf:"bytes,1,rep,name=points,proto3" json:"points,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Arrays only, one per entry of the enclosing batch's timestamps.
+	Points        []*DoubleArrayPoint `protobuf:"bytes,1,rep,name=points,proto3" json:"points,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -656,8 +738,9 @@ func (x *DoubleArrayPoints) GetPoints() []*DoubleArrayPoint {
 }
 
 type DoubleArrayPoint struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Value         []float64              `protobuf:"fixed64,2,rep,packed,name=value,proto3" json:"value,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// The array's elements.
+	Value         []float64 `protobuf:"fixed64,2,rep,packed,name=value,proto3" json:"value,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -788,8 +871,9 @@ func (x *LogPoint) GetValue() *LogValue {
 }
 
 type StructPoints struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Points        []string               `protobuf:"bytes,1,rep,name=points,proto3" json:"points,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// JSON objects only, one per entry of the enclosing batch's timestamps.
+	Points        []string `protobuf:"bytes,1,rep,name=points,proto3" json:"points,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -832,9 +916,12 @@ func (x *StructPoints) GetPoints() []string {
 }
 
 type LogValue struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Message       string                 `protobuf:"bytes,1,opt,name=message,proto3" json:"message,omitempty"`
-	Args          map[string]string      `protobuf:"bytes,2,rep,name=args,proto3" json:"args,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// The log line's text.
+	Message string `protobuf:"bytes,1,opt,name=message,proto3" json:"message,omitempty"`
+	// Key/value attributes stored with the log line, alongside the series tags. They are not substituted into
+	// `message`.
+	Args          map[string]string `protobuf:"bytes,2,rep,name=args,proto3" json:"args,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -884,8 +971,9 @@ func (x *LogValue) GetArgs() map[string]string {
 }
 
 type StringPoints struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Points        []string               `protobuf:"bytes,1,rep,name=points,proto3" json:"points,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Values only, one per entry of the enclosing batch's timestamps.
+	Points        []string `protobuf:"bytes,1,rep,name=points,proto3" json:"points,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -928,8 +1016,9 @@ func (x *StringPoints) GetPoints() []string {
 }
 
 type DoublePoints struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Points        []float64              `protobuf:"fixed64,1,rep,packed,name=points,proto3" json:"points,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Values only, one per entry of the enclosing batch's timestamps.
+	Points        []float64 `protobuf:"fixed64,1,rep,packed,name=points,proto3" json:"points,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -972,8 +1061,9 @@ func (x *DoublePoints) GetPoints() []float64 {
 }
 
 type IntPoints struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Points        []int64                `protobuf:"varint,1,rep,packed,name=points,proto3" json:"points,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Values only, one per entry of the enclosing batch's timestamps.
+	Points        []int64 `protobuf:"varint,1,rep,packed,name=points,proto3" json:"points,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -1016,8 +1106,9 @@ func (x *IntPoints) GetPoints() []int64 {
 }
 
 type Uint64Points struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Points        []uint64               `protobuf:"varint,1,rep,packed,name=points,proto3" json:"points,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Values only, one per entry of the enclosing batch's timestamps.
+	Points        []uint64 `protobuf:"varint,1,rep,packed,name=points,proto3" json:"points,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -1303,12 +1394,192 @@ func (x *RecordsBatch) GetUnit() string {
 	return ""
 }
 
+type StagedBatchObject struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Handle        *object_storage.Handle `protobuf:"bytes,1,opt,name=handle,proto3" json:"handle,omitempty"`
+	Format        BatchFormat            `protobuf:"varint,2,opt,name=format,proto3,enum=nominal.direct_channel_writer.v2.BatchFormat" json:"format,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *StagedBatchObject) Reset() {
+	*x = StagedBatchObject{}
+	mi := &file_nominal_protos_direct_channel_writer_common_v2_direct_channel_writer_common_proto_msgTypes[21]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *StagedBatchObject) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*StagedBatchObject) ProtoMessage() {}
+
+func (x *StagedBatchObject) ProtoReflect() protoreflect.Message {
+	mi := &file_nominal_protos_direct_channel_writer_common_v2_direct_channel_writer_common_proto_msgTypes[21]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use StagedBatchObject.ProtoReflect.Descriptor instead.
+func (*StagedBatchObject) Descriptor() ([]byte, []int) {
+	return file_nominal_protos_direct_channel_writer_common_v2_direct_channel_writer_common_proto_rawDescGZIP(), []int{21}
+}
+
+func (x *StagedBatchObject) GetHandle() *object_storage.Handle {
+	if x != nil {
+		return x.Handle
+	}
+	return nil
+}
+
+func (x *StagedBatchObject) GetFormat() BatchFormat {
+	if x != nil {
+		return x.Format
+	}
+	return BatchFormat_BATCH_FORMAT_UNSPECIFIED
+}
+
+type IcebergParquetFile struct {
+	state          protoimpl.MessageState   `protogen:"open.v1"`
+	Handle         *object_storage.Handle   `protobuf:"bytes,1,opt,name=handle,proto3" json:"handle,omitempty"`
+	Table          *v1.TableTarget          `protobuf:"bytes,2,opt,name=table,proto3" json:"table,omitempty"`
+	PartitionValue int32                    `protobuf:"varint,3,opt,name=partition_value,json=partitionValue,proto3" json:"partition_value,omitempty"`
+	MetricsV1      *v1.IcebergFileMetricsV1 `protobuf:"bytes,4,opt,name=metrics_v1,json=metricsV1,proto3" json:"metrics_v1,omitempty"`
+	unknownFields  protoimpl.UnknownFields
+	sizeCache      protoimpl.SizeCache
+}
+
+func (x *IcebergParquetFile) Reset() {
+	*x = IcebergParquetFile{}
+	mi := &file_nominal_protos_direct_channel_writer_common_v2_direct_channel_writer_common_proto_msgTypes[22]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *IcebergParquetFile) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*IcebergParquetFile) ProtoMessage() {}
+
+func (x *IcebergParquetFile) ProtoReflect() protoreflect.Message {
+	mi := &file_nominal_protos_direct_channel_writer_common_v2_direct_channel_writer_common_proto_msgTypes[22]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use IcebergParquetFile.ProtoReflect.Descriptor instead.
+func (*IcebergParquetFile) Descriptor() ([]byte, []int) {
+	return file_nominal_protos_direct_channel_writer_common_v2_direct_channel_writer_common_proto_rawDescGZIP(), []int{22}
+}
+
+func (x *IcebergParquetFile) GetHandle() *object_storage.Handle {
+	if x != nil {
+		return x.Handle
+	}
+	return nil
+}
+
+func (x *IcebergParquetFile) GetTable() *v1.TableTarget {
+	if x != nil {
+		return x.Table
+	}
+	return nil
+}
+
+func (x *IcebergParquetFile) GetPartitionValue() int32 {
+	if x != nil {
+		return x.PartitionValue
+	}
+	return 0
+}
+
+func (x *IcebergParquetFile) GetMetricsV1() *v1.IcebergFileMetricsV1 {
+	if x != nil {
+		return x.MetricsV1
+	}
+	return nil
+}
+
+type BatchSeriesMetadata struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Channel       string                 `protobuf:"bytes,1,opt,name=channel,proto3" json:"channel,omitempty"`
+	Type          SeriesValueType        `protobuf:"varint,3,opt,name=type,proto3,enum=nominal.direct_channel_writer.v2.SeriesValueType" json:"type,omitempty"`
+	Unit          *string                `protobuf:"bytes,4,opt,name=unit,proto3,oneof" json:"unit,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *BatchSeriesMetadata) Reset() {
+	*x = BatchSeriesMetadata{}
+	mi := &file_nominal_protos_direct_channel_writer_common_v2_direct_channel_writer_common_proto_msgTypes[23]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *BatchSeriesMetadata) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*BatchSeriesMetadata) ProtoMessage() {}
+
+func (x *BatchSeriesMetadata) ProtoReflect() protoreflect.Message {
+	mi := &file_nominal_protos_direct_channel_writer_common_v2_direct_channel_writer_common_proto_msgTypes[23]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use BatchSeriesMetadata.ProtoReflect.Descriptor instead.
+func (*BatchSeriesMetadata) Descriptor() ([]byte, []int) {
+	return file_nominal_protos_direct_channel_writer_common_v2_direct_channel_writer_common_proto_rawDescGZIP(), []int{23}
+}
+
+func (x *BatchSeriesMetadata) GetChannel() string {
+	if x != nil {
+		return x.Channel
+	}
+	return ""
+}
+
+func (x *BatchSeriesMetadata) GetType() SeriesValueType {
+	if x != nil {
+		return x.Type
+	}
+	return SeriesValueType_SERIES_VALUE_TYPE_UNSPECIFIED
+}
+
+func (x *BatchSeriesMetadata) GetUnit() string {
+	if x != nil && x.Unit != nil {
+		return *x.Unit
+	}
+	return ""
+}
+
 // Shape of one batch, measured by the producer when it staged the batch. A producer
 // sets the summary as a whole or not at all, so a consumer that checks presence once
-// can read all four fields without further checks.
+// can read every field without further checks.
 type BatchSummary struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
-	// Serialized size of the staged batch proto, in bytes.
+	// Size of the staged object, in bytes.
 	SizeBytes int32 `protobuf:"varint,1,opt,name=size_bytes,json=sizeBytes,proto3" json:"size_bytes,omitempty"`
 	// Points across the batch, counted as timestamps summed over its RecordsBatches.
 	PointCount int64 `protobuf:"varint,2,opt,name=point_count,json=pointCount,proto3" json:"point_count,omitempty"`
@@ -1320,14 +1591,15 @@ type BatchSummary struct {
 	// dependent: Arrow carries a series UUID and ingested_at on every row, and stores a log
 	// point's message text more than once, neither of which the wire size reflects. Consumers
 	// size their allocator and chunking against this; it is an estimate, not a measurement.
-	EstimatedArrowBytes int64 `protobuf:"varint,4,opt,name=estimated_arrow_bytes,json=estimatedArrowBytes,proto3" json:"estimated_arrow_bytes,omitempty"`
+	EstimatedArrowBytes int64        `protobuf:"varint,4,opt,name=estimated_arrow_bytes,json=estimatedArrowBytes,proto3" json:"estimated_arrow_bytes,omitempty"`
+	Bounds              *BatchBounds `protobuf:"bytes,5,opt,name=bounds,proto3" json:"bounds,omitempty"`
 	unknownFields       protoimpl.UnknownFields
 	sizeCache           protoimpl.SizeCache
 }
 
 func (x *BatchSummary) Reset() {
 	*x = BatchSummary{}
-	mi := &file_nominal_protos_direct_channel_writer_common_v2_direct_channel_writer_common_proto_msgTypes[21]
+	mi := &file_nominal_protos_direct_channel_writer_common_v2_direct_channel_writer_common_proto_msgTypes[24]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1339,7 +1611,7 @@ func (x *BatchSummary) String() string {
 func (*BatchSummary) ProtoMessage() {}
 
 func (x *BatchSummary) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_direct_channel_writer_common_v2_direct_channel_writer_common_proto_msgTypes[21]
+	mi := &file_nominal_protos_direct_channel_writer_common_v2_direct_channel_writer_common_proto_msgTypes[24]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1352,7 +1624,7 @@ func (x *BatchSummary) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use BatchSummary.ProtoReflect.Descriptor instead.
 func (*BatchSummary) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_direct_channel_writer_common_v2_direct_channel_writer_common_proto_rawDescGZIP(), []int{21}
+	return file_nominal_protos_direct_channel_writer_common_v2_direct_channel_writer_common_proto_rawDescGZIP(), []int{24}
 }
 
 func (x *BatchSummary) GetSizeBytes() int32 {
@@ -1383,11 +1655,70 @@ func (x *BatchSummary) GetEstimatedArrowBytes() int64 {
 	return 0
 }
 
+func (x *BatchSummary) GetBounds() *BatchBounds {
+	if x != nil {
+		return x.Bounds
+	}
+	return nil
+}
+
+type BatchBounds struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	MinTimestamp  *timestamppb.Timestamp `protobuf:"bytes,1,opt,name=min_timestamp,json=minTimestamp,proto3" json:"min_timestamp,omitempty"`
+	MaxTimestamp  *timestamppb.Timestamp `protobuf:"bytes,2,opt,name=max_timestamp,json=maxTimestamp,proto3" json:"max_timestamp,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *BatchBounds) Reset() {
+	*x = BatchBounds{}
+	mi := &file_nominal_protos_direct_channel_writer_common_v2_direct_channel_writer_common_proto_msgTypes[25]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *BatchBounds) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*BatchBounds) ProtoMessage() {}
+
+func (x *BatchBounds) ProtoReflect() protoreflect.Message {
+	mi := &file_nominal_protos_direct_channel_writer_common_v2_direct_channel_writer_common_proto_msgTypes[25]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use BatchBounds.ProtoReflect.Descriptor instead.
+func (*BatchBounds) Descriptor() ([]byte, []int) {
+	return file_nominal_protos_direct_channel_writer_common_v2_direct_channel_writer_common_proto_rawDescGZIP(), []int{25}
+}
+
+func (x *BatchBounds) GetMinTimestamp() *timestamppb.Timestamp {
+	if x != nil {
+		return x.MinTimestamp
+	}
+	return nil
+}
+
+func (x *BatchBounds) GetMaxTimestamp() *timestamppb.Timestamp {
+	if x != nil {
+		return x.MaxTimestamp
+	}
+	return nil
+}
+
 var File_nominal_protos_direct_channel_writer_common_v2_direct_channel_writer_common_proto protoreflect.FileDescriptor
 
 const file_nominal_protos_direct_channel_writer_common_v2_direct_channel_writer_common_proto_rawDesc = "" +
 	"\n" +
-	"Qnominal/protos/direct_channel_writer_common/v2/direct_channel_writer_common.proto\x12 nominal.direct_channel_writer.v2\x1a!nominal/protos/gen/v1/alias.proto\x1a$nominal/protos/types/time/time.proto\"\xa2\x03\n" +
+	"Qnominal/protos/direct_channel_writer_common/v2/direct_channel_writer_common.proto\x12 nominal.direct_channel_writer.v2\x1a\x1fgoogle/protobuf/timestamp.proto\x1a!nominal/protos/gen/v1/alias.proto\x1a%nominal/protos/iceberg/v1/table.proto\x1a#nominal/protos/iceberg/v1/wal.proto\x1a0nominal/protos/types/object_storage/handle.proto\x1a$nominal/protos/types/time/time.proto\"\xa2\x03\n" +
 	"\x1bInternalWriteBatchesRequest\x12H\n" +
 	"\abatches\x18\x01 \x03(\v2..nominal.direct_channel_writer.v2.RecordsBatchR\abatches\x12_\n" +
 	"\x0fdata_source_rid\x18\x02 \x01(\tB7\x9a\xb2\x1a3\n" +
@@ -1472,17 +1803,50 @@ const file_nominal_protos_direct_channel_writer_common_v2_direct_channel_writer_
 	"\tTagsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01B\a\n" +
-	"\x05_unit\"\xa5\x01\n" +
+	"\x05_unit\"\x98\x01\n" +
+	"\x11StagedBatchObject\x12<\n" +
+	"\x06handle\x18\x01 \x01(\v2$.nominal.types.object_storage.HandleR\x06handle\x12E\n" +
+	"\x06format\x18\x02 \x01(\x0e2-.nominal.direct_channel_writer.v2.BatchFormatR\x06format\"\xfb\x01\n" +
+	"\x12IcebergParquetFile\x12<\n" +
+	"\x06handle\x18\x01 \x01(\v2$.nominal.types.object_storage.HandleR\x06handle\x125\n" +
+	"\x05table\x18\x02 \x01(\v2\x1f.nominal.iceberg.v1.TableTargetR\x05table\x12'\n" +
+	"\x0fpartition_value\x18\x03 \x01(\x05R\x0epartitionValue\x12G\n" +
+	"\n" +
+	"metrics_v1\x18\x04 \x01(\v2(.nominal.iceberg.v1.IcebergFileMetricsV1R\tmetricsV1\"\xdd\x01\n" +
+	"\x13BatchSeriesMetadata\x126\n" +
+	"\achannel\x18\x01 \x01(\tB\x1c\x9a\xb2\x1a\x18\n" +
+	"\x16io.nominal.api.ChannelR\achannel\x12E\n" +
+	"\x04type\x18\x03 \x01(\x0e21.nominal.direct_channel_writer.v2.SeriesValueTypeR\x04type\x122\n" +
+	"\x04unit\x18\x04 \x01(\tB\x19\x9a\xb2\x1a\x15\n" +
+	"\x13io.nominal.api.UnitH\x00R\x04unit\x88\x01\x01B\a\n" +
+	"\x05_unitJ\x04\b\x02\x10\x03R\x04tags\"\xec\x01\n" +
 	"\fBatchSummary\x12\x1d\n" +
 	"\n" +
 	"size_bytes\x18\x01 \x01(\x05R\tsizeBytes\x12\x1f\n" +
 	"\vpoint_count\x18\x02 \x01(\x03R\n" +
 	"pointCount\x12!\n" +
 	"\fseries_count\x18\x03 \x01(\x05R\vseriesCount\x122\n" +
-	"\x15estimated_arrow_bytes\x18\x04 \x01(\x03R\x13estimatedArrowBytes*Y\n" +
+	"\x15estimated_arrow_bytes\x18\x04 \x01(\x03R\x13estimatedArrowBytes\x12E\n" +
+	"\x06bounds\x18\x05 \x01(\v2-.nominal.direct_channel_writer.v2.BatchBoundsR\x06bounds\"\x8f\x01\n" +
+	"\vBatchBounds\x12?\n" +
+	"\rmin_timestamp\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampR\fminTimestamp\x12?\n" +
+	"\rmax_timestamp\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampR\fmaxTimestamp*Y\n" +
 	"\vBatchFormat\x12\x1c\n" +
 	"\x18BATCH_FORMAT_UNSPECIFIED\x10\x00\x12,\n" +
-	"(BATCH_FORMAT_WRITE_BATCHES_REQUEST_PROTO\x10\x01B\xd4\x02\n" +
+	"(BATCH_FORMAT_WRITE_BATCHES_REQUEST_PROTO\x10\x01*\xe8\x02\n" +
+	"\x0fSeriesValueType\x12!\n" +
+	"\x1dSERIES_VALUE_TYPE_UNSPECIFIED\x10\x00\x12\x1c\n" +
+	"\x18SERIES_VALUE_TYPE_DOUBLE\x10\x01\x12\x1c\n" +
+	"\x18SERIES_VALUE_TYPE_STRING\x10\x02\x12\x19\n" +
+	"\x15SERIES_VALUE_TYPE_LOG\x10\x03\x12\x1b\n" +
+	"\x17SERIES_VALUE_TYPE_INT64\x10\x04\x12\x1c\n" +
+	"\x18SERIES_VALUE_TYPE_UINT64\x10\x05\x12\"\n" +
+	"\x1eSERIES_VALUE_TYPE_DOUBLE_ARRAY\x10\x06\x12\"\n" +
+	"\x1eSERIES_VALUE_TYPE_STRING_ARRAY\x10\a\x12\x1c\n" +
+	"\x18SERIES_VALUE_TYPE_STRUCT\x10\b\x12\x1b\n" +
+	"\x17SERIES_VALUE_TYPE_VIDEO\x10\t\x12\x1d\n" +
+	"\x19SERIES_VALUE_TYPE_SPATIAL\x10\n" +
+	"B\xd4\x02\n" +
 	"$com.nominal.direct_channel_writer.v2B\x1eDirectChannelWriterCommonProtoP\x01Zrgithub.com/nominal-io/nominal-api-protos-go/nominal/protos/direct_channel_writer_common/v2;direct_channel_writerv2\xa2\x02\x03NDX\xaa\x02\x1eNominal.DirectChannelWriter.V2\xca\x02\x1eNominal\\DirectChannelWriter\\V2\xe2\x02*Nominal\\DirectChannelWriter\\V2\\GPBMetadata\xea\x02 Nominal::DirectChannelWriter::V2b\x06proto3"
 
 var (
@@ -1497,65 +1861,83 @@ func file_nominal_protos_direct_channel_writer_common_v2_direct_channel_writer_c
 	return file_nominal_protos_direct_channel_writer_common_v2_direct_channel_writer_common_proto_rawDescData
 }
 
-var file_nominal_protos_direct_channel_writer_common_v2_direct_channel_writer_common_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
-var file_nominal_protos_direct_channel_writer_common_v2_direct_channel_writer_common_proto_msgTypes = make([]protoimpl.MessageInfo, 24)
+var file_nominal_protos_direct_channel_writer_common_v2_direct_channel_writer_common_proto_enumTypes = make([]protoimpl.EnumInfo, 2)
+var file_nominal_protos_direct_channel_writer_common_v2_direct_channel_writer_common_proto_msgTypes = make([]protoimpl.MessageInfo, 28)
 var file_nominal_protos_direct_channel_writer_common_v2_direct_channel_writer_common_proto_goTypes = []any{
 	(BatchFormat)(0),                                   // 0: nominal.direct_channel_writer.v2.BatchFormat
-	(*InternalWriteBatchesRequest)(nil),                // 1: nominal.direct_channel_writer.v2.InternalWriteBatchesRequest
-	(*StreamingSessionSourceInfo)(nil),                 // 2: nominal.direct_channel_writer.v2.StreamingSessionSourceInfo
-	(*UsageAttributionStreamingSessionSourceInfo)(nil), // 3: nominal.direct_channel_writer.v2.UsageAttributionStreamingSessionSourceInfo
-	(*MeshStreamingSessionSourceInfo)(nil),             // 4: nominal.direct_channel_writer.v2.MeshStreamingSessionSourceInfo
-	(*DataConnectorStreamingSessionSourceInfo)(nil),    // 5: nominal.direct_channel_writer.v2.DataConnectorStreamingSessionSourceInfo
-	(*CustomStreamingSessionSourceInfo)(nil),           // 6: nominal.direct_channel_writer.v2.CustomStreamingSessionSourceInfo
-	(*ArrayPoints)(nil),                                // 7: nominal.direct_channel_writer.v2.ArrayPoints
-	(*StringArrayPoints)(nil),                          // 8: nominal.direct_channel_writer.v2.StringArrayPoints
-	(*StringArrayPoint)(nil),                           // 9: nominal.direct_channel_writer.v2.StringArrayPoint
-	(*DoubleArrayPoints)(nil),                          // 10: nominal.direct_channel_writer.v2.DoubleArrayPoints
-	(*DoubleArrayPoint)(nil),                           // 11: nominal.direct_channel_writer.v2.DoubleArrayPoint
-	(*LogPoints)(nil),                                  // 12: nominal.direct_channel_writer.v2.LogPoints
-	(*LogPoint)(nil),                                   // 13: nominal.direct_channel_writer.v2.LogPoint
-	(*StructPoints)(nil),                               // 14: nominal.direct_channel_writer.v2.StructPoints
-	(*LogValue)(nil),                                   // 15: nominal.direct_channel_writer.v2.LogValue
-	(*StringPoints)(nil),                               // 16: nominal.direct_channel_writer.v2.StringPoints
-	(*DoublePoints)(nil),                               // 17: nominal.direct_channel_writer.v2.DoublePoints
-	(*IntPoints)(nil),                                  // 18: nominal.direct_channel_writer.v2.IntPoints
-	(*Uint64Points)(nil),                               // 19: nominal.direct_channel_writer.v2.Uint64Points
-	(*Points)(nil),                                     // 20: nominal.direct_channel_writer.v2.Points
-	(*RecordsBatch)(nil),                               // 21: nominal.direct_channel_writer.v2.RecordsBatch
-	(*BatchSummary)(nil),                               // 22: nominal.direct_channel_writer.v2.BatchSummary
-	nil,                                                // 23: nominal.direct_channel_writer.v2.LogValue.ArgsEntry
-	nil,                                                // 24: nominal.direct_channel_writer.v2.RecordsBatch.TagsEntry
-	(*time.Timestamp)(nil),                             // 25: nominal.types.time.Timestamp
+	(SeriesValueType)(0),                               // 1: nominal.direct_channel_writer.v2.SeriesValueType
+	(*InternalWriteBatchesRequest)(nil),                // 2: nominal.direct_channel_writer.v2.InternalWriteBatchesRequest
+	(*StreamingSessionSourceInfo)(nil),                 // 3: nominal.direct_channel_writer.v2.StreamingSessionSourceInfo
+	(*UsageAttributionStreamingSessionSourceInfo)(nil), // 4: nominal.direct_channel_writer.v2.UsageAttributionStreamingSessionSourceInfo
+	(*MeshStreamingSessionSourceInfo)(nil),             // 5: nominal.direct_channel_writer.v2.MeshStreamingSessionSourceInfo
+	(*DataConnectorStreamingSessionSourceInfo)(nil),    // 6: nominal.direct_channel_writer.v2.DataConnectorStreamingSessionSourceInfo
+	(*CustomStreamingSessionSourceInfo)(nil),           // 7: nominal.direct_channel_writer.v2.CustomStreamingSessionSourceInfo
+	(*ArrayPoints)(nil),                                // 8: nominal.direct_channel_writer.v2.ArrayPoints
+	(*StringArrayPoints)(nil),                          // 9: nominal.direct_channel_writer.v2.StringArrayPoints
+	(*StringArrayPoint)(nil),                           // 10: nominal.direct_channel_writer.v2.StringArrayPoint
+	(*DoubleArrayPoints)(nil),                          // 11: nominal.direct_channel_writer.v2.DoubleArrayPoints
+	(*DoubleArrayPoint)(nil),                           // 12: nominal.direct_channel_writer.v2.DoubleArrayPoint
+	(*LogPoints)(nil),                                  // 13: nominal.direct_channel_writer.v2.LogPoints
+	(*LogPoint)(nil),                                   // 14: nominal.direct_channel_writer.v2.LogPoint
+	(*StructPoints)(nil),                               // 15: nominal.direct_channel_writer.v2.StructPoints
+	(*LogValue)(nil),                                   // 16: nominal.direct_channel_writer.v2.LogValue
+	(*StringPoints)(nil),                               // 17: nominal.direct_channel_writer.v2.StringPoints
+	(*DoublePoints)(nil),                               // 18: nominal.direct_channel_writer.v2.DoublePoints
+	(*IntPoints)(nil),                                  // 19: nominal.direct_channel_writer.v2.IntPoints
+	(*Uint64Points)(nil),                               // 20: nominal.direct_channel_writer.v2.Uint64Points
+	(*Points)(nil),                                     // 21: nominal.direct_channel_writer.v2.Points
+	(*RecordsBatch)(nil),                               // 22: nominal.direct_channel_writer.v2.RecordsBatch
+	(*StagedBatchObject)(nil),                          // 23: nominal.direct_channel_writer.v2.StagedBatchObject
+	(*IcebergParquetFile)(nil),                         // 24: nominal.direct_channel_writer.v2.IcebergParquetFile
+	(*BatchSeriesMetadata)(nil),                        // 25: nominal.direct_channel_writer.v2.BatchSeriesMetadata
+	(*BatchSummary)(nil),                               // 26: nominal.direct_channel_writer.v2.BatchSummary
+	(*BatchBounds)(nil),                                // 27: nominal.direct_channel_writer.v2.BatchBounds
+	nil,                                                // 28: nominal.direct_channel_writer.v2.LogValue.ArgsEntry
+	nil,                                                // 29: nominal.direct_channel_writer.v2.RecordsBatch.TagsEntry
+	(*time.Timestamp)(nil),                             // 30: nominal.types.time.Timestamp
+	(*object_storage.Handle)(nil),                      // 31: nominal.types.object_storage.Handle
+	(*v1.TableTarget)(nil),                             // 32: nominal.iceberg.v1.TableTarget
+	(*v1.IcebergFileMetricsV1)(nil),                    // 33: nominal.iceberg.v1.IcebergFileMetricsV1
+	(*timestamppb.Timestamp)(nil),                      // 34: google.protobuf.Timestamp
 }
 var file_nominal_protos_direct_channel_writer_common_v2_direct_channel_writer_common_proto_depIdxs = []int32{
-	21, // 0: nominal.direct_channel_writer.v2.InternalWriteBatchesRequest.batches:type_name -> nominal.direct_channel_writer.v2.RecordsBatch
-	2,  // 1: nominal.direct_channel_writer.v2.InternalWriteBatchesRequest.source:type_name -> nominal.direct_channel_writer.v2.StreamingSessionSourceInfo
-	4,  // 2: nominal.direct_channel_writer.v2.StreamingSessionSourceInfo.mesh:type_name -> nominal.direct_channel_writer.v2.MeshStreamingSessionSourceInfo
-	5,  // 3: nominal.direct_channel_writer.v2.StreamingSessionSourceInfo.data_connector:type_name -> nominal.direct_channel_writer.v2.DataConnectorStreamingSessionSourceInfo
-	6,  // 4: nominal.direct_channel_writer.v2.StreamingSessionSourceInfo.custom:type_name -> nominal.direct_channel_writer.v2.CustomStreamingSessionSourceInfo
-	3,  // 5: nominal.direct_channel_writer.v2.StreamingSessionSourceInfo.usage_attribution:type_name -> nominal.direct_channel_writer.v2.UsageAttributionStreamingSessionSourceInfo
-	10, // 6: nominal.direct_channel_writer.v2.ArrayPoints.double_array_points:type_name -> nominal.direct_channel_writer.v2.DoubleArrayPoints
-	8,  // 7: nominal.direct_channel_writer.v2.ArrayPoints.string_array_points:type_name -> nominal.direct_channel_writer.v2.StringArrayPoints
-	9,  // 8: nominal.direct_channel_writer.v2.StringArrayPoints.points:type_name -> nominal.direct_channel_writer.v2.StringArrayPoint
-	11, // 9: nominal.direct_channel_writer.v2.DoubleArrayPoints.points:type_name -> nominal.direct_channel_writer.v2.DoubleArrayPoint
-	13, // 10: nominal.direct_channel_writer.v2.LogPoints.points:type_name -> nominal.direct_channel_writer.v2.LogPoint
-	15, // 11: nominal.direct_channel_writer.v2.LogPoint.value:type_name -> nominal.direct_channel_writer.v2.LogValue
-	23, // 12: nominal.direct_channel_writer.v2.LogValue.args:type_name -> nominal.direct_channel_writer.v2.LogValue.ArgsEntry
-	25, // 13: nominal.direct_channel_writer.v2.Points.timestamps:type_name -> nominal.types.time.Timestamp
-	17, // 14: nominal.direct_channel_writer.v2.Points.double_points:type_name -> nominal.direct_channel_writer.v2.DoublePoints
-	16, // 15: nominal.direct_channel_writer.v2.Points.string_points:type_name -> nominal.direct_channel_writer.v2.StringPoints
-	12, // 16: nominal.direct_channel_writer.v2.Points.log_points:type_name -> nominal.direct_channel_writer.v2.LogPoints
-	18, // 17: nominal.direct_channel_writer.v2.Points.int_points:type_name -> nominal.direct_channel_writer.v2.IntPoints
-	7,  // 18: nominal.direct_channel_writer.v2.Points.array_points:type_name -> nominal.direct_channel_writer.v2.ArrayPoints
-	14, // 19: nominal.direct_channel_writer.v2.Points.struct_points:type_name -> nominal.direct_channel_writer.v2.StructPoints
-	19, // 20: nominal.direct_channel_writer.v2.Points.uint64_points:type_name -> nominal.direct_channel_writer.v2.Uint64Points
-	24, // 21: nominal.direct_channel_writer.v2.RecordsBatch.tags:type_name -> nominal.direct_channel_writer.v2.RecordsBatch.TagsEntry
-	20, // 22: nominal.direct_channel_writer.v2.RecordsBatch.points:type_name -> nominal.direct_channel_writer.v2.Points
-	23, // [23:23] is the sub-list for method output_type
-	23, // [23:23] is the sub-list for method input_type
-	23, // [23:23] is the sub-list for extension type_name
-	23, // [23:23] is the sub-list for extension extendee
-	0,  // [0:23] is the sub-list for field type_name
+	22, // 0: nominal.direct_channel_writer.v2.InternalWriteBatchesRequest.batches:type_name -> nominal.direct_channel_writer.v2.RecordsBatch
+	3,  // 1: nominal.direct_channel_writer.v2.InternalWriteBatchesRequest.source:type_name -> nominal.direct_channel_writer.v2.StreamingSessionSourceInfo
+	5,  // 2: nominal.direct_channel_writer.v2.StreamingSessionSourceInfo.mesh:type_name -> nominal.direct_channel_writer.v2.MeshStreamingSessionSourceInfo
+	6,  // 3: nominal.direct_channel_writer.v2.StreamingSessionSourceInfo.data_connector:type_name -> nominal.direct_channel_writer.v2.DataConnectorStreamingSessionSourceInfo
+	7,  // 4: nominal.direct_channel_writer.v2.StreamingSessionSourceInfo.custom:type_name -> nominal.direct_channel_writer.v2.CustomStreamingSessionSourceInfo
+	4,  // 5: nominal.direct_channel_writer.v2.StreamingSessionSourceInfo.usage_attribution:type_name -> nominal.direct_channel_writer.v2.UsageAttributionStreamingSessionSourceInfo
+	11, // 6: nominal.direct_channel_writer.v2.ArrayPoints.double_array_points:type_name -> nominal.direct_channel_writer.v2.DoubleArrayPoints
+	9,  // 7: nominal.direct_channel_writer.v2.ArrayPoints.string_array_points:type_name -> nominal.direct_channel_writer.v2.StringArrayPoints
+	10, // 8: nominal.direct_channel_writer.v2.StringArrayPoints.points:type_name -> nominal.direct_channel_writer.v2.StringArrayPoint
+	12, // 9: nominal.direct_channel_writer.v2.DoubleArrayPoints.points:type_name -> nominal.direct_channel_writer.v2.DoubleArrayPoint
+	14, // 10: nominal.direct_channel_writer.v2.LogPoints.points:type_name -> nominal.direct_channel_writer.v2.LogPoint
+	16, // 11: nominal.direct_channel_writer.v2.LogPoint.value:type_name -> nominal.direct_channel_writer.v2.LogValue
+	28, // 12: nominal.direct_channel_writer.v2.LogValue.args:type_name -> nominal.direct_channel_writer.v2.LogValue.ArgsEntry
+	30, // 13: nominal.direct_channel_writer.v2.Points.timestamps:type_name -> nominal.types.time.Timestamp
+	18, // 14: nominal.direct_channel_writer.v2.Points.double_points:type_name -> nominal.direct_channel_writer.v2.DoublePoints
+	17, // 15: nominal.direct_channel_writer.v2.Points.string_points:type_name -> nominal.direct_channel_writer.v2.StringPoints
+	13, // 16: nominal.direct_channel_writer.v2.Points.log_points:type_name -> nominal.direct_channel_writer.v2.LogPoints
+	19, // 17: nominal.direct_channel_writer.v2.Points.int_points:type_name -> nominal.direct_channel_writer.v2.IntPoints
+	8,  // 18: nominal.direct_channel_writer.v2.Points.array_points:type_name -> nominal.direct_channel_writer.v2.ArrayPoints
+	15, // 19: nominal.direct_channel_writer.v2.Points.struct_points:type_name -> nominal.direct_channel_writer.v2.StructPoints
+	20, // 20: nominal.direct_channel_writer.v2.Points.uint64_points:type_name -> nominal.direct_channel_writer.v2.Uint64Points
+	29, // 21: nominal.direct_channel_writer.v2.RecordsBatch.tags:type_name -> nominal.direct_channel_writer.v2.RecordsBatch.TagsEntry
+	21, // 22: nominal.direct_channel_writer.v2.RecordsBatch.points:type_name -> nominal.direct_channel_writer.v2.Points
+	31, // 23: nominal.direct_channel_writer.v2.StagedBatchObject.handle:type_name -> nominal.types.object_storage.Handle
+	0,  // 24: nominal.direct_channel_writer.v2.StagedBatchObject.format:type_name -> nominal.direct_channel_writer.v2.BatchFormat
+	31, // 25: nominal.direct_channel_writer.v2.IcebergParquetFile.handle:type_name -> nominal.types.object_storage.Handle
+	32, // 26: nominal.direct_channel_writer.v2.IcebergParquetFile.table:type_name -> nominal.iceberg.v1.TableTarget
+	33, // 27: nominal.direct_channel_writer.v2.IcebergParquetFile.metrics_v1:type_name -> nominal.iceberg.v1.IcebergFileMetricsV1
+	1,  // 28: nominal.direct_channel_writer.v2.BatchSeriesMetadata.type:type_name -> nominal.direct_channel_writer.v2.SeriesValueType
+	27, // 29: nominal.direct_channel_writer.v2.BatchSummary.bounds:type_name -> nominal.direct_channel_writer.v2.BatchBounds
+	34, // 30: nominal.direct_channel_writer.v2.BatchBounds.min_timestamp:type_name -> google.protobuf.Timestamp
+	34, // 31: nominal.direct_channel_writer.v2.BatchBounds.max_timestamp:type_name -> google.protobuf.Timestamp
+	32, // [32:32] is the sub-list for method output_type
+	32, // [32:32] is the sub-list for method input_type
+	32, // [32:32] is the sub-list for extension type_name
+	32, // [32:32] is the sub-list for extension extendee
+	0,  // [0:32] is the sub-list for field type_name
 }
 
 func init() {
@@ -1586,13 +1968,14 @@ func file_nominal_protos_direct_channel_writer_common_v2_direct_channel_writer_c
 		(*Points_Uint64Points)(nil),
 	}
 	file_nominal_protos_direct_channel_writer_common_v2_direct_channel_writer_common_proto_msgTypes[20].OneofWrappers = []any{}
+	file_nominal_protos_direct_channel_writer_common_v2_direct_channel_writer_common_proto_msgTypes[23].OneofWrappers = []any{}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_nominal_protos_direct_channel_writer_common_v2_direct_channel_writer_common_proto_rawDesc), len(file_nominal_protos_direct_channel_writer_common_v2_direct_channel_writer_common_proto_rawDesc)),
-			NumEnums:      1,
-			NumMessages:   24,
+			NumEnums:      2,
+			NumMessages:   28,
 			NumExtensions: 0,
 			NumServices:   0,
 		},

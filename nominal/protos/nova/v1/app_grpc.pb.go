@@ -37,7 +37,8 @@ type NovaServiceClient interface {
 	CreateApp(ctx context.Context, in *CreateAppRequest, opts ...grpc.CallOption) (*CreateAppResponse, error)
 	// Returns one application. Absent and unauthorized apps are indistinguishable.
 	GetApp(ctx context.Context, in *GetAppRequest, opts ...grpc.CallOption) (*GetAppResponse, error)
-	// Overwrites an application's mutable metadata.
+	// Updates an application's mutable metadata: every mutable field when
+	// update_mask is absent, only the listed fields when it is present.
 	UpdateApp(ctx context.Context, in *UpdateAppRequest, opts ...grpc.CallOption) (*UpdateAppResponse, error)
 	// Permanently removes an application, releasing its name for reuse.
 	DeleteApp(ctx context.Context, in *DeleteAppRequest, opts ...grpc.CallOption) (*DeleteAppResponse, error)
@@ -125,7 +126,8 @@ type NovaServiceServer interface {
 	CreateApp(context.Context, *CreateAppRequest) (*CreateAppResponse, error)
 	// Returns one application. Absent and unauthorized apps are indistinguishable.
 	GetApp(context.Context, *GetAppRequest) (*GetAppResponse, error)
-	// Overwrites an application's mutable metadata.
+	// Updates an application's mutable metadata: every mutable field when
+	// update_mask is absent, only the listed fields when it is present.
 	UpdateApp(context.Context, *UpdateAppRequest) (*UpdateAppResponse, error)
 	// Permanently removes an application, releasing its name for reuse.
 	DeleteApp(context.Context, *DeleteAppRequest) (*DeleteAppResponse, error)

@@ -16,6 +16,7 @@ package assetv2
 
 import (
 	_ "buf.build/gen/go/bufbuild/protovalidate/protocolbuffers/go/buf/validate"
+	_ "github.com/nominal-io/nominal-api-protos-go/nominal/protos/authz/v1"
 	_ "github.com/nominal-io/nominal-api-protos-go/nominal/protos/gen/v1"
 	v1 "github.com/nominal-io/nominal-api-protos-go/nominal/protos/run/v1"
 	types "github.com/nominal-io/nominal-api-protos-go/nominal/protos/types"
@@ -34,6 +35,106 @@ const (
 	// Verify that runtime/protoimpl is sufficiently up-to-date.
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
+
+// buf:lint:ignore ENUM_VALUE_PREFIX
+type PropertyRequirement int32
+
+const (
+	PropertyRequirement_PROPERTY_REQUIREMENT_UNSPECIFIED PropertyRequirement = 0
+	PropertyRequirement_REQUIRED                         PropertyRequirement = 1
+	PropertyRequirement_SUGGESTED                        PropertyRequirement = 2
+)
+
+// Enum value maps for PropertyRequirement.
+var (
+	PropertyRequirement_name = map[int32]string{
+		0: "PROPERTY_REQUIREMENT_UNSPECIFIED",
+		1: "REQUIRED",
+		2: "SUGGESTED",
+	}
+	PropertyRequirement_value = map[string]int32{
+		"PROPERTY_REQUIREMENT_UNSPECIFIED": 0,
+		"REQUIRED":                         1,
+		"SUGGESTED":                        2,
+	}
+)
+
+func (x PropertyRequirement) Enum() *PropertyRequirement {
+	p := new(PropertyRequirement)
+	*p = x
+	return p
+}
+
+func (x PropertyRequirement) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (PropertyRequirement) Descriptor() protoreflect.EnumDescriptor {
+	return file_nominal_protos_asset_v2_asset_proto_enumTypes[0].Descriptor()
+}
+
+func (PropertyRequirement) Type() protoreflect.EnumType {
+	return &file_nominal_protos_asset_v2_asset_proto_enumTypes[0]
+}
+
+func (x PropertyRequirement) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use PropertyRequirement.Descriptor instead.
+func (PropertyRequirement) EnumDescriptor() ([]byte, []int) {
+	return file_nominal_protos_asset_v2_asset_proto_rawDescGZIP(), []int{0}
+}
+
+// buf:lint:ignore ENUM_VALUE_PREFIX
+type PropertyValueType int32
+
+const (
+	PropertyValueType_PROPERTY_VALUE_TYPE_UNSPECIFIED PropertyValueType = 0
+	PropertyValueType_STRING                          PropertyValueType = 1
+	PropertyValueType_NUMBER                          PropertyValueType = 2
+)
+
+// Enum value maps for PropertyValueType.
+var (
+	PropertyValueType_name = map[int32]string{
+		0: "PROPERTY_VALUE_TYPE_UNSPECIFIED",
+		1: "STRING",
+		2: "NUMBER",
+	}
+	PropertyValueType_value = map[string]int32{
+		"PROPERTY_VALUE_TYPE_UNSPECIFIED": 0,
+		"STRING":                          1,
+		"NUMBER":                          2,
+	}
+)
+
+func (x PropertyValueType) Enum() *PropertyValueType {
+	p := new(PropertyValueType)
+	*p = x
+	return p
+}
+
+func (x PropertyValueType) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (PropertyValueType) Descriptor() protoreflect.EnumDescriptor {
+	return file_nominal_protos_asset_v2_asset_proto_enumTypes[1].Descriptor()
+}
+
+func (PropertyValueType) Type() protoreflect.EnumType {
+	return &file_nominal_protos_asset_v2_asset_proto_enumTypes[1]
+}
+
+func (x PropertyValueType) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use PropertyValueType.Descriptor instead.
+func (PropertyValueType) EnumDescriptor() ([]byte, []int) {
+	return file_nominal_protos_asset_v2_asset_proto_rawDescGZIP(), []int{1}
+}
 
 // Inlined from global.SetOperator (io.nominal.api.SetOperator).
 //
@@ -71,11 +172,11 @@ func (x SetOperator) String() string {
 }
 
 func (SetOperator) Descriptor() protoreflect.EnumDescriptor {
-	return file_nominal_protos_asset_v2_asset_proto_enumTypes[0].Descriptor()
+	return file_nominal_protos_asset_v2_asset_proto_enumTypes[2].Descriptor()
 }
 
 func (SetOperator) Type() protoreflect.EnumType {
-	return &file_nominal_protos_asset_v2_asset_proto_enumTypes[0]
+	return &file_nominal_protos_asset_v2_asset_proto_enumTypes[2]
 }
 
 func (x SetOperator) Number() protoreflect.EnumNumber {
@@ -84,7 +185,7 @@ func (x SetOperator) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use SetOperator.Descriptor instead.
 func (SetOperator) EnumDescriptor() ([]byte, []int) {
-	return file_nominal_protos_asset_v2_asset_proto_rawDescGZIP(), []int{0}
+	return file_nominal_protos_asset_v2_asset_proto_rawDescGZIP(), []int{2}
 }
 
 // buf:lint:ignore ENUM_VALUE_PREFIX
@@ -124,11 +225,11 @@ func (x AssetSortField) String() string {
 }
 
 func (AssetSortField) Descriptor() protoreflect.EnumDescriptor {
-	return file_nominal_protos_asset_v2_asset_proto_enumTypes[1].Descriptor()
+	return file_nominal_protos_asset_v2_asset_proto_enumTypes[3].Descriptor()
 }
 
 func (AssetSortField) Type() protoreflect.EnumType {
-	return &file_nominal_protos_asset_v2_asset_proto_enumTypes[1]
+	return &file_nominal_protos_asset_v2_asset_proto_enumTypes[3]
 }
 
 func (x AssetSortField) Number() protoreflect.EnumNumber {
@@ -137,11 +238,117 @@ func (x AssetSortField) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use AssetSortField.Descriptor instead.
 func (AssetSortField) EnumDescriptor() ([]byte, []int) {
-	return file_nominal_protos_asset_v2_asset_proto_rawDescGZIP(), []int{1}
+	return file_nominal_protos_asset_v2_asset_proto_rawDescGZIP(), []int{3}
+}
+
+type LinkDirection int32
+
+const (
+	LinkDirection_LINK_DIRECTION_UNSPECIFIED LinkDirection = 0
+	// From assets of the link's source type to the assets of its target type they link to.
+	LinkDirection_LINK_DIRECTION_FORWARD LinkDirection = 1
+	// From assets of the link's target type to the assets of its source type that link to them.
+	LinkDirection_LINK_DIRECTION_INVERSE LinkDirection = 2
+)
+
+// Enum value maps for LinkDirection.
+var (
+	LinkDirection_name = map[int32]string{
+		0: "LINK_DIRECTION_UNSPECIFIED",
+		1: "LINK_DIRECTION_FORWARD",
+		2: "LINK_DIRECTION_INVERSE",
+	}
+	LinkDirection_value = map[string]int32{
+		"LINK_DIRECTION_UNSPECIFIED": 0,
+		"LINK_DIRECTION_FORWARD":     1,
+		"LINK_DIRECTION_INVERSE":     2,
+	}
+)
+
+func (x LinkDirection) Enum() *LinkDirection {
+	p := new(LinkDirection)
+	*p = x
+	return p
+}
+
+func (x LinkDirection) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (LinkDirection) Descriptor() protoreflect.EnumDescriptor {
+	return file_nominal_protos_asset_v2_asset_proto_enumTypes[4].Descriptor()
+}
+
+func (LinkDirection) Type() protoreflect.EnumType {
+	return &file_nominal_protos_asset_v2_asset_proto_enumTypes[4]
+}
+
+func (x LinkDirection) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use LinkDirection.Descriptor instead.
+func (LinkDirection) EnumDescriptor() ([]byte, []int) {
+	return file_nominal_protos_asset_v2_asset_proto_rawDescGZIP(), []int{4}
+}
+
+// What CreateOrUpdateAssetByPrimaryKey does when an active asset already has the requested type and primary-key value.
+// buf:lint:ignore ENUM_VALUE_PREFIX
+type IfAssetExists int32
+
+const (
+	IfAssetExists_IF_ASSET_EXISTS_UNSPECIFIED IfAssetExists = 0
+	// Return the existing asset unchanged.
+	IfAssetExists_RETURN_EXISTING IfAssetExists = 1
+	// Replace the existing asset's title, description, properties, labels, links, and types with the request's values,
+	// and its data scopes unless the request sets dataset_rid or data. Attachments, the asset's data, the workspace, and
+	// the primary key are unchanged.
+	IfAssetExists_UPDATE_EXISTING IfAssetExists = 2
+)
+
+// Enum value maps for IfAssetExists.
+var (
+	IfAssetExists_name = map[int32]string{
+		0: "IF_ASSET_EXISTS_UNSPECIFIED",
+		1: "RETURN_EXISTING",
+		2: "UPDATE_EXISTING",
+	}
+	IfAssetExists_value = map[string]int32{
+		"IF_ASSET_EXISTS_UNSPECIFIED": 0,
+		"RETURN_EXISTING":             1,
+		"UPDATE_EXISTING":             2,
+	}
+)
+
+func (x IfAssetExists) Enum() *IfAssetExists {
+	p := new(IfAssetExists)
+	*p = x
+	return p
+}
+
+func (x IfAssetExists) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (IfAssetExists) Descriptor() protoreflect.EnumDescriptor {
+	return file_nominal_protos_asset_v2_asset_proto_enumTypes[5].Descriptor()
+}
+
+func (IfAssetExists) Type() protoreflect.EnumType {
+	return &file_nominal_protos_asset_v2_asset_proto_enumTypes[5]
+}
+
+func (x IfAssetExists) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use IfAssetExists.Descriptor instead.
+func (IfAssetExists) EnumDescriptor() ([]byte, []int) {
+	return file_nominal_protos_asset_v2_asset_proto_rawDescGZIP(), []int{5}
 }
 
 // Structural guards for malformed proto requests (e.g. an unset required oneof on DataSource / SortKey /
-// UpdateOrRemoveAssetType / MetadataChange / ConflictBehavior, or an UNSPECIFIED/UNRECOGNIZED enum value, or a
+// MetadataChange / ConflictBehavior, or an UNSPECIFIED/UNRECOGNIZED enum value, or a
 // malformed scalar the resource re-parses). Domain errors (AssetNotFound, TypeNotFound, …) are thrown by the
 // business core.
 //
@@ -149,16 +356,22 @@ func (AssetSortField) EnumDescriptor() ([]byte, []int) {
 type AssetError int32
 
 const (
-	AssetError_ASSET_ERROR_INVALID_REQUEST AssetError = 0
+	AssetError_ASSET_ERROR_INVALID_REQUEST   AssetError = 0
+	AssetError_ASSET_ERROR_PERMISSION_DENIED AssetError = 1
+	AssetError_ASSET_ERROR_LINK_NOT_FOUND    AssetError = 2
 )
 
 // Enum value maps for AssetError.
 var (
 	AssetError_name = map[int32]string{
 		0: "ASSET_ERROR_INVALID_REQUEST",
+		1: "ASSET_ERROR_PERMISSION_DENIED",
+		2: "ASSET_ERROR_LINK_NOT_FOUND",
 	}
 	AssetError_value = map[string]int32{
-		"ASSET_ERROR_INVALID_REQUEST": 0,
+		"ASSET_ERROR_INVALID_REQUEST":   0,
+		"ASSET_ERROR_PERMISSION_DENIED": 1,
+		"ASSET_ERROR_LINK_NOT_FOUND":    2,
 	}
 )
 
@@ -173,11 +386,11 @@ func (x AssetError) String() string {
 }
 
 func (AssetError) Descriptor() protoreflect.EnumDescriptor {
-	return file_nominal_protos_asset_v2_asset_proto_enumTypes[2].Descriptor()
+	return file_nominal_protos_asset_v2_asset_proto_enumTypes[6].Descriptor()
 }
 
 func (AssetError) Type() protoreflect.EnumType {
-	return &file_nominal_protos_asset_v2_asset_proto_enumTypes[2]
+	return &file_nominal_protos_asset_v2_asset_proto_enumTypes[6]
 }
 
 func (x AssetError) Number() protoreflect.EnumNumber {
@@ -186,7 +399,74 @@ func (x AssetError) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use AssetError.Descriptor instead.
 func (AssetError) EnumDescriptor() ([]byte, []int) {
-	return file_nominal_protos_asset_v2_asset_proto_rawDescGZIP(), []int{2}
+	return file_nominal_protos_asset_v2_asset_proto_rawDescGZIP(), []int{6}
+}
+
+// The kind of a required series. A series of any stored type within the kind satisfies the requirement. Nested so
+// its STRING value does not collide with PropertyValueType.STRING at package scope (proto enum values are siblings
+// of their enclosing scope).
+//
+// buf:lint:ignore ENUM_VALUE_PREFIX
+type SeriesRequirement_SeriesType int32
+
+const (
+	SeriesRequirement_SERIES_TYPE_UNSPECIFIED SeriesRequirement_SeriesType = 0
+	// Double, int64 or uint64 points.
+	SeriesRequirement_NUMERIC       SeriesRequirement_SeriesType = 1
+	SeriesRequirement_STRING        SeriesRequirement_SeriesType = 2
+	SeriesRequirement_LOG           SeriesRequirement_SeriesType = 3
+	SeriesRequirement_NUMERIC_ARRAY SeriesRequirement_SeriesType = 4
+	SeriesRequirement_STRING_ARRAY  SeriesRequirement_SeriesType = 5
+	SeriesRequirement_STRUCT        SeriesRequirement_SeriesType = 6
+)
+
+// Enum value maps for SeriesRequirement_SeriesType.
+var (
+	SeriesRequirement_SeriesType_name = map[int32]string{
+		0: "SERIES_TYPE_UNSPECIFIED",
+		1: "NUMERIC",
+		2: "STRING",
+		3: "LOG",
+		4: "NUMERIC_ARRAY",
+		5: "STRING_ARRAY",
+		6: "STRUCT",
+	}
+	SeriesRequirement_SeriesType_value = map[string]int32{
+		"SERIES_TYPE_UNSPECIFIED": 0,
+		"NUMERIC":                 1,
+		"STRING":                  2,
+		"LOG":                     3,
+		"NUMERIC_ARRAY":           4,
+		"STRING_ARRAY":            5,
+		"STRUCT":                  6,
+	}
+)
+
+func (x SeriesRequirement_SeriesType) Enum() *SeriesRequirement_SeriesType {
+	p := new(SeriesRequirement_SeriesType)
+	*p = x
+	return p
+}
+
+func (x SeriesRequirement_SeriesType) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (SeriesRequirement_SeriesType) Descriptor() protoreflect.EnumDescriptor {
+	return file_nominal_protos_asset_v2_asset_proto_enumTypes[7].Descriptor()
+}
+
+func (SeriesRequirement_SeriesType) Type() protoreflect.EnumType {
+	return &file_nominal_protos_asset_v2_asset_proto_enumTypes[7]
+}
+
+func (x SeriesRequirement_SeriesType) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use SeriesRequirement_SeriesType.Descriptor instead.
+func (SeriesRequirement_SeriesType) EnumDescriptor() ([]byte, []int) {
+	return file_nominal_protos_asset_v2_asset_proto_rawDescGZIP(), []int{7, 0}
 }
 
 // Nested so its CREATED_AT value does not collide with AssetSortField.CREATED_AT at package scope (proto enum
@@ -223,11 +503,11 @@ func (x TypeSortOptions_TypeSortField) String() string {
 }
 
 func (TypeSortOptions_TypeSortField) Descriptor() protoreflect.EnumDescriptor {
-	return file_nominal_protos_asset_v2_asset_proto_enumTypes[3].Descriptor()
+	return file_nominal_protos_asset_v2_asset_proto_enumTypes[8].Descriptor()
 }
 
 func (TypeSortOptions_TypeSortField) Type() protoreflect.EnumType {
-	return &file_nominal_protos_asset_v2_asset_proto_enumTypes[3]
+	return &file_nominal_protos_asset_v2_asset_proto_enumTypes[8]
 }
 
 func (x TypeSortOptions_TypeSortField) Number() protoreflect.EnumNumber {
@@ -236,7 +516,7 @@ func (x TypeSortOptions_TypeSortField) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use TypeSortOptions_TypeSortField.Descriptor instead.
 func (TypeSortOptions_TypeSortField) EnumDescriptor() ([]byte, []int) {
-	return file_nominal_protos_asset_v2_asset_proto_rawDescGZIP(), []int{16, 0}
+	return file_nominal_protos_asset_v2_asset_proto_rawDescGZIP(), []int{20, 0}
 }
 
 type Asset struct {
@@ -258,13 +538,24 @@ type Asset struct {
 	CreatedAt   *timestamppb.Timestamp `protobuf:"bytes,9,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
 	UpdatedAt   *timestamppb.Timestamp `protobuf:"bytes,10,opt,name=updated_at,json=updatedAt,proto3" json:"updated_at,omitempty"`
 	Attachments []string               `protobuf:"bytes,11,rep,name=attachments,proto3" json:"attachments,omitempty"`
-	Type        *string                `protobuf:"bytes,12,opt,name=type,proto3,oneof" json:"type,omitempty"`
+	// Types attached to the asset. At most 10.
+	Types []string `protobuf:"bytes,17,rep,name=types,proto3" json:"types,omitempty"`
 	// Auto created assets are considered staged by default.
 	IsStaged        bool                                 `protobuf:"varint,13,opt,name=is_staged,json=isStaged,proto3" json:"is_staged,omitempty"`
 	IsArchived      bool                                 `protobuf:"varint,14,opt,name=is_archived,json=isArchived,proto3" json:"is_archived,omitempty"`
 	TypedProperties map[string]*types.TypedPropertyValue `protobuf:"bytes,15,rep,name=typed_properties,json=typedProperties,proto3" json:"typed_properties,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
-	// The dataset that backs this asset's data. Present when created with dataset_rid. May be absent for legacy assets without representable scopes.
-	DatasetRid    *string `protobuf:"bytes,16,opt,name=dataset_rid,json=datasetRid,proto3,oneof" json:"dataset_rid,omitempty"`
+	// Deprecated: use data. The dataset form of data's uuid, which resolves to the pipeline or raw dataset alike.
+	//
+	// Deprecated: Marked as deprecated in nominal/protos/asset/v2/asset.proto.
+	DatasetRid *string `protobuf:"bytes,16,opt,name=dataset_rid,json=datasetRid,proto3,oneof" json:"dataset_rid,omitempty"`
+	// Whether any of the asset's datasets is receiving live data, as the `live` search query defines it. Only
+	// SearchAssets and GetAssets set it; absent means not computed, not "not live".
+	IsLive *bool `protobuf:"varint,18,opt,name=is_live,json=isLive,proto3,oneof" json:"is_live,omitempty"`
+	// The pipeline or raw dataset this asset reads. Absent for legacy assets without representable scopes.
+	Data *AssetData `protobuf:"bytes,19,opt,name=data,proto3" json:"data,omitempty"`
+	// A typed asset may have a representative lucide-icon that differs from the default icon for assets that we show
+	// in the UI. This is usually the icon of the first asset type of the types associated with the asset (alphabetical)
+	IconName      *string `protobuf:"bytes,20,opt,name=icon_name,json=iconName,proto3,oneof" json:"icon_name,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -377,11 +668,11 @@ func (x *Asset) GetAttachments() []string {
 	return nil
 }
 
-func (x *Asset) GetType() string {
-	if x != nil && x.Type != nil {
-		return *x.Type
+func (x *Asset) GetTypes() []string {
+	if x != nil {
+		return x.Types
 	}
-	return ""
+	return nil
 }
 
 func (x *Asset) GetIsStaged() bool {
@@ -405,12 +696,121 @@ func (x *Asset) GetTypedProperties() map[string]*types.TypedPropertyValue {
 	return nil
 }
 
+// Deprecated: Marked as deprecated in nominal/protos/asset/v2/asset.proto.
 func (x *Asset) GetDatasetRid() string {
 	if x != nil && x.DatasetRid != nil {
 		return *x.DatasetRid
 	}
 	return ""
 }
+
+func (x *Asset) GetIsLive() bool {
+	if x != nil && x.IsLive != nil {
+		return *x.IsLive
+	}
+	return false
+}
+
+func (x *Asset) GetData() *AssetData {
+	if x != nil {
+		return x.Data
+	}
+	return nil
+}
+
+func (x *Asset) GetIconName() string {
+	if x != nil && x.IconName != nil {
+		return *x.IconName
+	}
+	return ""
+}
+
+// The pipeline or raw dataset an asset reads. Clients should treat an unset oneof as a kind added after they were
+// built.
+type AssetData struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Types that are valid to be assigned to Data:
+	//
+	//	*AssetData_PipelineRid
+	//	*AssetData_DatasetRid
+	Data          isAssetData_Data `protobuf_oneof:"data"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *AssetData) Reset() {
+	*x = AssetData{}
+	mi := &file_nominal_protos_asset_v2_asset_proto_msgTypes[1]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *AssetData) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*AssetData) ProtoMessage() {}
+
+func (x *AssetData) ProtoReflect() protoreflect.Message {
+	mi := &file_nominal_protos_asset_v2_asset_proto_msgTypes[1]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use AssetData.ProtoReflect.Descriptor instead.
+func (*AssetData) Descriptor() ([]byte, []int) {
+	return file_nominal_protos_asset_v2_asset_proto_rawDescGZIP(), []int{1}
+}
+
+func (x *AssetData) GetData() isAssetData_Data {
+	if x != nil {
+		return x.Data
+	}
+	return nil
+}
+
+func (x *AssetData) GetPipelineRid() string {
+	if x != nil {
+		if x, ok := x.Data.(*AssetData_PipelineRid); ok {
+			return x.PipelineRid
+		}
+	}
+	return ""
+}
+
+func (x *AssetData) GetDatasetRid() string {
+	if x != nil {
+		if x, ok := x.Data.(*AssetData_DatasetRid); ok {
+			return x.DatasetRid
+		}
+	}
+	return ""
+}
+
+type isAssetData_Data interface {
+	isAssetData_Data()
+}
+
+type AssetData_PipelineRid struct {
+	// A pipeline the asset reads as it changes. Editing the asset's data scopes does not change it.
+	PipelineRid string `protobuf:"bytes,1,opt,name=pipeline_rid,json=pipelineRid,proto3,oneof"`
+}
+
+type AssetData_DatasetRid struct {
+	// A raw catalog dataset the asset reads directly. Derived datasets are named by their pipeline instead. An asset
+	// reading a raw dataset has no data scopes to edit.
+	DatasetRid string `protobuf:"bytes,2,opt,name=dataset_rid,json=datasetRid,proto3,oneof"`
+}
+
+func (*AssetData_PipelineRid) isAssetData_Data() {}
+
+func (*AssetData_DatasetRid) isAssetData_Data() {}
 
 type Type struct {
 	state           protoimpl.MessageState     `protogen:"open.v1"`
@@ -421,16 +821,25 @@ type Type struct {
 	CreatedAt       *timestamppb.Timestamp     `protobuf:"bytes,5,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
 	// The name of the icon to display for the type. This name maps to a Lucide icon in the frontend.
 	IconName *string `protobuf:"bytes,6,opt,name=icon_name,json=iconName,proto3,oneof" json:"icon_name,omitempty"`
-	// The configuration outlines what a data scope should provide when added to an asset of this type. It is
-	// referenced at data scope creation time, but does not actively modify existing data scopes.
-	DatasourceConfigs map[string]*AssetTypeDataScopeConfig `protobuf:"bytes,7,rep,name=datasource_configs,json=datasourceConfigs,proto3" json:"datasource_configs,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
-	unknownFields     protoimpl.UnknownFields
-	sizeCache         protoimpl.SizeCache
+	// The property that identifies an asset of this type. It is a required nonempty string and is not repeated in
+	// property_configs.
+	PrimaryKey string `protobuf:"bytes,8,opt,name=primary_key,json=primaryKey,proto3" json:"primary_key,omitempty"`
+	IsArchived bool   `protobuf:"varint,9,opt,name=is_archived,json=isArchived,proto3" json:"is_archived,omitempty"`
+	// Requirements on the data of assets of this type, absent if none were ever set. Checked when the type is attached
+	// to an asset; later data or definition changes are not rechecked.
+	DataRequirements *DataRequirements `protobuf:"bytes,10,opt,name=data_requirements,json=dataRequirements,proto3" json:"data_requirements,omitempty"`
+	// Links this type declares, oldest first.
+	OutgoingLinks []*LinkDefinition `protobuf:"bytes,11,rep,name=outgoing_links,json=outgoingLinks,proto3" json:"outgoing_links,omitempty"`
+	// Links other types declare that target this type, including this type's links to itself, oldest first.
+	// Read-only: a link is changed through its source type.
+	IncomingLinks []*LinkDefinition `protobuf:"bytes,12,rep,name=incoming_links,json=incomingLinks,proto3" json:"incoming_links,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
 }
 
 func (x *Type) Reset() {
 	*x = Type{}
-	mi := &file_nominal_protos_asset_v2_asset_proto_msgTypes[1]
+	mi := &file_nominal_protos_asset_v2_asset_proto_msgTypes[2]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -442,7 +851,7 @@ func (x *Type) String() string {
 func (*Type) ProtoMessage() {}
 
 func (x *Type) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_asset_v2_asset_proto_msgTypes[1]
+	mi := &file_nominal_protos_asset_v2_asset_proto_msgTypes[2]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -455,7 +864,7 @@ func (x *Type) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Type.ProtoReflect.Descriptor instead.
 func (*Type) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_asset_v2_asset_proto_rawDescGZIP(), []int{1}
+	return file_nominal_protos_asset_v2_asset_proto_rawDescGZIP(), []int{2}
 }
 
 func (x *Type) GetRid() string {
@@ -500,88 +909,88 @@ func (x *Type) GetIconName() string {
 	return ""
 }
 
-func (x *Type) GetDatasourceConfigs() map[string]*AssetTypeDataScopeConfig {
+func (x *Type) GetPrimaryKey() string {
 	if x != nil {
-		return x.DatasourceConfigs
-	}
-	return nil
-}
-
-type AssetTypeDataScopeConfig struct {
-	state            protoimpl.MessageState `protogen:"open.v1"`
-	SuggestedRefName *string                `protobuf:"bytes,1,opt,name=suggested_ref_name,json=suggestedRefName,proto3,oneof" json:"suggested_ref_name,omitempty"`
-	// Tag names that should be supplied to downscope data for an asset of the asset type. These are not
-	// enforced.
-	Tags          *TagConfig `protobuf:"bytes,2,opt,name=tags,proto3" json:"tags,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
-}
-
-func (x *AssetTypeDataScopeConfig) Reset() {
-	*x = AssetTypeDataScopeConfig{}
-	mi := &file_nominal_protos_asset_v2_asset_proto_msgTypes[2]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *AssetTypeDataScopeConfig) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*AssetTypeDataScopeConfig) ProtoMessage() {}
-
-func (x *AssetTypeDataScopeConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_asset_v2_asset_proto_msgTypes[2]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use AssetTypeDataScopeConfig.ProtoReflect.Descriptor instead.
-func (*AssetTypeDataScopeConfig) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_asset_v2_asset_proto_rawDescGZIP(), []int{2}
-}
-
-func (x *AssetTypeDataScopeConfig) GetSuggestedRefName() string {
-	if x != nil && x.SuggestedRefName != nil {
-		return *x.SuggestedRefName
+		return x.PrimaryKey
 	}
 	return ""
 }
 
-func (x *AssetTypeDataScopeConfig) GetTags() *TagConfig {
+func (x *Type) GetIsArchived() bool {
 	if x != nil {
-		return x.Tags
+		return x.IsArchived
+	}
+	return false
+}
+
+func (x *Type) GetDataRequirements() *DataRequirements {
+	if x != nil {
+		return x.DataRequirements
 	}
 	return nil
 }
 
-type TagConfig struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	V1            []string               `protobuf:"bytes,1,rep,name=v1,proto3" json:"v1,omitempty"`
+func (x *Type) GetOutgoingLinks() []*LinkDefinition {
+	if x != nil {
+		return x.OutgoingLinks
+	}
+	return nil
+}
+
+func (x *Type) GetIncomingLinks() []*LinkDefinition {
+	if x != nil {
+		return x.IncomingLinks
+	}
+	return nil
+}
+
+// A link from assets of the source type to assets of the target type. A link that matches no active asset is
+// unresolved; references are never blocked from dangling. Deleting either type deletes the link.
+//
+// Type create and update requests take the same message: the target type must be in the source type's workspace, a
+// new link needs both types to be unarchived, and a type cannot link the same property to the same target type twice.
+// Existing links keep working when either type is archived later.
+type LinkDefinition struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Server-assigned. In an update, names one of the type's existing links, whose kind and target type cannot change;
+	// absent adds a new link. Must be absent on create.
+	Rid *string `protobuf:"bytes,1,opt,name=rid,proto3,oneof" json:"rid,omitempty"`
+	// Read-only: always present in responses. Leave it unset in requests, where the source is the type being created or
+	// updated; a value sent there is ignored.
+	SourceTypeRid *string `protobuf:"bytes,2,opt,name=source_type_rid,json=sourceTypeRid,proto3,oneof" json:"source_type_rid,omitempty"`
+	// May be the source type itself.
+	TargetTypeRid string `protobuf:"bytes,3,opt,name=target_type_rid,json=targetTypeRid,proto3" json:"target_type_rid,omitempty"`
+	// The link's name seen from the source type, absent if not set. Clients typically fall back to the target type's
+	// name.
+	ForwardLabel *string `protobuf:"bytes,4,opt,name=forward_label,json=forwardLabel,proto3,oneof" json:"forward_label,omitempty"`
+	// The link's name seen from the target type, absent if not set. Clients typically fall back to the source type's
+	// name.
+	InverseLabel *string `protobuf:"bytes,5,opt,name=inverse_label,json=inverseLabel,proto3,oneof" json:"inverse_label,omitempty"`
+	// How a source asset names its targets. Clients should treat an unset oneof as a link they cannot display: it is a
+	// kind added after the client was built.
+	//
+	// Types that are valid to be assigned to Kind:
+	//
+	//	*LinkDefinition_Direct
+	Kind          isLinkDefinition_Kind `protobuf_oneof:"kind"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
-func (x *TagConfig) Reset() {
-	*x = TagConfig{}
+func (x *LinkDefinition) Reset() {
+	*x = LinkDefinition{}
 	mi := &file_nominal_protos_asset_v2_asset_proto_msgTypes[3]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
 
-func (x *TagConfig) String() string {
+func (x *LinkDefinition) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*TagConfig) ProtoMessage() {}
+func (*LinkDefinition) ProtoMessage() {}
 
-func (x *TagConfig) ProtoReflect() protoreflect.Message {
+func (x *LinkDefinition) ProtoReflect() protoreflect.Message {
 	mi := &file_nominal_protos_asset_v2_asset_proto_msgTypes[3]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -593,29 +1002,299 @@ func (x *TagConfig) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use TagConfig.ProtoReflect.Descriptor instead.
-func (*TagConfig) Descriptor() ([]byte, []int) {
+// Deprecated: Use LinkDefinition.ProtoReflect.Descriptor instead.
+func (*LinkDefinition) Descriptor() ([]byte, []int) {
 	return file_nominal_protos_asset_v2_asset_proto_rawDescGZIP(), []int{3}
 }
 
-func (x *TagConfig) GetV1() []string {
+func (x *LinkDefinition) GetRid() string {
+	if x != nil && x.Rid != nil {
+		return *x.Rid
+	}
+	return ""
+}
+
+func (x *LinkDefinition) GetSourceTypeRid() string {
+	if x != nil && x.SourceTypeRid != nil {
+		return *x.SourceTypeRid
+	}
+	return ""
+}
+
+func (x *LinkDefinition) GetTargetTypeRid() string {
 	if x != nil {
-		return x.V1
+		return x.TargetTypeRid
+	}
+	return ""
+}
+
+func (x *LinkDefinition) GetForwardLabel() string {
+	if x != nil && x.ForwardLabel != nil {
+		return *x.ForwardLabel
+	}
+	return ""
+}
+
+func (x *LinkDefinition) GetInverseLabel() string {
+	if x != nil && x.InverseLabel != nil {
+		return *x.InverseLabel
+	}
+	return ""
+}
+
+func (x *LinkDefinition) GetKind() isLinkDefinition_Kind {
+	if x != nil {
+		return x.Kind
 	}
 	return nil
 }
 
+func (x *LinkDefinition) GetDirect() *DirectLink {
+	if x != nil {
+		if x, ok := x.Kind.(*LinkDefinition_Direct); ok {
+			return x.Direct
+		}
+	}
+	return nil
+}
+
+type isLinkDefinition_Kind interface {
+	isLinkDefinition_Kind()
+}
+
+type LinkDefinition_Direct struct {
+	Direct *DirectLink `protobuf:"bytes,6,opt,name=direct,proto3,oneof"`
+}
+
+func (*LinkDefinition_Direct) isLinkDefinition_Kind() {}
+
+// A source asset's value for a string property references the active asset of the target type whose primary key
+// equals it.
+type DirectLink struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// A string property declared in the source type's property_configs, other than its primary key. Whether every
+	// source asset must set it is that property's requirement.
+	SourceProperty string `protobuf:"bytes,1,opt,name=source_property,json=sourceProperty,proto3" json:"source_property,omitempty"`
+	unknownFields  protoimpl.UnknownFields
+	sizeCache      protoimpl.SizeCache
+}
+
+func (x *DirectLink) Reset() {
+	*x = DirectLink{}
+	mi := &file_nominal_protos_asset_v2_asset_proto_msgTypes[4]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *DirectLink) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*DirectLink) ProtoMessage() {}
+
+func (x *DirectLink) ProtoReflect() protoreflect.Message {
+	mi := &file_nominal_protos_asset_v2_asset_proto_msgTypes[4]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use DirectLink.ProtoReflect.Descriptor instead.
+func (*DirectLink) Descriptor() ([]byte, []int) {
+	return file_nominal_protos_asset_v2_asset_proto_rawDescGZIP(), []int{4}
+}
+
+func (x *DirectLink) GetSourceProperty() string {
+	if x != nil {
+		return x.SourceProperty
+	}
+	return ""
+}
+
+// The requirements on the data of assets of a type. Clients should treat an unset oneof as requirements they cannot
+// display: it is a kind added after the client was built.
+type DataRequirements struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Types that are valid to be assigned to Requirements:
+	//
+	//	*DataRequirements_Series
+	Requirements  isDataRequirements_Requirements `protobuf_oneof:"requirements"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *DataRequirements) Reset() {
+	*x = DataRequirements{}
+	mi := &file_nominal_protos_asset_v2_asset_proto_msgTypes[5]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *DataRequirements) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*DataRequirements) ProtoMessage() {}
+
+func (x *DataRequirements) ProtoReflect() protoreflect.Message {
+	mi := &file_nominal_protos_asset_v2_asset_proto_msgTypes[5]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use DataRequirements.ProtoReflect.Descriptor instead.
+func (*DataRequirements) Descriptor() ([]byte, []int) {
+	return file_nominal_protos_asset_v2_asset_proto_rawDescGZIP(), []int{5}
+}
+
+func (x *DataRequirements) GetRequirements() isDataRequirements_Requirements {
+	if x != nil {
+		return x.Requirements
+	}
+	return nil
+}
+
+func (x *DataRequirements) GetSeries() *SeriesRequirements {
+	if x != nil {
+		if x, ok := x.Requirements.(*DataRequirements_Series); ok {
+			return x.Series
+		}
+	}
+	return nil
+}
+
+type isDataRequirements_Requirements interface {
+	isDataRequirements_Requirements()
+}
+
+type DataRequirements_Series struct {
+	Series *SeriesRequirements `protobuf:"bytes,1,opt,name=series,proto3,oneof"`
+}
+
+func (*DataRequirements_Series) isDataRequirements_Requirements() {}
+
+// Met when, for each required series, the asset's data has a series with that exact name and type under the data
+// scopes' tag filters, at any time. No series requires nothing, which is how an update clears the requirements.
+type SeriesRequirements struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// At most 200, with unique names.
+	Series        []*SeriesRequirement `protobuf:"bytes,1,rep,name=series,proto3" json:"series,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *SeriesRequirements) Reset() {
+	*x = SeriesRequirements{}
+	mi := &file_nominal_protos_asset_v2_asset_proto_msgTypes[6]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *SeriesRequirements) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*SeriesRequirements) ProtoMessage() {}
+
+func (x *SeriesRequirements) ProtoReflect() protoreflect.Message {
+	mi := &file_nominal_protos_asset_v2_asset_proto_msgTypes[6]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use SeriesRequirements.ProtoReflect.Descriptor instead.
+func (*SeriesRequirements) Descriptor() ([]byte, []int) {
+	return file_nominal_protos_asset_v2_asset_proto_rawDescGZIP(), []int{6}
+}
+
+func (x *SeriesRequirements) GetSeries() []*SeriesRequirement {
+	if x != nil {
+		return x.Series
+	}
+	return nil
+}
+
+type SeriesRequirement struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// A channel name of 1 to 200 characters, matched exactly.
+	Name          string                       `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
+	Type          SeriesRequirement_SeriesType `protobuf:"varint,2,opt,name=type,proto3,enum=nominal.asset.v2.SeriesRequirement_SeriesType" json:"type,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *SeriesRequirement) Reset() {
+	*x = SeriesRequirement{}
+	mi := &file_nominal_protos_asset_v2_asset_proto_msgTypes[7]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *SeriesRequirement) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*SeriesRequirement) ProtoMessage() {}
+
+func (x *SeriesRequirement) ProtoReflect() protoreflect.Message {
+	mi := &file_nominal_protos_asset_v2_asset_proto_msgTypes[7]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use SeriesRequirement.ProtoReflect.Descriptor instead.
+func (*SeriesRequirement) Descriptor() ([]byte, []int) {
+	return file_nominal_protos_asset_v2_asset_proto_rawDescGZIP(), []int{7}
+}
+
+func (x *SeriesRequirement) GetName() string {
+	if x != nil {
+		return x.Name
+	}
+	return ""
+}
+
+func (x *SeriesRequirement) GetType() SeriesRequirement_SeriesType {
+	if x != nil {
+		return x.Type
+	}
+	return SeriesRequirement_SERIES_TYPE_UNSPECIFIED
+}
+
 type PropertyConfig struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	IsRequired    bool                   `protobuf:"varint,1,opt,name=is_required,json=isRequired,proto3" json:"is_required,omitempty"`
-	Description   *string                `protobuf:"bytes,2,opt,name=description,proto3,oneof" json:"description,omitempty"`
+	Requirement   PropertyRequirement    `protobuf:"varint,3,opt,name=requirement,proto3,enum=nominal.asset.v2.PropertyRequirement" json:"requirement,omitempty"`
+	ValueType     PropertyValueType      `protobuf:"varint,4,opt,name=value_type,json=valueType,proto3,enum=nominal.asset.v2.PropertyValueType" json:"value_type,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
 func (x *PropertyConfig) Reset() {
 	*x = PropertyConfig{}
-	mi := &file_nominal_protos_asset_v2_asset_proto_msgTypes[4]
+	mi := &file_nominal_protos_asset_v2_asset_proto_msgTypes[8]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -627,7 +1306,7 @@ func (x *PropertyConfig) String() string {
 func (*PropertyConfig) ProtoMessage() {}
 
 func (x *PropertyConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_asset_v2_asset_proto_msgTypes[4]
+	mi := &file_nominal_protos_asset_v2_asset_proto_msgTypes[8]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -640,21 +1319,21 @@ func (x *PropertyConfig) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use PropertyConfig.ProtoReflect.Descriptor instead.
 func (*PropertyConfig) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_asset_v2_asset_proto_rawDescGZIP(), []int{4}
+	return file_nominal_protos_asset_v2_asset_proto_rawDescGZIP(), []int{8}
 }
 
-func (x *PropertyConfig) GetIsRequired() bool {
+func (x *PropertyConfig) GetRequirement() PropertyRequirement {
 	if x != nil {
-		return x.IsRequired
+		return x.Requirement
 	}
-	return false
+	return PropertyRequirement_PROPERTY_REQUIREMENT_UNSPECIFIED
 }
 
-func (x *PropertyConfig) GetDescription() string {
-	if x != nil && x.Description != nil {
-		return *x.Description
+func (x *PropertyConfig) GetValueType() PropertyValueType {
+	if x != nil {
+		return x.ValueType
 	}
-	return ""
+	return PropertyValueType_PROPERTY_VALUE_TYPE_UNSPECIFIED
 }
 
 type DataScope struct {
@@ -673,7 +1352,7 @@ type DataScope struct {
 
 func (x *DataScope) Reset() {
 	*x = DataScope{}
-	mi := &file_nominal_protos_asset_v2_asset_proto_msgTypes[5]
+	mi := &file_nominal_protos_asset_v2_asset_proto_msgTypes[9]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -685,7 +1364,7 @@ func (x *DataScope) String() string {
 func (*DataScope) ProtoMessage() {}
 
 func (x *DataScope) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_asset_v2_asset_proto_msgTypes[5]
+	mi := &file_nominal_protos_asset_v2_asset_proto_msgTypes[9]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -698,7 +1377,7 @@ func (x *DataScope) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DataScope.ProtoReflect.Descriptor instead.
 func (*DataScope) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_asset_v2_asset_proto_rawDescGZIP(), []int{5}
+	return file_nominal_protos_asset_v2_asset_proto_rawDescGZIP(), []int{9}
 }
 
 func (x *DataScope) GetDataScopeName() string {
@@ -751,7 +1430,7 @@ type CreateAssetDataScope struct {
 
 func (x *CreateAssetDataScope) Reset() {
 	*x = CreateAssetDataScope{}
-	mi := &file_nominal_protos_asset_v2_asset_proto_msgTypes[6]
+	mi := &file_nominal_protos_asset_v2_asset_proto_msgTypes[10]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -763,7 +1442,7 @@ func (x *CreateAssetDataScope) String() string {
 func (*CreateAssetDataScope) ProtoMessage() {}
 
 func (x *CreateAssetDataScope) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_asset_v2_asset_proto_msgTypes[6]
+	mi := &file_nominal_protos_asset_v2_asset_proto_msgTypes[10]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -776,7 +1455,7 @@ func (x *CreateAssetDataScope) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CreateAssetDataScope.ProtoReflect.Descriptor instead.
 func (*CreateAssetDataScope) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_asset_v2_asset_proto_rawDescGZIP(), []int{6}
+	return file_nominal_protos_asset_v2_asset_proto_rawDescGZIP(), []int{10}
 }
 
 func (x *CreateAssetDataScope) GetDataScopeName() string {
@@ -825,7 +1504,7 @@ type DataSource struct {
 
 func (x *DataSource) Reset() {
 	*x = DataSource{}
-	mi := &file_nominal_protos_asset_v2_asset_proto_msgTypes[7]
+	mi := &file_nominal_protos_asset_v2_asset_proto_msgTypes[11]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -837,7 +1516,7 @@ func (x *DataSource) String() string {
 func (*DataSource) ProtoMessage() {}
 
 func (x *DataSource) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_asset_v2_asset_proto_msgTypes[7]
+	mi := &file_nominal_protos_asset_v2_asset_proto_msgTypes[11]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -850,7 +1529,7 @@ func (x *DataSource) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DataSource.ProtoReflect.Descriptor instead.
 func (*DataSource) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_asset_v2_asset_proto_rawDescGZIP(), []int{7}
+	return file_nominal_protos_asset_v2_asset_proto_rawDescGZIP(), []int{11}
 }
 
 func (x *DataSource) GetDataSource() isDataSource_DataSource {
@@ -950,7 +1629,7 @@ type Link struct {
 
 func (x *Link) Reset() {
 	*x = Link{}
-	mi := &file_nominal_protos_asset_v2_asset_proto_msgTypes[8]
+	mi := &file_nominal_protos_asset_v2_asset_proto_msgTypes[12]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -962,7 +1641,7 @@ func (x *Link) String() string {
 func (*Link) ProtoMessage() {}
 
 func (x *Link) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_asset_v2_asset_proto_msgTypes[8]
+	mi := &file_nominal_protos_asset_v2_asset_proto_msgTypes[12]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -975,7 +1654,7 @@ func (x *Link) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Link.ProtoReflect.Descriptor instead.
 func (*Link) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_asset_v2_asset_proto_rawDescGZIP(), []int{8}
+	return file_nominal_protos_asset_v2_asset_proto_rawDescGZIP(), []int{12}
 }
 
 func (x *Link) GetTitle() string {
@@ -1003,7 +1682,7 @@ type PropertiesFilter struct {
 
 func (x *PropertiesFilter) Reset() {
 	*x = PropertiesFilter{}
-	mi := &file_nominal_protos_asset_v2_asset_proto_msgTypes[9]
+	mi := &file_nominal_protos_asset_v2_asset_proto_msgTypes[13]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1015,7 +1694,7 @@ func (x *PropertiesFilter) String() string {
 func (*PropertiesFilter) ProtoMessage() {}
 
 func (x *PropertiesFilter) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_asset_v2_asset_proto_msgTypes[9]
+	mi := &file_nominal_protos_asset_v2_asset_proto_msgTypes[13]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1028,7 +1707,7 @@ func (x *PropertiesFilter) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use PropertiesFilter.ProtoReflect.Descriptor instead.
 func (*PropertiesFilter) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_asset_v2_asset_proto_rawDescGZIP(), []int{9}
+	return file_nominal_protos_asset_v2_asset_proto_rawDescGZIP(), []int{13}
 }
 
 func (x *PropertiesFilter) GetName() string {
@@ -1056,7 +1735,7 @@ type LabelsFilter struct {
 
 func (x *LabelsFilter) Reset() {
 	*x = LabelsFilter{}
-	mi := &file_nominal_protos_asset_v2_asset_proto_msgTypes[10]
+	mi := &file_nominal_protos_asset_v2_asset_proto_msgTypes[14]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1068,7 +1747,7 @@ func (x *LabelsFilter) String() string {
 func (*LabelsFilter) ProtoMessage() {}
 
 func (x *LabelsFilter) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_asset_v2_asset_proto_msgTypes[10]
+	mi := &file_nominal_protos_asset_v2_asset_proto_msgTypes[14]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1081,7 +1760,7 @@ func (x *LabelsFilter) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use LabelsFilter.ProtoReflect.Descriptor instead.
 func (*LabelsFilter) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_asset_v2_asset_proto_rawDescGZIP(), []int{10}
+	return file_nominal_protos_asset_v2_asset_proto_rawDescGZIP(), []int{14}
 }
 
 func (x *LabelsFilter) GetOperator() SetOperator {
@@ -1098,7 +1777,7 @@ func (x *LabelsFilter) GetLabels() []string {
 	return nil
 }
 
-// returns runs that match any of the provided assetTypes.
+// Matches an asset when any of its types is in asset_types.
 type AssetTypesFilter struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	AssetTypes    []string               `protobuf:"bytes,1,rep,name=asset_types,json=assetTypes,proto3" json:"asset_types,omitempty"`
@@ -1108,7 +1787,7 @@ type AssetTypesFilter struct {
 
 func (x *AssetTypesFilter) Reset() {
 	*x = AssetTypesFilter{}
-	mi := &file_nominal_protos_asset_v2_asset_proto_msgTypes[11]
+	mi := &file_nominal_protos_asset_v2_asset_proto_msgTypes[15]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1120,7 +1799,7 @@ func (x *AssetTypesFilter) String() string {
 func (*AssetTypesFilter) ProtoMessage() {}
 
 func (x *AssetTypesFilter) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_asset_v2_asset_proto_msgTypes[11]
+	mi := &file_nominal_protos_asset_v2_asset_proto_msgTypes[15]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1133,7 +1812,7 @@ func (x *AssetTypesFilter) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use AssetTypesFilter.ProtoReflect.Descriptor instead.
 func (*AssetTypesFilter) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_asset_v2_asset_proto_rawDescGZIP(), []int{11}
+	return file_nominal_protos_asset_v2_asset_proto_rawDescGZIP(), []int{15}
 }
 
 func (x *AssetTypesFilter) GetAssetTypes() []string {
@@ -1154,7 +1833,7 @@ type AssetRidsFilter struct {
 
 func (x *AssetRidsFilter) Reset() {
 	*x = AssetRidsFilter{}
-	mi := &file_nominal_protos_asset_v2_asset_proto_msgTypes[12]
+	mi := &file_nominal_protos_asset_v2_asset_proto_msgTypes[16]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1166,7 +1845,7 @@ func (x *AssetRidsFilter) String() string {
 func (*AssetRidsFilter) ProtoMessage() {}
 
 func (x *AssetRidsFilter) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_asset_v2_asset_proto_msgTypes[12]
+	mi := &file_nominal_protos_asset_v2_asset_proto_msgTypes[16]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1179,7 +1858,7 @@ func (x *AssetRidsFilter) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use AssetRidsFilter.ProtoReflect.Descriptor instead.
 func (*AssetRidsFilter) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_asset_v2_asset_proto_rawDescGZIP(), []int{12}
+	return file_nominal_protos_asset_v2_asset_proto_rawDescGZIP(), []int{16}
 }
 
 func (x *AssetRidsFilter) GetAssetRids() []string {
@@ -1202,7 +1881,7 @@ type AssetSortOptions struct {
 
 func (x *AssetSortOptions) Reset() {
 	*x = AssetSortOptions{}
-	mi := &file_nominal_protos_asset_v2_asset_proto_msgTypes[13]
+	mi := &file_nominal_protos_asset_v2_asset_proto_msgTypes[17]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1214,7 +1893,7 @@ func (x *AssetSortOptions) String() string {
 func (*AssetSortOptions) ProtoMessage() {}
 
 func (x *AssetSortOptions) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_asset_v2_asset_proto_msgTypes[13]
+	mi := &file_nominal_protos_asset_v2_asset_proto_msgTypes[17]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1227,7 +1906,7 @@ func (x *AssetSortOptions) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use AssetSortOptions.ProtoReflect.Descriptor instead.
 func (*AssetSortOptions) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_asset_v2_asset_proto_rawDescGZIP(), []int{13}
+	return file_nominal_protos_asset_v2_asset_proto_rawDescGZIP(), []int{17}
 }
 
 func (x *AssetSortOptions) GetIsDescending() bool {
@@ -1265,7 +1944,7 @@ type SortKey struct {
 
 func (x *SortKey) Reset() {
 	*x = SortKey{}
-	mi := &file_nominal_protos_asset_v2_asset_proto_msgTypes[14]
+	mi := &file_nominal_protos_asset_v2_asset_proto_msgTypes[18]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1277,7 +1956,7 @@ func (x *SortKey) String() string {
 func (*SortKey) ProtoMessage() {}
 
 func (x *SortKey) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_asset_v2_asset_proto_msgTypes[14]
+	mi := &file_nominal_protos_asset_v2_asset_proto_msgTypes[18]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1290,7 +1969,7 @@ func (x *SortKey) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SortKey.ProtoReflect.Descriptor instead.
 func (*SortKey) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_asset_v2_asset_proto_rawDescGZIP(), []int{14}
+	return file_nominal_protos_asset_v2_asset_proto_rawDescGZIP(), []int{18}
 }
 
 func (x *SortKey) GetSortKey() isSortKey_SortKey {
@@ -1359,7 +2038,7 @@ type SortProperty struct {
 
 func (x *SortProperty) Reset() {
 	*x = SortProperty{}
-	mi := &file_nominal_protos_asset_v2_asset_proto_msgTypes[15]
+	mi := &file_nominal_protos_asset_v2_asset_proto_msgTypes[19]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1371,7 +2050,7 @@ func (x *SortProperty) String() string {
 func (*SortProperty) ProtoMessage() {}
 
 func (x *SortProperty) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_asset_v2_asset_proto_msgTypes[15]
+	mi := &file_nominal_protos_asset_v2_asset_proto_msgTypes[19]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1384,7 +2063,7 @@ func (x *SortProperty) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SortProperty.ProtoReflect.Descriptor instead.
 func (*SortProperty) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_asset_v2_asset_proto_rawDescGZIP(), []int{15}
+	return file_nominal_protos_asset_v2_asset_proto_rawDescGZIP(), []int{19}
 }
 
 func (x *SortProperty) GetName() string {
@@ -1404,7 +2083,7 @@ type TypeSortOptions struct {
 
 func (x *TypeSortOptions) Reset() {
 	*x = TypeSortOptions{}
-	mi := &file_nominal_protos_asset_v2_asset_proto_msgTypes[16]
+	mi := &file_nominal_protos_asset_v2_asset_proto_msgTypes[20]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1416,7 +2095,7 @@ func (x *TypeSortOptions) String() string {
 func (*TypeSortOptions) ProtoMessage() {}
 
 func (x *TypeSortOptions) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_asset_v2_asset_proto_msgTypes[16]
+	mi := &file_nominal_protos_asset_v2_asset_proto_msgTypes[20]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1429,7 +2108,7 @@ func (x *TypeSortOptions) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use TypeSortOptions.ProtoReflect.Descriptor instead.
 func (*TypeSortOptions) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_asset_v2_asset_proto_rawDescGZIP(), []int{16}
+	return file_nominal_protos_asset_v2_asset_proto_rawDescGZIP(), []int{20}
 }
 
 func (x *TypeSortOptions) GetIsDescending() bool {
@@ -1471,6 +2150,7 @@ type SearchAssetsQuery struct {
 	//	*SearchAssetsQuery_NumericProperty
 	//	*SearchAssetsQuery_NumericPropertyRange
 	//	*SearchAssetsQuery_AssetRids
+	//	*SearchAssetsQuery_Live
 	Query         isSearchAssetsQuery_Query `protobuf_oneof:"query"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -1478,7 +2158,7 @@ type SearchAssetsQuery struct {
 
 func (x *SearchAssetsQuery) Reset() {
 	*x = SearchAssetsQuery{}
-	mi := &file_nominal_protos_asset_v2_asset_proto_msgTypes[17]
+	mi := &file_nominal_protos_asset_v2_asset_proto_msgTypes[21]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1490,7 +2170,7 @@ func (x *SearchAssetsQuery) String() string {
 func (*SearchAssetsQuery) ProtoMessage() {}
 
 func (x *SearchAssetsQuery) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_asset_v2_asset_proto_msgTypes[17]
+	mi := &file_nominal_protos_asset_v2_asset_proto_msgTypes[21]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1503,7 +2183,7 @@ func (x *SearchAssetsQuery) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SearchAssetsQuery.ProtoReflect.Descriptor instead.
 func (*SearchAssetsQuery) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_asset_v2_asset_proto_rawDescGZIP(), []int{17}
+	return file_nominal_protos_asset_v2_asset_proto_rawDescGZIP(), []int{21}
 }
 
 func (x *SearchAssetsQuery) GetQuery() isSearchAssetsQuery_Query {
@@ -1675,6 +2355,15 @@ func (x *SearchAssetsQuery) GetAssetRids() *AssetRidsFilter {
 	return nil
 }
 
+func (x *SearchAssetsQuery) GetLive() bool {
+	if x != nil {
+		if x, ok := x.Query.(*SearchAssetsQuery_Live); ok {
+			return x.Live
+		}
+	}
+	return false
+}
+
 type isSearchAssetsQuery_Query interface {
 	isSearchAssetsQuery_Query()
 }
@@ -1755,6 +2444,11 @@ type SearchAssetsQuery_AssetRids struct {
 	AssetRids *AssetRidsFilter `protobuf:"bytes,18,opt,name=asset_rids,json=assetRids,proto3,oneof"`
 }
 
+type SearchAssetsQuery_Live struct {
+	// Matches assets with any dataset currently receiving live data.
+	Live bool `protobuf:"varint,19,opt,name=live,proto3,oneof"`
+}
+
 func (*SearchAssetsQuery_SearchText) isSearchAssetsQuery_Query() {}
 
 func (*SearchAssetsQuery_ExactSubstring) isSearchAssetsQuery_Query() {}
@@ -1791,6 +2485,8 @@ func (*SearchAssetsQuery_NumericPropertyRange) isSearchAssetsQuery_Query() {}
 
 func (*SearchAssetsQuery_AssetRids) isSearchAssetsQuery_Query() {}
 
+func (*SearchAssetsQuery_Live) isSearchAssetsQuery_Query() {}
+
 type SearchAssetsQueryList struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Queries       []*SearchAssetsQuery   `protobuf:"bytes,1,rep,name=queries,proto3" json:"queries,omitempty"`
@@ -1800,7 +2496,7 @@ type SearchAssetsQueryList struct {
 
 func (x *SearchAssetsQueryList) Reset() {
 	*x = SearchAssetsQueryList{}
-	mi := &file_nominal_protos_asset_v2_asset_proto_msgTypes[18]
+	mi := &file_nominal_protos_asset_v2_asset_proto_msgTypes[22]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1812,7 +2508,7 @@ func (x *SearchAssetsQueryList) String() string {
 func (*SearchAssetsQueryList) ProtoMessage() {}
 
 func (x *SearchAssetsQueryList) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_asset_v2_asset_proto_msgTypes[18]
+	mi := &file_nominal_protos_asset_v2_asset_proto_msgTypes[22]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1825,7 +2521,7 @@ func (x *SearchAssetsQueryList) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SearchAssetsQueryList.ProtoReflect.Descriptor instead.
 func (*SearchAssetsQueryList) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_asset_v2_asset_proto_rawDescGZIP(), []int{18}
+	return file_nominal_protos_asset_v2_asset_proto_rawDescGZIP(), []int{22}
 }
 
 func (x *SearchAssetsQueryList) GetQueries() []*SearchAssetsQuery {
@@ -1844,7 +2540,6 @@ type SearchTypesQuery struct {
 	//	*SearchTypesQuery_And
 	//	*SearchTypesQuery_Or
 	//	*SearchTypesQuery_Workspace
-	//	*SearchTypesQuery_ConfiguredDatasource
 	Query         isSearchTypesQuery_Query `protobuf_oneof:"query"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -1852,7 +2547,7 @@ type SearchTypesQuery struct {
 
 func (x *SearchTypesQuery) Reset() {
 	*x = SearchTypesQuery{}
-	mi := &file_nominal_protos_asset_v2_asset_proto_msgTypes[19]
+	mi := &file_nominal_protos_asset_v2_asset_proto_msgTypes[23]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1864,7 +2559,7 @@ func (x *SearchTypesQuery) String() string {
 func (*SearchTypesQuery) ProtoMessage() {}
 
 func (x *SearchTypesQuery) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_asset_v2_asset_proto_msgTypes[19]
+	mi := &file_nominal_protos_asset_v2_asset_proto_msgTypes[23]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1877,7 +2572,7 @@ func (x *SearchTypesQuery) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SearchTypesQuery.ProtoReflect.Descriptor instead.
 func (*SearchTypesQuery) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_asset_v2_asset_proto_rawDescGZIP(), []int{19}
+	return file_nominal_protos_asset_v2_asset_proto_rawDescGZIP(), []int{23}
 }
 
 func (x *SearchTypesQuery) GetQuery() isSearchTypesQuery_Query {
@@ -1932,15 +2627,6 @@ func (x *SearchTypesQuery) GetWorkspace() string {
 	return ""
 }
 
-func (x *SearchTypesQuery) GetConfiguredDatasource() string {
-	if x != nil {
-		if x, ok := x.Query.(*SearchTypesQuery_ConfiguredDatasource); ok {
-			return x.ConfiguredDatasource
-		}
-	}
-	return ""
-}
-
 type isSearchTypesQuery_Query interface {
 	isSearchTypesQuery_Query()
 }
@@ -1965,10 +2651,6 @@ type SearchTypesQuery_Workspace struct {
 	Workspace string `protobuf:"bytes,5,opt,name=workspace,proto3,oneof"`
 }
 
-type SearchTypesQuery_ConfiguredDatasource struct {
-	ConfiguredDatasource string `protobuf:"bytes,6,opt,name=configured_datasource,json=configuredDatasource,proto3,oneof"`
-}
-
 func (*SearchTypesQuery_SearchText) isSearchTypesQuery_Query() {}
 
 func (*SearchTypesQuery_Property) isSearchTypesQuery_Query() {}
@@ -1979,8 +2661,6 @@ func (*SearchTypesQuery_Or) isSearchTypesQuery_Query() {}
 
 func (*SearchTypesQuery_Workspace) isSearchTypesQuery_Query() {}
 
-func (*SearchTypesQuery_ConfiguredDatasource) isSearchTypesQuery_Query() {}
-
 type SearchTypesQueryList struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Queries       []*SearchTypesQuery    `protobuf:"bytes,1,rep,name=queries,proto3" json:"queries,omitempty"`
@@ -1990,7 +2670,7 @@ type SearchTypesQueryList struct {
 
 func (x *SearchTypesQueryList) Reset() {
 	*x = SearchTypesQueryList{}
-	mi := &file_nominal_protos_asset_v2_asset_proto_msgTypes[20]
+	mi := &file_nominal_protos_asset_v2_asset_proto_msgTypes[24]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2002,7 +2682,7 @@ func (x *SearchTypesQueryList) String() string {
 func (*SearchTypesQueryList) ProtoMessage() {}
 
 func (x *SearchTypesQueryList) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_asset_v2_asset_proto_msgTypes[20]
+	mi := &file_nominal_protos_asset_v2_asset_proto_msgTypes[24]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2015,7 +2695,7 @@ func (x *SearchTypesQueryList) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SearchTypesQueryList.ProtoReflect.Descriptor instead.
 func (*SearchTypesQueryList) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_asset_v2_asset_proto_rawDescGZIP(), []int{20}
+	return file_nominal_protos_asset_v2_asset_proto_rawDescGZIP(), []int{24}
 }
 
 func (x *SearchTypesQueryList) GetQueries() []*SearchTypesQuery {
@@ -2039,7 +2719,7 @@ type MetadataChange struct {
 
 func (x *MetadataChange) Reset() {
 	*x = MetadataChange{}
-	mi := &file_nominal_protos_asset_v2_asset_proto_msgTypes[21]
+	mi := &file_nominal_protos_asset_v2_asset_proto_msgTypes[25]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2051,7 +2731,7 @@ func (x *MetadataChange) String() string {
 func (*MetadataChange) ProtoMessage() {}
 
 func (x *MetadataChange) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_asset_v2_asset_proto_msgTypes[21]
+	mi := &file_nominal_protos_asset_v2_asset_proto_msgTypes[25]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2064,7 +2744,7 @@ func (x *MetadataChange) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use MetadataChange.ProtoReflect.Descriptor instead.
 func (*MetadataChange) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_asset_v2_asset_proto_rawDescGZIP(), []int{21}
+	return file_nominal_protos_asset_v2_asset_proto_rawDescGZIP(), []int{25}
 }
 
 func (x *MetadataChange) GetMetadataChange() isMetadataChange_MetadataChange {
@@ -2134,7 +2814,7 @@ type RenameLabel struct {
 
 func (x *RenameLabel) Reset() {
 	*x = RenameLabel{}
-	mi := &file_nominal_protos_asset_v2_asset_proto_msgTypes[22]
+	mi := &file_nominal_protos_asset_v2_asset_proto_msgTypes[26]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2146,7 +2826,7 @@ func (x *RenameLabel) String() string {
 func (*RenameLabel) ProtoMessage() {}
 
 func (x *RenameLabel) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_asset_v2_asset_proto_msgTypes[22]
+	mi := &file_nominal_protos_asset_v2_asset_proto_msgTypes[26]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2159,7 +2839,7 @@ func (x *RenameLabel) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use RenameLabel.ProtoReflect.Descriptor instead.
 func (*RenameLabel) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_asset_v2_asset_proto_rawDescGZIP(), []int{22}
+	return file_nominal_protos_asset_v2_asset_proto_rawDescGZIP(), []int{26}
 }
 
 func (x *RenameLabel) GetSource() []string {
@@ -2190,7 +2870,7 @@ type RenamePropertyKey struct {
 
 func (x *RenamePropertyKey) Reset() {
 	*x = RenamePropertyKey{}
-	mi := &file_nominal_protos_asset_v2_asset_proto_msgTypes[23]
+	mi := &file_nominal_protos_asset_v2_asset_proto_msgTypes[27]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2202,7 +2882,7 @@ func (x *RenamePropertyKey) String() string {
 func (*RenamePropertyKey) ProtoMessage() {}
 
 func (x *RenamePropertyKey) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_asset_v2_asset_proto_msgTypes[23]
+	mi := &file_nominal_protos_asset_v2_asset_proto_msgTypes[27]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2215,7 +2895,7 @@ func (x *RenamePropertyKey) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use RenamePropertyKey.ProtoReflect.Descriptor instead.
 func (*RenamePropertyKey) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_asset_v2_asset_proto_rawDescGZIP(), []int{23}
+	return file_nominal_protos_asset_v2_asset_proto_rawDescGZIP(), []int{27}
 }
 
 func (x *RenamePropertyKey) GetSource() []string {
@@ -2252,7 +2932,7 @@ type MergePropertyValuesForKey struct {
 
 func (x *MergePropertyValuesForKey) Reset() {
 	*x = MergePropertyValuesForKey{}
-	mi := &file_nominal_protos_asset_v2_asset_proto_msgTypes[24]
+	mi := &file_nominal_protos_asset_v2_asset_proto_msgTypes[28]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2264,7 +2944,7 @@ func (x *MergePropertyValuesForKey) String() string {
 func (*MergePropertyValuesForKey) ProtoMessage() {}
 
 func (x *MergePropertyValuesForKey) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_asset_v2_asset_proto_msgTypes[24]
+	mi := &file_nominal_protos_asset_v2_asset_proto_msgTypes[28]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2277,7 +2957,7 @@ func (x *MergePropertyValuesForKey) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use MergePropertyValuesForKey.ProtoReflect.Descriptor instead.
 func (*MergePropertyValuesForKey) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_asset_v2_asset_proto_rawDescGZIP(), []int{24}
+	return file_nominal_protos_asset_v2_asset_proto_rawDescGZIP(), []int{28}
 }
 
 func (x *MergePropertyValuesForKey) GetKey() string {
@@ -2315,7 +2995,7 @@ type ConflictBehavior struct {
 
 func (x *ConflictBehavior) Reset() {
 	*x = ConflictBehavior{}
-	mi := &file_nominal_protos_asset_v2_asset_proto_msgTypes[25]
+	mi := &file_nominal_protos_asset_v2_asset_proto_msgTypes[29]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2327,7 +3007,7 @@ func (x *ConflictBehavior) String() string {
 func (*ConflictBehavior) ProtoMessage() {}
 
 func (x *ConflictBehavior) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_asset_v2_asset_proto_msgTypes[25]
+	mi := &file_nominal_protos_asset_v2_asset_proto_msgTypes[29]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2340,7 +3020,7 @@ func (x *ConflictBehavior) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ConflictBehavior.ProtoReflect.Descriptor instead.
 func (*ConflictBehavior) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_asset_v2_asset_proto_rawDescGZIP(), []int{25}
+	return file_nominal_protos_asset_v2_asset_proto_rawDescGZIP(), []int{29}
 }
 
 func (x *ConflictBehavior) GetConflictBehavior() isConflictBehavior_ConflictBehavior {
@@ -2396,7 +3076,7 @@ type SkipOnConflict struct {
 
 func (x *SkipOnConflict) Reset() {
 	*x = SkipOnConflict{}
-	mi := &file_nominal_protos_asset_v2_asset_proto_msgTypes[26]
+	mi := &file_nominal_protos_asset_v2_asset_proto_msgTypes[30]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2408,7 +3088,7 @@ func (x *SkipOnConflict) String() string {
 func (*SkipOnConflict) ProtoMessage() {}
 
 func (x *SkipOnConflict) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_asset_v2_asset_proto_msgTypes[26]
+	mi := &file_nominal_protos_asset_v2_asset_proto_msgTypes[30]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2421,7 +3101,7 @@ func (x *SkipOnConflict) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SkipOnConflict.ProtoReflect.Descriptor instead.
 func (*SkipOnConflict) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_asset_v2_asset_proto_rawDescGZIP(), []int{26}
+	return file_nominal_protos_asset_v2_asset_proto_rawDescGZIP(), []int{30}
 }
 
 // Documents that already have the target property key are included in the rename.
@@ -2436,7 +3116,7 @@ type OverwriteOnConflict struct {
 
 func (x *OverwriteOnConflict) Reset() {
 	*x = OverwriteOnConflict{}
-	mi := &file_nominal_protos_asset_v2_asset_proto_msgTypes[27]
+	mi := &file_nominal_protos_asset_v2_asset_proto_msgTypes[31]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2448,7 +3128,7 @@ func (x *OverwriteOnConflict) String() string {
 func (*OverwriteOnConflict) ProtoMessage() {}
 
 func (x *OverwriteOnConflict) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_asset_v2_asset_proto_msgTypes[27]
+	mi := &file_nominal_protos_asset_v2_asset_proto_msgTypes[31]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2461,7 +3141,7 @@ func (x *OverwriteOnConflict) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use OverwriteOnConflict.ProtoReflect.Descriptor instead.
 func (*OverwriteOnConflict) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_asset_v2_asset_proto_rawDescGZIP(), []int{27}
+	return file_nominal_protos_asset_v2_asset_proto_rawDescGZIP(), []int{31}
 }
 
 func (x *OverwriteOnConflict) GetPriority() []string {
@@ -2470,127 +3150,6 @@ func (x *OverwriteOnConflict) GetPriority() []string {
 	}
 	return nil
 }
-
-// The request to remove the type from the asset.
-type RemoveType struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
-}
-
-func (x *RemoveType) Reset() {
-	*x = RemoveType{}
-	mi := &file_nominal_protos_asset_v2_asset_proto_msgTypes[28]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *RemoveType) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*RemoveType) ProtoMessage() {}
-
-func (x *RemoveType) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_asset_v2_asset_proto_msgTypes[28]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use RemoveType.ProtoReflect.Descriptor instead.
-func (*RemoveType) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_asset_v2_asset_proto_rawDescGZIP(), []int{28}
-}
-
-// The request to update the type of the asset. The request will replace the existing type with the type
-// specified if a typeRID is provided. Otherwise, the type will be removed from the asset.
-type UpdateOrRemoveAssetType struct {
-	state protoimpl.MessageState `protogen:"open.v1"`
-	// Types that are valid to be assigned to UpdateOrRemoveAssetType:
-	//
-	//	*UpdateOrRemoveAssetType_TypeRid
-	//	*UpdateOrRemoveAssetType_RemoveType
-	UpdateOrRemoveAssetType isUpdateOrRemoveAssetType_UpdateOrRemoveAssetType `protobuf_oneof:"update_or_remove_asset_type"`
-	unknownFields           protoimpl.UnknownFields
-	sizeCache               protoimpl.SizeCache
-}
-
-func (x *UpdateOrRemoveAssetType) Reset() {
-	*x = UpdateOrRemoveAssetType{}
-	mi := &file_nominal_protos_asset_v2_asset_proto_msgTypes[29]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *UpdateOrRemoveAssetType) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*UpdateOrRemoveAssetType) ProtoMessage() {}
-
-func (x *UpdateOrRemoveAssetType) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_asset_v2_asset_proto_msgTypes[29]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use UpdateOrRemoveAssetType.ProtoReflect.Descriptor instead.
-func (*UpdateOrRemoveAssetType) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_asset_v2_asset_proto_rawDescGZIP(), []int{29}
-}
-
-func (x *UpdateOrRemoveAssetType) GetUpdateOrRemoveAssetType() isUpdateOrRemoveAssetType_UpdateOrRemoveAssetType {
-	if x != nil {
-		return x.UpdateOrRemoveAssetType
-	}
-	return nil
-}
-
-func (x *UpdateOrRemoveAssetType) GetTypeRid() string {
-	if x != nil {
-		if x, ok := x.UpdateOrRemoveAssetType.(*UpdateOrRemoveAssetType_TypeRid); ok {
-			return x.TypeRid
-		}
-	}
-	return ""
-}
-
-func (x *UpdateOrRemoveAssetType) GetRemoveType() *RemoveType {
-	if x != nil {
-		if x, ok := x.UpdateOrRemoveAssetType.(*UpdateOrRemoveAssetType_RemoveType); ok {
-			return x.RemoveType
-		}
-	}
-	return nil
-}
-
-type isUpdateOrRemoveAssetType_UpdateOrRemoveAssetType interface {
-	isUpdateOrRemoveAssetType_UpdateOrRemoveAssetType()
-}
-
-type UpdateOrRemoveAssetType_TypeRid struct {
-	TypeRid string `protobuf:"bytes,1,opt,name=type_rid,json=typeRid,proto3,oneof"`
-}
-
-type UpdateOrRemoveAssetType_RemoveType struct {
-	RemoveType *RemoveType `protobuf:"bytes,2,opt,name=remove_type,json=removeType,proto3,oneof"`
-}
-
-func (*UpdateOrRemoveAssetType_TypeRid) isUpdateOrRemoveAssetType_UpdateOrRemoveAssetType() {}
-
-func (*UpdateOrRemoveAssetType_RemoveType) isUpdateOrRemoveAssetType_UpdateOrRemoveAssetType() {}
 
 type LinkList struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
@@ -2601,7 +3160,7 @@ type LinkList struct {
 
 func (x *LinkList) Reset() {
 	*x = LinkList{}
-	mi := &file_nominal_protos_asset_v2_asset_proto_msgTypes[30]
+	mi := &file_nominal_protos_asset_v2_asset_proto_msgTypes[32]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2613,7 +3172,7 @@ func (x *LinkList) String() string {
 func (*LinkList) ProtoMessage() {}
 
 func (x *LinkList) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_asset_v2_asset_proto_msgTypes[30]
+	mi := &file_nominal_protos_asset_v2_asset_proto_msgTypes[32]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2626,12 +3185,57 @@ func (x *LinkList) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use LinkList.ProtoReflect.Descriptor instead.
 func (*LinkList) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_asset_v2_asset_proto_rawDescGZIP(), []int{30}
+	return file_nominal_protos_asset_v2_asset_proto_rawDescGZIP(), []int{32}
 }
 
 func (x *LinkList) GetLinks() []*Link {
 	if x != nil {
 		return x.Links
+	}
+	return nil
+}
+
+type TypeRidList struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// At most 10 types. Empty replaces memberships with none.
+	Types         []string `protobuf:"bytes,1,rep,name=types,proto3" json:"types,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *TypeRidList) Reset() {
+	*x = TypeRidList{}
+	mi := &file_nominal_protos_asset_v2_asset_proto_msgTypes[33]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *TypeRidList) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*TypeRidList) ProtoMessage() {}
+
+func (x *TypeRidList) ProtoReflect() protoreflect.Message {
+	mi := &file_nominal_protos_asset_v2_asset_proto_msgTypes[33]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use TypeRidList.ProtoReflect.Descriptor instead.
+func (*TypeRidList) Descriptor() ([]byte, []int) {
+	return file_nominal_protos_asset_v2_asset_proto_rawDescGZIP(), []int{33}
+}
+
+func (x *TypeRidList) GetTypes() []string {
+	if x != nil {
+		return x.Types
 	}
 	return nil
 }
@@ -2645,7 +3249,7 @@ type CreateAssetDataScopeList struct {
 
 func (x *CreateAssetDataScopeList) Reset() {
 	*x = CreateAssetDataScopeList{}
-	mi := &file_nominal_protos_asset_v2_asset_proto_msgTypes[31]
+	mi := &file_nominal_protos_asset_v2_asset_proto_msgTypes[34]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2657,7 +3261,7 @@ func (x *CreateAssetDataScopeList) String() string {
 func (*CreateAssetDataScopeList) ProtoMessage() {}
 
 func (x *CreateAssetDataScopeList) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_asset_v2_asset_proto_msgTypes[31]
+	mi := &file_nominal_protos_asset_v2_asset_proto_msgTypes[34]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2670,7 +3274,7 @@ func (x *CreateAssetDataScopeList) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CreateAssetDataScopeList.ProtoReflect.Descriptor instead.
 func (*CreateAssetDataScopeList) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_asset_v2_asset_proto_rawDescGZIP(), []int{31}
+	return file_nominal_protos_asset_v2_asset_proto_rawDescGZIP(), []int{34}
 }
 
 func (x *CreateAssetDataScopeList) GetDataScopes() []*CreateAssetDataScope {
@@ -2689,7 +3293,7 @@ type PropertyConfigMap struct {
 
 func (x *PropertyConfigMap) Reset() {
 	*x = PropertyConfigMap{}
-	mi := &file_nominal_protos_asset_v2_asset_proto_msgTypes[32]
+	mi := &file_nominal_protos_asset_v2_asset_proto_msgTypes[35]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2701,7 +3305,7 @@ func (x *PropertyConfigMap) String() string {
 func (*PropertyConfigMap) ProtoMessage() {}
 
 func (x *PropertyConfigMap) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_asset_v2_asset_proto_msgTypes[32]
+	mi := &file_nominal_protos_asset_v2_asset_proto_msgTypes[35]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2714,56 +3318,12 @@ func (x *PropertyConfigMap) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use PropertyConfigMap.ProtoReflect.Descriptor instead.
 func (*PropertyConfigMap) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_asset_v2_asset_proto_rawDescGZIP(), []int{32}
+	return file_nominal_protos_asset_v2_asset_proto_rawDescGZIP(), []int{35}
 }
 
 func (x *PropertyConfigMap) GetPropertyConfigs() map[string]*PropertyConfig {
 	if x != nil {
 		return x.PropertyConfigs
-	}
-	return nil
-}
-
-type AssetTypeDataScopeConfigMap struct {
-	state             protoimpl.MessageState               `protogen:"open.v1"`
-	DatasourceConfigs map[string]*AssetTypeDataScopeConfig `protobuf:"bytes,1,rep,name=datasource_configs,json=datasourceConfigs,proto3" json:"datasource_configs,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
-	unknownFields     protoimpl.UnknownFields
-	sizeCache         protoimpl.SizeCache
-}
-
-func (x *AssetTypeDataScopeConfigMap) Reset() {
-	*x = AssetTypeDataScopeConfigMap{}
-	mi := &file_nominal_protos_asset_v2_asset_proto_msgTypes[33]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *AssetTypeDataScopeConfigMap) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*AssetTypeDataScopeConfigMap) ProtoMessage() {}
-
-func (x *AssetTypeDataScopeConfigMap) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_asset_v2_asset_proto_msgTypes[33]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use AssetTypeDataScopeConfigMap.ProtoReflect.Descriptor instead.
-func (*AssetTypeDataScopeConfigMap) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_asset_v2_asset_proto_rawDescGZIP(), []int{33}
-}
-
-func (x *AssetTypeDataScopeConfigMap) GetDatasourceConfigs() map[string]*AssetTypeDataScopeConfig {
-	if x != nil {
-		return x.DatasourceConfigs
 	}
 	return nil
 }
@@ -2777,7 +3337,7 @@ type ArchivedStatusSet struct {
 
 func (x *ArchivedStatusSet) Reset() {
 	*x = ArchivedStatusSet{}
-	mi := &file_nominal_protos_asset_v2_asset_proto_msgTypes[34]
+	mi := &file_nominal_protos_asset_v2_asset_proto_msgTypes[36]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2789,7 +3349,7 @@ func (x *ArchivedStatusSet) String() string {
 func (*ArchivedStatusSet) ProtoMessage() {}
 
 func (x *ArchivedStatusSet) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_asset_v2_asset_proto_msgTypes[34]
+	mi := &file_nominal_protos_asset_v2_asset_proto_msgTypes[36]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2802,7 +3362,7 @@ func (x *ArchivedStatusSet) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ArchivedStatusSet.ProtoReflect.Descriptor instead.
 func (*ArchivedStatusSet) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_asset_v2_asset_proto_rawDescGZIP(), []int{34}
+	return file_nominal_protos_asset_v2_asset_proto_rawDescGZIP(), []int{36}
 }
 
 func (x *ArchivedStatusSet) GetArchivedStatuses() []types.ArchivedStatus {
@@ -2810,6 +3370,103 @@ func (x *ArchivedStatusSet) GetArchivedStatuses() []types.ArchivedStatus {
 		return x.ArchivedStatuses
 	}
 	return nil
+}
+
+type LinkDefinitionList struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Links         []*LinkDefinition      `protobuf:"bytes,1,rep,name=links,proto3" json:"links,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *LinkDefinitionList) Reset() {
+	*x = LinkDefinitionList{}
+	mi := &file_nominal_protos_asset_v2_asset_proto_msgTypes[37]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *LinkDefinitionList) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*LinkDefinitionList) ProtoMessage() {}
+
+func (x *LinkDefinitionList) ProtoReflect() protoreflect.Message {
+	mi := &file_nominal_protos_asset_v2_asset_proto_msgTypes[37]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use LinkDefinitionList.ProtoReflect.Descriptor instead.
+func (*LinkDefinitionList) Descriptor() ([]byte, []int) {
+	return file_nominal_protos_asset_v2_asset_proto_rawDescGZIP(), []int{37}
+}
+
+func (x *LinkDefinitionList) GetLinks() []*LinkDefinition {
+	if x != nil {
+		return x.Links
+	}
+	return nil
+}
+
+// A link followed in one direction.
+type LinkRef struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	LinkRid       string                 `protobuf:"bytes,1,opt,name=link_rid,json=linkRid,proto3" json:"link_rid,omitempty"`
+	Direction     LinkDirection          `protobuf:"varint,2,opt,name=direction,proto3,enum=nominal.asset.v2.LinkDirection" json:"direction,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *LinkRef) Reset() {
+	*x = LinkRef{}
+	mi := &file_nominal_protos_asset_v2_asset_proto_msgTypes[38]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *LinkRef) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*LinkRef) ProtoMessage() {}
+
+func (x *LinkRef) ProtoReflect() protoreflect.Message {
+	mi := &file_nominal_protos_asset_v2_asset_proto_msgTypes[38]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use LinkRef.ProtoReflect.Descriptor instead.
+func (*LinkRef) Descriptor() ([]byte, []int) {
+	return file_nominal_protos_asset_v2_asset_proto_rawDescGZIP(), []int{38}
+}
+
+func (x *LinkRef) GetLinkRid() string {
+	if x != nil {
+		return x.LinkRid
+	}
+	return ""
+}
+
+func (x *LinkRef) GetDirection() LinkDirection {
+	if x != nil {
+		return x.Direction
+	}
+	return LinkDirection_LINK_DIRECTION_UNSPECIFIED
 }
 
 type CreateAssetRequest struct {
@@ -2823,24 +3480,30 @@ type CreateAssetRequest struct {
 	// The data scopes associated with the asset.
 	DataScopes  []*CreateAssetDataScope `protobuf:"bytes,6,rep,name=data_scopes,json=dataScopes,proto3" json:"data_scopes,omitempty"`
 	Attachments []string                `protobuf:"bytes,7,rep,name=attachments,proto3" json:"attachments,omitempty"`
-	Type        *string                 `protobuf:"bytes,8,opt,name=type,proto3,oneof" json:"type,omitempty"`
 	// The workspace in which to create the asset. If not provided, the asset will be created in the default workspace
 	// for the user's organization, if the default workspace for the organization is configured. All data scopes,
-	// attachments, and the optional asset type must be in the same workspace.
+	// attachments, and asset types must be in the same workspace.
 	Workspace       *string                              `protobuf:"bytes,9,opt,name=workspace,proto3,oneof" json:"workspace,omitempty"`
 	TypedProperties map[string]*types.TypedPropertyValue `protobuf:"bytes,10,rep,name=typed_properties,json=typedProperties,proto3" json:"typed_properties,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
-	// Mutually exclusive with nonempty data_scopes. Omit for legacy scope-based creation.
-	// Must be readable and in the asset's workspace. Composition datasets attach directly and cannot already back an asset.
-	// Raw datasets are wrapped in a new composition dataset without changing the source.
-	// The response dataset_rid identifies the backing dataset and may differ from this RID.
-	DatasetRid    *string `protobuf:"bytes,11,opt,name=dataset_rid,json=datasetRid,proto3,oneof" json:"dataset_rid,omitempty"`
+	// Deprecated: use data. Mutually exclusive with data and nonempty data_scopes. Must be readable and in the asset's
+	// workspace. Composition datasets attach directly and cannot already back an asset. Raw datasets are wrapped in a
+	// new pipeline without changing the source, so the response's data may differ from this RID.
+	//
+	// Deprecated: Marked as deprecated in nominal/protos/asset/v2/asset.proto.
+	DatasetRid *string `protobuf:"bytes,11,opt,name=dataset_rid,json=datasetRid,proto3,oneof" json:"dataset_rid,omitempty"`
+	// Types to attach. Empty attaches none. At most 10 types.
+	Types []string `protobuf:"bytes,12,rep,name=types,proto3" json:"types,omitempty"`
+	// The pipeline or raw dataset the asset reads. Mutually exclusive with dataset_rid and nonempty data_scopes; omit
+	// all three for scope-based creation. The caller must be able to view it, and it must be unarchived, in the asset's
+	// workspace, and not already read by another asset.
+	Data          *AssetData `protobuf:"bytes,13,opt,name=data,proto3" json:"data,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
 func (x *CreateAssetRequest) Reset() {
 	*x = CreateAssetRequest{}
-	mi := &file_nominal_protos_asset_v2_asset_proto_msgTypes[35]
+	mi := &file_nominal_protos_asset_v2_asset_proto_msgTypes[39]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2852,7 +3515,7 @@ func (x *CreateAssetRequest) String() string {
 func (*CreateAssetRequest) ProtoMessage() {}
 
 func (x *CreateAssetRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_asset_v2_asset_proto_msgTypes[35]
+	mi := &file_nominal_protos_asset_v2_asset_proto_msgTypes[39]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2865,7 +3528,7 @@ func (x *CreateAssetRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CreateAssetRequest.ProtoReflect.Descriptor instead.
 func (*CreateAssetRequest) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_asset_v2_asset_proto_rawDescGZIP(), []int{35}
+	return file_nominal_protos_asset_v2_asset_proto_rawDescGZIP(), []int{39}
 }
 
 func (x *CreateAssetRequest) GetTitle() string {
@@ -2918,13 +3581,6 @@ func (x *CreateAssetRequest) GetAttachments() []string {
 	return nil
 }
 
-func (x *CreateAssetRequest) GetType() string {
-	if x != nil && x.Type != nil {
-		return *x.Type
-	}
-	return ""
-}
-
 func (x *CreateAssetRequest) GetWorkspace() string {
 	if x != nil && x.Workspace != nil {
 		return *x.Workspace
@@ -2939,11 +3595,26 @@ func (x *CreateAssetRequest) GetTypedProperties() map[string]*types.TypedPropert
 	return nil
 }
 
+// Deprecated: Marked as deprecated in nominal/protos/asset/v2/asset.proto.
 func (x *CreateAssetRequest) GetDatasetRid() string {
 	if x != nil && x.DatasetRid != nil {
 		return *x.DatasetRid
 	}
 	return ""
+}
+
+func (x *CreateAssetRequest) GetTypes() []string {
+	if x != nil {
+		return x.Types
+	}
+	return nil
+}
+
+func (x *CreateAssetRequest) GetData() *AssetData {
+	if x != nil {
+		return x.Data
+	}
+	return nil
 }
 
 type CreateAssetResponse struct {
@@ -2955,7 +3626,7 @@ type CreateAssetResponse struct {
 
 func (x *CreateAssetResponse) Reset() {
 	*x = CreateAssetResponse{}
-	mi := &file_nominal_protos_asset_v2_asset_proto_msgTypes[36]
+	mi := &file_nominal_protos_asset_v2_asset_proto_msgTypes[40]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2967,7 +3638,7 @@ func (x *CreateAssetResponse) String() string {
 func (*CreateAssetResponse) ProtoMessage() {}
 
 func (x *CreateAssetResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_asset_v2_asset_proto_msgTypes[36]
+	mi := &file_nominal_protos_asset_v2_asset_proto_msgTypes[40]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2980,7 +3651,7 @@ func (x *CreateAssetResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CreateAssetResponse.ProtoReflect.Descriptor instead.
 func (*CreateAssetResponse) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_asset_v2_asset_proto_rawDescGZIP(), []int{36}
+	return file_nominal_protos_asset_v2_asset_proto_rawDescGZIP(), []int{40}
 }
 
 func (x *CreateAssetResponse) GetAsset() *Asset {
@@ -2990,15 +3661,130 @@ func (x *CreateAssetResponse) GetAsset() *Asset {
 	return nil
 }
 
+type CreateOrUpdateAssetByPrimaryKeyRequest struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// The type whose primary key identifies the asset. Must be listed in asset.types.
+	TypeRid string `protobuf:"bytes,1,opt,name=type_rid,json=typeRid,proto3" json:"type_rid,omitempty"`
+	// The asset to create. Must set the type's primary-key property to a nonempty string.
+	Asset         *CreateAssetRequest `protobuf:"bytes,2,opt,name=asset,proto3" json:"asset,omitempty"`
+	IfExists      IfAssetExists       `protobuf:"varint,3,opt,name=if_exists,json=ifExists,proto3,enum=nominal.asset.v2.IfAssetExists" json:"if_exists,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *CreateOrUpdateAssetByPrimaryKeyRequest) Reset() {
+	*x = CreateOrUpdateAssetByPrimaryKeyRequest{}
+	mi := &file_nominal_protos_asset_v2_asset_proto_msgTypes[41]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *CreateOrUpdateAssetByPrimaryKeyRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*CreateOrUpdateAssetByPrimaryKeyRequest) ProtoMessage() {}
+
+func (x *CreateOrUpdateAssetByPrimaryKeyRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_nominal_protos_asset_v2_asset_proto_msgTypes[41]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use CreateOrUpdateAssetByPrimaryKeyRequest.ProtoReflect.Descriptor instead.
+func (*CreateOrUpdateAssetByPrimaryKeyRequest) Descriptor() ([]byte, []int) {
+	return file_nominal_protos_asset_v2_asset_proto_rawDescGZIP(), []int{41}
+}
+
+func (x *CreateOrUpdateAssetByPrimaryKeyRequest) GetTypeRid() string {
+	if x != nil {
+		return x.TypeRid
+	}
+	return ""
+}
+
+func (x *CreateOrUpdateAssetByPrimaryKeyRequest) GetAsset() *CreateAssetRequest {
+	if x != nil {
+		return x.Asset
+	}
+	return nil
+}
+
+func (x *CreateOrUpdateAssetByPrimaryKeyRequest) GetIfExists() IfAssetExists {
+	if x != nil {
+		return x.IfExists
+	}
+	return IfAssetExists_IF_ASSET_EXISTS_UNSPECIFIED
+}
+
+type CreateOrUpdateAssetByPrimaryKeyResponse struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	Asset *Asset                 `protobuf:"bytes,1,opt,name=asset,proto3" json:"asset,omitempty"`
+	// True when this call created the asset. False when it returned or updated an existing one.
+	Created       bool `protobuf:"varint,2,opt,name=created,proto3" json:"created,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *CreateOrUpdateAssetByPrimaryKeyResponse) Reset() {
+	*x = CreateOrUpdateAssetByPrimaryKeyResponse{}
+	mi := &file_nominal_protos_asset_v2_asset_proto_msgTypes[42]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *CreateOrUpdateAssetByPrimaryKeyResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*CreateOrUpdateAssetByPrimaryKeyResponse) ProtoMessage() {}
+
+func (x *CreateOrUpdateAssetByPrimaryKeyResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_nominal_protos_asset_v2_asset_proto_msgTypes[42]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use CreateOrUpdateAssetByPrimaryKeyResponse.ProtoReflect.Descriptor instead.
+func (*CreateOrUpdateAssetByPrimaryKeyResponse) Descriptor() ([]byte, []int) {
+	return file_nominal_protos_asset_v2_asset_proto_rawDescGZIP(), []int{42}
+}
+
+func (x *CreateOrUpdateAssetByPrimaryKeyResponse) GetAsset() *Asset {
+	if x != nil {
+		return x.Asset
+	}
+	return nil
+}
+
+func (x *CreateOrUpdateAssetByPrimaryKeyResponse) GetCreated() bool {
+	if x != nil {
+		return x.Created
+	}
+	return false
+}
+
 type UpdateAssetRequest struct {
 	state       protoimpl.MessageState `protogen:"open.v1"`
 	AssetRid    string                 `protobuf:"bytes,1,opt,name=asset_rid,json=assetRid,proto3" json:"asset_rid,omitempty"`
 	Title       *string                `protobuf:"bytes,2,opt,name=title,proto3,oneof" json:"title,omitempty"`
 	Description *string                `protobuf:"bytes,3,opt,name=description,proto3,oneof" json:"description,omitempty"`
-	// properties/labels/links/data_scopes are tri-state: an absent wrapper leaves the value untouched; a present
-	// wrapper (even with an empty collection) replaces the value. Properties and labels reuse the shared
-	// nominal.types update wrappers (the same types the other conversions use); links and data scopes have no
-	// shared wrapper, so they carry asset-local ones.
+	// properties/labels/links/data_scopes/types are tri-state: an absent wrapper leaves the value untouched; a
+	// present wrapper (even with an empty collection) replaces the value. Properties and labels reuse the shared
+	// nominal.types update wrappers (the same types the other conversions use); links, data scopes, and types have
+	// no shared wrapper, so they carry asset-local ones.
 	//
 	// Deprecated: Marked as deprecated in nominal/protos/asset/v2/asset.proto.
 	Properties *types.PropertyUpdateWrapper `protobuf:"bytes,4,opt,name=properties,proto3" json:"properties,omitempty"`
@@ -3006,16 +3792,23 @@ type UpdateAssetRequest struct {
 	Links      *LinkList                    `protobuf:"bytes,6,opt,name=links,proto3" json:"links,omitempty"`
 	// The data scopes for the asset. When present, replaces all existing data scopes with the scopes specified.
 	DataScopes      *CreateAssetDataScopeList         `protobuf:"bytes,7,opt,name=data_scopes,json=dataScopes,proto3" json:"data_scopes,omitempty"`
-	Type            *UpdateOrRemoveAssetType          `protobuf:"bytes,8,opt,name=type,proto3" json:"type,omitempty"`
 	IsStaged        *bool                             `protobuf:"varint,9,opt,name=is_staged,json=isStaged,proto3,oneof" json:"is_staged,omitempty"`
 	TypedProperties *types.TypedPropertyUpdateWrapper `protobuf:"bytes,10,opt,name=typed_properties,json=typedProperties,proto3" json:"typed_properties,omitempty"`
-	unknownFields   protoimpl.UnknownFields
-	sizeCache       protoimpl.SizeCache
+	// Absent leaves memberships unchanged. Present, including empty, replaces them.
+	Types *TypeRidList `protobuf:"bytes,11,opt,name=types,proto3,oneof" json:"types,omitempty"`
+	// Absent leaves the asset's data unchanged. Present relinks the asset to this pipeline or raw dataset, on the same
+	// conditions as CreateAssetRequest.data, and checks every type the asset will have against it. Mutually exclusive
+	// with nonempty data_scopes. An asset with data scopes is relinked only when data_scopes is present and empty, which
+	// clears them; the caller must be able to read each scope's data source. The pipeline or dataset the asset read
+	// before, including one built from its scopes, is left unchanged.
+	Data          *AssetData `protobuf:"bytes,12,opt,name=data,proto3" json:"data,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
 }
 
 func (x *UpdateAssetRequest) Reset() {
 	*x = UpdateAssetRequest{}
-	mi := &file_nominal_protos_asset_v2_asset_proto_msgTypes[37]
+	mi := &file_nominal_protos_asset_v2_asset_proto_msgTypes[43]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3027,7 +3820,7 @@ func (x *UpdateAssetRequest) String() string {
 func (*UpdateAssetRequest) ProtoMessage() {}
 
 func (x *UpdateAssetRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_asset_v2_asset_proto_msgTypes[37]
+	mi := &file_nominal_protos_asset_v2_asset_proto_msgTypes[43]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3040,7 +3833,7 @@ func (x *UpdateAssetRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UpdateAssetRequest.ProtoReflect.Descriptor instead.
 func (*UpdateAssetRequest) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_asset_v2_asset_proto_rawDescGZIP(), []int{37}
+	return file_nominal_protos_asset_v2_asset_proto_rawDescGZIP(), []int{43}
 }
 
 func (x *UpdateAssetRequest) GetAssetRid() string {
@@ -3093,13 +3886,6 @@ func (x *UpdateAssetRequest) GetDataScopes() *CreateAssetDataScopeList {
 	return nil
 }
 
-func (x *UpdateAssetRequest) GetType() *UpdateOrRemoveAssetType {
-	if x != nil {
-		return x.Type
-	}
-	return nil
-}
-
 func (x *UpdateAssetRequest) GetIsStaged() bool {
 	if x != nil && x.IsStaged != nil {
 		return *x.IsStaged
@@ -3114,6 +3900,20 @@ func (x *UpdateAssetRequest) GetTypedProperties() *types.TypedPropertyUpdateWrap
 	return nil
 }
 
+func (x *UpdateAssetRequest) GetTypes() *TypeRidList {
+	if x != nil {
+		return x.Types
+	}
+	return nil
+}
+
+func (x *UpdateAssetRequest) GetData() *AssetData {
+	if x != nil {
+		return x.Data
+	}
+	return nil
+}
+
 type UpdateAssetResponse struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Asset         *Asset                 `protobuf:"bytes,1,opt,name=asset,proto3" json:"asset,omitempty"`
@@ -3123,7 +3923,7 @@ type UpdateAssetResponse struct {
 
 func (x *UpdateAssetResponse) Reset() {
 	*x = UpdateAssetResponse{}
-	mi := &file_nominal_protos_asset_v2_asset_proto_msgTypes[38]
+	mi := &file_nominal_protos_asset_v2_asset_proto_msgTypes[44]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3135,7 +3935,7 @@ func (x *UpdateAssetResponse) String() string {
 func (*UpdateAssetResponse) ProtoMessage() {}
 
 func (x *UpdateAssetResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_asset_v2_asset_proto_msgTypes[38]
+	mi := &file_nominal_protos_asset_v2_asset_proto_msgTypes[44]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3148,7 +3948,7 @@ func (x *UpdateAssetResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UpdateAssetResponse.ProtoReflect.Descriptor instead.
 func (*UpdateAssetResponse) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_asset_v2_asset_proto_rawDescGZIP(), []int{38}
+	return file_nominal_protos_asset_v2_asset_proto_rawDescGZIP(), []int{44}
 }
 
 func (x *UpdateAssetResponse) GetAsset() *Asset {
@@ -3171,7 +3971,7 @@ type AddDataScopesToAssetRequest struct {
 
 func (x *AddDataScopesToAssetRequest) Reset() {
 	*x = AddDataScopesToAssetRequest{}
-	mi := &file_nominal_protos_asset_v2_asset_proto_msgTypes[39]
+	mi := &file_nominal_protos_asset_v2_asset_proto_msgTypes[45]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3183,7 +3983,7 @@ func (x *AddDataScopesToAssetRequest) String() string {
 func (*AddDataScopesToAssetRequest) ProtoMessage() {}
 
 func (x *AddDataScopesToAssetRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_asset_v2_asset_proto_msgTypes[39]
+	mi := &file_nominal_protos_asset_v2_asset_proto_msgTypes[45]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3196,7 +3996,7 @@ func (x *AddDataScopesToAssetRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use AddDataScopesToAssetRequest.ProtoReflect.Descriptor instead.
 func (*AddDataScopesToAssetRequest) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_asset_v2_asset_proto_rawDescGZIP(), []int{39}
+	return file_nominal_protos_asset_v2_asset_proto_rawDescGZIP(), []int{45}
 }
 
 func (x *AddDataScopesToAssetRequest) GetAssetRid() string {
@@ -3222,7 +4022,7 @@ type AddDataScopesToAssetResponse struct {
 
 func (x *AddDataScopesToAssetResponse) Reset() {
 	*x = AddDataScopesToAssetResponse{}
-	mi := &file_nominal_protos_asset_v2_asset_proto_msgTypes[40]
+	mi := &file_nominal_protos_asset_v2_asset_proto_msgTypes[46]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3234,7 +4034,7 @@ func (x *AddDataScopesToAssetResponse) String() string {
 func (*AddDataScopesToAssetResponse) ProtoMessage() {}
 
 func (x *AddDataScopesToAssetResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_asset_v2_asset_proto_msgTypes[40]
+	mi := &file_nominal_protos_asset_v2_asset_proto_msgTypes[46]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3247,7 +4047,7 @@ func (x *AddDataScopesToAssetResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use AddDataScopesToAssetResponse.ProtoReflect.Descriptor instead.
 func (*AddDataScopesToAssetResponse) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_asset_v2_asset_proto_rawDescGZIP(), []int{40}
+	return file_nominal_protos_asset_v2_asset_proto_rawDescGZIP(), []int{46}
 }
 
 func (x *AddDataScopesToAssetResponse) GetAsset() *Asset {
@@ -3266,7 +4066,7 @@ type GetAssetsRequest struct {
 
 func (x *GetAssetsRequest) Reset() {
 	*x = GetAssetsRequest{}
-	mi := &file_nominal_protos_asset_v2_asset_proto_msgTypes[41]
+	mi := &file_nominal_protos_asset_v2_asset_proto_msgTypes[47]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3278,7 +4078,7 @@ func (x *GetAssetsRequest) String() string {
 func (*GetAssetsRequest) ProtoMessage() {}
 
 func (x *GetAssetsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_asset_v2_asset_proto_msgTypes[41]
+	mi := &file_nominal_protos_asset_v2_asset_proto_msgTypes[47]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3291,7 +4091,7 @@ func (x *GetAssetsRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetAssetsRequest.ProtoReflect.Descriptor instead.
 func (*GetAssetsRequest) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_asset_v2_asset_proto_rawDescGZIP(), []int{41}
+	return file_nominal_protos_asset_v2_asset_proto_rawDescGZIP(), []int{47}
 }
 
 func (x *GetAssetsRequest) GetRids() []string {
@@ -3310,7 +4110,7 @@ type GetAssetsResponse struct {
 
 func (x *GetAssetsResponse) Reset() {
 	*x = GetAssetsResponse{}
-	mi := &file_nominal_protos_asset_v2_asset_proto_msgTypes[42]
+	mi := &file_nominal_protos_asset_v2_asset_proto_msgTypes[48]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3322,7 +4122,7 @@ func (x *GetAssetsResponse) String() string {
 func (*GetAssetsResponse) ProtoMessage() {}
 
 func (x *GetAssetsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_asset_v2_asset_proto_msgTypes[42]
+	mi := &file_nominal_protos_asset_v2_asset_proto_msgTypes[48]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3335,7 +4135,7 @@ func (x *GetAssetsResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetAssetsResponse.ProtoReflect.Descriptor instead.
 func (*GetAssetsResponse) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_asset_v2_asset_proto_rawDescGZIP(), []int{42}
+	return file_nominal_protos_asset_v2_asset_proto_rawDescGZIP(), []int{48}
 }
 
 func (x *GetAssetsResponse) GetResponses() map[string]*Asset {
@@ -3343,6 +4143,365 @@ func (x *GetAssetsResponse) GetResponses() map[string]*Asset {
 		return x.Responses
 	}
 	return nil
+}
+
+type GetAssetDataConformanceRequest struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// 1 to 100 unique asset RIDs.
+	AssetRids     []string `protobuf:"bytes,1,rep,name=asset_rids,json=assetRids,proto3" json:"asset_rids,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GetAssetDataConformanceRequest) Reset() {
+	*x = GetAssetDataConformanceRequest{}
+	mi := &file_nominal_protos_asset_v2_asset_proto_msgTypes[49]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetAssetDataConformanceRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetAssetDataConformanceRequest) ProtoMessage() {}
+
+func (x *GetAssetDataConformanceRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_nominal_protos_asset_v2_asset_proto_msgTypes[49]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetAssetDataConformanceRequest.ProtoReflect.Descriptor instead.
+func (*GetAssetDataConformanceRequest) Descriptor() ([]byte, []int) {
+	return file_nominal_protos_asset_v2_asset_proto_rawDescGZIP(), []int{49}
+}
+
+func (x *GetAssetDataConformanceRequest) GetAssetRids() []string {
+	if x != nil {
+		return x.AssetRids
+	}
+	return nil
+}
+
+type GetAssetDataConformanceResponse struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Keyed by asset RID. An asset none of whose types have data requirements has an empty types map. Assets that do
+	// not exist or that the caller cannot view are left out.
+	Assets        map[string]*AssetDataConformance `protobuf:"bytes,1,rep,name=assets,proto3" json:"assets,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GetAssetDataConformanceResponse) Reset() {
+	*x = GetAssetDataConformanceResponse{}
+	mi := &file_nominal_protos_asset_v2_asset_proto_msgTypes[50]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetAssetDataConformanceResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetAssetDataConformanceResponse) ProtoMessage() {}
+
+func (x *GetAssetDataConformanceResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_nominal_protos_asset_v2_asset_proto_msgTypes[50]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetAssetDataConformanceResponse.ProtoReflect.Descriptor instead.
+func (*GetAssetDataConformanceResponse) Descriptor() ([]byte, []int) {
+	return file_nominal_protos_asset_v2_asset_proto_rawDescGZIP(), []int{50}
+}
+
+func (x *GetAssetDataConformanceResponse) GetAssets() map[string]*AssetDataConformance {
+	if x != nil {
+		return x.Assets
+	}
+	return nil
+}
+
+// How an asset's current data meets the data requirements of its types.
+type AssetDataConformance struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Keyed by type RID, with an entry for each type on the asset that has data requirements.
+	Types         map[string]*TypeDataConformance `protobuf:"bytes,1,rep,name=types,proto3" json:"types,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *AssetDataConformance) Reset() {
+	*x = AssetDataConformance{}
+	mi := &file_nominal_protos_asset_v2_asset_proto_msgTypes[51]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *AssetDataConformance) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*AssetDataConformance) ProtoMessage() {}
+
+func (x *AssetDataConformance) ProtoReflect() protoreflect.Message {
+	mi := &file_nominal_protos_asset_v2_asset_proto_msgTypes[51]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use AssetDataConformance.ProtoReflect.Descriptor instead.
+func (*AssetDataConformance) Descriptor() ([]byte, []int) {
+	return file_nominal_protos_asset_v2_asset_proto_rawDescGZIP(), []int{51}
+}
+
+func (x *AssetDataConformance) GetTypes() map[string]*TypeDataConformance {
+	if x != nil {
+		return x.Types
+	}
+	return nil
+}
+
+// How an asset's current data meets one type's data_requirements.
+type TypeDataConformance struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Clients should treat an unset oneof as unknown: it is a result added after the client was built.
+	//
+	// Types that are valid to be assigned to Conformance:
+	//
+	//	*TypeDataConformance_Met
+	//	*TypeDataConformance_Unmet
+	//	*TypeDataConformance_Unknown
+	Conformance   isTypeDataConformance_Conformance `protobuf_oneof:"conformance"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *TypeDataConformance) Reset() {
+	*x = TypeDataConformance{}
+	mi := &file_nominal_protos_asset_v2_asset_proto_msgTypes[52]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *TypeDataConformance) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*TypeDataConformance) ProtoMessage() {}
+
+func (x *TypeDataConformance) ProtoReflect() protoreflect.Message {
+	mi := &file_nominal_protos_asset_v2_asset_proto_msgTypes[52]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use TypeDataConformance.ProtoReflect.Descriptor instead.
+func (*TypeDataConformance) Descriptor() ([]byte, []int) {
+	return file_nominal_protos_asset_v2_asset_proto_rawDescGZIP(), []int{52}
+}
+
+func (x *TypeDataConformance) GetConformance() isTypeDataConformance_Conformance {
+	if x != nil {
+		return x.Conformance
+	}
+	return nil
+}
+
+func (x *TypeDataConformance) GetMet() *DataRequirementsMet {
+	if x != nil {
+		if x, ok := x.Conformance.(*TypeDataConformance_Met); ok {
+			return x.Met
+		}
+	}
+	return nil
+}
+
+func (x *TypeDataConformance) GetUnmet() *DataRequirementsUnmet {
+	if x != nil {
+		if x, ok := x.Conformance.(*TypeDataConformance_Unmet); ok {
+			return x.Unmet
+		}
+	}
+	return nil
+}
+
+func (x *TypeDataConformance) GetUnknown() *DataRequirementsUnknown {
+	if x != nil {
+		if x, ok := x.Conformance.(*TypeDataConformance_Unknown); ok {
+			return x.Unknown
+		}
+	}
+	return nil
+}
+
+type isTypeDataConformance_Conformance interface {
+	isTypeDataConformance_Conformance()
+}
+
+type TypeDataConformance_Met struct {
+	Met *DataRequirementsMet `protobuf:"bytes,1,opt,name=met,proto3,oneof"`
+}
+
+type TypeDataConformance_Unmet struct {
+	Unmet *DataRequirementsUnmet `protobuf:"bytes,2,opt,name=unmet,proto3,oneof"`
+}
+
+type TypeDataConformance_Unknown struct {
+	Unknown *DataRequirementsUnknown `protobuf:"bytes,3,opt,name=unknown,proto3,oneof"`
+}
+
+func (*TypeDataConformance_Met) isTypeDataConformance_Conformance() {}
+
+func (*TypeDataConformance_Unmet) isTypeDataConformance_Conformance() {}
+
+func (*TypeDataConformance_Unknown) isTypeDataConformance_Conformance() {}
+
+// The asset's data meets the requirements.
+type DataRequirementsMet struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *DataRequirementsMet) Reset() {
+	*x = DataRequirementsMet{}
+	mi := &file_nominal_protos_asset_v2_asset_proto_msgTypes[53]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *DataRequirementsMet) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*DataRequirementsMet) ProtoMessage() {}
+
+func (x *DataRequirementsMet) ProtoReflect() protoreflect.Message {
+	mi := &file_nominal_protos_asset_v2_asset_proto_msgTypes[53]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use DataRequirementsMet.ProtoReflect.Descriptor instead.
+func (*DataRequirementsMet) Descriptor() ([]byte, []int) {
+	return file_nominal_protos_asset_v2_asset_proto_rawDescGZIP(), []int{53}
+}
+
+// The asset's data does not meet the requirements.
+type DataRequirementsUnmet struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Every required series that the asset's data has no series of that name and type for, by name. Nonempty.
+	MissingSeries []*SeriesRequirement `protobuf:"bytes,1,rep,name=missing_series,json=missingSeries,proto3" json:"missing_series,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *DataRequirementsUnmet) Reset() {
+	*x = DataRequirementsUnmet{}
+	mi := &file_nominal_protos_asset_v2_asset_proto_msgTypes[54]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *DataRequirementsUnmet) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*DataRequirementsUnmet) ProtoMessage() {}
+
+func (x *DataRequirementsUnmet) ProtoReflect() protoreflect.Message {
+	mi := &file_nominal_protos_asset_v2_asset_proto_msgTypes[54]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use DataRequirementsUnmet.ProtoReflect.Descriptor instead.
+func (*DataRequirementsUnmet) Descriptor() ([]byte, []int) {
+	return file_nominal_protos_asset_v2_asset_proto_rawDescGZIP(), []int{54}
+}
+
+func (x *DataRequirementsUnmet) GetMissingSeries() []*SeriesRequirement {
+	if x != nil {
+		return x.MissingSeries
+	}
+	return nil
+}
+
+// The requirements could not be checked, because the caller cannot read the asset's data or looking the series up
+// took too long.
+type DataRequirementsUnknown struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *DataRequirementsUnknown) Reset() {
+	*x = DataRequirementsUnknown{}
+	mi := &file_nominal_protos_asset_v2_asset_proto_msgTypes[55]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *DataRequirementsUnknown) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*DataRequirementsUnknown) ProtoMessage() {}
+
+func (x *DataRequirementsUnknown) ProtoReflect() protoreflect.Message {
+	mi := &file_nominal_protos_asset_v2_asset_proto_msgTypes[55]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use DataRequirementsUnknown.ProtoReflect.Descriptor instead.
+func (*DataRequirementsUnknown) Descriptor() ([]byte, []int) {
+	return file_nominal_protos_asset_v2_asset_proto_rawDescGZIP(), []int{55}
 }
 
 type GetAssetsByDataSourceRequest struct {
@@ -3354,7 +4513,7 @@ type GetAssetsByDataSourceRequest struct {
 
 func (x *GetAssetsByDataSourceRequest) Reset() {
 	*x = GetAssetsByDataSourceRequest{}
-	mi := &file_nominal_protos_asset_v2_asset_proto_msgTypes[43]
+	mi := &file_nominal_protos_asset_v2_asset_proto_msgTypes[56]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3366,7 +4525,7 @@ func (x *GetAssetsByDataSourceRequest) String() string {
 func (*GetAssetsByDataSourceRequest) ProtoMessage() {}
 
 func (x *GetAssetsByDataSourceRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_asset_v2_asset_proto_msgTypes[43]
+	mi := &file_nominal_protos_asset_v2_asset_proto_msgTypes[56]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3379,7 +4538,7 @@ func (x *GetAssetsByDataSourceRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetAssetsByDataSourceRequest.ProtoReflect.Descriptor instead.
 func (*GetAssetsByDataSourceRequest) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_asset_v2_asset_proto_rawDescGZIP(), []int{43}
+	return file_nominal_protos_asset_v2_asset_proto_rawDescGZIP(), []int{56}
 }
 
 func (x *GetAssetsByDataSourceRequest) GetDataSourceRid() string {
@@ -3398,7 +4557,7 @@ type GetAssetsByDataSourceResponse struct {
 
 func (x *GetAssetsByDataSourceResponse) Reset() {
 	*x = GetAssetsByDataSourceResponse{}
-	mi := &file_nominal_protos_asset_v2_asset_proto_msgTypes[44]
+	mi := &file_nominal_protos_asset_v2_asset_proto_msgTypes[57]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3410,7 +4569,7 @@ func (x *GetAssetsByDataSourceResponse) String() string {
 func (*GetAssetsByDataSourceResponse) ProtoMessage() {}
 
 func (x *GetAssetsByDataSourceResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_asset_v2_asset_proto_msgTypes[44]
+	mi := &file_nominal_protos_asset_v2_asset_proto_msgTypes[57]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3423,7 +4582,7 @@ func (x *GetAssetsByDataSourceResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetAssetsByDataSourceResponse.ProtoReflect.Descriptor instead.
 func (*GetAssetsByDataSourceResponse) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_asset_v2_asset_proto_rawDescGZIP(), []int{44}
+	return file_nominal_protos_asset_v2_asset_proto_rawDescGZIP(), []int{57}
 }
 
 func (x *GetAssetsByDataSourceResponse) GetAssets() []*Asset {
@@ -3445,7 +4604,7 @@ type ArchiveRequest struct {
 
 func (x *ArchiveRequest) Reset() {
 	*x = ArchiveRequest{}
-	mi := &file_nominal_protos_asset_v2_asset_proto_msgTypes[45]
+	mi := &file_nominal_protos_asset_v2_asset_proto_msgTypes[58]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3457,7 +4616,7 @@ func (x *ArchiveRequest) String() string {
 func (*ArchiveRequest) ProtoMessage() {}
 
 func (x *ArchiveRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_asset_v2_asset_proto_msgTypes[45]
+	mi := &file_nominal_protos_asset_v2_asset_proto_msgTypes[58]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3470,7 +4629,7 @@ func (x *ArchiveRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ArchiveRequest.ProtoReflect.Descriptor instead.
 func (*ArchiveRequest) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_asset_v2_asset_proto_rawDescGZIP(), []int{45}
+	return file_nominal_protos_asset_v2_asset_proto_rawDescGZIP(), []int{58}
 }
 
 func (x *ArchiveRequest) GetAssetRid() string {
@@ -3495,7 +4654,7 @@ type ArchiveResponse struct {
 
 func (x *ArchiveResponse) Reset() {
 	*x = ArchiveResponse{}
-	mi := &file_nominal_protos_asset_v2_asset_proto_msgTypes[46]
+	mi := &file_nominal_protos_asset_v2_asset_proto_msgTypes[59]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3507,7 +4666,7 @@ func (x *ArchiveResponse) String() string {
 func (*ArchiveResponse) ProtoMessage() {}
 
 func (x *ArchiveResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_asset_v2_asset_proto_msgTypes[46]
+	mi := &file_nominal_protos_asset_v2_asset_proto_msgTypes[59]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3520,7 +4679,7 @@ func (x *ArchiveResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ArchiveResponse.ProtoReflect.Descriptor instead.
 func (*ArchiveResponse) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_asset_v2_asset_proto_rawDescGZIP(), []int{46}
+	return file_nominal_protos_asset_v2_asset_proto_rawDescGZIP(), []int{59}
 }
 
 type UnarchiveRequest struct {
@@ -3535,7 +4694,7 @@ type UnarchiveRequest struct {
 
 func (x *UnarchiveRequest) Reset() {
 	*x = UnarchiveRequest{}
-	mi := &file_nominal_protos_asset_v2_asset_proto_msgTypes[47]
+	mi := &file_nominal_protos_asset_v2_asset_proto_msgTypes[60]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3547,7 +4706,7 @@ func (x *UnarchiveRequest) String() string {
 func (*UnarchiveRequest) ProtoMessage() {}
 
 func (x *UnarchiveRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_asset_v2_asset_proto_msgTypes[47]
+	mi := &file_nominal_protos_asset_v2_asset_proto_msgTypes[60]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3560,7 +4719,7 @@ func (x *UnarchiveRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UnarchiveRequest.ProtoReflect.Descriptor instead.
 func (*UnarchiveRequest) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_asset_v2_asset_proto_rawDescGZIP(), []int{47}
+	return file_nominal_protos_asset_v2_asset_proto_rawDescGZIP(), []int{60}
 }
 
 func (x *UnarchiveRequest) GetAssetRid() string {
@@ -3585,7 +4744,7 @@ type UnarchiveResponse struct {
 
 func (x *UnarchiveResponse) Reset() {
 	*x = UnarchiveResponse{}
-	mi := &file_nominal_protos_asset_v2_asset_proto_msgTypes[48]
+	mi := &file_nominal_protos_asset_v2_asset_proto_msgTypes[61]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3597,7 +4756,7 @@ func (x *UnarchiveResponse) String() string {
 func (*UnarchiveResponse) ProtoMessage() {}
 
 func (x *UnarchiveResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_asset_v2_asset_proto_msgTypes[48]
+	mi := &file_nominal_protos_asset_v2_asset_proto_msgTypes[61]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3610,7 +4769,7 @@ func (x *UnarchiveResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UnarchiveResponse.ProtoReflect.Descriptor instead.
 func (*UnarchiveResponse) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_asset_v2_asset_proto_rawDescGZIP(), []int{48}
+	return file_nominal_protos_asset_v2_asset_proto_rawDescGZIP(), []int{61}
 }
 
 type SearchAssetsRequest struct {
@@ -3626,13 +4785,17 @@ type SearchAssetsRequest struct {
 	// Computing the count is an additional query whose cost grows with the size of the matching set, so only set this
 	// when the count is needed.
 	IncludeMatchCount *bool `protobuf:"varint,6,opt,name=include_match_count,json=includeMatchCount,proto3,oneof" json:"include_match_count,omitempty"`
-	unknownFields     protoimpl.UnknownFields
-	sizeCache         protoimpl.SizeCache
+	// When true, each returned asset has is_live populated. Defaults to false, in which case is_live is left unset.
+	// Computing liveness is an additional query that can be slow in large workspaces, so only set this when is_live is
+	// needed. The `live` query filter does not require it.
+	IncludeLiveness *bool `protobuf:"varint,7,opt,name=include_liveness,json=includeLiveness,proto3,oneof" json:"include_liveness,omitempty"`
+	unknownFields   protoimpl.UnknownFields
+	sizeCache       protoimpl.SizeCache
 }
 
 func (x *SearchAssetsRequest) Reset() {
 	*x = SearchAssetsRequest{}
-	mi := &file_nominal_protos_asset_v2_asset_proto_msgTypes[49]
+	mi := &file_nominal_protos_asset_v2_asset_proto_msgTypes[62]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3644,7 +4807,7 @@ func (x *SearchAssetsRequest) String() string {
 func (*SearchAssetsRequest) ProtoMessage() {}
 
 func (x *SearchAssetsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_asset_v2_asset_proto_msgTypes[49]
+	mi := &file_nominal_protos_asset_v2_asset_proto_msgTypes[62]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3657,7 +4820,7 @@ func (x *SearchAssetsRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SearchAssetsRequest.ProtoReflect.Descriptor instead.
 func (*SearchAssetsRequest) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_asset_v2_asset_proto_rawDescGZIP(), []int{49}
+	return file_nominal_protos_asset_v2_asset_proto_rawDescGZIP(), []int{62}
 }
 
 func (x *SearchAssetsRequest) GetSort() *AssetSortOptions {
@@ -3702,6 +4865,13 @@ func (x *SearchAssetsRequest) GetIncludeMatchCount() bool {
 	return false
 }
 
+func (x *SearchAssetsRequest) GetIncludeLiveness() bool {
+	if x != nil && x.IncludeLiveness != nil {
+		return *x.IncludeLiveness
+	}
+	return false
+}
+
 type SearchAssetsResponse struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Results       []*Asset               `protobuf:"bytes,1,rep,name=results,proto3" json:"results,omitempty"`
@@ -3715,7 +4885,7 @@ type SearchAssetsResponse struct {
 
 func (x *SearchAssetsResponse) Reset() {
 	*x = SearchAssetsResponse{}
-	mi := &file_nominal_protos_asset_v2_asset_proto_msgTypes[50]
+	mi := &file_nominal_protos_asset_v2_asset_proto_msgTypes[63]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3727,7 +4897,7 @@ func (x *SearchAssetsResponse) String() string {
 func (*SearchAssetsResponse) ProtoMessage() {}
 
 func (x *SearchAssetsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_asset_v2_asset_proto_msgTypes[50]
+	mi := &file_nominal_protos_asset_v2_asset_proto_msgTypes[63]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3740,7 +4910,7 @@ func (x *SearchAssetsResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SearchAssetsResponse.ProtoReflect.Descriptor instead.
 func (*SearchAssetsResponse) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_asset_v2_asset_proto_rawDescGZIP(), []int{50}
+	return file_nominal_protos_asset_v2_asset_proto_rawDescGZIP(), []int{63}
 }
 
 func (x *SearchAssetsResponse) GetResults() []*Asset {
@@ -3776,7 +4946,7 @@ type BatchEditAssetMetadataRequest struct {
 
 func (x *BatchEditAssetMetadataRequest) Reset() {
 	*x = BatchEditAssetMetadataRequest{}
-	mi := &file_nominal_protos_asset_v2_asset_proto_msgTypes[51]
+	mi := &file_nominal_protos_asset_v2_asset_proto_msgTypes[64]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3788,7 +4958,7 @@ func (x *BatchEditAssetMetadataRequest) String() string {
 func (*BatchEditAssetMetadataRequest) ProtoMessage() {}
 
 func (x *BatchEditAssetMetadataRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_asset_v2_asset_proto_msgTypes[51]
+	mi := &file_nominal_protos_asset_v2_asset_proto_msgTypes[64]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3801,7 +4971,7 @@ func (x *BatchEditAssetMetadataRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use BatchEditAssetMetadataRequest.ProtoReflect.Descriptor instead.
 func (*BatchEditAssetMetadataRequest) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_asset_v2_asset_proto_rawDescGZIP(), []int{51}
+	return file_nominal_protos_asset_v2_asset_proto_rawDescGZIP(), []int{64}
 }
 
 func (x *BatchEditAssetMetadataRequest) GetAssetSearchQuery() *SearchAssetsQuery {
@@ -3831,7 +5001,7 @@ type BatchEditAssetMetadataResponse struct {
 
 func (x *BatchEditAssetMetadataResponse) Reset() {
 	*x = BatchEditAssetMetadataResponse{}
-	mi := &file_nominal_protos_asset_v2_asset_proto_msgTypes[52]
+	mi := &file_nominal_protos_asset_v2_asset_proto_msgTypes[65]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3843,7 +5013,7 @@ func (x *BatchEditAssetMetadataResponse) String() string {
 func (*BatchEditAssetMetadataResponse) ProtoMessage() {}
 
 func (x *BatchEditAssetMetadataResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_asset_v2_asset_proto_msgTypes[52]
+	mi := &file_nominal_protos_asset_v2_asset_proto_msgTypes[65]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3856,7 +5026,7 @@ func (x *BatchEditAssetMetadataResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use BatchEditAssetMetadataResponse.ProtoReflect.Descriptor instead.
 func (*BatchEditAssetMetadataResponse) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_asset_v2_asset_proto_rawDescGZIP(), []int{52}
+	return file_nominal_protos_asset_v2_asset_proto_rawDescGZIP(), []int{65}
 }
 
 func (x *BatchEditAssetMetadataResponse) GetModifiedAssetRids() []string {
@@ -3887,7 +5057,7 @@ type SearchTypesRequest struct {
 
 func (x *SearchTypesRequest) Reset() {
 	*x = SearchTypesRequest{}
-	mi := &file_nominal_protos_asset_v2_asset_proto_msgTypes[53]
+	mi := &file_nominal_protos_asset_v2_asset_proto_msgTypes[66]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3899,7 +5069,7 @@ func (x *SearchTypesRequest) String() string {
 func (*SearchTypesRequest) ProtoMessage() {}
 
 func (x *SearchTypesRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_asset_v2_asset_proto_msgTypes[53]
+	mi := &file_nominal_protos_asset_v2_asset_proto_msgTypes[66]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3912,7 +5082,7 @@ func (x *SearchTypesRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SearchTypesRequest.ProtoReflect.Descriptor instead.
 func (*SearchTypesRequest) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_asset_v2_asset_proto_rawDescGZIP(), []int{53}
+	return file_nominal_protos_asset_v2_asset_proto_rawDescGZIP(), []int{66}
 }
 
 func (x *SearchTypesRequest) GetSort() *TypeSortOptions {
@@ -3960,7 +5130,7 @@ type SearchTypesResponse struct {
 
 func (x *SearchTypesResponse) Reset() {
 	*x = SearchTypesResponse{}
-	mi := &file_nominal_protos_asset_v2_asset_proto_msgTypes[54]
+	mi := &file_nominal_protos_asset_v2_asset_proto_msgTypes[67]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3972,7 +5142,7 @@ func (x *SearchTypesResponse) String() string {
 func (*SearchTypesResponse) ProtoMessage() {}
 
 func (x *SearchTypesResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_asset_v2_asset_proto_msgTypes[54]
+	mi := &file_nominal_protos_asset_v2_asset_proto_msgTypes[67]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3985,7 +5155,7 @@ func (x *SearchTypesResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SearchTypesResponse.ProtoReflect.Descriptor instead.
 func (*SearchTypesResponse) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_asset_v2_asset_proto_rawDescGZIP(), []int{54}
+	return file_nominal_protos_asset_v2_asset_proto_rawDescGZIP(), []int{67}
 }
 
 func (x *SearchTypesResponse) GetResults() []*Type {
@@ -4013,7 +5183,7 @@ type UpdateAssetAttachmentsRequest struct {
 
 func (x *UpdateAssetAttachmentsRequest) Reset() {
 	*x = UpdateAssetAttachmentsRequest{}
-	mi := &file_nominal_protos_asset_v2_asset_proto_msgTypes[55]
+	mi := &file_nominal_protos_asset_v2_asset_proto_msgTypes[68]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4025,7 +5195,7 @@ func (x *UpdateAssetAttachmentsRequest) String() string {
 func (*UpdateAssetAttachmentsRequest) ProtoMessage() {}
 
 func (x *UpdateAssetAttachmentsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_asset_v2_asset_proto_msgTypes[55]
+	mi := &file_nominal_protos_asset_v2_asset_proto_msgTypes[68]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4038,7 +5208,7 @@ func (x *UpdateAssetAttachmentsRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UpdateAssetAttachmentsRequest.ProtoReflect.Descriptor instead.
 func (*UpdateAssetAttachmentsRequest) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_asset_v2_asset_proto_rawDescGZIP(), []int{55}
+	return file_nominal_protos_asset_v2_asset_proto_rawDescGZIP(), []int{68}
 }
 
 func (x *UpdateAssetAttachmentsRequest) GetAssetRid() string {
@@ -4070,7 +5240,7 @@ type UpdateAssetAttachmentsResponse struct {
 
 func (x *UpdateAssetAttachmentsResponse) Reset() {
 	*x = UpdateAssetAttachmentsResponse{}
-	mi := &file_nominal_protos_asset_v2_asset_proto_msgTypes[56]
+	mi := &file_nominal_protos_asset_v2_asset_proto_msgTypes[69]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4082,7 +5252,7 @@ func (x *UpdateAssetAttachmentsResponse) String() string {
 func (*UpdateAssetAttachmentsResponse) ProtoMessage() {}
 
 func (x *UpdateAssetAttachmentsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_asset_v2_asset_proto_msgTypes[56]
+	mi := &file_nominal_protos_asset_v2_asset_proto_msgTypes[69]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4095,7 +5265,7 @@ func (x *UpdateAssetAttachmentsResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UpdateAssetAttachmentsResponse.ProtoReflect.Descriptor instead.
 func (*UpdateAssetAttachmentsResponse) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_asset_v2_asset_proto_rawDescGZIP(), []int{56}
+	return file_nominal_protos_asset_v2_asset_proto_rawDescGZIP(), []int{69}
 }
 
 type UpdateAssetRefNamesRequest struct {
@@ -4108,7 +5278,7 @@ type UpdateAssetRefNamesRequest struct {
 
 func (x *UpdateAssetRefNamesRequest) Reset() {
 	*x = UpdateAssetRefNamesRequest{}
-	mi := &file_nominal_protos_asset_v2_asset_proto_msgTypes[57]
+	mi := &file_nominal_protos_asset_v2_asset_proto_msgTypes[70]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4120,7 +5290,7 @@ func (x *UpdateAssetRefNamesRequest) String() string {
 func (*UpdateAssetRefNamesRequest) ProtoMessage() {}
 
 func (x *UpdateAssetRefNamesRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_asset_v2_asset_proto_msgTypes[57]
+	mi := &file_nominal_protos_asset_v2_asset_proto_msgTypes[70]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4133,7 +5303,7 @@ func (x *UpdateAssetRefNamesRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UpdateAssetRefNamesRequest.ProtoReflect.Descriptor instead.
 func (*UpdateAssetRefNamesRequest) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_asset_v2_asset_proto_rawDescGZIP(), []int{57}
+	return file_nominal_protos_asset_v2_asset_proto_rawDescGZIP(), []int{70}
 }
 
 func (x *UpdateAssetRefNamesRequest) GetAssetRid() string {
@@ -4158,7 +5328,7 @@ type UpdateAssetRefNamesResponse struct {
 
 func (x *UpdateAssetRefNamesResponse) Reset() {
 	*x = UpdateAssetRefNamesResponse{}
-	mi := &file_nominal_protos_asset_v2_asset_proto_msgTypes[58]
+	mi := &file_nominal_protos_asset_v2_asset_proto_msgTypes[71]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4170,7 +5340,7 @@ func (x *UpdateAssetRefNamesResponse) String() string {
 func (*UpdateAssetRefNamesResponse) ProtoMessage() {}
 
 func (x *UpdateAssetRefNamesResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_asset_v2_asset_proto_msgTypes[58]
+	mi := &file_nominal_protos_asset_v2_asset_proto_msgTypes[71]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4183,7 +5353,7 @@ func (x *UpdateAssetRefNamesResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UpdateAssetRefNamesResponse.ProtoReflect.Descriptor instead.
 func (*UpdateAssetRefNamesResponse) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_asset_v2_asset_proto_rawDescGZIP(), []int{58}
+	return file_nominal_protos_asset_v2_asset_proto_rawDescGZIP(), []int{71}
 }
 
 type CreateTypeRequest struct {
@@ -4195,16 +5365,20 @@ type CreateTypeRequest struct {
 	// The workspace in which to create the asset type. If not provided, the asset type will be created in the default
 	// workspace for the user's organization, if the default workspace for the organization is configured.
 	Workspace *string `protobuf:"bytes,5,opt,name=workspace,proto3,oneof" json:"workspace,omitempty"`
-	// The configuration outlines what a data scope should provide when added to an asset of this type. It is referenced
-	// at data scope creation time, but does not actively modify existing data scopes. Tri-state presence wrapper.
-	DatasourceConfigs *AssetTypeDataScopeConfigMap `protobuf:"bytes,6,opt,name=datasource_configs,json=datasourceConfigs,proto3" json:"datasource_configs,omitempty"`
-	unknownFields     protoimpl.UnknownFields
-	sizeCache         protoimpl.SizeCache
+	// The property that identifies an asset of this type. It is a required nonempty string and is not repeated in
+	// property_configs.
+	PrimaryKey string `protobuf:"bytes,7,opt,name=primary_key,json=primaryKey,proto3" json:"primary_key,omitempty"`
+	// Requirements on the data of assets of this type.
+	DataRequirements *DataRequirements `protobuf:"bytes,8,opt,name=data_requirements,json=dataRequirements,proto3" json:"data_requirements,omitempty"`
+	// A link to the new type itself can only be added by a later update, once the type has a rid.
+	Links         []*LinkDefinition `protobuf:"bytes,9,rep,name=links,proto3" json:"links,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
 }
 
 func (x *CreateTypeRequest) Reset() {
 	*x = CreateTypeRequest{}
-	mi := &file_nominal_protos_asset_v2_asset_proto_msgTypes[59]
+	mi := &file_nominal_protos_asset_v2_asset_proto_msgTypes[72]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4216,7 +5390,7 @@ func (x *CreateTypeRequest) String() string {
 func (*CreateTypeRequest) ProtoMessage() {}
 
 func (x *CreateTypeRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_asset_v2_asset_proto_msgTypes[59]
+	mi := &file_nominal_protos_asset_v2_asset_proto_msgTypes[72]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4229,7 +5403,7 @@ func (x *CreateTypeRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CreateTypeRequest.ProtoReflect.Descriptor instead.
 func (*CreateTypeRequest) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_asset_v2_asset_proto_rawDescGZIP(), []int{59}
+	return file_nominal_protos_asset_v2_asset_proto_rawDescGZIP(), []int{72}
 }
 
 func (x *CreateTypeRequest) GetName() string {
@@ -4267,9 +5441,23 @@ func (x *CreateTypeRequest) GetWorkspace() string {
 	return ""
 }
 
-func (x *CreateTypeRequest) GetDatasourceConfigs() *AssetTypeDataScopeConfigMap {
+func (x *CreateTypeRequest) GetPrimaryKey() string {
 	if x != nil {
-		return x.DatasourceConfigs
+		return x.PrimaryKey
+	}
+	return ""
+}
+
+func (x *CreateTypeRequest) GetDataRequirements() *DataRequirements {
+	if x != nil {
+		return x.DataRequirements
+	}
+	return nil
+}
+
+func (x *CreateTypeRequest) GetLinks() []*LinkDefinition {
+	if x != nil {
+		return x.Links
 	}
 	return nil
 }
@@ -4283,7 +5471,7 @@ type CreateTypeResponse struct {
 
 func (x *CreateTypeResponse) Reset() {
 	*x = CreateTypeResponse{}
-	mi := &file_nominal_protos_asset_v2_asset_proto_msgTypes[60]
+	mi := &file_nominal_protos_asset_v2_asset_proto_msgTypes[73]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4295,7 +5483,7 @@ func (x *CreateTypeResponse) String() string {
 func (*CreateTypeResponse) ProtoMessage() {}
 
 func (x *CreateTypeResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_asset_v2_asset_proto_msgTypes[60]
+	mi := &file_nominal_protos_asset_v2_asset_proto_msgTypes[73]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4308,7 +5496,7 @@ func (x *CreateTypeResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CreateTypeResponse.ProtoReflect.Descriptor instead.
 func (*CreateTypeResponse) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_asset_v2_asset_proto_rawDescGZIP(), []int{60}
+	return file_nominal_protos_asset_v2_asset_proto_rawDescGZIP(), []int{73}
 }
 
 func (x *CreateTypeResponse) GetType() *Type {
@@ -4327,16 +5515,22 @@ type UpdateTypeRequest struct {
 	PropertyConfigs *PropertyConfigMap `protobuf:"bytes,3,opt,name=property_configs,json=propertyConfigs,proto3" json:"property_configs,omitempty"`
 	Description     *string            `protobuf:"bytes,4,opt,name=description,proto3,oneof" json:"description,omitempty"`
 	IconName        *string            `protobuf:"bytes,5,opt,name=icon_name,json=iconName,proto3,oneof" json:"icon_name,omitempty"`
-	// The configuration outlines what a data scope should provide when added to an asset of this type. It is referenced
-	// at data scope creation time, but does not actively modify existing data scopes. Tri-state.
-	DatasourceConfigs *AssetTypeDataScopeConfigMap `protobuf:"bytes,6,opt,name=datasource_configs,json=datasourceConfigs,proto3" json:"datasource_configs,omitempty"`
-	unknownFields     protoimpl.UnknownFields
-	sizeCache         protoimpl.SizeCache
+	PrimaryKey      *string            `protobuf:"bytes,7,opt,name=primary_key,json=primaryKey,proto3,oneof" json:"primary_key,omitempty"`
+	// Absent leaves the requirements unchanged. Present replaces them; requiring no series clears them. Assets that
+	// already have the type are not rechecked, unlike property_configs, which every such asset must still satisfy.
+	DataRequirements *DataRequirements `protobuf:"bytes,8,opt,name=data_requirements,json=dataRequirements,proto3" json:"data_requirements,omitempty"`
+	// Absent leaves the links unchanged. Present replaces the type's outgoing links: an entry with a rid keeps that link
+	// and replaces its labels, an entry without one adds a link, and an existing link whose rid is left out is removed.
+	// A type's outgoing_links can be sent back as read. Present property configs must still declare every remaining
+	// link's property as a string.
+	Links         *LinkDefinitionList `protobuf:"bytes,9,opt,name=links,proto3,oneof" json:"links,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
 }
 
 func (x *UpdateTypeRequest) Reset() {
 	*x = UpdateTypeRequest{}
-	mi := &file_nominal_protos_asset_v2_asset_proto_msgTypes[61]
+	mi := &file_nominal_protos_asset_v2_asset_proto_msgTypes[74]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4348,7 +5542,7 @@ func (x *UpdateTypeRequest) String() string {
 func (*UpdateTypeRequest) ProtoMessage() {}
 
 func (x *UpdateTypeRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_asset_v2_asset_proto_msgTypes[61]
+	mi := &file_nominal_protos_asset_v2_asset_proto_msgTypes[74]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4361,7 +5555,7 @@ func (x *UpdateTypeRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UpdateTypeRequest.ProtoReflect.Descriptor instead.
 func (*UpdateTypeRequest) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_asset_v2_asset_proto_rawDescGZIP(), []int{61}
+	return file_nominal_protos_asset_v2_asset_proto_rawDescGZIP(), []int{74}
 }
 
 func (x *UpdateTypeRequest) GetTypeRid() string {
@@ -4399,9 +5593,23 @@ func (x *UpdateTypeRequest) GetIconName() string {
 	return ""
 }
 
-func (x *UpdateTypeRequest) GetDatasourceConfigs() *AssetTypeDataScopeConfigMap {
+func (x *UpdateTypeRequest) GetPrimaryKey() string {
+	if x != nil && x.PrimaryKey != nil {
+		return *x.PrimaryKey
+	}
+	return ""
+}
+
+func (x *UpdateTypeRequest) GetDataRequirements() *DataRequirements {
 	if x != nil {
-		return x.DatasourceConfigs
+		return x.DataRequirements
+	}
+	return nil
+}
+
+func (x *UpdateTypeRequest) GetLinks() *LinkDefinitionList {
+	if x != nil {
+		return x.Links
 	}
 	return nil
 }
@@ -4415,7 +5623,7 @@ type UpdateTypeResponse struct {
 
 func (x *UpdateTypeResponse) Reset() {
 	*x = UpdateTypeResponse{}
-	mi := &file_nominal_protos_asset_v2_asset_proto_msgTypes[62]
+	mi := &file_nominal_protos_asset_v2_asset_proto_msgTypes[75]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4427,7 +5635,7 @@ func (x *UpdateTypeResponse) String() string {
 func (*UpdateTypeResponse) ProtoMessage() {}
 
 func (x *UpdateTypeResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_asset_v2_asset_proto_msgTypes[62]
+	mi := &file_nominal_protos_asset_v2_asset_proto_msgTypes[75]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4440,7 +5648,7 @@ func (x *UpdateTypeResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UpdateTypeResponse.ProtoReflect.Descriptor instead.
 func (*UpdateTypeResponse) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_asset_v2_asset_proto_rawDescGZIP(), []int{62}
+	return file_nominal_protos_asset_v2_asset_proto_rawDescGZIP(), []int{75}
 }
 
 func (x *UpdateTypeResponse) GetType() *Type {
@@ -4459,7 +5667,7 @@ type GetTypesRequest struct {
 
 func (x *GetTypesRequest) Reset() {
 	*x = GetTypesRequest{}
-	mi := &file_nominal_protos_asset_v2_asset_proto_msgTypes[63]
+	mi := &file_nominal_protos_asset_v2_asset_proto_msgTypes[76]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4471,7 +5679,7 @@ func (x *GetTypesRequest) String() string {
 func (*GetTypesRequest) ProtoMessage() {}
 
 func (x *GetTypesRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_asset_v2_asset_proto_msgTypes[63]
+	mi := &file_nominal_protos_asset_v2_asset_proto_msgTypes[76]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4484,7 +5692,7 @@ func (x *GetTypesRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetTypesRequest.ProtoReflect.Descriptor instead.
 func (*GetTypesRequest) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_asset_v2_asset_proto_rawDescGZIP(), []int{63}
+	return file_nominal_protos_asset_v2_asset_proto_rawDescGZIP(), []int{76}
 }
 
 func (x *GetTypesRequest) GetRids() []string {
@@ -4503,7 +5711,7 @@ type GetTypesResponse struct {
 
 func (x *GetTypesResponse) Reset() {
 	*x = GetTypesResponse{}
-	mi := &file_nominal_protos_asset_v2_asset_proto_msgTypes[64]
+	mi := &file_nominal_protos_asset_v2_asset_proto_msgTypes[77]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4515,7 +5723,7 @@ func (x *GetTypesResponse) String() string {
 func (*GetTypesResponse) ProtoMessage() {}
 
 func (x *GetTypesResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_asset_v2_asset_proto_msgTypes[64]
+	mi := &file_nominal_protos_asset_v2_asset_proto_msgTypes[77]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4528,100 +5736,12 @@ func (x *GetTypesResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetTypesResponse.ProtoReflect.Descriptor instead.
 func (*GetTypesResponse) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_asset_v2_asset_proto_rawDescGZIP(), []int{64}
+	return file_nominal_protos_asset_v2_asset_proto_rawDescGZIP(), []int{77}
 }
 
 func (x *GetTypesResponse) GetResponses() map[string]*Type {
 	if x != nil {
 		return x.Responses
-	}
-	return nil
-}
-
-type GetTypesForDatasourceRequest struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	DatasourceRid string                 `protobuf:"bytes,1,opt,name=datasource_rid,json=datasourceRid,proto3" json:"datasource_rid,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
-}
-
-func (x *GetTypesForDatasourceRequest) Reset() {
-	*x = GetTypesForDatasourceRequest{}
-	mi := &file_nominal_protos_asset_v2_asset_proto_msgTypes[65]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *GetTypesForDatasourceRequest) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*GetTypesForDatasourceRequest) ProtoMessage() {}
-
-func (x *GetTypesForDatasourceRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_asset_v2_asset_proto_msgTypes[65]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use GetTypesForDatasourceRequest.ProtoReflect.Descriptor instead.
-func (*GetTypesForDatasourceRequest) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_asset_v2_asset_proto_rawDescGZIP(), []int{65}
-}
-
-func (x *GetTypesForDatasourceRequest) GetDatasourceRid() string {
-	if x != nil {
-		return x.DatasourceRid
-	}
-	return ""
-}
-
-type GetTypesForDatasourceResponse struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Types         []*Type                `protobuf:"bytes,1,rep,name=types,proto3" json:"types,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
-}
-
-func (x *GetTypesForDatasourceResponse) Reset() {
-	*x = GetTypesForDatasourceResponse{}
-	mi := &file_nominal_protos_asset_v2_asset_proto_msgTypes[66]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *GetTypesForDatasourceResponse) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*GetTypesForDatasourceResponse) ProtoMessage() {}
-
-func (x *GetTypesForDatasourceResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_asset_v2_asset_proto_msgTypes[66]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use GetTypesForDatasourceResponse.ProtoReflect.Descriptor instead.
-func (*GetTypesForDatasourceResponse) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_asset_v2_asset_proto_rawDescGZIP(), []int{66}
-}
-
-func (x *GetTypesForDatasourceResponse) GetTypes() []*Type {
-	if x != nil {
-		return x.Types
 	}
 	return nil
 }
@@ -4635,7 +5755,7 @@ type DeleteTypeRequest struct {
 
 func (x *DeleteTypeRequest) Reset() {
 	*x = DeleteTypeRequest{}
-	mi := &file_nominal_protos_asset_v2_asset_proto_msgTypes[67]
+	mi := &file_nominal_protos_asset_v2_asset_proto_msgTypes[78]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4647,7 +5767,7 @@ func (x *DeleteTypeRequest) String() string {
 func (*DeleteTypeRequest) ProtoMessage() {}
 
 func (x *DeleteTypeRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_asset_v2_asset_proto_msgTypes[67]
+	mi := &file_nominal_protos_asset_v2_asset_proto_msgTypes[78]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4660,7 +5780,7 @@ func (x *DeleteTypeRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DeleteTypeRequest.ProtoReflect.Descriptor instead.
 func (*DeleteTypeRequest) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_asset_v2_asset_proto_rawDescGZIP(), []int{67}
+	return file_nominal_protos_asset_v2_asset_proto_rawDescGZIP(), []int{78}
 }
 
 func (x *DeleteTypeRequest) GetTypeRid() string {
@@ -4678,7 +5798,7 @@ type DeleteTypeResponse struct {
 
 func (x *DeleteTypeResponse) Reset() {
 	*x = DeleteTypeResponse{}
-	mi := &file_nominal_protos_asset_v2_asset_proto_msgTypes[68]
+	mi := &file_nominal_protos_asset_v2_asset_proto_msgTypes[79]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4690,7 +5810,7 @@ func (x *DeleteTypeResponse) String() string {
 func (*DeleteTypeResponse) ProtoMessage() {}
 
 func (x *DeleteTypeResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_asset_v2_asset_proto_msgTypes[68]
+	mi := &file_nominal_protos_asset_v2_asset_proto_msgTypes[79]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4703,7 +5823,7 @@ func (x *DeleteTypeResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DeleteTypeResponse.ProtoReflect.Descriptor instead.
 func (*DeleteTypeResponse) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_asset_v2_asset_proto_rawDescGZIP(), []int{68}
+	return file_nominal_protos_asset_v2_asset_proto_rawDescGZIP(), []int{79}
 }
 
 type ArchiveTypeRequest struct {
@@ -4715,7 +5835,7 @@ type ArchiveTypeRequest struct {
 
 func (x *ArchiveTypeRequest) Reset() {
 	*x = ArchiveTypeRequest{}
-	mi := &file_nominal_protos_asset_v2_asset_proto_msgTypes[69]
+	mi := &file_nominal_protos_asset_v2_asset_proto_msgTypes[80]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4727,7 +5847,7 @@ func (x *ArchiveTypeRequest) String() string {
 func (*ArchiveTypeRequest) ProtoMessage() {}
 
 func (x *ArchiveTypeRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_asset_v2_asset_proto_msgTypes[69]
+	mi := &file_nominal_protos_asset_v2_asset_proto_msgTypes[80]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4740,7 +5860,7 @@ func (x *ArchiveTypeRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ArchiveTypeRequest.ProtoReflect.Descriptor instead.
 func (*ArchiveTypeRequest) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_asset_v2_asset_proto_rawDescGZIP(), []int{69}
+	return file_nominal_protos_asset_v2_asset_proto_rawDescGZIP(), []int{80}
 }
 
 func (x *ArchiveTypeRequest) GetTypeRid() string {
@@ -4758,7 +5878,7 @@ type ArchiveTypeResponse struct {
 
 func (x *ArchiveTypeResponse) Reset() {
 	*x = ArchiveTypeResponse{}
-	mi := &file_nominal_protos_asset_v2_asset_proto_msgTypes[70]
+	mi := &file_nominal_protos_asset_v2_asset_proto_msgTypes[81]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4770,7 +5890,7 @@ func (x *ArchiveTypeResponse) String() string {
 func (*ArchiveTypeResponse) ProtoMessage() {}
 
 func (x *ArchiveTypeResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_asset_v2_asset_proto_msgTypes[70]
+	mi := &file_nominal_protos_asset_v2_asset_proto_msgTypes[81]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4783,7 +5903,7 @@ func (x *ArchiveTypeResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ArchiveTypeResponse.ProtoReflect.Descriptor instead.
 func (*ArchiveTypeResponse) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_asset_v2_asset_proto_rawDescGZIP(), []int{70}
+	return file_nominal_protos_asset_v2_asset_proto_rawDescGZIP(), []int{81}
 }
 
 type UnarchiveTypeRequest struct {
@@ -4795,7 +5915,7 @@ type UnarchiveTypeRequest struct {
 
 func (x *UnarchiveTypeRequest) Reset() {
 	*x = UnarchiveTypeRequest{}
-	mi := &file_nominal_protos_asset_v2_asset_proto_msgTypes[71]
+	mi := &file_nominal_protos_asset_v2_asset_proto_msgTypes[82]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4807,7 +5927,7 @@ func (x *UnarchiveTypeRequest) String() string {
 func (*UnarchiveTypeRequest) ProtoMessage() {}
 
 func (x *UnarchiveTypeRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_asset_v2_asset_proto_msgTypes[71]
+	mi := &file_nominal_protos_asset_v2_asset_proto_msgTypes[82]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4820,7 +5940,7 @@ func (x *UnarchiveTypeRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UnarchiveTypeRequest.ProtoReflect.Descriptor instead.
 func (*UnarchiveTypeRequest) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_asset_v2_asset_proto_rawDescGZIP(), []int{71}
+	return file_nominal_protos_asset_v2_asset_proto_rawDescGZIP(), []int{82}
 }
 
 func (x *UnarchiveTypeRequest) GetTypeRid() string {
@@ -4838,7 +5958,7 @@ type UnarchiveTypeResponse struct {
 
 func (x *UnarchiveTypeResponse) Reset() {
 	*x = UnarchiveTypeResponse{}
-	mi := &file_nominal_protos_asset_v2_asset_proto_msgTypes[72]
+	mi := &file_nominal_protos_asset_v2_asset_proto_msgTypes[83]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4850,7 +5970,7 @@ func (x *UnarchiveTypeResponse) String() string {
 func (*UnarchiveTypeResponse) ProtoMessage() {}
 
 func (x *UnarchiveTypeResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_asset_v2_asset_proto_msgTypes[72]
+	mi := &file_nominal_protos_asset_v2_asset_proto_msgTypes[83]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4863,14 +5983,300 @@ func (x *UnarchiveTypeResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UnarchiveTypeResponse.ProtoReflect.Descriptor instead.
 func (*UnarchiveTypeResponse) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_asset_v2_asset_proto_rawDescGZIP(), []int{72}
+	return file_nominal_protos_asset_v2_asset_proto_rawDescGZIP(), []int{83}
+}
+
+type TraverseLinksRequest struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// The assets to start from, archived or not. The caller must be able to view each one. The assets reached are
+	// always active, in both directions.
+	AssetRids []string `protobuf:"bytes,1,rep,name=asset_rids,json=assetRids,proto3" json:"asset_rids,omitempty"`
+	Link      *LinkRef `protobuf:"bytes,2,opt,name=link,proto3" json:"link,omitempty"`
+	// Defaults to 100.
+	PageSize      *int32  `protobuf:"varint,3,opt,name=page_size,json=pageSize,proto3,oneof" json:"page_size,omitempty"`
+	PageToken     *string `protobuf:"bytes,4,opt,name=page_token,json=pageToken,proto3,oneof" json:"page_token,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *TraverseLinksRequest) Reset() {
+	*x = TraverseLinksRequest{}
+	mi := &file_nominal_protos_asset_v2_asset_proto_msgTypes[84]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *TraverseLinksRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*TraverseLinksRequest) ProtoMessage() {}
+
+func (x *TraverseLinksRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_nominal_protos_asset_v2_asset_proto_msgTypes[84]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use TraverseLinksRequest.ProtoReflect.Descriptor instead.
+func (*TraverseLinksRequest) Descriptor() ([]byte, []int) {
+	return file_nominal_protos_asset_v2_asset_proto_rawDescGZIP(), []int{84}
+}
+
+func (x *TraverseLinksRequest) GetAssetRids() []string {
+	if x != nil {
+		return x.AssetRids
+	}
+	return nil
+}
+
+func (x *TraverseLinksRequest) GetLink() *LinkRef {
+	if x != nil {
+		return x.Link
+	}
+	return nil
+}
+
+func (x *TraverseLinksRequest) GetPageSize() int32 {
+	if x != nil && x.PageSize != nil {
+		return *x.PageSize
+	}
+	return 0
+}
+
+func (x *TraverseLinksRequest) GetPageToken() string {
+	if x != nil && x.PageToken != nil {
+		return *x.PageToken
+	}
+	return ""
+}
+
+type TraverseLinksResponse struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Ordered by requested asset RID, then by linked asset RID. Inverse edges from assets the caller cannot view are
+	// left out. Every page but the last holds page_size edges; the last may hold fewer, or none.
+	Edges []*LinkEdge `protobuf:"bytes,1,rep,name=edges,proto3" json:"edges,omitempty"`
+	// Present while more edges may follow. It names only the last edge returned, so it reveals nothing about edges
+	// left out.
+	NextPageToken *string `protobuf:"bytes,2,opt,name=next_page_token,json=nextPageToken,proto3,oneof" json:"next_page_token,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *TraverseLinksResponse) Reset() {
+	*x = TraverseLinksResponse{}
+	mi := &file_nominal_protos_asset_v2_asset_proto_msgTypes[85]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *TraverseLinksResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*TraverseLinksResponse) ProtoMessage() {}
+
+func (x *TraverseLinksResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_nominal_protos_asset_v2_asset_proto_msgTypes[85]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use TraverseLinksResponse.ProtoReflect.Descriptor instead.
+func (*TraverseLinksResponse) Descriptor() ([]byte, []int) {
+	return file_nominal_protos_asset_v2_asset_proto_rawDescGZIP(), []int{85}
+}
+
+func (x *TraverseLinksResponse) GetEdges() []*LinkEdge {
+	if x != nil {
+		return x.Edges
+	}
+	return nil
+}
+
+func (x *TraverseLinksResponse) GetNextPageToken() string {
+	if x != nil && x.NextPageToken != nil {
+		return *x.NextPageToken
+	}
+	return ""
+}
+
+// One requested asset and what the link connects it to.
+type LinkEdge struct {
+	state             protoimpl.MessageState `protogen:"open.v1"`
+	RequestedAssetRid string                 `protobuf:"bytes,1,opt,name=requested_asset_rid,json=requestedAssetRid,proto3" json:"requested_asset_rid,omitempty"`
+	// Types that are valid to be assigned to End:
+	//
+	//	*LinkEdge_LinkedAsset
+	//	*LinkEdge_UnresolvedValue
+	End           isLinkEdge_End `protobuf_oneof:"end"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *LinkEdge) Reset() {
+	*x = LinkEdge{}
+	mi := &file_nominal_protos_asset_v2_asset_proto_msgTypes[86]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *LinkEdge) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*LinkEdge) ProtoMessage() {}
+
+func (x *LinkEdge) ProtoReflect() protoreflect.Message {
+	mi := &file_nominal_protos_asset_v2_asset_proto_msgTypes[86]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use LinkEdge.ProtoReflect.Descriptor instead.
+func (*LinkEdge) Descriptor() ([]byte, []int) {
+	return file_nominal_protos_asset_v2_asset_proto_rawDescGZIP(), []int{86}
+}
+
+func (x *LinkEdge) GetRequestedAssetRid() string {
+	if x != nil {
+		return x.RequestedAssetRid
+	}
+	return ""
+}
+
+func (x *LinkEdge) GetEnd() isLinkEdge_End {
+	if x != nil {
+		return x.End
+	}
+	return nil
+}
+
+func (x *LinkEdge) GetLinkedAsset() *LinkedAsset {
+	if x != nil {
+		if x, ok := x.End.(*LinkEdge_LinkedAsset); ok {
+			return x.LinkedAsset
+		}
+	}
+	return nil
+}
+
+func (x *LinkEdge) GetUnresolvedValue() string {
+	if x != nil {
+		if x, ok := x.End.(*LinkEdge_UnresolvedValue); ok {
+			return x.UnresolvedValue
+		}
+	}
+	return ""
+}
+
+type isLinkEdge_End interface {
+	isLinkEdge_End()
+}
+
+type LinkEdge_LinkedAsset struct {
+	// An active asset at the other end of the link that the caller can view.
+	LinkedAsset *LinkedAsset `protobuf:"bytes,4,opt,name=linked_asset,json=linkedAsset,proto3,oneof"`
+}
+
+type LinkEdge_UnresolvedValue struct {
+	// Forward on a direct link only: the source property's string value when it names no active asset of the target
+	// type that the caller can view, including blank values and values longer than any primary key. An asset the
+	// caller cannot view is indistinguishable from a missing one. Absent properties produce no edge.
+	UnresolvedValue string `protobuf:"bytes,3,opt,name=unresolved_value,json=unresolvedValue,proto3,oneof"`
+}
+
+func (*LinkEdge_LinkedAsset) isLinkEdge_End() {}
+
+func (*LinkEdge_UnresolvedValue) isLinkEdge_End() {}
+
+// The asset at the other end of a link edge.
+type LinkedAsset struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	Rid   string                 `protobuf:"bytes,1,opt,name=rid,proto3" json:"rid,omitempty"`
+	Title string                 `protobuf:"bytes,2,opt,name=title,proto3" json:"title,omitempty"`
+	// The asset's primary-key value for the type at this end of the link: the target type forward, the source type
+	// inverse.
+	PrimaryKeyValue string `protobuf:"bytes,3,opt,name=primary_key_value,json=primaryKeyValue,proto3" json:"primary_key_value,omitempty"`
+	unknownFields   protoimpl.UnknownFields
+	sizeCache       protoimpl.SizeCache
+}
+
+func (x *LinkedAsset) Reset() {
+	*x = LinkedAsset{}
+	mi := &file_nominal_protos_asset_v2_asset_proto_msgTypes[87]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *LinkedAsset) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*LinkedAsset) ProtoMessage() {}
+
+func (x *LinkedAsset) ProtoReflect() protoreflect.Message {
+	mi := &file_nominal_protos_asset_v2_asset_proto_msgTypes[87]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use LinkedAsset.ProtoReflect.Descriptor instead.
+func (*LinkedAsset) Descriptor() ([]byte, []int) {
+	return file_nominal_protos_asset_v2_asset_proto_rawDescGZIP(), []int{87}
+}
+
+func (x *LinkedAsset) GetRid() string {
+	if x != nil {
+		return x.Rid
+	}
+	return ""
+}
+
+func (x *LinkedAsset) GetTitle() string {
+	if x != nil {
+		return x.Title
+	}
+	return ""
+}
+
+func (x *LinkedAsset) GetPrimaryKeyValue() string {
+	if x != nil {
+		return x.PrimaryKeyValue
+	}
+	return ""
 }
 
 var File_nominal_protos_asset_v2_asset_proto protoreflect.FileDescriptor
 
 const file_nominal_protos_asset_v2_asset_proto_rawDesc = "" +
 	"\n" +
-	"#nominal/protos/asset/v2/asset.proto\x12\x10nominal.asset.v2\x1a\x1bbuf/validate/validate.proto\x1a\x1cgoogle/api/annotations.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a!nominal/protos/gen/v1/alias.proto\x1a!nominal/protos/gen/v1/error.proto\x1a\x1fnominal/protos/run/v1/run.proto\x1a!nominal/protos/types/common.proto\x1a nominal/protos/types/types.proto\"\xe2\t\n" +
+	"#nominal/protos/asset/v2/asset.proto\x12\x10nominal.asset.v2\x1a\x1bbuf/validate/validate.proto\x1a\x1cgoogle/api/annotations.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a)nominal/protos/authz/v1/annotations.proto\x1a!nominal/protos/gen/v1/alias.proto\x1a!nominal/protos/gen/v1/error.proto\x1a\x1fnominal/protos/run/v1/run.proto\x1a!nominal/protos/types/common.proto\x1a nominal/protos/types/types.proto\"\xe3\n" +
+	"\n" +
 	"\x05Asset\x12:\n" +
 	"\x03rid\x18\x01 \x01(\tB(\x9a\xb2\x1a$\n" +
 	"\"io.nominal.scout.rids.api.AssetRidR\x03rid\x12\x14\n" +
@@ -4893,16 +6299,19 @@ const file_nominal_protos_asset_v2_asset_proto_rawDesc = "" +
 	"updated_at\x18\n" +
 	" \x01(\v2\x1a.google.protobuf.TimestampR\tupdatedAt\x12I\n" +
 	"\vattachments\x18\v \x03(\tB'\x9a\xb2\x1a#\n" +
-	"!io.nominal.api.rids.AttachmentRidR\vattachments\x12@\n" +
-	"\x04type\x18\f \x01(\tB'\x9a\xb2\x1a#\n" +
-	"!io.nominal.scout.rids.api.TypeRidH\x02R\x04type\x88\x01\x01\x12\x1b\n" +
+	"!io.nominal.api.rids.AttachmentRidR\vattachments\x12=\n" +
+	"\x05types\x18\x11 \x03(\tB'\x9a\xb2\x1a#\n" +
+	"!io.nominal.scout.rids.api.TypeRidR\x05types\x12\x1b\n" +
 	"\tis_staged\x18\r \x01(\bR\bisStaged\x12\x1f\n" +
 	"\vis_archived\x18\x0e \x01(\bR\n" +
 	"isArchived\x12z\n" +
-	"\x10typed_properties\x18\x0f \x03(\v2,.nominal.asset.v2.Asset.TypedPropertiesEntryB!\x9a\xb2\x1a\x1d\x12\x1bio.nominal.api.PropertyNameR\x0ftypedProperties\x12J\n" +
-	"\vdataset_rid\x18\x10 \x01(\tB$\x9a\xb2\x1a \n" +
-	"\x1eio.nominal.api.rids.DatasetRidH\x03R\n" +
-	"datasetRid\x88\x01\x01\x1a=\n" +
+	"\x10typed_properties\x18\x0f \x03(\v2,.nominal.asset.v2.Asset.TypedPropertiesEntryB!\x9a\xb2\x1a\x1d\x12\x1bio.nominal.api.PropertyNameR\x0ftypedProperties\x12L\n" +
+	"\vdataset_rid\x18\x10 \x01(\tB&\x9a\xb2\x1a \n" +
+	"\x1eio.nominal.api.rids.DatasetRid\x18\x01H\x02R\n" +
+	"datasetRid\x88\x01\x01\x12\x1c\n" +
+	"\ais_live\x18\x12 \x01(\bH\x03R\x06isLive\x88\x01\x01\x12/\n" +
+	"\x04data\x18\x13 \x01(\v2\x1b.nominal.asset.v2.AssetDataR\x04data\x12 \n" +
+	"\ticon_name\x18\x14 \x01(\tH\x04R\biconName\x88\x01\x01\x1a=\n" +
 	"\x0fPropertiesEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\x1ae\n" +
@@ -4910,9 +6319,19 @@ const file_nominal_protos_asset_v2_asset_proto_rawDesc = "" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x127\n" +
 	"\x05value\x18\x02 \x01(\v2!.nominal.types.TypedPropertyValueR\x05value:\x028\x01B\x0e\n" +
 	"\f_descriptionB\r\n" +
-	"\v_created_byB\a\n" +
-	"\x05_typeB\x0e\n" +
-	"\f_dataset_rid\"\xd2\x05\n" +
+	"\v_created_byB\x0e\n" +
+	"\f_dataset_ridB\n" +
+	"\n" +
+	"\b_is_liveB\f\n" +
+	"\n" +
+	"_icon_name\"\xc3\x01\n" +
+	"\tAssetData\x12T\n" +
+	"\fpipeline_rid\x18\x01 \x01(\tB/\xbaH\ar\x05\x10\x01(\x80\x02\x9a\xb2\x1a!\n" +
+	"\x1fio.nominal.api.rids.PipelineRidH\x00R\vpipelineRid\x12Q\n" +
+	"\vdataset_rid\x18\x02 \x01(\tB.\xbaH\ar\x05\x10\x01(\x80\x02\x9a\xb2\x1a \n" +
+	"\x1eio.nominal.api.rids.DatasetRidH\x00R\n" +
+	"datasetRidB\r\n" +
+	"\x04data\x12\x05\xbaH\x02\b\x01\"\xa0\x06\n" +
 	"\x04Type\x129\n" +
 	"\x03rid\x18\x01 \x01(\tB'\x9a\xb2\x1a#\n" +
 	"!io.nominal.scout.rids.api.TypeRidR\x03rid\x12\x12\n" +
@@ -4921,29 +6340,66 @@ const file_nominal_protos_asset_v2_asset_proto_rawDesc = "" +
 	"\x10property_configs\x18\x04 \x03(\v2+.nominal.asset.v2.Type.PropertyConfigsEntryB!\x9a\xb2\x1a\x1d\x12\x1bio.nominal.api.PropertyNameR\x0fpropertyConfigs\x129\n" +
 	"\n" +
 	"created_at\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampR\tcreatedAt\x12 \n" +
-	"\ticon_name\x18\x06 \x01(\tH\x01R\biconName\x88\x01\x01\x12\x85\x01\n" +
-	"\x12datasource_configs\x18\a \x03(\v2-.nominal.asset.v2.Type.DatasourceConfigsEntryB'\x9a\xb2\x1a#\x12!io.nominal.api.rids.DataSourceRidR\x11datasourceConfigs\x1ad\n" +
+	"\ticon_name\x18\x06 \x01(\tH\x01R\biconName\x88\x01\x01\x12B\n" +
+	"\vprimary_key\x18\b \x01(\tB!\x9a\xb2\x1a\x1d\n" +
+	"\x1bio.nominal.api.PropertyNameR\n" +
+	"primaryKey\x12\x1f\n" +
+	"\vis_archived\x18\t \x01(\bR\n" +
+	"isArchived\x12O\n" +
+	"\x11data_requirements\x18\n" +
+	" \x01(\v2\".nominal.asset.v2.DataRequirementsR\x10dataRequirements\x12G\n" +
+	"\x0eoutgoing_links\x18\v \x03(\v2 .nominal.asset.v2.LinkDefinitionR\routgoingLinks\x12G\n" +
+	"\x0eincoming_links\x18\f \x03(\v2 .nominal.asset.v2.LinkDefinitionR\rincomingLinks\x1ad\n" +
 	"\x14PropertyConfigsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x126\n" +
-	"\x05value\x18\x02 \x01(\v2 .nominal.asset.v2.PropertyConfigR\x05value:\x028\x01\x1ap\n" +
-	"\x16DatasourceConfigsEntry\x12\x10\n" +
-	"\x03key\x18\x01 \x01(\tR\x03key\x12@\n" +
-	"\x05value\x18\x02 \x01(\v2*.nominal.asset.v2.AssetTypeDataScopeConfigR\x05value:\x028\x01B\x0e\n" +
+	"\x05value\x18\x02 \x01(\v2 .nominal.asset.v2.PropertyConfigR\x05value:\x028\x01B\x0e\n" +
 	"\f_descriptionB\f\n" +
 	"\n" +
-	"_icon_name\"\x95\x01\n" +
-	"\x18AssetTypeDataScopeConfig\x121\n" +
-	"\x12suggested_ref_name\x18\x01 \x01(\tH\x00R\x10suggestedRefName\x88\x01\x01\x12/\n" +
-	"\x04tags\x18\x02 \x01(\v2\x1b.nominal.asset.v2.TagConfigR\x04tagsB\x15\n" +
-	"\x13_suggested_ref_name\"9\n" +
-	"\tTagConfig\x12,\n" +
-	"\x02v1\x18\x01 \x03(\tB\x1c\x9a\xb2\x1a\x18\n" +
-	"\x16io.nominal.api.TagNameR\x02v1\"h\n" +
-	"\x0ePropertyConfig\x12\x1f\n" +
-	"\vis_required\x18\x01 \x01(\bR\n" +
-	"isRequired\x12%\n" +
-	"\vdescription\x18\x02 \x01(\tH\x00R\vdescription\x88\x01\x01B\x0e\n" +
-	"\f_description\"\xf0\x03\n" +
+	"_icon_name\"\xe8\x03\n" +
+	"\x0eLinkDefinition\x12>\n" +
+	"\x03rid\x18\x01 \x01(\tB'\x9a\xb2\x1a#\n" +
+	"!io.nominal.scout.rids.api.LinkRidH\x01R\x03rid\x88\x01\x01\x12T\n" +
+	"\x0fsource_type_rid\x18\x02 \x01(\tB'\x9a\xb2\x1a#\n" +
+	"!io.nominal.scout.rids.api.TypeRidH\x02R\rsourceTypeRid\x88\x01\x01\x12O\n" +
+	"\x0ftarget_type_rid\x18\x03 \x01(\tB'\x9a\xb2\x1a#\n" +
+	"!io.nominal.scout.rids.api.TypeRidR\rtargetTypeRid\x123\n" +
+	"\rforward_label\x18\x04 \x01(\tB\t\xbaH\x06r\x04\x10\x01\x18dH\x03R\fforwardLabel\x88\x01\x01\x123\n" +
+	"\rinverse_label\x18\x05 \x01(\tB\t\xbaH\x06r\x04\x10\x01\x18dH\x04R\finverseLabel\x88\x01\x01\x126\n" +
+	"\x06direct\x18\x06 \x01(\v2\x1c.nominal.asset.v2.DirectLinkH\x00R\x06directB\r\n" +
+	"\x04kind\x12\x05\xbaH\x02\b\x01B\x06\n" +
+	"\x04_ridB\x12\n" +
+	"\x10_source_type_ridB\x10\n" +
+	"\x0e_forward_labelB\x10\n" +
+	"\x0e_inverse_label\"_\n" +
+	"\n" +
+	"DirectLink\x12Q\n" +
+	"\x0fsource_property\x18\x01 \x01(\tB(\xbaH\x04r\x02\x10\x01\x9a\xb2\x1a\x1d\n" +
+	"\x1bio.nominal.api.PropertyNameR\x0esourceProperty\"i\n" +
+	"\x10DataRequirements\x12>\n" +
+	"\x06series\x18\x01 \x01(\v2$.nominal.asset.v2.SeriesRequirementsH\x00R\x06seriesB\x15\n" +
+	"\frequirements\x12\x05\xbaH\x02\b\x01\"\\\n" +
+	"\x12SeriesRequirements\x12F\n" +
+	"\x06series\x18\x01 \x03(\v2#.nominal.asset.v2.SeriesRequirementB\t\xbaH\x06\x92\x01\x03\x10\xc8\x01R\x06series\"\x9d\x02\n" +
+	"\x11SeriesRequirement\x12:\n" +
+	"\x04name\x18\x01 \x01(\tB&\xbaH\ar\x05\x10\x01\x18\xc8\x01\x9a\xb2\x1a\x18\n" +
+	"\x16io.nominal.api.ChannelR\x04name\x12N\n" +
+	"\x04type\x18\x02 \x01(\x0e2..nominal.asset.v2.SeriesRequirement.SeriesTypeB\n" +
+	"\xbaH\a\x82\x01\x04\x10\x01 \x00R\x04type\"|\n" +
+	"\n" +
+	"SeriesType\x12\x1b\n" +
+	"\x17SERIES_TYPE_UNSPECIFIED\x10\x00\x12\v\n" +
+	"\aNUMERIC\x10\x01\x12\n" +
+	"\n" +
+	"\x06STRING\x10\x02\x12\a\n" +
+	"\x03LOG\x10\x03\x12\x11\n" +
+	"\rNUMERIC_ARRAY\x10\x04\x12\x10\n" +
+	"\fSTRING_ARRAY\x10\x05\x12\n" +
+	"\n" +
+	"\x06STRUCT\x10\x06\"\x9d\x01\n" +
+	"\x0ePropertyConfig\x12G\n" +
+	"\vrequirement\x18\x03 \x01(\x0e2%.nominal.asset.v2.PropertyRequirementR\vrequirement\x12B\n" +
+	"\n" +
+	"value_type\x18\x04 \x01(\x0e2#.nominal.asset.v2.PropertyValueTypeR\tvalueType\"\xf0\x03\n" +
 	"\tDataScope\x12T\n" +
 	"\x0fdata_scope_name\x18\x01 \x01(\tB,\x9a\xb2\x1a(\n" +
 	"&io.nominal.scout.api.DataSourceRefNameR\rdataScopeName\x12=\n" +
@@ -5025,7 +6481,7 @@ const file_nominal_protos_asset_v2_asset_proto_rawDesc = "" +
 	"\rTypeSortField\x12\x1f\n" +
 	"\x1bTYPE_SORT_FIELD_UNSPECIFIED\x10\x00\x12\x0e\n" +
 	"\n" +
-	"CREATED_AT\x10\x01\"\xe7\b\n" +
+	"CREATED_AT\x10\x01\"\xfd\b\n" +
 	"\x11SearchAssetsQuery\x12!\n" +
 	"\vsearch_text\x18\x01 \x01(\tH\x00R\n" +
 	"searchText\x12)\n" +
@@ -5054,10 +6510,11 @@ const file_nominal_protos_asset_v2_asset_proto_rawDesc = "" +
 	"\x10numeric_property\x18\x10 \x01(\v2'.nominal.types.NumericPropertyPredicateH\x00R\x0fnumericProperty\x12d\n" +
 	"\x16numeric_property_range\x18\x11 \x01(\v2,.nominal.types.NumericPropertyRangePredicateH\x00R\x14numericPropertyRange\x12B\n" +
 	"\n" +
-	"asset_rids\x18\x12 \x01(\v2!.nominal.asset.v2.AssetRidsFilterH\x00R\tassetRidsB\x0e\n" +
+	"asset_rids\x18\x12 \x01(\v2!.nominal.asset.v2.AssetRidsFilterH\x00R\tassetRids\x12\x14\n" +
+	"\x04live\x18\x13 \x01(\bH\x00R\x04liveB\x0e\n" +
 	"\x05query\x12\x05\xbaH\x02\b\x01\"V\n" +
 	"\x15SearchAssetsQueryList\x12=\n" +
-	"\aqueries\x18\x01 \x03(\v2#.nominal.asset.v2.SearchAssetsQueryR\aqueries\"\xa4\x03\n" +
+	"\aqueries\x18\x01 \x03(\v2#.nominal.asset.v2.SearchAssetsQueryR\aqueries\"\xc4\x02\n" +
 	"\x10SearchTypesQuery\x12!\n" +
 	"\vsearch_text\x18\x01 \x01(\tH\x00R\n" +
 	"searchText\x12?\n" +
@@ -5066,9 +6523,7 @@ const file_nominal_protos_asset_v2_asset_proto_rawDesc = "" +
 	"\x03and\x18\x03 \x01(\v2&.nominal.asset.v2.SearchTypesQueryListH\x00R\x03and\x128\n" +
 	"\x02or\x18\x04 \x01(\v2&.nominal.asset.v2.SearchTypesQueryListH\x00R\x02or\x12F\n" +
 	"\tworkspace\x18\x05 \x01(\tB&\x9a\xb2\x1a\"\n" +
-	" io.nominal.api.rids.WorkspaceRidH\x00R\tworkspace\x12^\n" +
-	"\x15configured_datasource\x18\x06 \x01(\tB'\x9a\xb2\x1a#\n" +
-	"!io.nominal.api.rids.DataSourceRidH\x00R\x14configuredDatasourceB\x0e\n" +
+	" io.nominal.api.rids.WorkspaceRidH\x00R\tworkspaceB\x0e\n" +
 	"\x05query\x12\x05\xbaH\x02\b\x01\"T\n" +
 	"\x14SearchTypesQueryList\x12<\n" +
 	"\aqueries\x18\x01 \x03(\v2\".nominal.asset.v2.SearchTypesQueryR\aqueries\"\xb6\x02\n" +
@@ -5103,17 +6558,13 @@ const file_nominal_protos_asset_v2_asset_proto_rawDesc = "" +
 	"\x0eSkipOnConflict\"T\n" +
 	"\x13OverwriteOnConflict\x12=\n" +
 	"\bpriority\x18\x01 \x03(\tB!\x9a\xb2\x1a\x1d\n" +
-	"\x1bio.nominal.api.PropertyNameR\bpriority\"\f\n" +
-	"\n" +
-	"RemoveType\"\xc6\x01\n" +
-	"\x17UpdateOrRemoveAssetType\x12D\n" +
-	"\btype_rid\x18\x01 \x01(\tB'\x9a\xb2\x1a#\n" +
-	"!io.nominal.scout.rids.api.TypeRidH\x00R\atypeRid\x12?\n" +
-	"\vremove_type\x18\x02 \x01(\v2\x1c.nominal.asset.v2.RemoveTypeH\x00R\n" +
-	"removeTypeB$\n" +
-	"\x1bupdate_or_remove_asset_type\x12\x05\xbaH\x02\b\x01\"8\n" +
+	"\x1bio.nominal.api.PropertyNameR\bpriority\"8\n" +
 	"\bLinkList\x12,\n" +
-	"\x05links\x18\x01 \x03(\v2\x16.nominal.asset.v2.LinkR\x05links\"c\n" +
+	"\x05links\x18\x01 \x03(\v2\x16.nominal.asset.v2.LinkR\x05links\"T\n" +
+	"\vTypeRidList\x12E\n" +
+	"\x05types\x18\x01 \x03(\tB/\xbaH\x05\x92\x01\x02\x10\n" +
+	"\x9a\xb2\x1a#\n" +
+	"!io.nominal.scout.rids.api.TypeRidR\x05types\"c\n" +
 	"\x18CreateAssetDataScopeList\x12G\n" +
 	"\vdata_scopes\x18\x01 \x03(\v2&.nominal.asset.v2.CreateAssetDataScopeR\n" +
 	"dataScopes\"\x82\x02\n" +
@@ -5121,14 +6572,16 @@ const file_nominal_protos_asset_v2_asset_proto_rawDesc = "" +
 	"\x10property_configs\x18\x01 \x03(\v28.nominal.asset.v2.PropertyConfigMap.PropertyConfigsEntryB!\x9a\xb2\x1a\x1d\x12\x1bio.nominal.api.PropertyNameR\x0fpropertyConfigs\x1ad\n" +
 	"\x14PropertyConfigsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x126\n" +
-	"\x05value\x18\x02 \x01(\v2 .nominal.asset.v2.PropertyConfigR\x05value:\x028\x01\"\xae\x02\n" +
-	"\x1bAssetTypeDataScopeConfigMap\x12\x9c\x01\n" +
-	"\x12datasource_configs\x18\x01 \x03(\v2D.nominal.asset.v2.AssetTypeDataScopeConfigMap.DatasourceConfigsEntryB'\x9a\xb2\x1a#\x12!io.nominal.api.rids.DataSourceRidR\x11datasourceConfigs\x1ap\n" +
-	"\x16DatasourceConfigsEntry\x12\x10\n" +
-	"\x03key\x18\x01 \x01(\tR\x03key\x12@\n" +
-	"\x05value\x18\x02 \x01(\v2*.nominal.asset.v2.AssetTypeDataScopeConfigR\x05value:\x028\x01\"_\n" +
+	"\x05value\x18\x02 \x01(\v2 .nominal.asset.v2.PropertyConfigR\x05value:\x028\x01\"_\n" +
 	"\x11ArchivedStatusSet\x12J\n" +
-	"\x11archived_statuses\x18\x01 \x03(\x0e2\x1d.nominal.types.ArchivedStatusR\x10archivedStatuses\"\xab\b\n" +
+	"\x11archived_statuses\x18\x01 \x03(\x0e2\x1d.nominal.types.ArchivedStatusR\x10archivedStatuses\"V\n" +
+	"\x12LinkDefinitionList\x12@\n" +
+	"\x05links\x18\x01 \x03(\v2 .nominal.asset.v2.LinkDefinitionB\b\xbaH\x05\x92\x01\x02\x10\x14R\x05links\"\x98\x01\n" +
+	"\aLinkRef\x12B\n" +
+	"\blink_rid\x18\x01 \x01(\tB'\x9a\xb2\x1a#\n" +
+	"!io.nominal.scout.rids.api.LinkRidR\alinkRid\x12I\n" +
+	"\tdirection\x18\x02 \x01(\x0e2\x1f.nominal.asset.v2.LinkDirectionB\n" +
+	"\xbaH\a\x82\x01\x04\x10\x01 \x00R\tdirection\"\xda\b\n" +
 	"\x12CreateAssetRequest\x12\x14\n" +
 	"\x05title\x18\x01 \x01(\tR\x05title\x12%\n" +
 	"\vdescription\x18\x02 \x01(\tH\x00R\vdescription\x88\x01\x01\x12\x97\x01\n" +
@@ -5141,29 +6594,38 @@ const file_nominal_protos_asset_v2_asset_proto_rawDesc = "" +
 	"\vdata_scopes\x18\x06 \x03(\v2&.nominal.asset.v2.CreateAssetDataScopeR\n" +
 	"dataScopes\x12I\n" +
 	"\vattachments\x18\a \x03(\tB'\x9a\xb2\x1a#\n" +
-	"!io.nominal.api.rids.AttachmentRidR\vattachments\x12@\n" +
-	"\x04type\x18\b \x01(\tB'\x9a\xb2\x1a#\n" +
-	"!io.nominal.scout.rids.api.TypeRidH\x01R\x04type\x88\x01\x01\x12I\n" +
+	"!io.nominal.api.rids.AttachmentRidR\vattachments\x12I\n" +
 	"\tworkspace\x18\t \x01(\tB&\x9a\xb2\x1a\"\n" +
-	" io.nominal.api.rids.WorkspaceRidH\x02R\tworkspace\x88\x01\x01\x12\x87\x01\n" +
+	" io.nominal.api.rids.WorkspaceRidH\x01R\tworkspace\x88\x01\x01\x12\x87\x01\n" +
 	"\x10typed_properties\x18\n" +
-	" \x03(\v29.nominal.asset.v2.CreateAssetRequest.TypedPropertiesEntryB!\x9a\xb2\x1a\x1d\x12\x1bio.nominal.api.PropertyNameR\x0ftypedProperties\x12T\n" +
-	"\vdataset_rid\x18\v \x01(\tB.\xbaH\ar\x05\x10\x01(\x80\x02\x9a\xb2\x1a \n" +
-	"\x1eio.nominal.api.rids.DatasetRidH\x03R\n" +
-	"datasetRid\x88\x01\x01\x1a=\n" +
+	" \x03(\v29.nominal.asset.v2.CreateAssetRequest.TypedPropertiesEntryB!\x9a\xb2\x1a\x1d\x12\x1bio.nominal.api.PropertyNameR\x0ftypedProperties\x12V\n" +
+	"\vdataset_rid\x18\v \x01(\tB0\xbaH\ar\x05\x10\x01(\x80\x02\x9a\xb2\x1a \n" +
+	"\x1eio.nominal.api.rids.DatasetRid\x18\x01H\x02R\n" +
+	"datasetRid\x88\x01\x01\x12E\n" +
+	"\x05types\x18\f \x03(\tB/\xbaH\x05\x92\x01\x02\x10\n" +
+	"\x9a\xb2\x1a#\n" +
+	"!io.nominal.scout.rids.api.TypeRidR\x05types\x12/\n" +
+	"\x04data\x18\r \x01(\v2\x1b.nominal.asset.v2.AssetDataR\x04data\x1a=\n" +
 	"\x0fPropertiesEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\x1ae\n" +
 	"\x14TypedPropertiesEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x127\n" +
 	"\x05value\x18\x02 \x01(\v2!.nominal.types.TypedPropertyValueR\x05value:\x028\x01B\x0e\n" +
-	"\f_descriptionB\a\n" +
-	"\x05_typeB\f\n" +
+	"\f_descriptionB\f\n" +
 	"\n" +
 	"_workspaceB\x0e\n" +
 	"\f_dataset_rid\"D\n" +
 	"\x13CreateAssetResponse\x12-\n" +
-	"\x05asset\x18\x01 \x01(\v2\x17.nominal.asset.v2.AssetR\x05asset\"\x80\x05\n" +
+	"\x05asset\x18\x01 \x01(\v2\x17.nominal.asset.v2.AssetR\x05asset\"\xee\x01\n" +
+	"&CreateOrUpdateAssetByPrimaryKeyRequest\x12B\n" +
+	"\btype_rid\x18\x01 \x01(\tB'\x9a\xb2\x1a#\n" +
+	"!io.nominal.scout.rids.api.TypeRidR\atypeRid\x12B\n" +
+	"\x05asset\x18\x02 \x01(\v2$.nominal.asset.v2.CreateAssetRequestB\x06\xbaH\x03\xc8\x01\x01R\x05asset\x12<\n" +
+	"\tif_exists\x18\x03 \x01(\x0e2\x1f.nominal.asset.v2.IfAssetExistsR\bifExists\"r\n" +
+	"'CreateOrUpdateAssetByPrimaryKeyResponse\x12-\n" +
+	"\x05asset\x18\x01 \x01(\v2\x17.nominal.asset.v2.AssetR\x05asset\x12\x18\n" +
+	"\acreated\x18\x02 \x01(\bR\acreated\"\xb6\x05\n" +
 	"\x12UpdateAssetRequest\x12E\n" +
 	"\tasset_rid\x18\x01 \x01(\tB(\x9a\xb2\x1a$\n" +
 	"\"io.nominal.scout.rids.api.AssetRidR\bassetRid\x12\x19\n" +
@@ -5175,15 +6637,17 @@ const file_nominal_protos_asset_v2_asset_proto_rawDesc = "" +
 	"\x06labels\x18\x05 \x01(\v2!.nominal.types.LabelUpdateWrapperR\x06labels\x120\n" +
 	"\x05links\x18\x06 \x01(\v2\x1a.nominal.asset.v2.LinkListR\x05links\x12K\n" +
 	"\vdata_scopes\x18\a \x01(\v2*.nominal.asset.v2.CreateAssetDataScopeListR\n" +
-	"dataScopes\x12=\n" +
-	"\x04type\x18\b \x01(\v2).nominal.asset.v2.UpdateOrRemoveAssetTypeR\x04type\x12 \n" +
+	"dataScopes\x12 \n" +
 	"\tis_staged\x18\t \x01(\bH\x02R\bisStaged\x88\x01\x01\x12T\n" +
 	"\x10typed_properties\x18\n" +
-	" \x01(\v2).nominal.types.TypedPropertyUpdateWrapperR\x0ftypedPropertiesB\b\n" +
+	" \x01(\v2).nominal.types.TypedPropertyUpdateWrapperR\x0ftypedProperties\x128\n" +
+	"\x05types\x18\v \x01(\v2\x1d.nominal.asset.v2.TypeRidListH\x03R\x05types\x88\x01\x01\x12/\n" +
+	"\x04data\x18\f \x01(\v2\x1b.nominal.asset.v2.AssetDataR\x04dataB\b\n" +
 	"\x06_titleB\x0e\n" +
 	"\f_descriptionB\f\n" +
 	"\n" +
-	"_is_staged\"D\n" +
+	"_is_stagedB\b\n" +
+	"\x06_types\"D\n" +
 	"\x13UpdateAssetResponse\x12-\n" +
 	"\x05asset\x18\x01 \x01(\v2\x17.nominal.asset.v2.AssetR\x05asset\"\xad\x01\n" +
 	"\x1bAddDataScopesToAssetRequest\x12E\n" +
@@ -5200,7 +6664,31 @@ const file_nominal_protos_asset_v2_asset_proto_rawDesc = "" +
 	"\tresponses\x18\x01 \x03(\v22.nominal.asset.v2.GetAssetsResponse.ResponsesEntryB(\x9a\xb2\x1a$\x12\"io.nominal.scout.rids.api.AssetRidR\tresponses\x1aU\n" +
 	"\x0eResponsesEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12-\n" +
-	"\x05value\x18\x02 \x01(\v2\x17.nominal.asset.v2.AssetR\x05value:\x028\x01\"o\n" +
+	"\x05value\x18\x02 \x01(\v2\x17.nominal.asset.v2.AssetR\x05value:\x028\x01\"u\n" +
+	"\x1eGetAssetDataConformanceRequest\x12S\n" +
+	"\n" +
+	"asset_rids\x18\x01 \x03(\tB4\xbaH\t\x92\x01\x06\b\x01\x10d\x18\x01\x9a\xb2\x1a$\n" +
+	"\"io.nominal.scout.rids.api.AssetRidR\tassetRids\"\x85\x02\n" +
+	"\x1fGetAssetDataConformanceResponse\x12\x7f\n" +
+	"\x06assets\x18\x01 \x03(\v2=.nominal.asset.v2.GetAssetDataConformanceResponse.AssetsEntryB(\x9a\xb2\x1a$\x12\"io.nominal.scout.rids.api.AssetRidR\x06assets\x1aa\n" +
+	"\vAssetsEntry\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\tR\x03key\x12<\n" +
+	"\x05value\x18\x02 \x01(\v2&.nominal.asset.v2.AssetDataConformanceR\x05value:\x028\x01\"\xe9\x01\n" +
+	"\x14AssetDataConformance\x12p\n" +
+	"\x05types\x18\x01 \x03(\v21.nominal.asset.v2.AssetDataConformance.TypesEntryB'\x9a\xb2\x1a#\x12!io.nominal.scout.rids.api.TypeRidR\x05types\x1a_\n" +
+	"\n" +
+	"TypesEntry\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\tR\x03key\x12;\n" +
+	"\x05value\x18\x02 \x01(\v2%.nominal.asset.v2.TypeDataConformanceR\x05value:\x028\x01\"\xe7\x01\n" +
+	"\x13TypeDataConformance\x129\n" +
+	"\x03met\x18\x01 \x01(\v2%.nominal.asset.v2.DataRequirementsMetH\x00R\x03met\x12?\n" +
+	"\x05unmet\x18\x02 \x01(\v2'.nominal.asset.v2.DataRequirementsUnmetH\x00R\x05unmet\x12E\n" +
+	"\aunknown\x18\x03 \x01(\v2).nominal.asset.v2.DataRequirementsUnknownH\x00R\aunknownB\r\n" +
+	"\vconformance\"\x15\n" +
+	"\x13DataRequirementsMet\"c\n" +
+	"\x15DataRequirementsUnmet\x12J\n" +
+	"\x0emissing_series\x18\x01 \x03(\v2#.nominal.asset.v2.SeriesRequirementR\rmissingSeries\"\x19\n" +
+	"\x17DataRequirementsUnknown\"o\n" +
 	"\x1cGetAssetsByDataSourceRequest\x12O\n" +
 	"\x0fdata_source_rid\x18\x01 \x01(\tB'\x9a\xb2\x1a#\n" +
 	"!io.nominal.api.rids.DataSourceRidR\rdataSourceRid\"P\n" +
@@ -5217,19 +6705,21 @@ const file_nominal_protos_asset_v2_asset_proto_rawDesc = "" +
 	"\"io.nominal.scout.rids.api.AssetRidR\bassetRid\x12=\n" +
 	"\x18include_linked_workbooks\x18\x02 \x01(\bH\x00R\x16includeLinkedWorkbooks\x88\x01\x01B\x1b\n" +
 	"\x19_include_linked_workbooks\"\x13\n" +
-	"\x11UnarchiveResponse\"\xb4\x03\n" +
-	"\x13SearchAssetsRequest\x126\n" +
-	"\x04sort\x18\x01 \x01(\v2\".nominal.asset.v2.AssetSortOptionsR\x04sort\x12 \n" +
+	"\x11UnarchiveResponse\"\xfe\x03\n" +
+	"\x13SearchAssetsRequest\x12;\n" +
+	"\x04sort\x18\x01 \x01(\v2\".nominal.asset.v2.AssetSortOptionsB\x03\xe0A\x02R\x04sort\x12 \n" +
 	"\tpage_size\x18\x02 \x01(\x05H\x00R\bpageSize\x88\x01\x01\x12G\n" +
 	"\x0fnext_page_token\x18\x03 \x01(\tB\x1a\x9a\xb2\x1a\x16\n" +
 	"\x14io.nominal.api.TokenH\x01R\rnextPageToken\x88\x01\x01\x129\n" +
 	"\x05query\x18\x04 \x01(\v2#.nominal.asset.v2.SearchAssetsQueryR\x05query\x12P\n" +
 	"\x11archived_statuses\x18\x05 \x01(\v2#.nominal.asset.v2.ArchivedStatusSetR\x10archivedStatuses\x123\n" +
-	"\x13include_match_count\x18\x06 \x01(\bH\x02R\x11includeMatchCount\x88\x01\x01B\f\n" +
+	"\x13include_match_count\x18\x06 \x01(\bH\x02R\x11includeMatchCount\x88\x01\x01\x12.\n" +
+	"\x10include_liveness\x18\a \x01(\bH\x03R\x0fincludeLiveness\x88\x01\x01B\f\n" +
 	"\n" +
 	"_page_sizeB\x12\n" +
 	"\x10_next_page_tokenB\x16\n" +
-	"\x14_include_match_count\"\xdc\x01\n" +
+	"\x14_include_match_countB\x13\n" +
+	"\x11_include_liveness\"\xdc\x01\n" +
 	"\x14SearchAssetsResponse\x121\n" +
 	"\aresults\x18\x01 \x03(\v2\x17.nominal.asset.v2.AssetR\aresults\x12G\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tB\x1a\x9a\xb2\x1a\x16\n" +
@@ -5277,15 +6767,19 @@ const file_nominal_protos_asset_v2_asset_proto_rawDesc = "" +
 	"\x1cDataScopeRefNameUpdatesEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"\x1d\n" +
-	"\x1bUpdateAssetRefNamesResponse\"\xb4\x04\n" +
+	"\x1bUpdateAssetRefNamesResponse\"\xad\x05\n" +
 	"\x11CreateTypeRequest\x12\x12\n" +
 	"\x04name\x18\x01 \x01(\tR\x04name\x12\x86\x01\n" +
 	"\x10property_configs\x18\x02 \x03(\v28.nominal.asset.v2.CreateTypeRequest.PropertyConfigsEntryB!\x9a\xb2\x1a\x1d\x12\x1bio.nominal.api.PropertyNameR\x0fpropertyConfigs\x12%\n" +
 	"\vdescription\x18\x03 \x01(\tH\x00R\vdescription\x88\x01\x01\x12 \n" +
 	"\ticon_name\x18\x04 \x01(\tH\x01R\biconName\x88\x01\x01\x12I\n" +
 	"\tworkspace\x18\x05 \x01(\tB&\x9a\xb2\x1a\"\n" +
-	" io.nominal.api.rids.WorkspaceRidH\x02R\tworkspace\x88\x01\x01\x12\\\n" +
-	"\x12datasource_configs\x18\x06 \x01(\v2-.nominal.asset.v2.AssetTypeDataScopeConfigMapR\x11datasourceConfigs\x1ad\n" +
+	" io.nominal.api.rids.WorkspaceRidH\x02R\tworkspace\x88\x01\x01\x12B\n" +
+	"\vprimary_key\x18\a \x01(\tB!\x9a\xb2\x1a\x1d\n" +
+	"\x1bio.nominal.api.PropertyNameR\n" +
+	"primaryKey\x12O\n" +
+	"\x11data_requirements\x18\b \x01(\v2\".nominal.asset.v2.DataRequirementsR\x10dataRequirements\x12@\n" +
+	"\x05links\x18\t \x03(\v2 .nominal.asset.v2.LinkDefinitionB\b\xbaH\x05\x92\x01\x02\x10\x14R\x05links\x1ad\n" +
 	"\x14PropertyConfigsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x126\n" +
 	"\x05value\x18\x02 \x01(\v2 .nominal.asset.v2.PropertyConfigR\x05value:\x028\x01B\x0e\n" +
@@ -5295,19 +6789,25 @@ const file_nominal_protos_asset_v2_asset_proto_rawDesc = "" +
 	"\n" +
 	"_workspace\"@\n" +
 	"\x12CreateTypeResponse\x12*\n" +
-	"\x04type\x18\x01 \x01(\v2\x16.nominal.asset.v2.TypeR\x04type\"\x8e\x03\n" +
+	"\x04type\x18\x01 \x01(\v2\x16.nominal.asset.v2.TypeR\x04type\"\xa5\x04\n" +
 	"\x11UpdateTypeRequest\x12B\n" +
 	"\btype_rid\x18\x01 \x01(\tB'\x9a\xb2\x1a#\n" +
 	"!io.nominal.scout.rids.api.TypeRidR\atypeRid\x12\x17\n" +
 	"\x04name\x18\x02 \x01(\tH\x00R\x04name\x88\x01\x01\x12N\n" +
 	"\x10property_configs\x18\x03 \x01(\v2#.nominal.asset.v2.PropertyConfigMapR\x0fpropertyConfigs\x12%\n" +
 	"\vdescription\x18\x04 \x01(\tH\x01R\vdescription\x88\x01\x01\x12 \n" +
-	"\ticon_name\x18\x05 \x01(\tH\x02R\biconName\x88\x01\x01\x12\\\n" +
-	"\x12datasource_configs\x18\x06 \x01(\v2-.nominal.asset.v2.AssetTypeDataScopeConfigMapR\x11datasourceConfigsB\a\n" +
+	"\ticon_name\x18\x05 \x01(\tH\x02R\biconName\x88\x01\x01\x12G\n" +
+	"\vprimary_key\x18\a \x01(\tB!\x9a\xb2\x1a\x1d\n" +
+	"\x1bio.nominal.api.PropertyNameH\x03R\n" +
+	"primaryKey\x88\x01\x01\x12O\n" +
+	"\x11data_requirements\x18\b \x01(\v2\".nominal.asset.v2.DataRequirementsR\x10dataRequirements\x12?\n" +
+	"\x05links\x18\t \x01(\v2$.nominal.asset.v2.LinkDefinitionListH\x04R\x05links\x88\x01\x01B\a\n" +
 	"\x05_nameB\x0e\n" +
 	"\f_descriptionB\f\n" +
 	"\n" +
-	"_icon_name\"@\n" +
+	"_icon_nameB\x0e\n" +
+	"\f_primary_keyB\b\n" +
+	"\x06_links\"@\n" +
 	"\x12UpdateTypeResponse\x12*\n" +
 	"\x04type\x18\x01 \x01(\v2\x16.nominal.asset.v2.TypeR\x04type\"N\n" +
 	"\x0fGetTypesRequest\x12;\n" +
@@ -5317,12 +6817,7 @@ const file_nominal_protos_asset_v2_asset_proto_rawDesc = "" +
 	"\tresponses\x18\x01 \x03(\v21.nominal.asset.v2.GetTypesResponse.ResponsesEntryB'\x9a\xb2\x1a#\x12!io.nominal.scout.rids.api.TypeRidR\tresponses\x1aT\n" +
 	"\x0eResponsesEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12,\n" +
-	"\x05value\x18\x02 \x01(\v2\x16.nominal.asset.v2.TypeR\x05value:\x028\x01\"n\n" +
-	"\x1cGetTypesForDatasourceRequest\x12N\n" +
-	"\x0edatasource_rid\x18\x01 \x01(\tB'\x9a\xb2\x1a#\n" +
-	"!io.nominal.api.rids.DataSourceRidR\rdatasourceRid\"M\n" +
-	"\x1dGetTypesForDatasourceResponse\x12,\n" +
-	"\x05types\x18\x01 \x03(\v2\x16.nominal.asset.v2.TypeR\x05types\"W\n" +
+	"\x05value\x18\x02 \x01(\v2\x16.nominal.asset.v2.TypeR\x05value:\x028\x01\"W\n" +
 	"\x11DeleteTypeRequest\x12B\n" +
 	"\btype_rid\x18\x01 \x01(\tB'\x9a\xb2\x1a#\n" +
 	"!io.nominal.scout.rids.api.TypeRidR\atypeRid\"\x14\n" +
@@ -5334,7 +6829,46 @@ const file_nominal_protos_asset_v2_asset_proto_rawDesc = "" +
 	"\x14UnarchiveTypeRequest\x12B\n" +
 	"\btype_rid\x18\x01 \x01(\tB'\x9a\xb2\x1a#\n" +
 	"!io.nominal.scout.rids.api.TypeRidR\atypeRid\"\x17\n" +
-	"\x15UnarchiveTypeResponse*<\n" +
+	"\x15UnarchiveTypeResponse\"\xac\x02\n" +
+	"\x14TraverseLinksRequest\x12R\n" +
+	"\n" +
+	"asset_rids\x18\x01 \x03(\tB3\xbaH\b\x92\x01\x05\b\x01\x10\xe8\a\x9a\xb2\x1a$\n" +
+	"\"io.nominal.scout.rids.api.AssetRidR\tassetRids\x125\n" +
+	"\x04link\x18\x02 \x01(\v2\x19.nominal.asset.v2.LinkRefB\x06\xbaH\x03\xc8\x01\x01R\x04link\x12,\n" +
+	"\tpage_size\x18\x03 \x01(\x05B\n" +
+	"\xbaH\a\x1a\x05\x18\xe8\a(\x01H\x00R\bpageSize\x88\x01\x01\x12>\n" +
+	"\n" +
+	"page_token\x18\x04 \x01(\tB\x1a\x9a\xb2\x1a\x16\n" +
+	"\x14io.nominal.api.TokenH\x01R\tpageToken\x88\x01\x01B\f\n" +
+	"\n" +
+	"_page_sizeB\r\n" +
+	"\v_page_token\"\xa6\x01\n" +
+	"\x15TraverseLinksResponse\x120\n" +
+	"\x05edges\x18\x01 \x03(\v2\x1a.nominal.asset.v2.LinkEdgeR\x05edges\x12G\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tB\x1a\x9a\xb2\x1a\x16\n" +
+	"\x14io.nominal.api.TokenH\x00R\rnextPageToken\x88\x01\x01B\x12\n" +
+	"\x10_next_page_token\"\xf4\x01\n" +
+	"\bLinkEdge\x12X\n" +
+	"\x13requested_asset_rid\x18\x01 \x01(\tB(\x9a\xb2\x1a$\n" +
+	"\"io.nominal.scout.rids.api.AssetRidR\x11requestedAssetRid\x12B\n" +
+	"\flinked_asset\x18\x04 \x01(\v2\x1d.nominal.asset.v2.LinkedAssetH\x00R\vlinkedAsset\x12+\n" +
+	"\x10unresolved_value\x18\x03 \x01(\tH\x00R\x0funresolvedValueB\x05\n" +
+	"\x03endJ\x04\b\x02\x10\x03R\x10linked_asset_rid\"\x8b\x01\n" +
+	"\vLinkedAsset\x12:\n" +
+	"\x03rid\x18\x01 \x01(\tB(\x9a\xb2\x1a$\n" +
+	"\"io.nominal.scout.rids.api.AssetRidR\x03rid\x12\x14\n" +
+	"\x05title\x18\x02 \x01(\tR\x05title\x12*\n" +
+	"\x11primary_key_value\x18\x03 \x01(\tR\x0fprimaryKeyValue*X\n" +
+	"\x13PropertyRequirement\x12$\n" +
+	" PROPERTY_REQUIREMENT_UNSPECIFIED\x10\x00\x12\f\n" +
+	"\bREQUIRED\x10\x01\x12\r\n" +
+	"\tSUGGESTED\x10\x02*P\n" +
+	"\x11PropertyValueType\x12#\n" +
+	"\x1fPROPERTY_VALUE_TYPE_UNSPECIFIED\x10\x00\x12\n" +
+	"\n" +
+	"\x06STRING\x10\x01\x12\n" +
+	"\n" +
+	"\x06NUMBER\x10\x02*<\n" +
 	"\vSetOperator\x12\x1c\n" +
 	"\x18SET_OPERATOR_UNSPECIFIED\x10\x00\x12\a\n" +
 	"\x03AND\x10\x01\x12\x06\n" +
@@ -5344,34 +6878,91 @@ const file_nominal_protos_asset_v2_asset_proto_rawDesc = "" +
 	"\x04NAME\x10\x01\x12\x0e\n" +
 	"\n" +
 	"CREATED_AT\x10\x02\x12\x19\n" +
-	"\x15MOST_RECENT_RUN_START\x10\x03*Z\n" +
+	"\x15MOST_RECENT_RUN_START\x10\x03*g\n" +
+	"\rLinkDirection\x12\x1e\n" +
+	"\x1aLINK_DIRECTION_UNSPECIFIED\x10\x00\x12\x1a\n" +
+	"\x16LINK_DIRECTION_FORWARD\x10\x01\x12\x1a\n" +
+	"\x16LINK_DIRECTION_INVERSE\x10\x02*Z\n" +
+	"\rIfAssetExists\x12\x1f\n" +
+	"\x1bIF_ASSET_EXISTS_UNSPECIFIED\x10\x00\x12\x13\n" +
+	"\x0fRETURN_EXISTING\x10\x01\x12\x13\n" +
+	"\x0fUPDATE_EXISTING\x10\x02*\xec\x01\n" +
 	"\n" +
 	"AssetError\x12L\n" +
 	"\x1bASSET_ERROR_INVALID_REQUEST\x10\x00\x1a+\xb2\xb2\x1a'\n" +
-	"\x10INVALID_ARGUMENT\x12\x13InvalidAssetRequest2\xaf\x15\n" +
-	"\fAssetService\x12w\n" +
-	"\vCreateAsset\x12$.nominal.asset.v2.CreateAssetRequest\x1a%.nominal.asset.v2.CreateAssetResponse\"\x1b\x82\xd3\xe4\x93\x02\x15:\x01*\"\x10/asset/v2/assets\x12\x83\x01\n" +
-	"\vUpdateAsset\x12$.nominal.asset.v2.UpdateAssetRequest\x1a%.nominal.asset.v2.UpdateAssetResponse\"'\x82\xd3\xe4\x93\x02!:\x01*\x1a\x1c/asset/v2/assets/{asset_rid}\x12\xaa\x01\n" +
-	"\x14AddDataScopesToAsset\x12-.nominal.asset.v2.AddDataScopesToAssetRequest\x1a..nominal.asset.v2.AddDataScopesToAssetResponse\"3\x82\xd3\xe4\x93\x02-:\x01*\"(/asset/v2/assets/{asset_rid}/data-scopes\x12{\n" +
-	"\tGetAssets\x12\".nominal.asset.v2.GetAssetsRequest\x1a#.nominal.asset.v2.GetAssetsResponse\"%\x82\xd3\xe4\x93\x02\x1f:\x01*\"\x1a/asset/v2/assets/batch-get\x12\xb3\x01\n" +
-	"\x15GetAssetsByDataSource\x12..nominal.asset.v2.GetAssetsByDataSourceRequest\x1a/.nominal.asset.v2.GetAssetsByDataSourceResponse\"9\x82\xd3\xe4\x93\x023\"1/asset/v2/assets/by-data-source/{data_source_rid}\x12\x7f\n" +
-	"\aArchive\x12 .nominal.asset.v2.ArchiveRequest\x1a!.nominal.asset.v2.ArchiveResponse\"/\x82\xd3\xe4\x93\x02):\x01*\"$/asset/v2/assets/{asset_rid}/archive\x12\x87\x01\n" +
-	"\tUnarchive\x12\".nominal.asset.v2.UnarchiveRequest\x1a#.nominal.asset.v2.UnarchiveResponse\"1\x82\xd3\xe4\x93\x02+:\x01*\"&/asset/v2/assets/{asset_rid}/unarchive\x12\x81\x01\n" +
-	"\fSearchAssets\x12%.nominal.asset.v2.SearchAssetsRequest\x1a&.nominal.asset.v2.SearchAssetsResponse\"\"\x82\xd3\xe4\x93\x02\x1c:\x01*\"\x17/asset/v2/assets/search\x12\xac\x01\n" +
-	"\x16BatchEditAssetMetadata\x12/.nominal.asset.v2.BatchEditAssetMetadataRequest\x1a0.nominal.asset.v2.BatchEditAssetMetadataResponse\"/\x82\xd3\xe4\x93\x02):\x01*\"$/asset/v2/assets/metadata/batch-edit\x12}\n" +
-	"\vSearchTypes\x12$.nominal.asset.v2.SearchTypesRequest\x1a%.nominal.asset.v2.SearchTypesResponse\"!\x82\xd3\xe4\x93\x02\x1b:\x01*\"\x16/asset/v2/types/search\x12\xb0\x01\n" +
-	"\x16UpdateAssetAttachments\x12/.nominal.asset.v2.UpdateAssetAttachmentsRequest\x1a0.nominal.asset.v2.UpdateAssetAttachmentsResponse\"3\x82\xd3\xe4\x93\x02-:\x01*\"(/asset/v2/assets/{asset_rid}/attachments\x12\xa5\x01\n" +
-	"\x13UpdateAssetRefNames\x12,.nominal.asset.v2.UpdateAssetRefNamesRequest\x1a-.nominal.asset.v2.UpdateAssetRefNamesResponse\"1\x82\xd3\xe4\x93\x02+:\x01*\"&/asset/v2/assets/{asset_rid}/ref-names\x12s\n" +
+	"\x10INVALID_ARGUMENT\x12\x13InvalidAssetRequest\x12Q\n" +
+	"\x1dASSET_ERROR_PERMISSION_DENIED\x10\x01\x1a.\xb2\xb2\x1a*\n" +
+	"\x11PERMISSION_DENIED\x12\x15AssetPermissionDenied\x12=\n" +
+	"\x1aASSET_ERROR_LINK_NOT_FOUND\x10\x02\x1a\x1d\xb2\xb2\x1a\x19\n" +
+	"\tNOT_FOUND\x12\fLinkNotFound2\x82\x1c\n" +
+	"\fAssetService\x12\x97\x01\n" +
+	"\vCreateAsset\x12$.nominal.asset.v2.CreateAssetRequest\x1a%.nominal.asset.v2.CreateAssetResponse\";\xba\xb2\x1a\x1c\n" +
+	"\x1a\n" +
+	"\x16workspace:create_asset\"\x00\x82\xd3\xe4\x93\x02\x15:\x01*\"\x10/asset/v2/assets\x12\xe4\x01\n" +
+	"\x1fCreateOrUpdateAssetByPrimaryKey\x128.nominal.asset.v2.CreateOrUpdateAssetByPrimaryKeyRequest\x1a9.nominal.asset.v2.CreateOrUpdateAssetByPrimaryKeyResponse\"L\xba\xb2\x1a\x1c\n" +
+	"\x1a\n" +
+	"\x16workspace:create_asset\"\x00\x82\xd3\xe4\x93\x02&:\x01*\"!/asset/v2/types/{type_rid}/assets\x12\xa2\x01\n" +
+	"\vUpdateAsset\x12$.nominal.asset.v2.UpdateAssetRequest\x1a%.nominal.asset.v2.UpdateAssetResponse\"F\xba\xb2\x1a\x1b\n" +
+	"\x19\n" +
 	"\n" +
-	"CreateType\x12#.nominal.asset.v2.CreateTypeRequest\x1a$.nominal.asset.v2.CreateTypeResponse\"\x1a\x82\xd3\xe4\x93\x02\x14:\x01*\"\x0f/asset/v2/types\x12~\n" +
+	"asset:edit\x12\v\n" +
+	"\tasset_rid\x82\xd3\xe4\x93\x02!:\x01*\x1a\x1c/asset/v2/assets/{asset_rid}\x12\xc9\x01\n" +
+	"\x14AddDataScopesToAsset\x12-.nominal.asset.v2.AddDataScopesToAssetRequest\x1a..nominal.asset.v2.AddDataScopesToAssetResponse\"R\xba\xb2\x1a\x1b\n" +
+	"\x19\n" +
 	"\n" +
-	"UpdateType\x12#.nominal.asset.v2.UpdateTypeRequest\x1a$.nominal.asset.v2.UpdateTypeResponse\"%\x82\xd3\xe4\x93\x02\x1f:\x01*\x1a\x1a/asset/v2/types/{type_rid}\x12w\n" +
-	"\bGetTypes\x12!.nominal.asset.v2.GetTypesRequest\x1a\".nominal.asset.v2.GetTypesResponse\"$\x82\xd3\xe4\x93\x02\x1e:\x01*\"\x19/asset/v2/types/batch-get\x12\xa2\x01\n" +
-	"\x15GetTypesForDatasource\x12..nominal.asset.v2.GetTypesForDatasourceRequest\x1a/.nominal.asset.v2.GetTypesForDatasourceResponse\"(\x82\xd3\xe4\x93\x02\":\x01*\"\x1d/asset/v2/types/by-datasource\x12{\n" +
+	"asset:edit\x12\v\n" +
+	"\tasset_rid\x82\xd3\xe4\x93\x02-:\x01*\"(/asset/v2/assets/{asset_rid}/data-scopes\x12\x7f\n" +
+	"\tGetAssets\x12\".nominal.asset.v2.GetAssetsRequest\x1a#.nominal.asset.v2.GetAssetsResponse\")\xba\xb2\x1a\x00\x82\xd3\xe4\x93\x02\x1f:\x01*\"\x1a/asset/v2/assets/batch-get\x12\xba\x01\n" +
+	"\x17GetAssetDataConformance\x120.nominal.asset.v2.GetAssetDataConformanceRequest\x1a1.nominal.asset.v2.GetAssetDataConformanceResponse\":\xba\xb2\x1a\x00\x82\xd3\xe4\x93\x020:\x01*\"+/asset/v2/assets/data-conformance/batch-get\x12\xe6\x01\n" +
+	"\x15GetAssetsByDataSource\x12..nominal.asset.v2.GetAssetsByDataSourceRequest\x1a/.nominal.asset.v2.GetAssetsByDataSourceResponse\"l\xba\xb2\x1a/\n" +
+	"-\n" +
+	"\x18datasource:read_metadata\x12\x11\n" +
+	"\x0fdata_source_rid\x82\xd3\xe4\x93\x023\"1/asset/v2/assets/by-data-source/{data_source_rid}\x12\x9e\x01\n" +
+	"\aArchive\x12 .nominal.asset.v2.ArchiveRequest\x1a!.nominal.asset.v2.ArchiveResponse\"N\xba\xb2\x1a\x1b\n" +
+	"\x19\n" +
 	"\n" +
-	"DeleteType\x12#.nominal.asset.v2.DeleteTypeRequest\x1a$.nominal.asset.v2.DeleteTypeResponse\"\"\x82\xd3\xe4\x93\x02\x1c*\x1a/asset/v2/types/{type_rid}\x12\x86\x01\n" +
-	"\vArchiveType\x12$.nominal.asset.v2.ArchiveTypeRequest\x1a%.nominal.asset.v2.ArchiveTypeResponse\"*\x82\xd3\xe4\x93\x02$\"\"/asset/v2/types/{type_rid}/archive\x12\x8e\x01\n" +
-	"\rUnarchiveType\x12&.nominal.asset.v2.UnarchiveTypeRequest\x1a'.nominal.asset.v2.UnarchiveTypeResponse\",\x82\xd3\xe4\x93\x02&\"$/asset/v2/types/{type_rid}/unarchiveB\xd1\x01\n" +
+	"asset:edit\x12\v\n" +
+	"\tasset_rid\x82\xd3\xe4\x93\x02):\x01*\"$/asset/v2/assets/{asset_rid}/archive\x12\xa6\x01\n" +
+	"\tUnarchive\x12\".nominal.asset.v2.UnarchiveRequest\x1a#.nominal.asset.v2.UnarchiveResponse\"P\xba\xb2\x1a\x1b\n" +
+	"\x19\n" +
+	"\n" +
+	"asset:edit\x12\v\n" +
+	"\tasset_rid\x82\xd3\xe4\x93\x02+:\x01*\"&/asset/v2/assets/{asset_rid}/unarchive\x12\x85\x01\n" +
+	"\fSearchAssets\x12%.nominal.asset.v2.SearchAssetsRequest\x1a&.nominal.asset.v2.SearchAssetsResponse\"&\xba\xb2\x1a\x00\x82\xd3\xe4\x93\x02\x1c:\x01*\"\x17/asset/v2/assets/search\x12\xc4\x01\n" +
+	"\x16BatchEditAssetMetadata\x12/.nominal.asset.v2.BatchEditAssetMetadataRequest\x1a0.nominal.asset.v2.BatchEditAssetMetadataResponse\"G\xba\xb2\x1a\x14\n" +
+	"\x12\n" +
+	"\x0eworkspace:view\"\x00\x82\xd3\xe4\x93\x02):\x01*\"$/asset/v2/assets/metadata/batch-edit\x12\x81\x01\n" +
+	"\vSearchTypes\x12$.nominal.asset.v2.SearchTypesRequest\x1a%.nominal.asset.v2.SearchTypesResponse\"%\xba\xb2\x1a\x00\x82\xd3\xe4\x93\x02\x1b:\x01*\"\x16/asset/v2/types/search\x12\xcf\x01\n" +
+	"\x16UpdateAssetAttachments\x12/.nominal.asset.v2.UpdateAssetAttachmentsRequest\x1a0.nominal.asset.v2.UpdateAssetAttachmentsResponse\"R\xba\xb2\x1a\x1b\n" +
+	"\x19\n" +
+	"\n" +
+	"asset:edit\x12\v\n" +
+	"\tasset_rid\x82\xd3\xe4\x93\x02-:\x01*\"(/asset/v2/assets/{asset_rid}/attachments\x12\xc4\x01\n" +
+	"\x13UpdateAssetRefNames\x12,.nominal.asset.v2.UpdateAssetRefNamesRequest\x1a-.nominal.asset.v2.UpdateAssetRefNamesResponse\"P\xba\xb2\x1a\x1b\n" +
+	"\x19\n" +
+	"\n" +
+	"asset:edit\x12\v\n" +
+	"\tasset_rid\x82\xd3\xe4\x93\x02+:\x01*\"&/asset/v2/assets/{asset_rid}/ref-names\x12\x99\x01\n" +
+	"\n" +
+	"CreateType\x12#.nominal.asset.v2.CreateTypeRequest\x1a$.nominal.asset.v2.CreateTypeResponse\"@\xba\xb2\x1a\"\n" +
+	" \n" +
+	"\x1cworkspace:edit_configuration\"\x00\x82\xd3\xe4\x93\x02\x14:\x01*\"\x0f/asset/v2/types\x12\x96\x01\n" +
+	"\n" +
+	"UpdateType\x12#.nominal.asset.v2.UpdateTypeRequest\x1a$.nominal.asset.v2.UpdateTypeResponse\"=\xba\xb2\x1a\x14\n" +
+	"\x12\n" +
+	"\x0eworkspace:view\"\x00\x82\xd3\xe4\x93\x02\x1f:\x01*\x1a\x1a/asset/v2/types/{type_rid}\x12{\n" +
+	"\bGetTypes\x12!.nominal.asset.v2.GetTypesRequest\x1a\".nominal.asset.v2.GetTypesResponse\"(\xba\xb2\x1a\x00\x82\xd3\xe4\x93\x02\x1e:\x01*\"\x19/asset/v2/types/batch-get\x12\x93\x01\n" +
+	"\n" +
+	"DeleteType\x12#.nominal.asset.v2.DeleteTypeRequest\x1a$.nominal.asset.v2.DeleteTypeResponse\":\xba\xb2\x1a\x14\n" +
+	"\x12\n" +
+	"\x0eworkspace:view\"\x00\x82\xd3\xe4\x93\x02\x1c*\x1a/asset/v2/types/{type_rid}\x12\x9e\x01\n" +
+	"\vArchiveType\x12$.nominal.asset.v2.ArchiveTypeRequest\x1a%.nominal.asset.v2.ArchiveTypeResponse\"B\xba\xb2\x1a\x14\n" +
+	"\x12\n" +
+	"\x0eworkspace:view\"\x00\x82\xd3\xe4\x93\x02$\"\"/asset/v2/types/{type_rid}/archive\x12\xa6\x01\n" +
+	"\rUnarchiveType\x12&.nominal.asset.v2.UnarchiveTypeRequest\x1a'.nominal.asset.v2.UnarchiveTypeResponse\"D\xba\xb2\x1a\x14\n" +
+	"\x12\n" +
+	"\x0eworkspace:view\"\x00\x82\xd3\xe4\x93\x02&\"$/asset/v2/types/{type_rid}/unarchive\x12\x90\x01\n" +
+	"\rTraverseLinks\x12&.nominal.asset.v2.TraverseLinksRequest\x1a'.nominal.asset.v2.TraverseLinksResponse\".\xba\xb2\x1a\x00\x82\xd3\xe4\x93\x02$:\x01*\"\x1f/asset/v2/assets/traverse-linksB\xd1\x01\n" +
 	"\x14com.nominal.asset.v2B\n" +
 	"AssetProtoP\x01ZKgithub.com/nominal-io/nominal-api-protos-go/nominal/protos/asset/v2;assetv2\xa2\x02\x03NAX\xaa\x02\x10Nominal.Asset.V2\xca\x02\x10Nominal\\Asset\\V2\xe2\x02\x1cNominal\\Asset\\V2\\GPBMetadata\xea\x02\x12Nominal::Asset::V2b\x06proto3"
 
@@ -5387,250 +6978,297 @@ func file_nominal_protos_asset_v2_asset_proto_rawDescGZIP() []byte {
 	return file_nominal_protos_asset_v2_asset_proto_rawDescData
 }
 
-var file_nominal_protos_asset_v2_asset_proto_enumTypes = make([]protoimpl.EnumInfo, 4)
-var file_nominal_protos_asset_v2_asset_proto_msgTypes = make([]protoimpl.MessageInfo, 87)
+var file_nominal_protos_asset_v2_asset_proto_enumTypes = make([]protoimpl.EnumInfo, 9)
+var file_nominal_protos_asset_v2_asset_proto_msgTypes = make([]protoimpl.MessageInfo, 102)
 var file_nominal_protos_asset_v2_asset_proto_goTypes = []any{
-	(SetOperator)(0),                            // 0: nominal.asset.v2.SetOperator
-	(AssetSortField)(0),                         // 1: nominal.asset.v2.AssetSortField
-	(AssetError)(0),                             // 2: nominal.asset.v2.AssetError
-	(TypeSortOptions_TypeSortField)(0),          // 3: nominal.asset.v2.TypeSortOptions.TypeSortField
-	(*Asset)(nil),                               // 4: nominal.asset.v2.Asset
-	(*Type)(nil),                                // 5: nominal.asset.v2.Type
-	(*AssetTypeDataScopeConfig)(nil),            // 6: nominal.asset.v2.AssetTypeDataScopeConfig
-	(*TagConfig)(nil),                           // 7: nominal.asset.v2.TagConfig
-	(*PropertyConfig)(nil),                      // 8: nominal.asset.v2.PropertyConfig
-	(*DataScope)(nil),                           // 9: nominal.asset.v2.DataScope
-	(*CreateAssetDataScope)(nil),                // 10: nominal.asset.v2.CreateAssetDataScope
-	(*DataSource)(nil),                          // 11: nominal.asset.v2.DataSource
-	(*Link)(nil),                                // 12: nominal.asset.v2.Link
-	(*PropertiesFilter)(nil),                    // 13: nominal.asset.v2.PropertiesFilter
-	(*LabelsFilter)(nil),                        // 14: nominal.asset.v2.LabelsFilter
-	(*AssetTypesFilter)(nil),                    // 15: nominal.asset.v2.AssetTypesFilter
-	(*AssetRidsFilter)(nil),                     // 16: nominal.asset.v2.AssetRidsFilter
-	(*AssetSortOptions)(nil),                    // 17: nominal.asset.v2.AssetSortOptions
-	(*SortKey)(nil),                             // 18: nominal.asset.v2.SortKey
-	(*SortProperty)(nil),                        // 19: nominal.asset.v2.SortProperty
-	(*TypeSortOptions)(nil),                     // 20: nominal.asset.v2.TypeSortOptions
-	(*SearchAssetsQuery)(nil),                   // 21: nominal.asset.v2.SearchAssetsQuery
-	(*SearchAssetsQueryList)(nil),               // 22: nominal.asset.v2.SearchAssetsQueryList
-	(*SearchTypesQuery)(nil),                    // 23: nominal.asset.v2.SearchTypesQuery
-	(*SearchTypesQueryList)(nil),                // 24: nominal.asset.v2.SearchTypesQueryList
-	(*MetadataChange)(nil),                      // 25: nominal.asset.v2.MetadataChange
-	(*RenameLabel)(nil),                         // 26: nominal.asset.v2.RenameLabel
-	(*RenamePropertyKey)(nil),                   // 27: nominal.asset.v2.RenamePropertyKey
-	(*MergePropertyValuesForKey)(nil),           // 28: nominal.asset.v2.MergePropertyValuesForKey
-	(*ConflictBehavior)(nil),                    // 29: nominal.asset.v2.ConflictBehavior
-	(*SkipOnConflict)(nil),                      // 30: nominal.asset.v2.SkipOnConflict
-	(*OverwriteOnConflict)(nil),                 // 31: nominal.asset.v2.OverwriteOnConflict
-	(*RemoveType)(nil),                          // 32: nominal.asset.v2.RemoveType
-	(*UpdateOrRemoveAssetType)(nil),             // 33: nominal.asset.v2.UpdateOrRemoveAssetType
-	(*LinkList)(nil),                            // 34: nominal.asset.v2.LinkList
-	(*CreateAssetDataScopeList)(nil),            // 35: nominal.asset.v2.CreateAssetDataScopeList
-	(*PropertyConfigMap)(nil),                   // 36: nominal.asset.v2.PropertyConfigMap
-	(*AssetTypeDataScopeConfigMap)(nil),         // 37: nominal.asset.v2.AssetTypeDataScopeConfigMap
-	(*ArchivedStatusSet)(nil),                   // 38: nominal.asset.v2.ArchivedStatusSet
-	(*CreateAssetRequest)(nil),                  // 39: nominal.asset.v2.CreateAssetRequest
-	(*CreateAssetResponse)(nil),                 // 40: nominal.asset.v2.CreateAssetResponse
-	(*UpdateAssetRequest)(nil),                  // 41: nominal.asset.v2.UpdateAssetRequest
-	(*UpdateAssetResponse)(nil),                 // 42: nominal.asset.v2.UpdateAssetResponse
-	(*AddDataScopesToAssetRequest)(nil),         // 43: nominal.asset.v2.AddDataScopesToAssetRequest
-	(*AddDataScopesToAssetResponse)(nil),        // 44: nominal.asset.v2.AddDataScopesToAssetResponse
-	(*GetAssetsRequest)(nil),                    // 45: nominal.asset.v2.GetAssetsRequest
-	(*GetAssetsResponse)(nil),                   // 46: nominal.asset.v2.GetAssetsResponse
-	(*GetAssetsByDataSourceRequest)(nil),        // 47: nominal.asset.v2.GetAssetsByDataSourceRequest
-	(*GetAssetsByDataSourceResponse)(nil),       // 48: nominal.asset.v2.GetAssetsByDataSourceResponse
-	(*ArchiveRequest)(nil),                      // 49: nominal.asset.v2.ArchiveRequest
-	(*ArchiveResponse)(nil),                     // 50: nominal.asset.v2.ArchiveResponse
-	(*UnarchiveRequest)(nil),                    // 51: nominal.asset.v2.UnarchiveRequest
-	(*UnarchiveResponse)(nil),                   // 52: nominal.asset.v2.UnarchiveResponse
-	(*SearchAssetsRequest)(nil),                 // 53: nominal.asset.v2.SearchAssetsRequest
-	(*SearchAssetsResponse)(nil),                // 54: nominal.asset.v2.SearchAssetsResponse
-	(*BatchEditAssetMetadataRequest)(nil),       // 55: nominal.asset.v2.BatchEditAssetMetadataRequest
-	(*BatchEditAssetMetadataResponse)(nil),      // 56: nominal.asset.v2.BatchEditAssetMetadataResponse
-	(*SearchTypesRequest)(nil),                  // 57: nominal.asset.v2.SearchTypesRequest
-	(*SearchTypesResponse)(nil),                 // 58: nominal.asset.v2.SearchTypesResponse
-	(*UpdateAssetAttachmentsRequest)(nil),       // 59: nominal.asset.v2.UpdateAssetAttachmentsRequest
-	(*UpdateAssetAttachmentsResponse)(nil),      // 60: nominal.asset.v2.UpdateAssetAttachmentsResponse
-	(*UpdateAssetRefNamesRequest)(nil),          // 61: nominal.asset.v2.UpdateAssetRefNamesRequest
-	(*UpdateAssetRefNamesResponse)(nil),         // 62: nominal.asset.v2.UpdateAssetRefNamesResponse
-	(*CreateTypeRequest)(nil),                   // 63: nominal.asset.v2.CreateTypeRequest
-	(*CreateTypeResponse)(nil),                  // 64: nominal.asset.v2.CreateTypeResponse
-	(*UpdateTypeRequest)(nil),                   // 65: nominal.asset.v2.UpdateTypeRequest
-	(*UpdateTypeResponse)(nil),                  // 66: nominal.asset.v2.UpdateTypeResponse
-	(*GetTypesRequest)(nil),                     // 67: nominal.asset.v2.GetTypesRequest
-	(*GetTypesResponse)(nil),                    // 68: nominal.asset.v2.GetTypesResponse
-	(*GetTypesForDatasourceRequest)(nil),        // 69: nominal.asset.v2.GetTypesForDatasourceRequest
-	(*GetTypesForDatasourceResponse)(nil),       // 70: nominal.asset.v2.GetTypesForDatasourceResponse
-	(*DeleteTypeRequest)(nil),                   // 71: nominal.asset.v2.DeleteTypeRequest
-	(*DeleteTypeResponse)(nil),                  // 72: nominal.asset.v2.DeleteTypeResponse
-	(*ArchiveTypeRequest)(nil),                  // 73: nominal.asset.v2.ArchiveTypeRequest
-	(*ArchiveTypeResponse)(nil),                 // 74: nominal.asset.v2.ArchiveTypeResponse
-	(*UnarchiveTypeRequest)(nil),                // 75: nominal.asset.v2.UnarchiveTypeRequest
-	(*UnarchiveTypeResponse)(nil),               // 76: nominal.asset.v2.UnarchiveTypeResponse
-	nil,                                         // 77: nominal.asset.v2.Asset.PropertiesEntry
-	nil,                                         // 78: nominal.asset.v2.Asset.TypedPropertiesEntry
-	nil,                                         // 79: nominal.asset.v2.Type.PropertyConfigsEntry
-	nil,                                         // 80: nominal.asset.v2.Type.DatasourceConfigsEntry
-	nil,                                         // 81: nominal.asset.v2.DataScope.SeriesTagsEntry
-	nil,                                         // 82: nominal.asset.v2.CreateAssetDataScope.SeriesTagsEntry
-	nil,                                         // 83: nominal.asset.v2.PropertyConfigMap.PropertyConfigsEntry
-	nil,                                         // 84: nominal.asset.v2.AssetTypeDataScopeConfigMap.DatasourceConfigsEntry
-	nil,                                         // 85: nominal.asset.v2.CreateAssetRequest.PropertiesEntry
-	nil,                                         // 86: nominal.asset.v2.CreateAssetRequest.TypedPropertiesEntry
-	nil,                                         // 87: nominal.asset.v2.GetAssetsResponse.ResponsesEntry
-	nil,                                         // 88: nominal.asset.v2.UpdateAssetRefNamesRequest.DataScopeRefNameUpdatesEntry
-	nil,                                         // 89: nominal.asset.v2.CreateTypeRequest.PropertyConfigsEntry
-	nil,                                         // 90: nominal.asset.v2.GetTypesResponse.ResponsesEntry
-	(*timestamppb.Timestamp)(nil),               // 91: google.protobuf.Timestamp
-	(*types.Duration)(nil),                      // 92: nominal.types.Duration
-	(v1.WeakTimestampType)(0),                   // 93: nominal.run.v1.WeakTimestampType
-	(*types.Property)(nil),                      // 94: nominal.types.Property
-	(*types.NumericPropertyPredicate)(nil),      // 95: nominal.types.NumericPropertyPredicate
-	(*types.NumericPropertyRangePredicate)(nil), // 96: nominal.types.NumericPropertyRangePredicate
-	(types.ArchivedStatus)(0),                   // 97: nominal.types.ArchivedStatus
-	(*types.PropertyUpdateWrapper)(nil),         // 98: nominal.types.PropertyUpdateWrapper
-	(*types.LabelUpdateWrapper)(nil),            // 99: nominal.types.LabelUpdateWrapper
-	(*types.TypedPropertyUpdateWrapper)(nil),    // 100: nominal.types.TypedPropertyUpdateWrapper
-	(*types.TypedPropertyValue)(nil),            // 101: nominal.types.TypedPropertyValue
+	(PropertyRequirement)(0),                        // 0: nominal.asset.v2.PropertyRequirement
+	(PropertyValueType)(0),                          // 1: nominal.asset.v2.PropertyValueType
+	(SetOperator)(0),                                // 2: nominal.asset.v2.SetOperator
+	(AssetSortField)(0),                             // 3: nominal.asset.v2.AssetSortField
+	(LinkDirection)(0),                              // 4: nominal.asset.v2.LinkDirection
+	(IfAssetExists)(0),                              // 5: nominal.asset.v2.IfAssetExists
+	(AssetError)(0),                                 // 6: nominal.asset.v2.AssetError
+	(SeriesRequirement_SeriesType)(0),               // 7: nominal.asset.v2.SeriesRequirement.SeriesType
+	(TypeSortOptions_TypeSortField)(0),              // 8: nominal.asset.v2.TypeSortOptions.TypeSortField
+	(*Asset)(nil),                                   // 9: nominal.asset.v2.Asset
+	(*AssetData)(nil),                               // 10: nominal.asset.v2.AssetData
+	(*Type)(nil),                                    // 11: nominal.asset.v2.Type
+	(*LinkDefinition)(nil),                          // 12: nominal.asset.v2.LinkDefinition
+	(*DirectLink)(nil),                              // 13: nominal.asset.v2.DirectLink
+	(*DataRequirements)(nil),                        // 14: nominal.asset.v2.DataRequirements
+	(*SeriesRequirements)(nil),                      // 15: nominal.asset.v2.SeriesRequirements
+	(*SeriesRequirement)(nil),                       // 16: nominal.asset.v2.SeriesRequirement
+	(*PropertyConfig)(nil),                          // 17: nominal.asset.v2.PropertyConfig
+	(*DataScope)(nil),                               // 18: nominal.asset.v2.DataScope
+	(*CreateAssetDataScope)(nil),                    // 19: nominal.asset.v2.CreateAssetDataScope
+	(*DataSource)(nil),                              // 20: nominal.asset.v2.DataSource
+	(*Link)(nil),                                    // 21: nominal.asset.v2.Link
+	(*PropertiesFilter)(nil),                        // 22: nominal.asset.v2.PropertiesFilter
+	(*LabelsFilter)(nil),                            // 23: nominal.asset.v2.LabelsFilter
+	(*AssetTypesFilter)(nil),                        // 24: nominal.asset.v2.AssetTypesFilter
+	(*AssetRidsFilter)(nil),                         // 25: nominal.asset.v2.AssetRidsFilter
+	(*AssetSortOptions)(nil),                        // 26: nominal.asset.v2.AssetSortOptions
+	(*SortKey)(nil),                                 // 27: nominal.asset.v2.SortKey
+	(*SortProperty)(nil),                            // 28: nominal.asset.v2.SortProperty
+	(*TypeSortOptions)(nil),                         // 29: nominal.asset.v2.TypeSortOptions
+	(*SearchAssetsQuery)(nil),                       // 30: nominal.asset.v2.SearchAssetsQuery
+	(*SearchAssetsQueryList)(nil),                   // 31: nominal.asset.v2.SearchAssetsQueryList
+	(*SearchTypesQuery)(nil),                        // 32: nominal.asset.v2.SearchTypesQuery
+	(*SearchTypesQueryList)(nil),                    // 33: nominal.asset.v2.SearchTypesQueryList
+	(*MetadataChange)(nil),                          // 34: nominal.asset.v2.MetadataChange
+	(*RenameLabel)(nil),                             // 35: nominal.asset.v2.RenameLabel
+	(*RenamePropertyKey)(nil),                       // 36: nominal.asset.v2.RenamePropertyKey
+	(*MergePropertyValuesForKey)(nil),               // 37: nominal.asset.v2.MergePropertyValuesForKey
+	(*ConflictBehavior)(nil),                        // 38: nominal.asset.v2.ConflictBehavior
+	(*SkipOnConflict)(nil),                          // 39: nominal.asset.v2.SkipOnConflict
+	(*OverwriteOnConflict)(nil),                     // 40: nominal.asset.v2.OverwriteOnConflict
+	(*LinkList)(nil),                                // 41: nominal.asset.v2.LinkList
+	(*TypeRidList)(nil),                             // 42: nominal.asset.v2.TypeRidList
+	(*CreateAssetDataScopeList)(nil),                // 43: nominal.asset.v2.CreateAssetDataScopeList
+	(*PropertyConfigMap)(nil),                       // 44: nominal.asset.v2.PropertyConfigMap
+	(*ArchivedStatusSet)(nil),                       // 45: nominal.asset.v2.ArchivedStatusSet
+	(*LinkDefinitionList)(nil),                      // 46: nominal.asset.v2.LinkDefinitionList
+	(*LinkRef)(nil),                                 // 47: nominal.asset.v2.LinkRef
+	(*CreateAssetRequest)(nil),                      // 48: nominal.asset.v2.CreateAssetRequest
+	(*CreateAssetResponse)(nil),                     // 49: nominal.asset.v2.CreateAssetResponse
+	(*CreateOrUpdateAssetByPrimaryKeyRequest)(nil),  // 50: nominal.asset.v2.CreateOrUpdateAssetByPrimaryKeyRequest
+	(*CreateOrUpdateAssetByPrimaryKeyResponse)(nil), // 51: nominal.asset.v2.CreateOrUpdateAssetByPrimaryKeyResponse
+	(*UpdateAssetRequest)(nil),                      // 52: nominal.asset.v2.UpdateAssetRequest
+	(*UpdateAssetResponse)(nil),                     // 53: nominal.asset.v2.UpdateAssetResponse
+	(*AddDataScopesToAssetRequest)(nil),             // 54: nominal.asset.v2.AddDataScopesToAssetRequest
+	(*AddDataScopesToAssetResponse)(nil),            // 55: nominal.asset.v2.AddDataScopesToAssetResponse
+	(*GetAssetsRequest)(nil),                        // 56: nominal.asset.v2.GetAssetsRequest
+	(*GetAssetsResponse)(nil),                       // 57: nominal.asset.v2.GetAssetsResponse
+	(*GetAssetDataConformanceRequest)(nil),          // 58: nominal.asset.v2.GetAssetDataConformanceRequest
+	(*GetAssetDataConformanceResponse)(nil),         // 59: nominal.asset.v2.GetAssetDataConformanceResponse
+	(*AssetDataConformance)(nil),                    // 60: nominal.asset.v2.AssetDataConformance
+	(*TypeDataConformance)(nil),                     // 61: nominal.asset.v2.TypeDataConformance
+	(*DataRequirementsMet)(nil),                     // 62: nominal.asset.v2.DataRequirementsMet
+	(*DataRequirementsUnmet)(nil),                   // 63: nominal.asset.v2.DataRequirementsUnmet
+	(*DataRequirementsUnknown)(nil),                 // 64: nominal.asset.v2.DataRequirementsUnknown
+	(*GetAssetsByDataSourceRequest)(nil),            // 65: nominal.asset.v2.GetAssetsByDataSourceRequest
+	(*GetAssetsByDataSourceResponse)(nil),           // 66: nominal.asset.v2.GetAssetsByDataSourceResponse
+	(*ArchiveRequest)(nil),                          // 67: nominal.asset.v2.ArchiveRequest
+	(*ArchiveResponse)(nil),                         // 68: nominal.asset.v2.ArchiveResponse
+	(*UnarchiveRequest)(nil),                        // 69: nominal.asset.v2.UnarchiveRequest
+	(*UnarchiveResponse)(nil),                       // 70: nominal.asset.v2.UnarchiveResponse
+	(*SearchAssetsRequest)(nil),                     // 71: nominal.asset.v2.SearchAssetsRequest
+	(*SearchAssetsResponse)(nil),                    // 72: nominal.asset.v2.SearchAssetsResponse
+	(*BatchEditAssetMetadataRequest)(nil),           // 73: nominal.asset.v2.BatchEditAssetMetadataRequest
+	(*BatchEditAssetMetadataResponse)(nil),          // 74: nominal.asset.v2.BatchEditAssetMetadataResponse
+	(*SearchTypesRequest)(nil),                      // 75: nominal.asset.v2.SearchTypesRequest
+	(*SearchTypesResponse)(nil),                     // 76: nominal.asset.v2.SearchTypesResponse
+	(*UpdateAssetAttachmentsRequest)(nil),           // 77: nominal.asset.v2.UpdateAssetAttachmentsRequest
+	(*UpdateAssetAttachmentsResponse)(nil),          // 78: nominal.asset.v2.UpdateAssetAttachmentsResponse
+	(*UpdateAssetRefNamesRequest)(nil),              // 79: nominal.asset.v2.UpdateAssetRefNamesRequest
+	(*UpdateAssetRefNamesResponse)(nil),             // 80: nominal.asset.v2.UpdateAssetRefNamesResponse
+	(*CreateTypeRequest)(nil),                       // 81: nominal.asset.v2.CreateTypeRequest
+	(*CreateTypeResponse)(nil),                      // 82: nominal.asset.v2.CreateTypeResponse
+	(*UpdateTypeRequest)(nil),                       // 83: nominal.asset.v2.UpdateTypeRequest
+	(*UpdateTypeResponse)(nil),                      // 84: nominal.asset.v2.UpdateTypeResponse
+	(*GetTypesRequest)(nil),                         // 85: nominal.asset.v2.GetTypesRequest
+	(*GetTypesResponse)(nil),                        // 86: nominal.asset.v2.GetTypesResponse
+	(*DeleteTypeRequest)(nil),                       // 87: nominal.asset.v2.DeleteTypeRequest
+	(*DeleteTypeResponse)(nil),                      // 88: nominal.asset.v2.DeleteTypeResponse
+	(*ArchiveTypeRequest)(nil),                      // 89: nominal.asset.v2.ArchiveTypeRequest
+	(*ArchiveTypeResponse)(nil),                     // 90: nominal.asset.v2.ArchiveTypeResponse
+	(*UnarchiveTypeRequest)(nil),                    // 91: nominal.asset.v2.UnarchiveTypeRequest
+	(*UnarchiveTypeResponse)(nil),                   // 92: nominal.asset.v2.UnarchiveTypeResponse
+	(*TraverseLinksRequest)(nil),                    // 93: nominal.asset.v2.TraverseLinksRequest
+	(*TraverseLinksResponse)(nil),                   // 94: nominal.asset.v2.TraverseLinksResponse
+	(*LinkEdge)(nil),                                // 95: nominal.asset.v2.LinkEdge
+	(*LinkedAsset)(nil),                             // 96: nominal.asset.v2.LinkedAsset
+	nil,                                             // 97: nominal.asset.v2.Asset.PropertiesEntry
+	nil,                                             // 98: nominal.asset.v2.Asset.TypedPropertiesEntry
+	nil,                                             // 99: nominal.asset.v2.Type.PropertyConfigsEntry
+	nil,                                             // 100: nominal.asset.v2.DataScope.SeriesTagsEntry
+	nil,                                             // 101: nominal.asset.v2.CreateAssetDataScope.SeriesTagsEntry
+	nil,                                             // 102: nominal.asset.v2.PropertyConfigMap.PropertyConfigsEntry
+	nil,                                             // 103: nominal.asset.v2.CreateAssetRequest.PropertiesEntry
+	nil,                                             // 104: nominal.asset.v2.CreateAssetRequest.TypedPropertiesEntry
+	nil,                                             // 105: nominal.asset.v2.GetAssetsResponse.ResponsesEntry
+	nil,                                             // 106: nominal.asset.v2.GetAssetDataConformanceResponse.AssetsEntry
+	nil,                                             // 107: nominal.asset.v2.AssetDataConformance.TypesEntry
+	nil,                                             // 108: nominal.asset.v2.UpdateAssetRefNamesRequest.DataScopeRefNameUpdatesEntry
+	nil,                                             // 109: nominal.asset.v2.CreateTypeRequest.PropertyConfigsEntry
+	nil,                                             // 110: nominal.asset.v2.GetTypesResponse.ResponsesEntry
+	(*timestamppb.Timestamp)(nil),                   // 111: google.protobuf.Timestamp
+	(*types.Duration)(nil),                          // 112: nominal.types.Duration
+	(v1.WeakTimestampType)(0),                       // 113: nominal.run.v1.WeakTimestampType
+	(*types.Property)(nil),                          // 114: nominal.types.Property
+	(*types.NumericPropertyPredicate)(nil),          // 115: nominal.types.NumericPropertyPredicate
+	(*types.NumericPropertyRangePredicate)(nil),     // 116: nominal.types.NumericPropertyRangePredicate
+	(types.ArchivedStatus)(0),                       // 117: nominal.types.ArchivedStatus
+	(*types.PropertyUpdateWrapper)(nil),             // 118: nominal.types.PropertyUpdateWrapper
+	(*types.LabelUpdateWrapper)(nil),                // 119: nominal.types.LabelUpdateWrapper
+	(*types.TypedPropertyUpdateWrapper)(nil),        // 120: nominal.types.TypedPropertyUpdateWrapper
+	(*types.TypedPropertyValue)(nil),                // 121: nominal.types.TypedPropertyValue
 }
 var file_nominal_protos_asset_v2_asset_proto_depIdxs = []int32{
-	77,  // 0: nominal.asset.v2.Asset.properties:type_name -> nominal.asset.v2.Asset.PropertiesEntry
-	12,  // 1: nominal.asset.v2.Asset.links:type_name -> nominal.asset.v2.Link
-	9,   // 2: nominal.asset.v2.Asset.data_scopes:type_name -> nominal.asset.v2.DataScope
-	91,  // 3: nominal.asset.v2.Asset.created_at:type_name -> google.protobuf.Timestamp
-	91,  // 4: nominal.asset.v2.Asset.updated_at:type_name -> google.protobuf.Timestamp
-	78,  // 5: nominal.asset.v2.Asset.typed_properties:type_name -> nominal.asset.v2.Asset.TypedPropertiesEntry
-	79,  // 6: nominal.asset.v2.Type.property_configs:type_name -> nominal.asset.v2.Type.PropertyConfigsEntry
-	91,  // 7: nominal.asset.v2.Type.created_at:type_name -> google.protobuf.Timestamp
-	80,  // 8: nominal.asset.v2.Type.datasource_configs:type_name -> nominal.asset.v2.Type.DatasourceConfigsEntry
-	7,   // 9: nominal.asset.v2.AssetTypeDataScopeConfig.tags:type_name -> nominal.asset.v2.TagConfig
-	11,  // 10: nominal.asset.v2.DataScope.data_source:type_name -> nominal.asset.v2.DataSource
-	92,  // 11: nominal.asset.v2.DataScope.offset:type_name -> nominal.types.Duration
-	93,  // 12: nominal.asset.v2.DataScope.timestamp_type:type_name -> nominal.run.v1.WeakTimestampType
-	81,  // 13: nominal.asset.v2.DataScope.series_tags:type_name -> nominal.asset.v2.DataScope.SeriesTagsEntry
-	11,  // 14: nominal.asset.v2.CreateAssetDataScope.data_source:type_name -> nominal.asset.v2.DataSource
-	92,  // 15: nominal.asset.v2.CreateAssetDataScope.offset:type_name -> nominal.types.Duration
-	82,  // 16: nominal.asset.v2.CreateAssetDataScope.series_tags:type_name -> nominal.asset.v2.CreateAssetDataScope.SeriesTagsEntry
-	0,   // 17: nominal.asset.v2.LabelsFilter.operator:type_name -> nominal.asset.v2.SetOperator
-	1,   // 18: nominal.asset.v2.AssetSortOptions.field:type_name -> nominal.asset.v2.AssetSortField
-	18,  // 19: nominal.asset.v2.AssetSortOptions.sort_key:type_name -> nominal.asset.v2.SortKey
-	1,   // 20: nominal.asset.v2.SortKey.field:type_name -> nominal.asset.v2.AssetSortField
-	19,  // 21: nominal.asset.v2.SortKey.property:type_name -> nominal.asset.v2.SortProperty
-	19,  // 22: nominal.asset.v2.SortKey.numeric_property:type_name -> nominal.asset.v2.SortProperty
-	3,   // 23: nominal.asset.v2.TypeSortOptions.field:type_name -> nominal.asset.v2.TypeSortOptions.TypeSortField
-	14,  // 24: nominal.asset.v2.SearchAssetsQuery.labels:type_name -> nominal.asset.v2.LabelsFilter
-	94,  // 25: nominal.asset.v2.SearchAssetsQuery.property:type_name -> nominal.types.Property
-	13,  // 26: nominal.asset.v2.SearchAssetsQuery.properties:type_name -> nominal.asset.v2.PropertiesFilter
-	15,  // 27: nominal.asset.v2.SearchAssetsQuery.asset_types:type_name -> nominal.asset.v2.AssetTypesFilter
-	22,  // 28: nominal.asset.v2.SearchAssetsQuery.and:type_name -> nominal.asset.v2.SearchAssetsQueryList
-	22,  // 29: nominal.asset.v2.SearchAssetsQuery.or:type_name -> nominal.asset.v2.SearchAssetsQueryList
-	21,  // 30: nominal.asset.v2.SearchAssetsQuery.not:type_name -> nominal.asset.v2.SearchAssetsQuery
-	95,  // 31: nominal.asset.v2.SearchAssetsQuery.numeric_property:type_name -> nominal.types.NumericPropertyPredicate
-	96,  // 32: nominal.asset.v2.SearchAssetsQuery.numeric_property_range:type_name -> nominal.types.NumericPropertyRangePredicate
-	16,  // 33: nominal.asset.v2.SearchAssetsQuery.asset_rids:type_name -> nominal.asset.v2.AssetRidsFilter
-	21,  // 34: nominal.asset.v2.SearchAssetsQueryList.queries:type_name -> nominal.asset.v2.SearchAssetsQuery
-	24,  // 35: nominal.asset.v2.SearchTypesQuery.and:type_name -> nominal.asset.v2.SearchTypesQueryList
-	24,  // 36: nominal.asset.v2.SearchTypesQuery.or:type_name -> nominal.asset.v2.SearchTypesQueryList
-	23,  // 37: nominal.asset.v2.SearchTypesQueryList.queries:type_name -> nominal.asset.v2.SearchTypesQuery
-	26,  // 38: nominal.asset.v2.MetadataChange.rename_label:type_name -> nominal.asset.v2.RenameLabel
-	27,  // 39: nominal.asset.v2.MetadataChange.rename_property_key:type_name -> nominal.asset.v2.RenamePropertyKey
-	28,  // 40: nominal.asset.v2.MetadataChange.merge_property_values_for_key:type_name -> nominal.asset.v2.MergePropertyValuesForKey
-	29,  // 41: nominal.asset.v2.RenamePropertyKey.on_conflict:type_name -> nominal.asset.v2.ConflictBehavior
-	30,  // 42: nominal.asset.v2.ConflictBehavior.skip:type_name -> nominal.asset.v2.SkipOnConflict
-	31,  // 43: nominal.asset.v2.ConflictBehavior.overwrite:type_name -> nominal.asset.v2.OverwriteOnConflict
-	32,  // 44: nominal.asset.v2.UpdateOrRemoveAssetType.remove_type:type_name -> nominal.asset.v2.RemoveType
-	12,  // 45: nominal.asset.v2.LinkList.links:type_name -> nominal.asset.v2.Link
-	10,  // 46: nominal.asset.v2.CreateAssetDataScopeList.data_scopes:type_name -> nominal.asset.v2.CreateAssetDataScope
-	83,  // 47: nominal.asset.v2.PropertyConfigMap.property_configs:type_name -> nominal.asset.v2.PropertyConfigMap.PropertyConfigsEntry
-	84,  // 48: nominal.asset.v2.AssetTypeDataScopeConfigMap.datasource_configs:type_name -> nominal.asset.v2.AssetTypeDataScopeConfigMap.DatasourceConfigsEntry
-	97,  // 49: nominal.asset.v2.ArchivedStatusSet.archived_statuses:type_name -> nominal.types.ArchivedStatus
-	85,  // 50: nominal.asset.v2.CreateAssetRequest.properties:type_name -> nominal.asset.v2.CreateAssetRequest.PropertiesEntry
-	12,  // 51: nominal.asset.v2.CreateAssetRequest.links:type_name -> nominal.asset.v2.Link
-	10,  // 52: nominal.asset.v2.CreateAssetRequest.data_scopes:type_name -> nominal.asset.v2.CreateAssetDataScope
-	86,  // 53: nominal.asset.v2.CreateAssetRequest.typed_properties:type_name -> nominal.asset.v2.CreateAssetRequest.TypedPropertiesEntry
-	4,   // 54: nominal.asset.v2.CreateAssetResponse.asset:type_name -> nominal.asset.v2.Asset
-	98,  // 55: nominal.asset.v2.UpdateAssetRequest.properties:type_name -> nominal.types.PropertyUpdateWrapper
-	99,  // 56: nominal.asset.v2.UpdateAssetRequest.labels:type_name -> nominal.types.LabelUpdateWrapper
-	34,  // 57: nominal.asset.v2.UpdateAssetRequest.links:type_name -> nominal.asset.v2.LinkList
-	35,  // 58: nominal.asset.v2.UpdateAssetRequest.data_scopes:type_name -> nominal.asset.v2.CreateAssetDataScopeList
-	33,  // 59: nominal.asset.v2.UpdateAssetRequest.type:type_name -> nominal.asset.v2.UpdateOrRemoveAssetType
-	100, // 60: nominal.asset.v2.UpdateAssetRequest.typed_properties:type_name -> nominal.types.TypedPropertyUpdateWrapper
-	4,   // 61: nominal.asset.v2.UpdateAssetResponse.asset:type_name -> nominal.asset.v2.Asset
-	10,  // 62: nominal.asset.v2.AddDataScopesToAssetRequest.data_scopes:type_name -> nominal.asset.v2.CreateAssetDataScope
-	4,   // 63: nominal.asset.v2.AddDataScopesToAssetResponse.asset:type_name -> nominal.asset.v2.Asset
-	87,  // 64: nominal.asset.v2.GetAssetsResponse.responses:type_name -> nominal.asset.v2.GetAssetsResponse.ResponsesEntry
-	4,   // 65: nominal.asset.v2.GetAssetsByDataSourceResponse.assets:type_name -> nominal.asset.v2.Asset
-	17,  // 66: nominal.asset.v2.SearchAssetsRequest.sort:type_name -> nominal.asset.v2.AssetSortOptions
-	21,  // 67: nominal.asset.v2.SearchAssetsRequest.query:type_name -> nominal.asset.v2.SearchAssetsQuery
-	38,  // 68: nominal.asset.v2.SearchAssetsRequest.archived_statuses:type_name -> nominal.asset.v2.ArchivedStatusSet
-	4,   // 69: nominal.asset.v2.SearchAssetsResponse.results:type_name -> nominal.asset.v2.Asset
-	21,  // 70: nominal.asset.v2.BatchEditAssetMetadataRequest.asset_search_query:type_name -> nominal.asset.v2.SearchAssetsQuery
-	25,  // 71: nominal.asset.v2.BatchEditAssetMetadataRequest.operation:type_name -> nominal.asset.v2.MetadataChange
-	20,  // 72: nominal.asset.v2.SearchTypesRequest.sort:type_name -> nominal.asset.v2.TypeSortOptions
-	23,  // 73: nominal.asset.v2.SearchTypesRequest.query:type_name -> nominal.asset.v2.SearchTypesQuery
-	38,  // 74: nominal.asset.v2.SearchTypesRequest.archived_statuses:type_name -> nominal.asset.v2.ArchivedStatusSet
-	5,   // 75: nominal.asset.v2.SearchTypesResponse.results:type_name -> nominal.asset.v2.Type
-	88,  // 76: nominal.asset.v2.UpdateAssetRefNamesRequest.data_scope_ref_name_updates:type_name -> nominal.asset.v2.UpdateAssetRefNamesRequest.DataScopeRefNameUpdatesEntry
-	89,  // 77: nominal.asset.v2.CreateTypeRequest.property_configs:type_name -> nominal.asset.v2.CreateTypeRequest.PropertyConfigsEntry
-	37,  // 78: nominal.asset.v2.CreateTypeRequest.datasource_configs:type_name -> nominal.asset.v2.AssetTypeDataScopeConfigMap
-	5,   // 79: nominal.asset.v2.CreateTypeResponse.type:type_name -> nominal.asset.v2.Type
-	36,  // 80: nominal.asset.v2.UpdateTypeRequest.property_configs:type_name -> nominal.asset.v2.PropertyConfigMap
-	37,  // 81: nominal.asset.v2.UpdateTypeRequest.datasource_configs:type_name -> nominal.asset.v2.AssetTypeDataScopeConfigMap
-	5,   // 82: nominal.asset.v2.UpdateTypeResponse.type:type_name -> nominal.asset.v2.Type
-	90,  // 83: nominal.asset.v2.GetTypesResponse.responses:type_name -> nominal.asset.v2.GetTypesResponse.ResponsesEntry
-	5,   // 84: nominal.asset.v2.GetTypesForDatasourceResponse.types:type_name -> nominal.asset.v2.Type
-	101, // 85: nominal.asset.v2.Asset.TypedPropertiesEntry.value:type_name -> nominal.types.TypedPropertyValue
-	8,   // 86: nominal.asset.v2.Type.PropertyConfigsEntry.value:type_name -> nominal.asset.v2.PropertyConfig
-	6,   // 87: nominal.asset.v2.Type.DatasourceConfigsEntry.value:type_name -> nominal.asset.v2.AssetTypeDataScopeConfig
-	8,   // 88: nominal.asset.v2.PropertyConfigMap.PropertyConfigsEntry.value:type_name -> nominal.asset.v2.PropertyConfig
-	6,   // 89: nominal.asset.v2.AssetTypeDataScopeConfigMap.DatasourceConfigsEntry.value:type_name -> nominal.asset.v2.AssetTypeDataScopeConfig
-	101, // 90: nominal.asset.v2.CreateAssetRequest.TypedPropertiesEntry.value:type_name -> nominal.types.TypedPropertyValue
-	4,   // 91: nominal.asset.v2.GetAssetsResponse.ResponsesEntry.value:type_name -> nominal.asset.v2.Asset
-	8,   // 92: nominal.asset.v2.CreateTypeRequest.PropertyConfigsEntry.value:type_name -> nominal.asset.v2.PropertyConfig
-	5,   // 93: nominal.asset.v2.GetTypesResponse.ResponsesEntry.value:type_name -> nominal.asset.v2.Type
-	39,  // 94: nominal.asset.v2.AssetService.CreateAsset:input_type -> nominal.asset.v2.CreateAssetRequest
-	41,  // 95: nominal.asset.v2.AssetService.UpdateAsset:input_type -> nominal.asset.v2.UpdateAssetRequest
-	43,  // 96: nominal.asset.v2.AssetService.AddDataScopesToAsset:input_type -> nominal.asset.v2.AddDataScopesToAssetRequest
-	45,  // 97: nominal.asset.v2.AssetService.GetAssets:input_type -> nominal.asset.v2.GetAssetsRequest
-	47,  // 98: nominal.asset.v2.AssetService.GetAssetsByDataSource:input_type -> nominal.asset.v2.GetAssetsByDataSourceRequest
-	49,  // 99: nominal.asset.v2.AssetService.Archive:input_type -> nominal.asset.v2.ArchiveRequest
-	51,  // 100: nominal.asset.v2.AssetService.Unarchive:input_type -> nominal.asset.v2.UnarchiveRequest
-	53,  // 101: nominal.asset.v2.AssetService.SearchAssets:input_type -> nominal.asset.v2.SearchAssetsRequest
-	55,  // 102: nominal.asset.v2.AssetService.BatchEditAssetMetadata:input_type -> nominal.asset.v2.BatchEditAssetMetadataRequest
-	57,  // 103: nominal.asset.v2.AssetService.SearchTypes:input_type -> nominal.asset.v2.SearchTypesRequest
-	59,  // 104: nominal.asset.v2.AssetService.UpdateAssetAttachments:input_type -> nominal.asset.v2.UpdateAssetAttachmentsRequest
-	61,  // 105: nominal.asset.v2.AssetService.UpdateAssetRefNames:input_type -> nominal.asset.v2.UpdateAssetRefNamesRequest
-	63,  // 106: nominal.asset.v2.AssetService.CreateType:input_type -> nominal.asset.v2.CreateTypeRequest
-	65,  // 107: nominal.asset.v2.AssetService.UpdateType:input_type -> nominal.asset.v2.UpdateTypeRequest
-	67,  // 108: nominal.asset.v2.AssetService.GetTypes:input_type -> nominal.asset.v2.GetTypesRequest
-	69,  // 109: nominal.asset.v2.AssetService.GetTypesForDatasource:input_type -> nominal.asset.v2.GetTypesForDatasourceRequest
-	71,  // 110: nominal.asset.v2.AssetService.DeleteType:input_type -> nominal.asset.v2.DeleteTypeRequest
-	73,  // 111: nominal.asset.v2.AssetService.ArchiveType:input_type -> nominal.asset.v2.ArchiveTypeRequest
-	75,  // 112: nominal.asset.v2.AssetService.UnarchiveType:input_type -> nominal.asset.v2.UnarchiveTypeRequest
-	40,  // 113: nominal.asset.v2.AssetService.CreateAsset:output_type -> nominal.asset.v2.CreateAssetResponse
-	42,  // 114: nominal.asset.v2.AssetService.UpdateAsset:output_type -> nominal.asset.v2.UpdateAssetResponse
-	44,  // 115: nominal.asset.v2.AssetService.AddDataScopesToAsset:output_type -> nominal.asset.v2.AddDataScopesToAssetResponse
-	46,  // 116: nominal.asset.v2.AssetService.GetAssets:output_type -> nominal.asset.v2.GetAssetsResponse
-	48,  // 117: nominal.asset.v2.AssetService.GetAssetsByDataSource:output_type -> nominal.asset.v2.GetAssetsByDataSourceResponse
-	50,  // 118: nominal.asset.v2.AssetService.Archive:output_type -> nominal.asset.v2.ArchiveResponse
-	52,  // 119: nominal.asset.v2.AssetService.Unarchive:output_type -> nominal.asset.v2.UnarchiveResponse
-	54,  // 120: nominal.asset.v2.AssetService.SearchAssets:output_type -> nominal.asset.v2.SearchAssetsResponse
-	56,  // 121: nominal.asset.v2.AssetService.BatchEditAssetMetadata:output_type -> nominal.asset.v2.BatchEditAssetMetadataResponse
-	58,  // 122: nominal.asset.v2.AssetService.SearchTypes:output_type -> nominal.asset.v2.SearchTypesResponse
-	60,  // 123: nominal.asset.v2.AssetService.UpdateAssetAttachments:output_type -> nominal.asset.v2.UpdateAssetAttachmentsResponse
-	62,  // 124: nominal.asset.v2.AssetService.UpdateAssetRefNames:output_type -> nominal.asset.v2.UpdateAssetRefNamesResponse
-	64,  // 125: nominal.asset.v2.AssetService.CreateType:output_type -> nominal.asset.v2.CreateTypeResponse
-	66,  // 126: nominal.asset.v2.AssetService.UpdateType:output_type -> nominal.asset.v2.UpdateTypeResponse
-	68,  // 127: nominal.asset.v2.AssetService.GetTypes:output_type -> nominal.asset.v2.GetTypesResponse
-	70,  // 128: nominal.asset.v2.AssetService.GetTypesForDatasource:output_type -> nominal.asset.v2.GetTypesForDatasourceResponse
-	72,  // 129: nominal.asset.v2.AssetService.DeleteType:output_type -> nominal.asset.v2.DeleteTypeResponse
-	74,  // 130: nominal.asset.v2.AssetService.ArchiveType:output_type -> nominal.asset.v2.ArchiveTypeResponse
-	76,  // 131: nominal.asset.v2.AssetService.UnarchiveType:output_type -> nominal.asset.v2.UnarchiveTypeResponse
-	113, // [113:132] is the sub-list for method output_type
-	94,  // [94:113] is the sub-list for method input_type
-	94,  // [94:94] is the sub-list for extension type_name
-	94,  // [94:94] is the sub-list for extension extendee
-	0,   // [0:94] is the sub-list for field type_name
+	97,  // 0: nominal.asset.v2.Asset.properties:type_name -> nominal.asset.v2.Asset.PropertiesEntry
+	21,  // 1: nominal.asset.v2.Asset.links:type_name -> nominal.asset.v2.Link
+	18,  // 2: nominal.asset.v2.Asset.data_scopes:type_name -> nominal.asset.v2.DataScope
+	111, // 3: nominal.asset.v2.Asset.created_at:type_name -> google.protobuf.Timestamp
+	111, // 4: nominal.asset.v2.Asset.updated_at:type_name -> google.protobuf.Timestamp
+	98,  // 5: nominal.asset.v2.Asset.typed_properties:type_name -> nominal.asset.v2.Asset.TypedPropertiesEntry
+	10,  // 6: nominal.asset.v2.Asset.data:type_name -> nominal.asset.v2.AssetData
+	99,  // 7: nominal.asset.v2.Type.property_configs:type_name -> nominal.asset.v2.Type.PropertyConfigsEntry
+	111, // 8: nominal.asset.v2.Type.created_at:type_name -> google.protobuf.Timestamp
+	14,  // 9: nominal.asset.v2.Type.data_requirements:type_name -> nominal.asset.v2.DataRequirements
+	12,  // 10: nominal.asset.v2.Type.outgoing_links:type_name -> nominal.asset.v2.LinkDefinition
+	12,  // 11: nominal.asset.v2.Type.incoming_links:type_name -> nominal.asset.v2.LinkDefinition
+	13,  // 12: nominal.asset.v2.LinkDefinition.direct:type_name -> nominal.asset.v2.DirectLink
+	15,  // 13: nominal.asset.v2.DataRequirements.series:type_name -> nominal.asset.v2.SeriesRequirements
+	16,  // 14: nominal.asset.v2.SeriesRequirements.series:type_name -> nominal.asset.v2.SeriesRequirement
+	7,   // 15: nominal.asset.v2.SeriesRequirement.type:type_name -> nominal.asset.v2.SeriesRequirement.SeriesType
+	0,   // 16: nominal.asset.v2.PropertyConfig.requirement:type_name -> nominal.asset.v2.PropertyRequirement
+	1,   // 17: nominal.asset.v2.PropertyConfig.value_type:type_name -> nominal.asset.v2.PropertyValueType
+	20,  // 18: nominal.asset.v2.DataScope.data_source:type_name -> nominal.asset.v2.DataSource
+	112, // 19: nominal.asset.v2.DataScope.offset:type_name -> nominal.types.Duration
+	113, // 20: nominal.asset.v2.DataScope.timestamp_type:type_name -> nominal.run.v1.WeakTimestampType
+	100, // 21: nominal.asset.v2.DataScope.series_tags:type_name -> nominal.asset.v2.DataScope.SeriesTagsEntry
+	20,  // 22: nominal.asset.v2.CreateAssetDataScope.data_source:type_name -> nominal.asset.v2.DataSource
+	112, // 23: nominal.asset.v2.CreateAssetDataScope.offset:type_name -> nominal.types.Duration
+	101, // 24: nominal.asset.v2.CreateAssetDataScope.series_tags:type_name -> nominal.asset.v2.CreateAssetDataScope.SeriesTagsEntry
+	2,   // 25: nominal.asset.v2.LabelsFilter.operator:type_name -> nominal.asset.v2.SetOperator
+	3,   // 26: nominal.asset.v2.AssetSortOptions.field:type_name -> nominal.asset.v2.AssetSortField
+	27,  // 27: nominal.asset.v2.AssetSortOptions.sort_key:type_name -> nominal.asset.v2.SortKey
+	3,   // 28: nominal.asset.v2.SortKey.field:type_name -> nominal.asset.v2.AssetSortField
+	28,  // 29: nominal.asset.v2.SortKey.property:type_name -> nominal.asset.v2.SortProperty
+	28,  // 30: nominal.asset.v2.SortKey.numeric_property:type_name -> nominal.asset.v2.SortProperty
+	8,   // 31: nominal.asset.v2.TypeSortOptions.field:type_name -> nominal.asset.v2.TypeSortOptions.TypeSortField
+	23,  // 32: nominal.asset.v2.SearchAssetsQuery.labels:type_name -> nominal.asset.v2.LabelsFilter
+	114, // 33: nominal.asset.v2.SearchAssetsQuery.property:type_name -> nominal.types.Property
+	22,  // 34: nominal.asset.v2.SearchAssetsQuery.properties:type_name -> nominal.asset.v2.PropertiesFilter
+	24,  // 35: nominal.asset.v2.SearchAssetsQuery.asset_types:type_name -> nominal.asset.v2.AssetTypesFilter
+	31,  // 36: nominal.asset.v2.SearchAssetsQuery.and:type_name -> nominal.asset.v2.SearchAssetsQueryList
+	31,  // 37: nominal.asset.v2.SearchAssetsQuery.or:type_name -> nominal.asset.v2.SearchAssetsQueryList
+	30,  // 38: nominal.asset.v2.SearchAssetsQuery.not:type_name -> nominal.asset.v2.SearchAssetsQuery
+	115, // 39: nominal.asset.v2.SearchAssetsQuery.numeric_property:type_name -> nominal.types.NumericPropertyPredicate
+	116, // 40: nominal.asset.v2.SearchAssetsQuery.numeric_property_range:type_name -> nominal.types.NumericPropertyRangePredicate
+	25,  // 41: nominal.asset.v2.SearchAssetsQuery.asset_rids:type_name -> nominal.asset.v2.AssetRidsFilter
+	30,  // 42: nominal.asset.v2.SearchAssetsQueryList.queries:type_name -> nominal.asset.v2.SearchAssetsQuery
+	33,  // 43: nominal.asset.v2.SearchTypesQuery.and:type_name -> nominal.asset.v2.SearchTypesQueryList
+	33,  // 44: nominal.asset.v2.SearchTypesQuery.or:type_name -> nominal.asset.v2.SearchTypesQueryList
+	32,  // 45: nominal.asset.v2.SearchTypesQueryList.queries:type_name -> nominal.asset.v2.SearchTypesQuery
+	35,  // 46: nominal.asset.v2.MetadataChange.rename_label:type_name -> nominal.asset.v2.RenameLabel
+	36,  // 47: nominal.asset.v2.MetadataChange.rename_property_key:type_name -> nominal.asset.v2.RenamePropertyKey
+	37,  // 48: nominal.asset.v2.MetadataChange.merge_property_values_for_key:type_name -> nominal.asset.v2.MergePropertyValuesForKey
+	38,  // 49: nominal.asset.v2.RenamePropertyKey.on_conflict:type_name -> nominal.asset.v2.ConflictBehavior
+	39,  // 50: nominal.asset.v2.ConflictBehavior.skip:type_name -> nominal.asset.v2.SkipOnConflict
+	40,  // 51: nominal.asset.v2.ConflictBehavior.overwrite:type_name -> nominal.asset.v2.OverwriteOnConflict
+	21,  // 52: nominal.asset.v2.LinkList.links:type_name -> nominal.asset.v2.Link
+	19,  // 53: nominal.asset.v2.CreateAssetDataScopeList.data_scopes:type_name -> nominal.asset.v2.CreateAssetDataScope
+	102, // 54: nominal.asset.v2.PropertyConfigMap.property_configs:type_name -> nominal.asset.v2.PropertyConfigMap.PropertyConfigsEntry
+	117, // 55: nominal.asset.v2.ArchivedStatusSet.archived_statuses:type_name -> nominal.types.ArchivedStatus
+	12,  // 56: nominal.asset.v2.LinkDefinitionList.links:type_name -> nominal.asset.v2.LinkDefinition
+	4,   // 57: nominal.asset.v2.LinkRef.direction:type_name -> nominal.asset.v2.LinkDirection
+	103, // 58: nominal.asset.v2.CreateAssetRequest.properties:type_name -> nominal.asset.v2.CreateAssetRequest.PropertiesEntry
+	21,  // 59: nominal.asset.v2.CreateAssetRequest.links:type_name -> nominal.asset.v2.Link
+	19,  // 60: nominal.asset.v2.CreateAssetRequest.data_scopes:type_name -> nominal.asset.v2.CreateAssetDataScope
+	104, // 61: nominal.asset.v2.CreateAssetRequest.typed_properties:type_name -> nominal.asset.v2.CreateAssetRequest.TypedPropertiesEntry
+	10,  // 62: nominal.asset.v2.CreateAssetRequest.data:type_name -> nominal.asset.v2.AssetData
+	9,   // 63: nominal.asset.v2.CreateAssetResponse.asset:type_name -> nominal.asset.v2.Asset
+	48,  // 64: nominal.asset.v2.CreateOrUpdateAssetByPrimaryKeyRequest.asset:type_name -> nominal.asset.v2.CreateAssetRequest
+	5,   // 65: nominal.asset.v2.CreateOrUpdateAssetByPrimaryKeyRequest.if_exists:type_name -> nominal.asset.v2.IfAssetExists
+	9,   // 66: nominal.asset.v2.CreateOrUpdateAssetByPrimaryKeyResponse.asset:type_name -> nominal.asset.v2.Asset
+	118, // 67: nominal.asset.v2.UpdateAssetRequest.properties:type_name -> nominal.types.PropertyUpdateWrapper
+	119, // 68: nominal.asset.v2.UpdateAssetRequest.labels:type_name -> nominal.types.LabelUpdateWrapper
+	41,  // 69: nominal.asset.v2.UpdateAssetRequest.links:type_name -> nominal.asset.v2.LinkList
+	43,  // 70: nominal.asset.v2.UpdateAssetRequest.data_scopes:type_name -> nominal.asset.v2.CreateAssetDataScopeList
+	120, // 71: nominal.asset.v2.UpdateAssetRequest.typed_properties:type_name -> nominal.types.TypedPropertyUpdateWrapper
+	42,  // 72: nominal.asset.v2.UpdateAssetRequest.types:type_name -> nominal.asset.v2.TypeRidList
+	10,  // 73: nominal.asset.v2.UpdateAssetRequest.data:type_name -> nominal.asset.v2.AssetData
+	9,   // 74: nominal.asset.v2.UpdateAssetResponse.asset:type_name -> nominal.asset.v2.Asset
+	19,  // 75: nominal.asset.v2.AddDataScopesToAssetRequest.data_scopes:type_name -> nominal.asset.v2.CreateAssetDataScope
+	9,   // 76: nominal.asset.v2.AddDataScopesToAssetResponse.asset:type_name -> nominal.asset.v2.Asset
+	105, // 77: nominal.asset.v2.GetAssetsResponse.responses:type_name -> nominal.asset.v2.GetAssetsResponse.ResponsesEntry
+	106, // 78: nominal.asset.v2.GetAssetDataConformanceResponse.assets:type_name -> nominal.asset.v2.GetAssetDataConformanceResponse.AssetsEntry
+	107, // 79: nominal.asset.v2.AssetDataConformance.types:type_name -> nominal.asset.v2.AssetDataConformance.TypesEntry
+	62,  // 80: nominal.asset.v2.TypeDataConformance.met:type_name -> nominal.asset.v2.DataRequirementsMet
+	63,  // 81: nominal.asset.v2.TypeDataConformance.unmet:type_name -> nominal.asset.v2.DataRequirementsUnmet
+	64,  // 82: nominal.asset.v2.TypeDataConformance.unknown:type_name -> nominal.asset.v2.DataRequirementsUnknown
+	16,  // 83: nominal.asset.v2.DataRequirementsUnmet.missing_series:type_name -> nominal.asset.v2.SeriesRequirement
+	9,   // 84: nominal.asset.v2.GetAssetsByDataSourceResponse.assets:type_name -> nominal.asset.v2.Asset
+	26,  // 85: nominal.asset.v2.SearchAssetsRequest.sort:type_name -> nominal.asset.v2.AssetSortOptions
+	30,  // 86: nominal.asset.v2.SearchAssetsRequest.query:type_name -> nominal.asset.v2.SearchAssetsQuery
+	45,  // 87: nominal.asset.v2.SearchAssetsRequest.archived_statuses:type_name -> nominal.asset.v2.ArchivedStatusSet
+	9,   // 88: nominal.asset.v2.SearchAssetsResponse.results:type_name -> nominal.asset.v2.Asset
+	30,  // 89: nominal.asset.v2.BatchEditAssetMetadataRequest.asset_search_query:type_name -> nominal.asset.v2.SearchAssetsQuery
+	34,  // 90: nominal.asset.v2.BatchEditAssetMetadataRequest.operation:type_name -> nominal.asset.v2.MetadataChange
+	29,  // 91: nominal.asset.v2.SearchTypesRequest.sort:type_name -> nominal.asset.v2.TypeSortOptions
+	32,  // 92: nominal.asset.v2.SearchTypesRequest.query:type_name -> nominal.asset.v2.SearchTypesQuery
+	45,  // 93: nominal.asset.v2.SearchTypesRequest.archived_statuses:type_name -> nominal.asset.v2.ArchivedStatusSet
+	11,  // 94: nominal.asset.v2.SearchTypesResponse.results:type_name -> nominal.asset.v2.Type
+	108, // 95: nominal.asset.v2.UpdateAssetRefNamesRequest.data_scope_ref_name_updates:type_name -> nominal.asset.v2.UpdateAssetRefNamesRequest.DataScopeRefNameUpdatesEntry
+	109, // 96: nominal.asset.v2.CreateTypeRequest.property_configs:type_name -> nominal.asset.v2.CreateTypeRequest.PropertyConfigsEntry
+	14,  // 97: nominal.asset.v2.CreateTypeRequest.data_requirements:type_name -> nominal.asset.v2.DataRequirements
+	12,  // 98: nominal.asset.v2.CreateTypeRequest.links:type_name -> nominal.asset.v2.LinkDefinition
+	11,  // 99: nominal.asset.v2.CreateTypeResponse.type:type_name -> nominal.asset.v2.Type
+	44,  // 100: nominal.asset.v2.UpdateTypeRequest.property_configs:type_name -> nominal.asset.v2.PropertyConfigMap
+	14,  // 101: nominal.asset.v2.UpdateTypeRequest.data_requirements:type_name -> nominal.asset.v2.DataRequirements
+	46,  // 102: nominal.asset.v2.UpdateTypeRequest.links:type_name -> nominal.asset.v2.LinkDefinitionList
+	11,  // 103: nominal.asset.v2.UpdateTypeResponse.type:type_name -> nominal.asset.v2.Type
+	110, // 104: nominal.asset.v2.GetTypesResponse.responses:type_name -> nominal.asset.v2.GetTypesResponse.ResponsesEntry
+	47,  // 105: nominal.asset.v2.TraverseLinksRequest.link:type_name -> nominal.asset.v2.LinkRef
+	95,  // 106: nominal.asset.v2.TraverseLinksResponse.edges:type_name -> nominal.asset.v2.LinkEdge
+	96,  // 107: nominal.asset.v2.LinkEdge.linked_asset:type_name -> nominal.asset.v2.LinkedAsset
+	121, // 108: nominal.asset.v2.Asset.TypedPropertiesEntry.value:type_name -> nominal.types.TypedPropertyValue
+	17,  // 109: nominal.asset.v2.Type.PropertyConfigsEntry.value:type_name -> nominal.asset.v2.PropertyConfig
+	17,  // 110: nominal.asset.v2.PropertyConfigMap.PropertyConfigsEntry.value:type_name -> nominal.asset.v2.PropertyConfig
+	121, // 111: nominal.asset.v2.CreateAssetRequest.TypedPropertiesEntry.value:type_name -> nominal.types.TypedPropertyValue
+	9,   // 112: nominal.asset.v2.GetAssetsResponse.ResponsesEntry.value:type_name -> nominal.asset.v2.Asset
+	60,  // 113: nominal.asset.v2.GetAssetDataConformanceResponse.AssetsEntry.value:type_name -> nominal.asset.v2.AssetDataConformance
+	61,  // 114: nominal.asset.v2.AssetDataConformance.TypesEntry.value:type_name -> nominal.asset.v2.TypeDataConformance
+	17,  // 115: nominal.asset.v2.CreateTypeRequest.PropertyConfigsEntry.value:type_name -> nominal.asset.v2.PropertyConfig
+	11,  // 116: nominal.asset.v2.GetTypesResponse.ResponsesEntry.value:type_name -> nominal.asset.v2.Type
+	48,  // 117: nominal.asset.v2.AssetService.CreateAsset:input_type -> nominal.asset.v2.CreateAssetRequest
+	50,  // 118: nominal.asset.v2.AssetService.CreateOrUpdateAssetByPrimaryKey:input_type -> nominal.asset.v2.CreateOrUpdateAssetByPrimaryKeyRequest
+	52,  // 119: nominal.asset.v2.AssetService.UpdateAsset:input_type -> nominal.asset.v2.UpdateAssetRequest
+	54,  // 120: nominal.asset.v2.AssetService.AddDataScopesToAsset:input_type -> nominal.asset.v2.AddDataScopesToAssetRequest
+	56,  // 121: nominal.asset.v2.AssetService.GetAssets:input_type -> nominal.asset.v2.GetAssetsRequest
+	58,  // 122: nominal.asset.v2.AssetService.GetAssetDataConformance:input_type -> nominal.asset.v2.GetAssetDataConformanceRequest
+	65,  // 123: nominal.asset.v2.AssetService.GetAssetsByDataSource:input_type -> nominal.asset.v2.GetAssetsByDataSourceRequest
+	67,  // 124: nominal.asset.v2.AssetService.Archive:input_type -> nominal.asset.v2.ArchiveRequest
+	69,  // 125: nominal.asset.v2.AssetService.Unarchive:input_type -> nominal.asset.v2.UnarchiveRequest
+	71,  // 126: nominal.asset.v2.AssetService.SearchAssets:input_type -> nominal.asset.v2.SearchAssetsRequest
+	73,  // 127: nominal.asset.v2.AssetService.BatchEditAssetMetadata:input_type -> nominal.asset.v2.BatchEditAssetMetadataRequest
+	75,  // 128: nominal.asset.v2.AssetService.SearchTypes:input_type -> nominal.asset.v2.SearchTypesRequest
+	77,  // 129: nominal.asset.v2.AssetService.UpdateAssetAttachments:input_type -> nominal.asset.v2.UpdateAssetAttachmentsRequest
+	79,  // 130: nominal.asset.v2.AssetService.UpdateAssetRefNames:input_type -> nominal.asset.v2.UpdateAssetRefNamesRequest
+	81,  // 131: nominal.asset.v2.AssetService.CreateType:input_type -> nominal.asset.v2.CreateTypeRequest
+	83,  // 132: nominal.asset.v2.AssetService.UpdateType:input_type -> nominal.asset.v2.UpdateTypeRequest
+	85,  // 133: nominal.asset.v2.AssetService.GetTypes:input_type -> nominal.asset.v2.GetTypesRequest
+	87,  // 134: nominal.asset.v2.AssetService.DeleteType:input_type -> nominal.asset.v2.DeleteTypeRequest
+	89,  // 135: nominal.asset.v2.AssetService.ArchiveType:input_type -> nominal.asset.v2.ArchiveTypeRequest
+	91,  // 136: nominal.asset.v2.AssetService.UnarchiveType:input_type -> nominal.asset.v2.UnarchiveTypeRequest
+	93,  // 137: nominal.asset.v2.AssetService.TraverseLinks:input_type -> nominal.asset.v2.TraverseLinksRequest
+	49,  // 138: nominal.asset.v2.AssetService.CreateAsset:output_type -> nominal.asset.v2.CreateAssetResponse
+	51,  // 139: nominal.asset.v2.AssetService.CreateOrUpdateAssetByPrimaryKey:output_type -> nominal.asset.v2.CreateOrUpdateAssetByPrimaryKeyResponse
+	53,  // 140: nominal.asset.v2.AssetService.UpdateAsset:output_type -> nominal.asset.v2.UpdateAssetResponse
+	55,  // 141: nominal.asset.v2.AssetService.AddDataScopesToAsset:output_type -> nominal.asset.v2.AddDataScopesToAssetResponse
+	57,  // 142: nominal.asset.v2.AssetService.GetAssets:output_type -> nominal.asset.v2.GetAssetsResponse
+	59,  // 143: nominal.asset.v2.AssetService.GetAssetDataConformance:output_type -> nominal.asset.v2.GetAssetDataConformanceResponse
+	66,  // 144: nominal.asset.v2.AssetService.GetAssetsByDataSource:output_type -> nominal.asset.v2.GetAssetsByDataSourceResponse
+	68,  // 145: nominal.asset.v2.AssetService.Archive:output_type -> nominal.asset.v2.ArchiveResponse
+	70,  // 146: nominal.asset.v2.AssetService.Unarchive:output_type -> nominal.asset.v2.UnarchiveResponse
+	72,  // 147: nominal.asset.v2.AssetService.SearchAssets:output_type -> nominal.asset.v2.SearchAssetsResponse
+	74,  // 148: nominal.asset.v2.AssetService.BatchEditAssetMetadata:output_type -> nominal.asset.v2.BatchEditAssetMetadataResponse
+	76,  // 149: nominal.asset.v2.AssetService.SearchTypes:output_type -> nominal.asset.v2.SearchTypesResponse
+	78,  // 150: nominal.asset.v2.AssetService.UpdateAssetAttachments:output_type -> nominal.asset.v2.UpdateAssetAttachmentsResponse
+	80,  // 151: nominal.asset.v2.AssetService.UpdateAssetRefNames:output_type -> nominal.asset.v2.UpdateAssetRefNamesResponse
+	82,  // 152: nominal.asset.v2.AssetService.CreateType:output_type -> nominal.asset.v2.CreateTypeResponse
+	84,  // 153: nominal.asset.v2.AssetService.UpdateType:output_type -> nominal.asset.v2.UpdateTypeResponse
+	86,  // 154: nominal.asset.v2.AssetService.GetTypes:output_type -> nominal.asset.v2.GetTypesResponse
+	88,  // 155: nominal.asset.v2.AssetService.DeleteType:output_type -> nominal.asset.v2.DeleteTypeResponse
+	90,  // 156: nominal.asset.v2.AssetService.ArchiveType:output_type -> nominal.asset.v2.ArchiveTypeResponse
+	92,  // 157: nominal.asset.v2.AssetService.UnarchiveType:output_type -> nominal.asset.v2.UnarchiveTypeResponse
+	94,  // 158: nominal.asset.v2.AssetService.TraverseLinks:output_type -> nominal.asset.v2.TraverseLinksResponse
+	138, // [138:159] is the sub-list for method output_type
+	117, // [117:138] is the sub-list for method input_type
+	117, // [117:117] is the sub-list for extension type_name
+	117, // [117:117] is the sub-list for extension extendee
+	0,   // [0:117] is the sub-list for field type_name
 }
 
 func init() { file_nominal_protos_asset_v2_asset_proto_init() }
@@ -5639,26 +7277,34 @@ func file_nominal_protos_asset_v2_asset_proto_init() {
 		return
 	}
 	file_nominal_protos_asset_v2_asset_proto_msgTypes[0].OneofWrappers = []any{}
-	file_nominal_protos_asset_v2_asset_proto_msgTypes[1].OneofWrappers = []any{}
+	file_nominal_protos_asset_v2_asset_proto_msgTypes[1].OneofWrappers = []any{
+		(*AssetData_PipelineRid)(nil),
+		(*AssetData_DatasetRid)(nil),
+	}
 	file_nominal_protos_asset_v2_asset_proto_msgTypes[2].OneofWrappers = []any{}
-	file_nominal_protos_asset_v2_asset_proto_msgTypes[4].OneofWrappers = []any{}
-	file_nominal_protos_asset_v2_asset_proto_msgTypes[5].OneofWrappers = []any{}
-	file_nominal_protos_asset_v2_asset_proto_msgTypes[6].OneofWrappers = []any{}
-	file_nominal_protos_asset_v2_asset_proto_msgTypes[7].OneofWrappers = []any{
+	file_nominal_protos_asset_v2_asset_proto_msgTypes[3].OneofWrappers = []any{
+		(*LinkDefinition_Direct)(nil),
+	}
+	file_nominal_protos_asset_v2_asset_proto_msgTypes[5].OneofWrappers = []any{
+		(*DataRequirements_Series)(nil),
+	}
+	file_nominal_protos_asset_v2_asset_proto_msgTypes[9].OneofWrappers = []any{}
+	file_nominal_protos_asset_v2_asset_proto_msgTypes[10].OneofWrappers = []any{}
+	file_nominal_protos_asset_v2_asset_proto_msgTypes[11].OneofWrappers = []any{
 		(*DataSource_Dataset)(nil),
 		(*DataSource_Connection)(nil),
 		(*DataSource_LogSet)(nil),
 		(*DataSource_Video)(nil),
 		(*DataSource_Spatial)(nil),
 	}
-	file_nominal_protos_asset_v2_asset_proto_msgTypes[8].OneofWrappers = []any{}
-	file_nominal_protos_asset_v2_asset_proto_msgTypes[13].OneofWrappers = []any{}
-	file_nominal_protos_asset_v2_asset_proto_msgTypes[14].OneofWrappers = []any{
+	file_nominal_protos_asset_v2_asset_proto_msgTypes[12].OneofWrappers = []any{}
+	file_nominal_protos_asset_v2_asset_proto_msgTypes[17].OneofWrappers = []any{}
+	file_nominal_protos_asset_v2_asset_proto_msgTypes[18].OneofWrappers = []any{
 		(*SortKey_Field)(nil),
 		(*SortKey_Property)(nil),
 		(*SortKey_NumericProperty)(nil),
 	}
-	file_nominal_protos_asset_v2_asset_proto_msgTypes[17].OneofWrappers = []any{
+	file_nominal_protos_asset_v2_asset_proto_msgTypes[21].OneofWrappers = []any{
 		(*SearchAssetsQuery_SearchText)(nil),
 		(*SearchAssetsQuery_ExactSubstring)(nil),
 		(*SearchAssetsQuery_Label)(nil),
@@ -5677,46 +7323,53 @@ func file_nominal_protos_asset_v2_asset_proto_init() {
 		(*SearchAssetsQuery_NumericProperty)(nil),
 		(*SearchAssetsQuery_NumericPropertyRange)(nil),
 		(*SearchAssetsQuery_AssetRids)(nil),
+		(*SearchAssetsQuery_Live)(nil),
 	}
-	file_nominal_protos_asset_v2_asset_proto_msgTypes[19].OneofWrappers = []any{
+	file_nominal_protos_asset_v2_asset_proto_msgTypes[23].OneofWrappers = []any{
 		(*SearchTypesQuery_SearchText)(nil),
 		(*SearchTypesQuery_Property)(nil),
 		(*SearchTypesQuery_And)(nil),
 		(*SearchTypesQuery_Or)(nil),
 		(*SearchTypesQuery_Workspace)(nil),
-		(*SearchTypesQuery_ConfiguredDatasource)(nil),
 	}
-	file_nominal_protos_asset_v2_asset_proto_msgTypes[21].OneofWrappers = []any{
+	file_nominal_protos_asset_v2_asset_proto_msgTypes[25].OneofWrappers = []any{
 		(*MetadataChange_RenameLabel)(nil),
 		(*MetadataChange_RenamePropertyKey)(nil),
 		(*MetadataChange_MergePropertyValuesForKey)(nil),
 	}
-	file_nominal_protos_asset_v2_asset_proto_msgTypes[25].OneofWrappers = []any{
+	file_nominal_protos_asset_v2_asset_proto_msgTypes[29].OneofWrappers = []any{
 		(*ConflictBehavior_Skip)(nil),
 		(*ConflictBehavior_Overwrite)(nil),
 	}
-	file_nominal_protos_asset_v2_asset_proto_msgTypes[29].OneofWrappers = []any{
-		(*UpdateOrRemoveAssetType_TypeRid)(nil),
-		(*UpdateOrRemoveAssetType_RemoveType)(nil),
+	file_nominal_protos_asset_v2_asset_proto_msgTypes[39].OneofWrappers = []any{}
+	file_nominal_protos_asset_v2_asset_proto_msgTypes[43].OneofWrappers = []any{}
+	file_nominal_protos_asset_v2_asset_proto_msgTypes[52].OneofWrappers = []any{
+		(*TypeDataConformance_Met)(nil),
+		(*TypeDataConformance_Unmet)(nil),
+		(*TypeDataConformance_Unknown)(nil),
 	}
-	file_nominal_protos_asset_v2_asset_proto_msgTypes[35].OneofWrappers = []any{}
-	file_nominal_protos_asset_v2_asset_proto_msgTypes[37].OneofWrappers = []any{}
-	file_nominal_protos_asset_v2_asset_proto_msgTypes[45].OneofWrappers = []any{}
-	file_nominal_protos_asset_v2_asset_proto_msgTypes[47].OneofWrappers = []any{}
-	file_nominal_protos_asset_v2_asset_proto_msgTypes[49].OneofWrappers = []any{}
-	file_nominal_protos_asset_v2_asset_proto_msgTypes[50].OneofWrappers = []any{}
-	file_nominal_protos_asset_v2_asset_proto_msgTypes[51].OneofWrappers = []any{}
-	file_nominal_protos_asset_v2_asset_proto_msgTypes[53].OneofWrappers = []any{}
-	file_nominal_protos_asset_v2_asset_proto_msgTypes[54].OneofWrappers = []any{}
-	file_nominal_protos_asset_v2_asset_proto_msgTypes[59].OneofWrappers = []any{}
-	file_nominal_protos_asset_v2_asset_proto_msgTypes[61].OneofWrappers = []any{}
+	file_nominal_protos_asset_v2_asset_proto_msgTypes[58].OneofWrappers = []any{}
+	file_nominal_protos_asset_v2_asset_proto_msgTypes[60].OneofWrappers = []any{}
+	file_nominal_protos_asset_v2_asset_proto_msgTypes[62].OneofWrappers = []any{}
+	file_nominal_protos_asset_v2_asset_proto_msgTypes[63].OneofWrappers = []any{}
+	file_nominal_protos_asset_v2_asset_proto_msgTypes[64].OneofWrappers = []any{}
+	file_nominal_protos_asset_v2_asset_proto_msgTypes[66].OneofWrappers = []any{}
+	file_nominal_protos_asset_v2_asset_proto_msgTypes[67].OneofWrappers = []any{}
+	file_nominal_protos_asset_v2_asset_proto_msgTypes[72].OneofWrappers = []any{}
+	file_nominal_protos_asset_v2_asset_proto_msgTypes[74].OneofWrappers = []any{}
+	file_nominal_protos_asset_v2_asset_proto_msgTypes[84].OneofWrappers = []any{}
+	file_nominal_protos_asset_v2_asset_proto_msgTypes[85].OneofWrappers = []any{}
+	file_nominal_protos_asset_v2_asset_proto_msgTypes[86].OneofWrappers = []any{
+		(*LinkEdge_LinkedAsset)(nil),
+		(*LinkEdge_UnresolvedValue)(nil),
+	}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_nominal_protos_asset_v2_asset_proto_rawDesc), len(file_nominal_protos_asset_v2_asset_proto_rawDesc)),
-			NumEnums:      4,
-			NumMessages:   87,
+			NumEnums:      9,
+			NumMessages:   102,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

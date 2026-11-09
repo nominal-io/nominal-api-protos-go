@@ -33,7 +33,10 @@ const (
 //
 // Manages a drive's ingest rules: which files, when they first match a rule, are ingested where.
 type InternalIngestRulesServiceClient interface {
-	// Creates an ingest rule on a drive.
+	// Creates an ingest rule on a drive. Requires drive:read_metadata on the drive and workspace:edit_configuration on
+	// the drive's workspace; the handler resolves that workspace from the drive. A rule that ingests into an existing
+	// dataset also requires datasource:write_data on that dataset, which the annotation can't declare because the
+	// dataset is nested in triggers and only present for that target.
 	//
 	// Errors: FileStoreCommonError (DRIVE_NOT_FOUND, PERMISSION_DENIED).
 	CreateIngestRule(ctx context.Context, in *CreateIngestRuleRequest, opts ...grpc.CallOption) (*CreateIngestRuleResponse, error)
@@ -44,18 +47,34 @@ type InternalIngestRulesServiceClient interface {
 	// Gets an ingest rule by RID.
 	//
 	// Errors: FileStoreCommonError (DRIVE_NOT_FOUND, PERMISSION_DENIED), IngestRulesError (RULE_NOT_FOUND).
+	//
+	// The rule's drive is resolved from rule_rid, so the annotation declares the closest check a caller can
+	// make, workspace:view; the handler checks drive:read_metadata on the rule's drive.
 	GetIngestRule(ctx context.Context, in *GetIngestRuleRequest, opts ...grpc.CallOption) (*GetIngestRuleResponse, error)
-	// Updates an ingest rule's matcher and triggers.
+	// Updates an ingest rule's matcher and triggers. A rule that ingests into an existing dataset also requires
+	// datasource:write_data on that dataset.
 	//
 	// Errors: FileStoreCommonError (DRIVE_NOT_FOUND, PERMISSION_DENIED), IngestRulesError (RULE_NOT_FOUND).
+	//
+	// The rule's drive is resolved from rule_rid, so the annotation declares workspace:edit_configuration, the
+	// closest check a caller can make; the handler checks drive:read_metadata on the rule's drive, then
+	// workspace:edit_configuration on the drive's workspace.
 	UpdateIngestRule(ctx context.Context, in *UpdateIngestRuleRequest, opts ...grpc.CallOption) (*UpdateIngestRuleResponse, error)
 	// Archives an ingest rule. An archived rule fires for nothing.
 	//
 	// Errors: FileStoreCommonError (DRIVE_NOT_FOUND, PERMISSION_DENIED), IngestRulesError (RULE_NOT_FOUND).
+	//
+	// The rule's drive is resolved from rule_rid, so the annotation declares workspace:edit_configuration, the
+	// closest check a caller can make; the handler checks drive:read_metadata on the rule's drive, then
+	// workspace:edit_configuration on the drive's workspace.
 	ArchiveIngestRule(ctx context.Context, in *ArchiveIngestRuleRequest, opts ...grpc.CallOption) (*ArchiveIngestRuleResponse, error)
 	// Unarchives an ingest rule, optionally backfilling matches added since it was archived.
 	//
 	// Errors: FileStoreCommonError (DRIVE_NOT_FOUND, PERMISSION_DENIED), IngestRulesError (RULE_NOT_FOUND).
+	//
+	// The rule's drive is resolved from rule_rid, so the annotation declares workspace:edit_configuration, the
+	// closest check a caller can make; the handler checks drive:read_metadata on the rule's drive, then
+	// workspace:edit_configuration on the drive's workspace.
 	UnarchiveIngestRule(ctx context.Context, in *UnarchiveIngestRuleRequest, opts ...grpc.CallOption) (*UnarchiveIngestRuleResponse, error)
 }
 
@@ -133,7 +152,10 @@ func (c *internalIngestRulesServiceClient) UnarchiveIngestRule(ctx context.Conte
 //
 // Manages a drive's ingest rules: which files, when they first match a rule, are ingested where.
 type InternalIngestRulesServiceServer interface {
-	// Creates an ingest rule on a drive.
+	// Creates an ingest rule on a drive. Requires drive:read_metadata on the drive and workspace:edit_configuration on
+	// the drive's workspace; the handler resolves that workspace from the drive. A rule that ingests into an existing
+	// dataset also requires datasource:write_data on that dataset, which the annotation can't declare because the
+	// dataset is nested in triggers and only present for that target.
 	//
 	// Errors: FileStoreCommonError (DRIVE_NOT_FOUND, PERMISSION_DENIED).
 	CreateIngestRule(context.Context, *CreateIngestRuleRequest) (*CreateIngestRuleResponse, error)
@@ -144,18 +166,34 @@ type InternalIngestRulesServiceServer interface {
 	// Gets an ingest rule by RID.
 	//
 	// Errors: FileStoreCommonError (DRIVE_NOT_FOUND, PERMISSION_DENIED), IngestRulesError (RULE_NOT_FOUND).
+	//
+	// The rule's drive is resolved from rule_rid, so the annotation declares the closest check a caller can
+	// make, workspace:view; the handler checks drive:read_metadata on the rule's drive.
 	GetIngestRule(context.Context, *GetIngestRuleRequest) (*GetIngestRuleResponse, error)
-	// Updates an ingest rule's matcher and triggers.
+	// Updates an ingest rule's matcher and triggers. A rule that ingests into an existing dataset also requires
+	// datasource:write_data on that dataset.
 	//
 	// Errors: FileStoreCommonError (DRIVE_NOT_FOUND, PERMISSION_DENIED), IngestRulesError (RULE_NOT_FOUND).
+	//
+	// The rule's drive is resolved from rule_rid, so the annotation declares workspace:edit_configuration, the
+	// closest check a caller can make; the handler checks drive:read_metadata on the rule's drive, then
+	// workspace:edit_configuration on the drive's workspace.
 	UpdateIngestRule(context.Context, *UpdateIngestRuleRequest) (*UpdateIngestRuleResponse, error)
 	// Archives an ingest rule. An archived rule fires for nothing.
 	//
 	// Errors: FileStoreCommonError (DRIVE_NOT_FOUND, PERMISSION_DENIED), IngestRulesError (RULE_NOT_FOUND).
+	//
+	// The rule's drive is resolved from rule_rid, so the annotation declares workspace:edit_configuration, the
+	// closest check a caller can make; the handler checks drive:read_metadata on the rule's drive, then
+	// workspace:edit_configuration on the drive's workspace.
 	ArchiveIngestRule(context.Context, *ArchiveIngestRuleRequest) (*ArchiveIngestRuleResponse, error)
 	// Unarchives an ingest rule, optionally backfilling matches added since it was archived.
 	//
 	// Errors: FileStoreCommonError (DRIVE_NOT_FOUND, PERMISSION_DENIED), IngestRulesError (RULE_NOT_FOUND).
+	//
+	// The rule's drive is resolved from rule_rid, so the annotation declares workspace:edit_configuration, the
+	// closest check a caller can make; the handler checks drive:read_metadata on the rule's drive, then
+	// workspace:edit_configuration on the drive's workspace.
 	UnarchiveIngestRule(context.Context, *UnarchiveIngestRuleRequest) (*UnarchiveIngestRuleResponse, error)
 	mustEmbedUnimplementedInternalIngestRulesServiceServer()
 }

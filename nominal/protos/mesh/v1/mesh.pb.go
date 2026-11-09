@@ -7,6 +7,7 @@
 package meshv1
 
 import (
+	_ "github.com/nominal-io/nominal-api-protos-go/nominal/protos/authz/v1"
 	v2 "github.com/nominal-io/nominal-api-protos-go/nominal/protos/direct_channel_writer_common/v2"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
@@ -30,6 +31,7 @@ type MeshRequest struct {
 	//
 	//	*MeshRequest_DataStream
 	//	*MeshRequest_FileIngest
+	//	*MeshRequest_Artifacts
 	Request       isMeshRequest_Request `protobuf_oneof:"request"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -90,6 +92,15 @@ func (x *MeshRequest) GetFileIngest() *FileIngestRequest {
 	return nil
 }
 
+func (x *MeshRequest) GetArtifacts() *ImportArtifactsRequest {
+	if x != nil {
+		if x, ok := x.Request.(*MeshRequest_Artifacts); ok {
+			return x.Artifacts
+		}
+	}
+	return nil
+}
+
 type isMeshRequest_Request interface {
 	isMeshRequest_Request()
 }
@@ -102,12 +113,24 @@ type MeshRequest_FileIngest struct {
 	FileIngest *FileIngestRequest `protobuf:"bytes,2,opt,name=file_ingest,json=fileIngest,proto3,oneof"`
 }
 
+type MeshRequest_Artifacts struct {
+	Artifacts *ImportArtifactsRequest `protobuf:"bytes,3,opt,name=artifacts,proto3,oneof"`
+}
+
 func (*MeshRequest_DataStream) isMeshRequest_Request() {}
 
 func (*MeshRequest_FileIngest) isMeshRequest_Request() {}
 
+func (*MeshRequest_Artifacts) isMeshRequest_Request() {}
+
 type MeshResponse struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Types that are valid to be assigned to Response:
+	//
+	//	*MeshResponse_Artifacts
+	//	*MeshResponse_DataStream
+	//	*MeshResponse_FileIngest
+	Response      isMeshResponse_Response `protobuf_oneof:"response"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -142,6 +165,134 @@ func (*MeshResponse) Descriptor() ([]byte, []int) {
 	return file_nominal_protos_mesh_v1_mesh_proto_rawDescGZIP(), []int{1}
 }
 
+func (x *MeshResponse) GetResponse() isMeshResponse_Response {
+	if x != nil {
+		return x.Response
+	}
+	return nil
+}
+
+func (x *MeshResponse) GetArtifacts() *ImportArtifactsResponse {
+	if x != nil {
+		if x, ok := x.Response.(*MeshResponse_Artifacts); ok {
+			return x.Artifacts
+		}
+	}
+	return nil
+}
+
+func (x *MeshResponse) GetDataStream() *DataStreamResponse {
+	if x != nil {
+		if x, ok := x.Response.(*MeshResponse_DataStream); ok {
+			return x.DataStream
+		}
+	}
+	return nil
+}
+
+func (x *MeshResponse) GetFileIngest() *FileIngestResponse {
+	if x != nil {
+		if x, ok := x.Response.(*MeshResponse_FileIngest); ok {
+			return x.FileIngest
+		}
+	}
+	return nil
+}
+
+type isMeshResponse_Response interface {
+	isMeshResponse_Response()
+}
+
+type MeshResponse_Artifacts struct {
+	Artifacts *ImportArtifactsResponse `protobuf:"bytes,1,opt,name=artifacts,proto3,oneof"`
+}
+
+type MeshResponse_DataStream struct {
+	DataStream *DataStreamResponse `protobuf:"bytes,2,opt,name=data_stream,json=dataStream,proto3,oneof"`
+}
+
+type MeshResponse_FileIngest struct {
+	FileIngest *FileIngestResponse `protobuf:"bytes,3,opt,name=file_ingest,json=fileIngest,proto3,oneof"`
+}
+
+func (*MeshResponse_Artifacts) isMeshResponse_Response() {}
+
+func (*MeshResponse_DataStream) isMeshResponse_Response() {}
+
+func (*MeshResponse_FileIngest) isMeshResponse_Response() {}
+
+type DataStreamResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *DataStreamResponse) Reset() {
+	*x = DataStreamResponse{}
+	mi := &file_nominal_protos_mesh_v1_mesh_proto_msgTypes[2]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *DataStreamResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*DataStreamResponse) ProtoMessage() {}
+
+func (x *DataStreamResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_nominal_protos_mesh_v1_mesh_proto_msgTypes[2]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use DataStreamResponse.ProtoReflect.Descriptor instead.
+func (*DataStreamResponse) Descriptor() ([]byte, []int) {
+	return file_nominal_protos_mesh_v1_mesh_proto_rawDescGZIP(), []int{2}
+}
+
+type FileIngestResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *FileIngestResponse) Reset() {
+	*x = FileIngestResponse{}
+	mi := &file_nominal_protos_mesh_v1_mesh_proto_msgTypes[3]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *FileIngestResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*FileIngestResponse) ProtoMessage() {}
+
+func (x *FileIngestResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_nominal_protos_mesh_v1_mesh_proto_msgTypes[3]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use FileIngestResponse.ProtoReflect.Descriptor instead.
+func (*FileIngestResponse) Descriptor() ([]byte, []int) {
+	return file_nominal_protos_mesh_v1_mesh_proto_rawDescGZIP(), []int{3}
+}
+
 type DataStreamRequest struct {
 	state               protoimpl.MessageState            `protogen:"open.v1"`
 	WriteBatchesRequest []*v2.InternalWriteBatchesRequest `protobuf:"bytes,1,rep,name=write_batches_request,json=writeBatchesRequest,proto3" json:"write_batches_request,omitempty"`
@@ -151,7 +302,7 @@ type DataStreamRequest struct {
 
 func (x *DataStreamRequest) Reset() {
 	*x = DataStreamRequest{}
-	mi := &file_nominal_protos_mesh_v1_mesh_proto_msgTypes[2]
+	mi := &file_nominal_protos_mesh_v1_mesh_proto_msgTypes[4]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -163,7 +314,7 @@ func (x *DataStreamRequest) String() string {
 func (*DataStreamRequest) ProtoMessage() {}
 
 func (x *DataStreamRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_mesh_v1_mesh_proto_msgTypes[2]
+	mi := &file_nominal_protos_mesh_v1_mesh_proto_msgTypes[4]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -176,7 +327,7 @@ func (x *DataStreamRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DataStreamRequest.ProtoReflect.Descriptor instead.
 func (*DataStreamRequest) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_mesh_v1_mesh_proto_rawDescGZIP(), []int{2}
+	return file_nominal_protos_mesh_v1_mesh_proto_rawDescGZIP(), []int{4}
 }
 
 func (x *DataStreamRequest) GetWriteBatchesRequest() []*v2.InternalWriteBatchesRequest {
@@ -197,7 +348,7 @@ type FileIngestRequest struct {
 
 func (x *FileIngestRequest) Reset() {
 	*x = FileIngestRequest{}
-	mi := &file_nominal_protos_mesh_v1_mesh_proto_msgTypes[3]
+	mi := &file_nominal_protos_mesh_v1_mesh_proto_msgTypes[5]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -209,7 +360,7 @@ func (x *FileIngestRequest) String() string {
 func (*FileIngestRequest) ProtoMessage() {}
 
 func (x *FileIngestRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_mesh_v1_mesh_proto_msgTypes[3]
+	mi := &file_nominal_protos_mesh_v1_mesh_proto_msgTypes[5]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -222,7 +373,7 @@ func (x *FileIngestRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use FileIngestRequest.ProtoReflect.Descriptor instead.
 func (*FileIngestRequest) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_mesh_v1_mesh_proto_rawDescGZIP(), []int{3}
+	return file_nominal_protos_mesh_v1_mesh_proto_rawDescGZIP(), []int{5}
 }
 
 func (x *FileIngestRequest) GetIngestRequest() []byte {
@@ -240,7 +391,7 @@ type HealthCheckRequest struct {
 
 func (x *HealthCheckRequest) Reset() {
 	*x = HealthCheckRequest{}
-	mi := &file_nominal_protos_mesh_v1_mesh_proto_msgTypes[4]
+	mi := &file_nominal_protos_mesh_v1_mesh_proto_msgTypes[6]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -252,7 +403,7 @@ func (x *HealthCheckRequest) String() string {
 func (*HealthCheckRequest) ProtoMessage() {}
 
 func (x *HealthCheckRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_mesh_v1_mesh_proto_msgTypes[4]
+	mi := &file_nominal_protos_mesh_v1_mesh_proto_msgTypes[6]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -265,7 +416,7 @@ func (x *HealthCheckRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use HealthCheckRequest.ProtoReflect.Descriptor instead.
 func (*HealthCheckRequest) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_mesh_v1_mesh_proto_rawDescGZIP(), []int{4}
+	return file_nominal_protos_mesh_v1_mesh_proto_rawDescGZIP(), []int{6}
 }
 
 type HealthCheckResponse struct {
@@ -276,7 +427,7 @@ type HealthCheckResponse struct {
 
 func (x *HealthCheckResponse) Reset() {
 	*x = HealthCheckResponse{}
-	mi := &file_nominal_protos_mesh_v1_mesh_proto_msgTypes[5]
+	mi := &file_nominal_protos_mesh_v1_mesh_proto_msgTypes[7]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -288,7 +439,7 @@ func (x *HealthCheckResponse) String() string {
 func (*HealthCheckResponse) ProtoMessage() {}
 
 func (x *HealthCheckResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_mesh_v1_mesh_proto_msgTypes[5]
+	mi := &file_nominal_protos_mesh_v1_mesh_proto_msgTypes[7]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -301,43 +452,73 @@ func (x *HealthCheckResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use HealthCheckResponse.ProtoReflect.Descriptor instead.
 func (*HealthCheckResponse) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_mesh_v1_mesh_proto_rawDescGZIP(), []int{5}
+	return file_nominal_protos_mesh_v1_mesh_proto_rawDescGZIP(), []int{7}
 }
 
 var File_nominal_protos_mesh_v1_mesh_proto protoreflect.FileDescriptor
 
 const file_nominal_protos_mesh_v1_mesh_proto_rawDesc = "" +
 	"\n" +
-	"!nominal/protos/mesh/v1/mesh.proto\x12\x0fnominal.mesh.v1\x1a\x1cgoogle/api/annotations.proto\x1aQnominal/protos/direct_channel_writer_common/v2/direct_channel_writer_common.proto\x1a\"nominal/protos/mesh/v1/links.proto\x1a/nominal/protos/mesh/v1/remote_connections.proto\"\xa6\x01\n" +
+	"!nominal/protos/mesh/v1/mesh.proto\x12\x0fnominal.mesh.v1\x1a\x1cgoogle/api/annotations.proto\x1a)nominal/protos/authz/v1/annotations.proto\x1aQnominal/protos/direct_channel_writer_common/v2/direct_channel_writer_common.proto\x1a-nominal/protos/mesh/v1/artifact_imports.proto\x1a\"nominal/protos/mesh/v1/links.proto\x1a/nominal/protos/mesh/v1/remote_connections.proto\"\xef\x01\n" +
 	"\vMeshRequest\x12E\n" +
 	"\vdata_stream\x18\x01 \x01(\v2\".nominal.mesh.v1.DataStreamRequestH\x00R\n" +
 	"dataStream\x12E\n" +
 	"\vfile_ingest\x18\x02 \x01(\v2\".nominal.mesh.v1.FileIngestRequestH\x00R\n" +
-	"fileIngestB\t\n" +
-	"\arequest\"\x0e\n" +
-	"\fMeshResponse\"\x86\x01\n" +
+	"fileIngest\x12G\n" +
+	"\tartifacts\x18\x03 \x01(\v2'.nominal.mesh.v1.ImportArtifactsRequestH\x00R\tartifactsB\t\n" +
+	"\arequest\"\xf4\x01\n" +
+	"\fMeshResponse\x12H\n" +
+	"\tartifacts\x18\x01 \x01(\v2(.nominal.mesh.v1.ImportArtifactsResponseH\x00R\tartifacts\x12F\n" +
+	"\vdata_stream\x18\x02 \x01(\v2#.nominal.mesh.v1.DataStreamResponseH\x00R\n" +
+	"dataStream\x12F\n" +
+	"\vfile_ingest\x18\x03 \x01(\v2#.nominal.mesh.v1.FileIngestResponseH\x00R\n" +
+	"fileIngestB\n" +
+	"\n" +
+	"\bresponse\"\x14\n" +
+	"\x12DataStreamResponse\"\x14\n" +
+	"\x12FileIngestResponse\"\x86\x01\n" +
 	"\x11DataStreamRequest\x12q\n" +
 	"\x15write_batches_request\x18\x01 \x03(\v2=.nominal.direct_channel_writer.v2.InternalWriteBatchesRequestR\x13writeBatchesRequest\":\n" +
 	"\x11FileIngestRequest\x12%\n" +
 	"\x0eingest_request\x18\x01 \x01(\fR\ringestRequest\"\x14\n" +
 	"\x12HealthCheckRequest\"\x15\n" +
-	"\x13HealthCheckResponse2\x9c\r\n" +
-	"\vMeshService\x12]\n" +
-	"\x04Mesh\x12\x1c.nominal.mesh.v1.MeshRequest\x1a\x1d.nominal.mesh.v1.MeshResponse\"\x18\x82\xd3\xe4\x93\x02\x12:\x01*\"\r/mesh/v1/mesh\x12q\n" +
-	"\vHealthCheck\x12#.nominal.mesh.v1.HealthCheckRequest\x1a$.nominal.mesh.v1.HealthCheckResponse\"\x17\x82\xd3\xe4\x93\x02\x11\x12\x0f/mesh/v1/health\x12p\n" +
+	"\x13HealthCheckResponse2\xe7\x0f\n" +
+	"\vMeshService\x12a\n" +
+	"\x04Mesh\x12\x1c.nominal.mesh.v1.MeshRequest\x1a\x1d.nominal.mesh.v1.MeshResponse\"\x1c\xba\xb2\x1a\x00\x82\xd3\xe4\x93\x02\x12:\x01*\"\r/mesh/v1/mesh\x12u\n" +
+	"\vHealthCheck\x12#.nominal.mesh.v1.HealthCheckRequest\x1a$.nominal.mesh.v1.HealthCheckResponse\"\x1b\xba\xb2\x1a\x00\x82\xd3\xe4\x93\x02\x11\x12\x0f/mesh/v1/health\x12\x95\x01\n" +
 	"\n" +
-	"CreateLink\x12\".nominal.mesh.v1.CreateLinkRequest\x1a#.nominal.mesh.v1.CreateLinkResponse\"\x19\x82\xd3\xe4\x93\x02\x13:\x01*\"\x0e/mesh/v1/links\x12o\n" +
-	"\aGetLink\x12\x1f.nominal.mesh.v1.GetLinkRequest\x1a .nominal.mesh.v1.GetLinkResponse\"!\x82\xd3\xe4\x93\x02\x1b\x12\x19/mesh/v1/links/{link_rid}\x12{\n" +
+	"CreateLink\x12\".nominal.mesh.v1.CreateLinkRequest\x1a#.nominal.mesh.v1.CreateLinkResponse\">\xba\xb2\x1a!\n" +
+	"\x1f\n" +
+	"\x1bworkspace:edit_connectivity\"\x00\x82\xd3\xe4\x93\x02\x13:\x01*\"\x0e/mesh/v1/links\x12\x87\x01\n" +
+	"\aGetLink\x12\x1f.nominal.mesh.v1.GetLinkRequest\x1a .nominal.mesh.v1.GetLinkResponse\"9\xba\xb2\x1a\x14\n" +
+	"\x12\n" +
+	"\x0eworkspace:view\"\x00\x82\xd3\xe4\x93\x02\x1b\x12\x19/mesh/v1/links/{link_rid}\x12\xa0\x01\n" +
 	"\n" +
-	"UpdateLink\x12\".nominal.mesh.v1.UpdateLinkRequest\x1a#.nominal.mesh.v1.UpdateLinkResponse\"$\x82\xd3\xe4\x93\x02\x1e:\x01*\x1a\x19/mesh/v1/links/{link_rid}\x12x\n" +
+	"UpdateLink\x12\".nominal.mesh.v1.UpdateLinkRequest\x1a#.nominal.mesh.v1.UpdateLinkResponse\"I\xba\xb2\x1a!\n" +
+	"\x1f\n" +
+	"\x1bworkspace:edit_connectivity\"\x00\x82\xd3\xe4\x93\x02\x1e:\x01*\x1a\x19/mesh/v1/links/{link_rid}\x12\x9d\x01\n" +
 	"\n" +
-	"DeleteLink\x12\".nominal.mesh.v1.DeleteLinkRequest\x1a#.nominal.mesh.v1.DeleteLinkResponse\"!\x82\xd3\xe4\x93\x02\x1b*\x19/mesh/v1/links/{link_rid}\x12z\n" +
-	"\vSearchLinks\x12#.nominal.mesh.v1.SearchLinksRequest\x1a$.nominal.mesh.v1.SearchLinksResponse\" \x82\xd3\xe4\x93\x02\x1a:\x01*\"\x15/mesh/v1/links/search\x12\xa1\x01\n" +
-	"\x16CreateRemoteConnection\x12..nominal.mesh.v1.CreateRemoteConnectionRequest\x1a/.nominal.mesh.v1.CreateRemoteConnectionResponse\"&\x82\xd3\xe4\x93\x02 :\x01*\"\x1b/mesh/v1/remote-connections\x12\xad\x01\n" +
-	"\x13GetRemoteConnection\x12+.nominal.mesh.v1.GetRemoteConnectionRequest\x1a,.nominal.mesh.v1.GetRemoteConnectionResponse\";\x82\xd3\xe4\x93\x025\x123/mesh/v1/remote-connections/{remote_connection_rid}\x12\xb9\x01\n" +
-	"\x16UpdateRemoteConnection\x12..nominal.mesh.v1.UpdateRemoteConnectionRequest\x1a/.nominal.mesh.v1.UpdateRemoteConnectionResponse\">\x82\xd3\xe4\x93\x028:\x01*\x1a3/mesh/v1/remote-connections/{remote_connection_rid}\x12\xb6\x01\n" +
-	"\x16DeleteRemoteConnection\x12..nominal.mesh.v1.DeleteRemoteConnectionRequest\x1a/.nominal.mesh.v1.DeleteRemoteConnectionResponse\";\x82\xd3\xe4\x93\x025*3/mesh/v1/remote-connections/{remote_connection_rid}\x12\x9b\x01\n" +
-	"\x15ListRemoteConnections\x12-.nominal.mesh.v1.ListRemoteConnectionsRequest\x1a..nominal.mesh.v1.ListRemoteConnectionsResponse\"#\x82\xd3\xe4\x93\x02\x1d\x12\x1b/mesh/v1/remote-connectionsB\xc9\x01\n" +
+	"DeleteLink\x12\".nominal.mesh.v1.DeleteLinkRequest\x1a#.nominal.mesh.v1.DeleteLinkResponse\"F\xba\xb2\x1a!\n" +
+	"\x1f\n" +
+	"\x1bworkspace:edit_connectivity\"\x00\x82\xd3\xe4\x93\x02\x1b*\x19/mesh/v1/links/{link_rid}\x12\x92\x01\n" +
+	"\vSearchLinks\x12#.nominal.mesh.v1.SearchLinksRequest\x1a$.nominal.mesh.v1.SearchLinksResponse\"8\xba\xb2\x1a\x14\n" +
+	"\x12\n" +
+	"\x0eworkspace:view\"\x00\x82\xd3\xe4\x93\x02\x1a:\x01*\"\x15/mesh/v1/links/search\x12\xc6\x01\n" +
+	"\x16CreateRemoteConnection\x12..nominal.mesh.v1.CreateRemoteConnectionRequest\x1a/.nominal.mesh.v1.CreateRemoteConnectionResponse\"K\xba\xb2\x1a!\n" +
+	"\x1f\n" +
+	"\x1bworkspace:edit_connectivity\"\x00\x82\xd3\xe4\x93\x02 :\x01*\"\x1b/mesh/v1/remote-connections\x12\xc5\x01\n" +
+	"\x13GetRemoteConnection\x12+.nominal.mesh.v1.GetRemoteConnectionRequest\x1a,.nominal.mesh.v1.GetRemoteConnectionResponse\"S\xba\xb2\x1a\x14\n" +
+	"\x12\n" +
+	"\x0eworkspace:view\"\x00\x82\xd3\xe4\x93\x025\x123/mesh/v1/remote-connections/{remote_connection_rid}\x12\xde\x01\n" +
+	"\x16UpdateRemoteConnection\x12..nominal.mesh.v1.UpdateRemoteConnectionRequest\x1a/.nominal.mesh.v1.UpdateRemoteConnectionResponse\"c\xba\xb2\x1a!\n" +
+	"\x1f\n" +
+	"\x1bworkspace:edit_connectivity\"\x00\x82\xd3\xe4\x93\x028:\x01*\x1a3/mesh/v1/remote-connections/{remote_connection_rid}\x12\xdb\x01\n" +
+	"\x16DeleteRemoteConnection\x12..nominal.mesh.v1.DeleteRemoteConnectionRequest\x1a/.nominal.mesh.v1.DeleteRemoteConnectionResponse\"`\xba\xb2\x1a!\n" +
+	"\x1f\n" +
+	"\x1bworkspace:edit_connectivity\"\x00\x82\xd3\xe4\x93\x025*3/mesh/v1/remote-connections/{remote_connection_rid}\x12\xb3\x01\n" +
+	"\x15ListRemoteConnections\x12-.nominal.mesh.v1.ListRemoteConnectionsRequest\x1a..nominal.mesh.v1.ListRemoteConnectionsResponse\";\xba\xb2\x1a\x14\n" +
+	"\x12\n" +
+	"\x0eworkspace:view\"\x00\x82\xd3\xe4\x93\x02\x1d\x12\x1b/mesh/v1/remote-connectionsB\xc9\x01\n" +
 	"\x13com.nominal.mesh.v1B\tMeshProtoP\x01ZIgithub.com/nominal-io/nominal-api-protos-go/nominal/protos/mesh/v1;meshv1\xa2\x02\x03NMX\xaa\x02\x0fNominal.Mesh.V1\xca\x02\x0fNominal\\Mesh\\V1\xe2\x02\x1bNominal\\Mesh\\V1\\GPBMetadata\xea\x02\x11Nominal::Mesh::V1b\x06proto3"
 
 var (
@@ -352,69 +533,77 @@ func file_nominal_protos_mesh_v1_mesh_proto_rawDescGZIP() []byte {
 	return file_nominal_protos_mesh_v1_mesh_proto_rawDescData
 }
 
-var file_nominal_protos_mesh_v1_mesh_proto_msgTypes = make([]protoimpl.MessageInfo, 6)
+var file_nominal_protos_mesh_v1_mesh_proto_msgTypes = make([]protoimpl.MessageInfo, 8)
 var file_nominal_protos_mesh_v1_mesh_proto_goTypes = []any{
 	(*MeshRequest)(nil),                    // 0: nominal.mesh.v1.MeshRequest
 	(*MeshResponse)(nil),                   // 1: nominal.mesh.v1.MeshResponse
-	(*DataStreamRequest)(nil),              // 2: nominal.mesh.v1.DataStreamRequest
-	(*FileIngestRequest)(nil),              // 3: nominal.mesh.v1.FileIngestRequest
-	(*HealthCheckRequest)(nil),             // 4: nominal.mesh.v1.HealthCheckRequest
-	(*HealthCheckResponse)(nil),            // 5: nominal.mesh.v1.HealthCheckResponse
-	(*v2.InternalWriteBatchesRequest)(nil), // 6: nominal.direct_channel_writer.v2.InternalWriteBatchesRequest
-	(*CreateLinkRequest)(nil),              // 7: nominal.mesh.v1.CreateLinkRequest
-	(*GetLinkRequest)(nil),                 // 8: nominal.mesh.v1.GetLinkRequest
-	(*UpdateLinkRequest)(nil),              // 9: nominal.mesh.v1.UpdateLinkRequest
-	(*DeleteLinkRequest)(nil),              // 10: nominal.mesh.v1.DeleteLinkRequest
-	(*SearchLinksRequest)(nil),             // 11: nominal.mesh.v1.SearchLinksRequest
-	(*CreateRemoteConnectionRequest)(nil),  // 12: nominal.mesh.v1.CreateRemoteConnectionRequest
-	(*GetRemoteConnectionRequest)(nil),     // 13: nominal.mesh.v1.GetRemoteConnectionRequest
-	(*UpdateRemoteConnectionRequest)(nil),  // 14: nominal.mesh.v1.UpdateRemoteConnectionRequest
-	(*DeleteRemoteConnectionRequest)(nil),  // 15: nominal.mesh.v1.DeleteRemoteConnectionRequest
-	(*ListRemoteConnectionsRequest)(nil),   // 16: nominal.mesh.v1.ListRemoteConnectionsRequest
-	(*CreateLinkResponse)(nil),             // 17: nominal.mesh.v1.CreateLinkResponse
-	(*GetLinkResponse)(nil),                // 18: nominal.mesh.v1.GetLinkResponse
-	(*UpdateLinkResponse)(nil),             // 19: nominal.mesh.v1.UpdateLinkResponse
-	(*DeleteLinkResponse)(nil),             // 20: nominal.mesh.v1.DeleteLinkResponse
-	(*SearchLinksResponse)(nil),            // 21: nominal.mesh.v1.SearchLinksResponse
-	(*CreateRemoteConnectionResponse)(nil), // 22: nominal.mesh.v1.CreateRemoteConnectionResponse
-	(*GetRemoteConnectionResponse)(nil),    // 23: nominal.mesh.v1.GetRemoteConnectionResponse
-	(*UpdateRemoteConnectionResponse)(nil), // 24: nominal.mesh.v1.UpdateRemoteConnectionResponse
-	(*DeleteRemoteConnectionResponse)(nil), // 25: nominal.mesh.v1.DeleteRemoteConnectionResponse
-	(*ListRemoteConnectionsResponse)(nil),  // 26: nominal.mesh.v1.ListRemoteConnectionsResponse
+	(*DataStreamResponse)(nil),             // 2: nominal.mesh.v1.DataStreamResponse
+	(*FileIngestResponse)(nil),             // 3: nominal.mesh.v1.FileIngestResponse
+	(*DataStreamRequest)(nil),              // 4: nominal.mesh.v1.DataStreamRequest
+	(*FileIngestRequest)(nil),              // 5: nominal.mesh.v1.FileIngestRequest
+	(*HealthCheckRequest)(nil),             // 6: nominal.mesh.v1.HealthCheckRequest
+	(*HealthCheckResponse)(nil),            // 7: nominal.mesh.v1.HealthCheckResponse
+	(*ImportArtifactsRequest)(nil),         // 8: nominal.mesh.v1.ImportArtifactsRequest
+	(*ImportArtifactsResponse)(nil),        // 9: nominal.mesh.v1.ImportArtifactsResponse
+	(*v2.InternalWriteBatchesRequest)(nil), // 10: nominal.direct_channel_writer.v2.InternalWriteBatchesRequest
+	(*CreateLinkRequest)(nil),              // 11: nominal.mesh.v1.CreateLinkRequest
+	(*GetLinkRequest)(nil),                 // 12: nominal.mesh.v1.GetLinkRequest
+	(*UpdateLinkRequest)(nil),              // 13: nominal.mesh.v1.UpdateLinkRequest
+	(*DeleteLinkRequest)(nil),              // 14: nominal.mesh.v1.DeleteLinkRequest
+	(*SearchLinksRequest)(nil),             // 15: nominal.mesh.v1.SearchLinksRequest
+	(*CreateRemoteConnectionRequest)(nil),  // 16: nominal.mesh.v1.CreateRemoteConnectionRequest
+	(*GetRemoteConnectionRequest)(nil),     // 17: nominal.mesh.v1.GetRemoteConnectionRequest
+	(*UpdateRemoteConnectionRequest)(nil),  // 18: nominal.mesh.v1.UpdateRemoteConnectionRequest
+	(*DeleteRemoteConnectionRequest)(nil),  // 19: nominal.mesh.v1.DeleteRemoteConnectionRequest
+	(*ListRemoteConnectionsRequest)(nil),   // 20: nominal.mesh.v1.ListRemoteConnectionsRequest
+	(*CreateLinkResponse)(nil),             // 21: nominal.mesh.v1.CreateLinkResponse
+	(*GetLinkResponse)(nil),                // 22: nominal.mesh.v1.GetLinkResponse
+	(*UpdateLinkResponse)(nil),             // 23: nominal.mesh.v1.UpdateLinkResponse
+	(*DeleteLinkResponse)(nil),             // 24: nominal.mesh.v1.DeleteLinkResponse
+	(*SearchLinksResponse)(nil),            // 25: nominal.mesh.v1.SearchLinksResponse
+	(*CreateRemoteConnectionResponse)(nil), // 26: nominal.mesh.v1.CreateRemoteConnectionResponse
+	(*GetRemoteConnectionResponse)(nil),    // 27: nominal.mesh.v1.GetRemoteConnectionResponse
+	(*UpdateRemoteConnectionResponse)(nil), // 28: nominal.mesh.v1.UpdateRemoteConnectionResponse
+	(*DeleteRemoteConnectionResponse)(nil), // 29: nominal.mesh.v1.DeleteRemoteConnectionResponse
+	(*ListRemoteConnectionsResponse)(nil),  // 30: nominal.mesh.v1.ListRemoteConnectionsResponse
 }
 var file_nominal_protos_mesh_v1_mesh_proto_depIdxs = []int32{
-	2,  // 0: nominal.mesh.v1.MeshRequest.data_stream:type_name -> nominal.mesh.v1.DataStreamRequest
-	3,  // 1: nominal.mesh.v1.MeshRequest.file_ingest:type_name -> nominal.mesh.v1.FileIngestRequest
-	6,  // 2: nominal.mesh.v1.DataStreamRequest.write_batches_request:type_name -> nominal.direct_channel_writer.v2.InternalWriteBatchesRequest
-	0,  // 3: nominal.mesh.v1.MeshService.Mesh:input_type -> nominal.mesh.v1.MeshRequest
-	4,  // 4: nominal.mesh.v1.MeshService.HealthCheck:input_type -> nominal.mesh.v1.HealthCheckRequest
-	7,  // 5: nominal.mesh.v1.MeshService.CreateLink:input_type -> nominal.mesh.v1.CreateLinkRequest
-	8,  // 6: nominal.mesh.v1.MeshService.GetLink:input_type -> nominal.mesh.v1.GetLinkRequest
-	9,  // 7: nominal.mesh.v1.MeshService.UpdateLink:input_type -> nominal.mesh.v1.UpdateLinkRequest
-	10, // 8: nominal.mesh.v1.MeshService.DeleteLink:input_type -> nominal.mesh.v1.DeleteLinkRequest
-	11, // 9: nominal.mesh.v1.MeshService.SearchLinks:input_type -> nominal.mesh.v1.SearchLinksRequest
-	12, // 10: nominal.mesh.v1.MeshService.CreateRemoteConnection:input_type -> nominal.mesh.v1.CreateRemoteConnectionRequest
-	13, // 11: nominal.mesh.v1.MeshService.GetRemoteConnection:input_type -> nominal.mesh.v1.GetRemoteConnectionRequest
-	14, // 12: nominal.mesh.v1.MeshService.UpdateRemoteConnection:input_type -> nominal.mesh.v1.UpdateRemoteConnectionRequest
-	15, // 13: nominal.mesh.v1.MeshService.DeleteRemoteConnection:input_type -> nominal.mesh.v1.DeleteRemoteConnectionRequest
-	16, // 14: nominal.mesh.v1.MeshService.ListRemoteConnections:input_type -> nominal.mesh.v1.ListRemoteConnectionsRequest
-	1,  // 15: nominal.mesh.v1.MeshService.Mesh:output_type -> nominal.mesh.v1.MeshResponse
-	5,  // 16: nominal.mesh.v1.MeshService.HealthCheck:output_type -> nominal.mesh.v1.HealthCheckResponse
-	17, // 17: nominal.mesh.v1.MeshService.CreateLink:output_type -> nominal.mesh.v1.CreateLinkResponse
-	18, // 18: nominal.mesh.v1.MeshService.GetLink:output_type -> nominal.mesh.v1.GetLinkResponse
-	19, // 19: nominal.mesh.v1.MeshService.UpdateLink:output_type -> nominal.mesh.v1.UpdateLinkResponse
-	20, // 20: nominal.mesh.v1.MeshService.DeleteLink:output_type -> nominal.mesh.v1.DeleteLinkResponse
-	21, // 21: nominal.mesh.v1.MeshService.SearchLinks:output_type -> nominal.mesh.v1.SearchLinksResponse
-	22, // 22: nominal.mesh.v1.MeshService.CreateRemoteConnection:output_type -> nominal.mesh.v1.CreateRemoteConnectionResponse
-	23, // 23: nominal.mesh.v1.MeshService.GetRemoteConnection:output_type -> nominal.mesh.v1.GetRemoteConnectionResponse
-	24, // 24: nominal.mesh.v1.MeshService.UpdateRemoteConnection:output_type -> nominal.mesh.v1.UpdateRemoteConnectionResponse
-	25, // 25: nominal.mesh.v1.MeshService.DeleteRemoteConnection:output_type -> nominal.mesh.v1.DeleteRemoteConnectionResponse
-	26, // 26: nominal.mesh.v1.MeshService.ListRemoteConnections:output_type -> nominal.mesh.v1.ListRemoteConnectionsResponse
-	15, // [15:27] is the sub-list for method output_type
-	3,  // [3:15] is the sub-list for method input_type
-	3,  // [3:3] is the sub-list for extension type_name
-	3,  // [3:3] is the sub-list for extension extendee
-	0,  // [0:3] is the sub-list for field type_name
+	4,  // 0: nominal.mesh.v1.MeshRequest.data_stream:type_name -> nominal.mesh.v1.DataStreamRequest
+	5,  // 1: nominal.mesh.v1.MeshRequest.file_ingest:type_name -> nominal.mesh.v1.FileIngestRequest
+	8,  // 2: nominal.mesh.v1.MeshRequest.artifacts:type_name -> nominal.mesh.v1.ImportArtifactsRequest
+	9,  // 3: nominal.mesh.v1.MeshResponse.artifacts:type_name -> nominal.mesh.v1.ImportArtifactsResponse
+	2,  // 4: nominal.mesh.v1.MeshResponse.data_stream:type_name -> nominal.mesh.v1.DataStreamResponse
+	3,  // 5: nominal.mesh.v1.MeshResponse.file_ingest:type_name -> nominal.mesh.v1.FileIngestResponse
+	10, // 6: nominal.mesh.v1.DataStreamRequest.write_batches_request:type_name -> nominal.direct_channel_writer.v2.InternalWriteBatchesRequest
+	0,  // 7: nominal.mesh.v1.MeshService.Mesh:input_type -> nominal.mesh.v1.MeshRequest
+	6,  // 8: nominal.mesh.v1.MeshService.HealthCheck:input_type -> nominal.mesh.v1.HealthCheckRequest
+	11, // 9: nominal.mesh.v1.MeshService.CreateLink:input_type -> nominal.mesh.v1.CreateLinkRequest
+	12, // 10: nominal.mesh.v1.MeshService.GetLink:input_type -> nominal.mesh.v1.GetLinkRequest
+	13, // 11: nominal.mesh.v1.MeshService.UpdateLink:input_type -> nominal.mesh.v1.UpdateLinkRequest
+	14, // 12: nominal.mesh.v1.MeshService.DeleteLink:input_type -> nominal.mesh.v1.DeleteLinkRequest
+	15, // 13: nominal.mesh.v1.MeshService.SearchLinks:input_type -> nominal.mesh.v1.SearchLinksRequest
+	16, // 14: nominal.mesh.v1.MeshService.CreateRemoteConnection:input_type -> nominal.mesh.v1.CreateRemoteConnectionRequest
+	17, // 15: nominal.mesh.v1.MeshService.GetRemoteConnection:input_type -> nominal.mesh.v1.GetRemoteConnectionRequest
+	18, // 16: nominal.mesh.v1.MeshService.UpdateRemoteConnection:input_type -> nominal.mesh.v1.UpdateRemoteConnectionRequest
+	19, // 17: nominal.mesh.v1.MeshService.DeleteRemoteConnection:input_type -> nominal.mesh.v1.DeleteRemoteConnectionRequest
+	20, // 18: nominal.mesh.v1.MeshService.ListRemoteConnections:input_type -> nominal.mesh.v1.ListRemoteConnectionsRequest
+	1,  // 19: nominal.mesh.v1.MeshService.Mesh:output_type -> nominal.mesh.v1.MeshResponse
+	7,  // 20: nominal.mesh.v1.MeshService.HealthCheck:output_type -> nominal.mesh.v1.HealthCheckResponse
+	21, // 21: nominal.mesh.v1.MeshService.CreateLink:output_type -> nominal.mesh.v1.CreateLinkResponse
+	22, // 22: nominal.mesh.v1.MeshService.GetLink:output_type -> nominal.mesh.v1.GetLinkResponse
+	23, // 23: nominal.mesh.v1.MeshService.UpdateLink:output_type -> nominal.mesh.v1.UpdateLinkResponse
+	24, // 24: nominal.mesh.v1.MeshService.DeleteLink:output_type -> nominal.mesh.v1.DeleteLinkResponse
+	25, // 25: nominal.mesh.v1.MeshService.SearchLinks:output_type -> nominal.mesh.v1.SearchLinksResponse
+	26, // 26: nominal.mesh.v1.MeshService.CreateRemoteConnection:output_type -> nominal.mesh.v1.CreateRemoteConnectionResponse
+	27, // 27: nominal.mesh.v1.MeshService.GetRemoteConnection:output_type -> nominal.mesh.v1.GetRemoteConnectionResponse
+	28, // 28: nominal.mesh.v1.MeshService.UpdateRemoteConnection:output_type -> nominal.mesh.v1.UpdateRemoteConnectionResponse
+	29, // 29: nominal.mesh.v1.MeshService.DeleteRemoteConnection:output_type -> nominal.mesh.v1.DeleteRemoteConnectionResponse
+	30, // 30: nominal.mesh.v1.MeshService.ListRemoteConnections:output_type -> nominal.mesh.v1.ListRemoteConnectionsResponse
+	19, // [19:31] is the sub-list for method output_type
+	7,  // [7:19] is the sub-list for method input_type
+	7,  // [7:7] is the sub-list for extension type_name
+	7,  // [7:7] is the sub-list for extension extendee
+	0,  // [0:7] is the sub-list for field type_name
 }
 
 func init() { file_nominal_protos_mesh_v1_mesh_proto_init() }
@@ -422,11 +611,18 @@ func file_nominal_protos_mesh_v1_mesh_proto_init() {
 	if File_nominal_protos_mesh_v1_mesh_proto != nil {
 		return
 	}
+	file_nominal_protos_mesh_v1_artifact_imports_proto_init()
 	file_nominal_protos_mesh_v1_links_proto_init()
 	file_nominal_protos_mesh_v1_remote_connections_proto_init()
 	file_nominal_protos_mesh_v1_mesh_proto_msgTypes[0].OneofWrappers = []any{
 		(*MeshRequest_DataStream)(nil),
 		(*MeshRequest_FileIngest)(nil),
+		(*MeshRequest_Artifacts)(nil),
+	}
+	file_nominal_protos_mesh_v1_mesh_proto_msgTypes[1].OneofWrappers = []any{
+		(*MeshResponse_Artifacts)(nil),
+		(*MeshResponse_DataStream)(nil),
+		(*MeshResponse_FileIngest)(nil),
 	}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
@@ -434,7 +630,7 @@ func file_nominal_protos_mesh_v1_mesh_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_nominal_protos_mesh_v1_mesh_proto_rawDesc), len(file_nominal_protos_mesh_v1_mesh_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   6,
+			NumMessages:   8,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

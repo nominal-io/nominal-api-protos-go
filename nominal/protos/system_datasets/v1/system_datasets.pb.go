@@ -8,6 +8,7 @@ package system_datasetsv1
 
 import (
 	_ "buf.build/gen/go/bufbuild/protovalidate/protocolbuffers/go/buf/validate"
+	_ "github.com/nominal-io/nominal-api-protos-go/nominal/protos/authz/v1"
 	_ "github.com/nominal-io/nominal-api-protos-go/nominal/protos/gen/v1"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
@@ -194,7 +195,7 @@ var File_nominal_protos_system_datasets_v1_system_datasets_proto protoreflect.Fi
 
 const file_nominal_protos_system_datasets_v1_system_datasets_proto_rawDesc = "" +
 	"\n" +
-	"7nominal/protos/system_datasets/v1/system_datasets.proto\x12\x1anominal.system_datasets.v1\x1a\x1bbuf/validate/validate.proto\x1a\x1cgoogle/api/annotations.proto\x1a!nominal/protos/gen/v1/alias.proto\"\x8c\x04\n" +
+	"7nominal/protos/system_datasets/v1/system_datasets.proto\x12\x1anominal.system_datasets.v1\x1a\x1bbuf/validate/validate.proto\x1a\x1cgoogle/api/annotations.proto\x1a)nominal/protos/authz/v1/annotations.proto\x1a!nominal/protos/gen/v1/alias.proto\"\x8c\x04\n" +
 	"\x0eSystemDatasets\x12U\n" +
 	"\x11usage_dataset_rid\x18\x01 \x01(\tB$\x9a\xb2\x1a \n" +
 	"\x1eio.nominal.api.rids.DatasetRidH\x00R\x0fusageDatasetRid\x88\x01\x01\x12Q\n" +
@@ -212,9 +213,11 @@ const file_nominal_protos_system_datasets_v1_system_datasets_proto_rawDesc = "" 
 	"\rworkspace_rid\x18\x01 \x01(\tB,\xbaH\x03\xc8\x01\x01\x9a\xb2\x1a\"\n" +
 	" io.nominal.api.rids.WorkspaceRidR\fworkspaceRid\"p\n" +
 	"\x19GetSystemDatasetsResponse\x12S\n" +
-	"\x0fsystem_datasets\x18\x01 \x01(\v2*.nominal.system_datasets.v1.SystemDatasetsR\x0esystemDatasets2\xf3\x01\n" +
-	"\x15SystemDatasetsService\x12\xd9\x01\n" +
-	"\x11GetSystemDatasets\x124.nominal.system_datasets.v1.GetSystemDatasetsRequest\x1a5.nominal.system_datasets.v1.GetSystemDatasetsResponse\"W\x82\xd3\xe4\x93\x02Qb\x0fsystem_datasets\x12>/system-datasets/v1/workspaces/{workspace_rid}/system-datasetsB\x9c\x02\n" +
+	"\x0fsystem_datasets\x18\x01 \x01(\v2*.nominal.system_datasets.v1.SystemDatasetsR\x0esystemDatasets2\x8b\x02\n" +
+	"\x15SystemDatasetsService\x12\xf1\x01\n" +
+	"\x11GetSystemDatasets\x124.nominal.system_datasets.v1.GetSystemDatasetsRequest\x1a5.nominal.system_datasets.v1.GetSystemDatasetsResponse\"o\xba\xb2\x1a\x14\n" +
+	"\x12\n" +
+	"\x0eworkspace:view\"\x00\x82\xd3\xe4\x93\x02Qb\x0fsystem_datasets\x12>/system-datasets/v1/workspaces/{workspace_rid}/system-datasetsB\x9c\x02\n" +
 	"\x1ecom.nominal.system_datasets.v1B\x13SystemDatasetsProtoP\x01Z_github.com/nominal-io/nominal-api-protos-go/nominal/protos/system_datasets/v1;system_datasetsv1\xa2\x02\x03NSX\xaa\x02\x19Nominal.SystemDatasets.V1\xca\x02\x19Nominal\\SystemDatasets\\V1\xe2\x02%Nominal\\SystemDatasets\\V1\\GPBMetadata\xea\x02\x1bNominal::SystemDatasets::V1b\x06proto3"
 
 var (

@@ -1161,6 +1161,115 @@ func (x *ExtractorFailure) GetDetails() map[string]string {
 	return nil
 }
 
+// Inputs of a containerized extractor job that are read in place from an S3 virtual drive, keyed by the
+// input's environment variable. An input absent from the map (or an absent message) is a Nominal-storage input.
+type DriveInputPins struct {
+	state         protoimpl.MessageState    `protogen:"open.v1"`
+	Pins          map[string]*DriveInputPin `protobuf:"bytes,1,rep,name=pins,proto3" json:"pins,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *DriveInputPins) Reset() {
+	*x = DriveInputPins{}
+	mi := &file_nominal_protos_ingest_transform_v1_activities_proto_msgTypes[14]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *DriveInputPins) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*DriveInputPins) ProtoMessage() {}
+
+func (x *DriveInputPins) ProtoReflect() protoreflect.Message {
+	mi := &file_nominal_protos_ingest_transform_v1_activities_proto_msgTypes[14]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use DriveInputPins.ProtoReflect.Descriptor instead.
+func (*DriveInputPins) Descriptor() ([]byte, []int) {
+	return file_nominal_protos_ingest_transform_v1_activities_proto_rawDescGZIP(), []int{14}
+}
+
+func (x *DriveInputPins) GetPins() map[string]*DriveInputPin {
+	if x != nil {
+		return x.Pins
+	}
+	return nil
+}
+
+// The virtual drive an input is read through and the ETag the revision recorded for it.
+type DriveInputPin struct {
+	state     protoimpl.MessageState `protogen:"open.v1"`
+	DriveUuid string                 `protobuf:"bytes,1,opt,name=drive_uuid,json=driveUuid,proto3" json:"drive_uuid,omitempty"`
+	Etag      string                 `protobuf:"bytes,2,opt,name=etag,proto3" json:"etag,omitempty"`
+	// DriveSourceFingerprint of the drive's connection config when the input was resolved. A read is refused once the
+	// drive's config no longer has it. Unset on a pin recorded before this field existed, which skips the check.
+	ConfigFingerprint *string `protobuf:"bytes,3,opt,name=config_fingerprint,json=configFingerprint,proto3,oneof" json:"config_fingerprint,omitempty"`
+	unknownFields     protoimpl.UnknownFields
+	sizeCache         protoimpl.SizeCache
+}
+
+func (x *DriveInputPin) Reset() {
+	*x = DriveInputPin{}
+	mi := &file_nominal_protos_ingest_transform_v1_activities_proto_msgTypes[15]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *DriveInputPin) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*DriveInputPin) ProtoMessage() {}
+
+func (x *DriveInputPin) ProtoReflect() protoreflect.Message {
+	mi := &file_nominal_protos_ingest_transform_v1_activities_proto_msgTypes[15]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use DriveInputPin.ProtoReflect.Descriptor instead.
+func (*DriveInputPin) Descriptor() ([]byte, []int) {
+	return file_nominal_protos_ingest_transform_v1_activities_proto_rawDescGZIP(), []int{15}
+}
+
+func (x *DriveInputPin) GetDriveUuid() string {
+	if x != nil {
+		return x.DriveUuid
+	}
+	return ""
+}
+
+func (x *DriveInputPin) GetEtag() string {
+	if x != nil {
+		return x.Etag
+	}
+	return ""
+}
+
+func (x *DriveInputPin) GetConfigFingerprint() string {
+	if x != nil && x.ConfigFingerprint != nil {
+		return *x.ConfigFingerprint
+	}
+	return ""
+}
+
 var File_nominal_protos_ingest_transform_v1_activities_proto protoreflect.FileDescriptor
 
 const file_nominal_protos_ingest_transform_v1_activities_proto_rawDesc = "" +
@@ -1276,7 +1385,18 @@ const file_nominal_protos_ingest_transform_v1_activities_proto_rawDesc = "" +
 	"\adetails\x18\x04 \x03(\v2:.nominal.ingest_transform.v1.ExtractorFailure.DetailsEntryR\adetails\x1a:\n" +
 	"\fDetailsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
-	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01*\x82\x01\n" +
+	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"\xc0\x01\n" +
+	"\x0eDriveInputPins\x12I\n" +
+	"\x04pins\x18\x01 \x03(\v25.nominal.ingest_transform.v1.DriveInputPins.PinsEntryR\x04pins\x1ac\n" +
+	"\tPinsEntry\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\tR\x03key\x12@\n" +
+	"\x05value\x18\x02 \x01(\v2*.nominal.ingest_transform.v1.DriveInputPinR\x05value:\x028\x01\"\x8d\x01\n" +
+	"\rDriveInputPin\x12\x1d\n" +
+	"\n" +
+	"drive_uuid\x18\x01 \x01(\tR\tdriveUuid\x12\x12\n" +
+	"\x04etag\x18\x02 \x01(\tR\x04etag\x122\n" +
+	"\x12config_fingerprint\x18\x03 \x01(\tH\x00R\x11configFingerprint\x88\x01\x01B\x15\n" +
+	"\x13_config_fingerprint*\x82\x01\n" +
 	"\x14TransformFailureKind\x12&\n" +
 	"\"TRANSFORM_FAILURE_KIND_UNSPECIFIED\x10\x00\x12\x1f\n" +
 	"\x1bTRANSFORM_FAILURE_KIND_USER\x10\x01\x12!\n" +
@@ -1303,7 +1423,7 @@ func file_nominal_protos_ingest_transform_v1_activities_proto_rawDescGZIP() []by
 }
 
 var file_nominal_protos_ingest_transform_v1_activities_proto_enumTypes = make([]protoimpl.EnumInfo, 2)
-var file_nominal_protos_ingest_transform_v1_activities_proto_msgTypes = make([]protoimpl.MessageInfo, 24)
+var file_nominal_protos_ingest_transform_v1_activities_proto_msgTypes = make([]protoimpl.MessageInfo, 27)
 var file_nominal_protos_ingest_transform_v1_activities_proto_goTypes = []any{
 	(TransformFailureKind)(0),              // 0: nominal.ingest_transform.v1.TransformFailureKind
 	(IngestTransformType)(0),               // 1: nominal.ingest_transform.v1.IngestTransformType
@@ -1321,56 +1441,61 @@ var file_nominal_protos_ingest_transform_v1_activities_proto_goTypes = []any{
 	(*MarkTransformSucceededRequest)(nil),  // 13: nominal.ingest_transform.v1.MarkTransformSucceededRequest
 	(*MarkTransformFailedRequest)(nil),     // 14: nominal.ingest_transform.v1.MarkTransformFailedRequest
 	(*ExtractorFailure)(nil),               // 15: nominal.ingest_transform.v1.ExtractorFailure
-	nil,                                    // 16: nominal.ingest_transform.v1.LoadRunnableTransformResponse.ArgumentsEntry
-	nil,                                    // 17: nominal.ingest_transform.v1.McapTransformPayload.TagsEntry
-	nil,                                    // 18: nominal.ingest_transform.v1.DataflashTransformPayload.TagsEntry
-	nil,                                    // 19: nominal.ingest_transform.v1.ParquetArchiveTransformPayload.UnitsEntry
-	nil,                                    // 20: nominal.ingest_transform.v1.ParquetArchiveTransformPayload.TagsEntry
-	nil,                                    // 21: nominal.ingest_transform.v1.ParquetArchiveTransformPayload.ChannelNameOverridesEntry
-	nil,                                    // 22: nominal.ingest_transform.v1.FileCopyTransformPayload.TagsEntry
-	nil,                                    // 23: nominal.ingest_transform.v1.ContainerizedTransformPayload.SourcesEntry
-	nil,                                    // 24: nominal.ingest_transform.v1.ContainerizedTransformPayload.TagsEntry
-	nil,                                    // 25: nominal.ingest_transform.v1.ExtractorFailure.DetailsEntry
-	(*v2.TimestampMetadata)(nil),           // 26: nominal.ingest.v2.TimestampMetadata
-	(*v2.IngestSource)(nil),                // 27: nominal.ingest.v2.IngestSource
-	(*v2.ParquetFormat)(nil),               // 28: nominal.ingest.v2.ParquetFormat
-	(*v2.FileIngestItem)(nil),              // 29: nominal.ingest.v2.FileIngestItem
+	(*DriveInputPins)(nil),                 // 16: nominal.ingest_transform.v1.DriveInputPins
+	(*DriveInputPin)(nil),                  // 17: nominal.ingest_transform.v1.DriveInputPin
+	nil,                                    // 18: nominal.ingest_transform.v1.LoadRunnableTransformResponse.ArgumentsEntry
+	nil,                                    // 19: nominal.ingest_transform.v1.McapTransformPayload.TagsEntry
+	nil,                                    // 20: nominal.ingest_transform.v1.DataflashTransformPayload.TagsEntry
+	nil,                                    // 21: nominal.ingest_transform.v1.ParquetArchiveTransformPayload.UnitsEntry
+	nil,                                    // 22: nominal.ingest_transform.v1.ParquetArchiveTransformPayload.TagsEntry
+	nil,                                    // 23: nominal.ingest_transform.v1.ParquetArchiveTransformPayload.ChannelNameOverridesEntry
+	nil,                                    // 24: nominal.ingest_transform.v1.FileCopyTransformPayload.TagsEntry
+	nil,                                    // 25: nominal.ingest_transform.v1.ContainerizedTransformPayload.SourcesEntry
+	nil,                                    // 26: nominal.ingest_transform.v1.ContainerizedTransformPayload.TagsEntry
+	nil,                                    // 27: nominal.ingest_transform.v1.ExtractorFailure.DetailsEntry
+	nil,                                    // 28: nominal.ingest_transform.v1.DriveInputPins.PinsEntry
+	(*v2.TimestampMetadata)(nil),           // 29: nominal.ingest.v2.TimestampMetadata
+	(*v2.IngestSource)(nil),                // 30: nominal.ingest.v2.IngestSource
+	(*v2.ParquetFormat)(nil),               // 31: nominal.ingest.v2.ParquetFormat
+	(*v2.FileIngestItem)(nil),              // 32: nominal.ingest.v2.FileIngestItem
 }
 var file_nominal_protos_ingest_transform_v1_activities_proto_depIdxs = []int32{
 	1,  // 0: nominal.ingest_transform.v1.LoadRunnableTransformResponse.transform_type:type_name -> nominal.ingest_transform.v1.IngestTransformType
-	16, // 1: nominal.ingest_transform.v1.LoadRunnableTransformResponse.arguments:type_name -> nominal.ingest_transform.v1.LoadRunnableTransformResponse.ArgumentsEntry
-	26, // 2: nominal.ingest_transform.v1.LoadRunnableTransformResponse.timestamp_metadata:type_name -> nominal.ingest.v2.TimestampMetadata
+	18, // 1: nominal.ingest_transform.v1.LoadRunnableTransformResponse.arguments:type_name -> nominal.ingest_transform.v1.LoadRunnableTransformResponse.ArgumentsEntry
+	29, // 2: nominal.ingest_transform.v1.LoadRunnableTransformResponse.timestamp_metadata:type_name -> nominal.ingest.v2.TimestampMetadata
 	12, // 3: nominal.ingest_transform.v1.LoadRunnableTransformResponse.containerized:type_name -> nominal.ingest_transform.v1.ContainerizedTransformPayload
 	6,  // 4: nominal.ingest_transform.v1.LoadRunnableTransformResponse.mcap:type_name -> nominal.ingest_transform.v1.McapTransformPayload
 	9,  // 5: nominal.ingest_transform.v1.LoadRunnableTransformResponse.dataflash:type_name -> nominal.ingest_transform.v1.DataflashTransformPayload
 	10, // 6: nominal.ingest_transform.v1.LoadRunnableTransformResponse.parquet_archive:type_name -> nominal.ingest_transform.v1.ParquetArchiveTransformPayload
 	11, // 7: nominal.ingest_transform.v1.LoadRunnableTransformResponse.file_copy:type_name -> nominal.ingest_transform.v1.FileCopyTransformPayload
-	27, // 8: nominal.ingest_transform.v1.McapTransformPayload.source:type_name -> nominal.ingest.v2.IngestSource
-	17, // 9: nominal.ingest_transform.v1.McapTransformPayload.tags:type_name -> nominal.ingest_transform.v1.McapTransformPayload.TagsEntry
+	30, // 8: nominal.ingest_transform.v1.McapTransformPayload.source:type_name -> nominal.ingest.v2.IngestSource
+	19, // 9: nominal.ingest_transform.v1.McapTransformPayload.tags:type_name -> nominal.ingest_transform.v1.McapTransformPayload.TagsEntry
 	7,  // 10: nominal.ingest_transform.v1.McapTransformPayload.channels:type_name -> nominal.ingest_transform.v1.McapChannelFilter
 	8,  // 11: nominal.ingest_transform.v1.McapChannelFilter.include_topics:type_name -> nominal.ingest_transform.v1.McapTopics
 	8,  // 12: nominal.ingest_transform.v1.McapChannelFilter.exclude_topics:type_name -> nominal.ingest_transform.v1.McapTopics
-	27, // 13: nominal.ingest_transform.v1.DataflashTransformPayload.source:type_name -> nominal.ingest.v2.IngestSource
-	18, // 14: nominal.ingest_transform.v1.DataflashTransformPayload.tags:type_name -> nominal.ingest_transform.v1.DataflashTransformPayload.TagsEntry
-	27, // 15: nominal.ingest_transform.v1.ParquetArchiveTransformPayload.source:type_name -> nominal.ingest.v2.IngestSource
-	26, // 16: nominal.ingest_transform.v1.ParquetArchiveTransformPayload.timestamp_metadata:type_name -> nominal.ingest.v2.TimestampMetadata
-	28, // 17: nominal.ingest_transform.v1.ParquetArchiveTransformPayload.format:type_name -> nominal.ingest.v2.ParquetFormat
-	19, // 18: nominal.ingest_transform.v1.ParquetArchiveTransformPayload.units:type_name -> nominal.ingest_transform.v1.ParquetArchiveTransformPayload.UnitsEntry
-	20, // 19: nominal.ingest_transform.v1.ParquetArchiveTransformPayload.tags:type_name -> nominal.ingest_transform.v1.ParquetArchiveTransformPayload.TagsEntry
-	21, // 20: nominal.ingest_transform.v1.ParquetArchiveTransformPayload.channel_name_overrides:type_name -> nominal.ingest_transform.v1.ParquetArchiveTransformPayload.ChannelNameOverridesEntry
-	29, // 21: nominal.ingest_transform.v1.FileCopyTransformPayload.file:type_name -> nominal.ingest.v2.FileIngestItem
-	22, // 22: nominal.ingest_transform.v1.FileCopyTransformPayload.tags:type_name -> nominal.ingest_transform.v1.FileCopyTransformPayload.TagsEntry
-	23, // 23: nominal.ingest_transform.v1.ContainerizedTransformPayload.sources:type_name -> nominal.ingest_transform.v1.ContainerizedTransformPayload.SourcesEntry
-	24, // 24: nominal.ingest_transform.v1.ContainerizedTransformPayload.tags:type_name -> nominal.ingest_transform.v1.ContainerizedTransformPayload.TagsEntry
+	30, // 13: nominal.ingest_transform.v1.DataflashTransformPayload.source:type_name -> nominal.ingest.v2.IngestSource
+	20, // 14: nominal.ingest_transform.v1.DataflashTransformPayload.tags:type_name -> nominal.ingest_transform.v1.DataflashTransformPayload.TagsEntry
+	30, // 15: nominal.ingest_transform.v1.ParquetArchiveTransformPayload.source:type_name -> nominal.ingest.v2.IngestSource
+	29, // 16: nominal.ingest_transform.v1.ParquetArchiveTransformPayload.timestamp_metadata:type_name -> nominal.ingest.v2.TimestampMetadata
+	31, // 17: nominal.ingest_transform.v1.ParquetArchiveTransformPayload.format:type_name -> nominal.ingest.v2.ParquetFormat
+	21, // 18: nominal.ingest_transform.v1.ParquetArchiveTransformPayload.units:type_name -> nominal.ingest_transform.v1.ParquetArchiveTransformPayload.UnitsEntry
+	22, // 19: nominal.ingest_transform.v1.ParquetArchiveTransformPayload.tags:type_name -> nominal.ingest_transform.v1.ParquetArchiveTransformPayload.TagsEntry
+	23, // 20: nominal.ingest_transform.v1.ParquetArchiveTransformPayload.channel_name_overrides:type_name -> nominal.ingest_transform.v1.ParquetArchiveTransformPayload.ChannelNameOverridesEntry
+	32, // 21: nominal.ingest_transform.v1.FileCopyTransformPayload.file:type_name -> nominal.ingest.v2.FileIngestItem
+	24, // 22: nominal.ingest_transform.v1.FileCopyTransformPayload.tags:type_name -> nominal.ingest_transform.v1.FileCopyTransformPayload.TagsEntry
+	25, // 23: nominal.ingest_transform.v1.ContainerizedTransformPayload.sources:type_name -> nominal.ingest_transform.v1.ContainerizedTransformPayload.SourcesEntry
+	26, // 24: nominal.ingest_transform.v1.ContainerizedTransformPayload.tags:type_name -> nominal.ingest_transform.v1.ContainerizedTransformPayload.TagsEntry
 	0,  // 25: nominal.ingest_transform.v1.MarkTransformFailedRequest.failure_kind:type_name -> nominal.ingest_transform.v1.TransformFailureKind
 	15, // 26: nominal.ingest_transform.v1.MarkTransformFailedRequest.extractor_failure:type_name -> nominal.ingest_transform.v1.ExtractorFailure
-	25, // 27: nominal.ingest_transform.v1.ExtractorFailure.details:type_name -> nominal.ingest_transform.v1.ExtractorFailure.DetailsEntry
-	27, // 28: nominal.ingest_transform.v1.ContainerizedTransformPayload.SourcesEntry.value:type_name -> nominal.ingest.v2.IngestSource
-	29, // [29:29] is the sub-list for method output_type
-	29, // [29:29] is the sub-list for method input_type
-	29, // [29:29] is the sub-list for extension type_name
-	29, // [29:29] is the sub-list for extension extendee
-	0,  // [0:29] is the sub-list for field type_name
+	27, // 27: nominal.ingest_transform.v1.ExtractorFailure.details:type_name -> nominal.ingest_transform.v1.ExtractorFailure.DetailsEntry
+	28, // 28: nominal.ingest_transform.v1.DriveInputPins.pins:type_name -> nominal.ingest_transform.v1.DriveInputPins.PinsEntry
+	30, // 29: nominal.ingest_transform.v1.ContainerizedTransformPayload.SourcesEntry.value:type_name -> nominal.ingest.v2.IngestSource
+	17, // 30: nominal.ingest_transform.v1.DriveInputPins.PinsEntry.value:type_name -> nominal.ingest_transform.v1.DriveInputPin
+	31, // [31:31] is the sub-list for method output_type
+	31, // [31:31] is the sub-list for method input_type
+	31, // [31:31] is the sub-list for extension type_name
+	31, // [31:31] is the sub-list for extension extendee
+	0,  // [0:31] is the sub-list for field type_name
 }
 
 func init() { file_nominal_protos_ingest_transform_v1_activities_proto_init() }
@@ -1393,13 +1518,14 @@ func file_nominal_protos_ingest_transform_v1_activities_proto_init() {
 	file_nominal_protos_ingest_transform_v1_activities_proto_msgTypes[8].OneofWrappers = []any{}
 	file_nominal_protos_ingest_transform_v1_activities_proto_msgTypes[10].OneofWrappers = []any{}
 	file_nominal_protos_ingest_transform_v1_activities_proto_msgTypes[12].OneofWrappers = []any{}
+	file_nominal_protos_ingest_transform_v1_activities_proto_msgTypes[15].OneofWrappers = []any{}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_nominal_protos_ingest_transform_v1_activities_proto_rawDesc), len(file_nominal_protos_ingest_transform_v1_activities_proto_rawDesc)),
 			NumEnums:      2,
-			NumMessages:   24,
+			NumMessages:   27,
 			NumExtensions: 0,
 			NumServices:   0,
 		},

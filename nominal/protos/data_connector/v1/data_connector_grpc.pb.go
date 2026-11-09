@@ -46,7 +46,8 @@ type DataConnectorServiceClient interface {
 	Search(ctx context.Context, in *SearchRequest, opts ...grpc.CallOption) (*SearchResponse, error)
 	// Gets the settings for a data connector
 	GetDataConnector(ctx context.Context, in *GetDataConnectorRequest, opts ...grpc.CallOption) (*GetDataConnectorResponse, error)
-	// Gets the settings for a batch of data connectors
+	// Gets the settings for a batch of data connectors. Connectors in workspaces the caller lacks
+	// workspace:view on are omitted rather than failing the call.
 	BatchGetDataConnectors(ctx context.Context, in *BatchGetDataConnectorsRequest, opts ...grpc.CallOption) (*BatchGetDataConnectorsResponse, error)
 	// Updates the settings for a data connector.
 	// `body: "*"` is required here. google.api.http routes fields outside the path and body to the query
@@ -178,7 +179,8 @@ type DataConnectorServiceServer interface {
 	Search(context.Context, *SearchRequest) (*SearchResponse, error)
 	// Gets the settings for a data connector
 	GetDataConnector(context.Context, *GetDataConnectorRequest) (*GetDataConnectorResponse, error)
-	// Gets the settings for a batch of data connectors
+	// Gets the settings for a batch of data connectors. Connectors in workspaces the caller lacks
+	// workspace:view on are omitted rather than failing the call.
 	BatchGetDataConnectors(context.Context, *BatchGetDataConnectorsRequest) (*BatchGetDataConnectorsResponse, error)
 	// Updates the settings for a data connector.
 	// `body: "*"` is required here. google.api.http routes fields outside the path and body to the query

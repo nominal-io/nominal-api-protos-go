@@ -427,11 +427,11 @@ const file_nominal_protos_authorization_internal_v1_internal_refresh_coordinatio
 	")REFRESH_COORDINATION_DECISION_UNSPECIFIED\x10\x00\x12*\n" +
 	"&REFRESH_COORDINATION_DECISION_ACQUIRED\x10\x01\x12&\n" +
 	"\"REFRESH_COORDINATION_DECISION_WAIT\x10\x02\x122\n" +
-	".REFRESH_COORDINATION_DECISION_RESULT_AVAILABLE\x10\x032\xbf\x03\n" +
+	".REFRESH_COORDINATION_DECISION_RESULT_AVAILABLE\x10\x032\xc5\x03\n" +
 	"\"InternalRefreshCoordinationService\x12\x81\x01\n" +
-	"\fBeginRefresh\x126.nominal.authorization.internal.v1.BeginRefreshRequest\x1a7.nominal.authorization.internal.v1.BeginRefreshResponse\"\x00\x12\x8a\x01\n" +
-	"\x0fCompleteRefresh\x129.nominal.authorization.internal.v1.CompleteRefreshRequest\x1a:.nominal.authorization.internal.v1.CompleteRefreshResponse\"\x00\x12\x87\x01\n" +
-	"\x0eAbandonRefresh\x128.nominal.authorization.internal.v1.AbandonRefreshRequest\x1a9.nominal.authorization.internal.v1.AbandonRefreshResponse\"\x00B\xd1\x02\n" +
+	"\fBeginRefresh\x126.nominal.authorization.internal.v1.BeginRefreshRequest\x1a7.nominal.authorization.internal.v1.BeginRefreshResponse\"\x00\x12\x8d\x01\n" +
+	"\x0fCompleteRefresh\x129.nominal.authorization.internal.v1.CompleteRefreshRequest\x1a:.nominal.authorization.internal.v1.CompleteRefreshResponse\"\x03\x90\x02\x02\x12\x8a\x01\n" +
+	"\x0eAbandonRefresh\x128.nominal.authorization.internal.v1.AbandonRefreshRequest\x1a9.nominal.authorization.internal.v1.AbandonRefreshResponse\"\x03\x90\x02\x02B\xd1\x02\n" +
 	"%com.nominal.authorization.internal.v1B InternalRefreshCoordinationProtoP\x01Z_github.com/nominal-io/nominal-api-protos-go/nominal/protos/authorization/internal/v1;internalv1\xa2\x02\x03NAI\xaa\x02!Nominal.Authorization.Internal.V1\xca\x02!Nominal\\Authorization\\Internal\\V1\xe2\x02-Nominal\\Authorization\\Internal\\V1\\GPBMetadata\xea\x02$Nominal::Authorization::Internal::V1b\x06proto3"
 
 var (
