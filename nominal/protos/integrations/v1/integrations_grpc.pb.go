@@ -20,6 +20,8 @@ const _ = grpc.SupportPackageIsVersion9
 
 const (
 	IntegrationsService_CreateIntegration_FullMethodName                        = "/nominal.integrations.v1.IntegrationsService/CreateIntegration"
+	IntegrationsService_CreateSlackAuthorizationUrl_FullMethodName              = "/nominal.integrations.v1.IntegrationsService/CreateSlackAuthorizationUrl"
+	IntegrationsService_CreateSlackWebhookIntegration_FullMethodName            = "/nominal.integrations.v1.IntegrationsService/CreateSlackWebhookIntegration"
 	IntegrationsService_CreateSecureWebhookIntegration_FullMethodName           = "/nominal.integrations.v1.IntegrationsService/CreateSecureWebhookIntegration"
 	IntegrationsService_SendSecureWebhookMessage_FullMethodName                 = "/nominal.integrations.v1.IntegrationsService/SendSecureWebhookMessage"
 	IntegrationsService_DeleteIntegration_FullMethodName                        = "/nominal.integrations.v1.IntegrationsService/DeleteIntegration"
@@ -39,23 +41,75 @@ const (
 type IntegrationsServiceClient interface {
 	// Creates an integration and stores its supplied credentials as workspace-scoped secrets.
 	CreateIntegration(ctx context.Context, in *CreateIntegrationRequest, opts ...grpc.CallOption) (*CreateIntegrationResponse, error)
+	// Creates the Slack OAuth URL that grants Nominal an incoming webhook in a Slack workspace.
+	CreateSlackAuthorizationUrl(ctx context.Context, in *CreateSlackAuthorizationUrlRequest, opts ...grpc.CallOption) (*CreateSlackAuthorizationUrlResponse, error)
+	// Completes Slack OAuth with the code Slack returned and creates the Slack webhook integration. The caller must be
+	// the user who created the authorization URL.
+	CreateSlackWebhookIntegration(ctx context.Context, in *CreateSlackWebhookIntegrationRequest, opts ...grpc.CallOption) (*CreateSlackWebhookIntegrationResponse, error)
 	// Creates a secure webhook integration and returns its newly generated signing key.
 	CreateSecureWebhookIntegration(ctx context.Context, in *CreateSecureWebhookIntegrationRequest, opts ...grpc.CallOption) (*CreateSecureWebhookIntegrationResponse, error)
 	// Delivers a signed payload through a secure webhook integration.
 	SendSecureWebhookMessage(ctx context.Context, in *SendSecureWebhookMessageRequest, opts ...grpc.CallOption) (*SendSecureWebhookMessageResponse, error)
-	// Archives an integration.
+	// Archives an integration, so ListIntegrations no longer returns it. The integration is not removed.
+	//
+	// An archived integration can still be read with GetIntegration, with archived set. SendMessage and
+	// SendSecureWebhookMessage on it send nothing and succeed. Archiving an archived integration succeeds. The
+	// caller needs permission to edit integrations in the integration's workspace.
+	//
+	// Errors:
+	// - INVALID_ARGUMENT: the RID is malformed.
+	// - NOT_FOUND: the integration does not exist, or the caller cannot edit integrations in its workspace.
 	DeleteIntegration(ctx context.Context, in *DeleteIntegrationRequest, opts ...grpc.CallOption) (*DeleteIntegrationResponse, error)
-	// Updates an integration's display metadata.
+	// Updates the name and description of an integration, and returns the integration.
+	//
+	// Only the fields that are set change. The connection details and credentials do not change: use
+	// UpdateIntegrationDetails for those. The caller needs permission to edit integrations in the integration's
+	// workspace.
+	//
+	// Errors:
+	// - INVALID_ARGUMENT: the RID is malformed.
+	// - NOT_FOUND: the integration does not exist, or the caller cannot edit integrations in its workspace.
 	UpdateIntegrationMetadata(ctx context.Context, in *UpdateIntegrationMetadataRequest, opts ...grpc.CallOption) (*UpdateIntegrationMetadataResponse, error)
 	// Replaces an integration's connection details and rotates supplied credentials.
 	UpdateIntegrationDetails(ctx context.Context, in *UpdateIntegrationDetailsRequest, opts ...grpc.CallOption) (*UpdateIntegrationDetailsResponse, error)
-	// Gets an integration by RID.
+	// Gets an integration: a connection from Nominal to Slack, Opsgenie, PagerDuty, Microsoft Teams, or a webhook,
+	// with its name, description, connection details, and archived state.
+	//
+	// Archived integrations are returned, with archived set. Credentials are never returned. The caller needs
+	// permission to view the integration's workspace.
+	//
+	// Errors:
+	// - NOT_FOUND: the integration does not exist, or the caller cannot view its workspace.
 	GetIntegration(ctx context.Context, in *GetIntegrationRequest, opts ...grpc.CallOption) (*GetIntegrationResponse, error)
-	// Lists integrations visible in the requested workspaces.
+	// Lists integrations visible in the requested workspaces. Workspaces the caller lacks
+	// workspace:view on are filtered out rather than failing the call.
 	ListIntegrations(ctx context.Context, in *ListIntegrationsRequest, opts ...grpc.CallOption) (*ListIntegrationsResponse, error)
-	// Sends a message through an integration.
+	// Sends a message through an integration to its external service: a Slack channel, an Opsgenie alert, or a
+	// webhook.
+	//
+	// Slack and simple webhook integrations post the message text, with the title on a first line when a title is
+	// set. An Opsgenie integration creates an alert whose description is the message and whose message is the title,
+	// or the start of the message, cut at a word boundary to 130 characters, when no title is set. Tags, priority, and
+	// opsgenie_alias apply only to Opsgenie. A secure webhook integration receives a JSON body with the title (when
+	// set) and the message. A failed delivery to Slack, Opsgenie, or a simple webhook is not reported: the call still
+	// succeeds. Sending through an archived integration sends nothing and succeeds. The caller needs permission to
+	// edit integrations in the integration's workspace.
+	//
+	// Errors:
+	//   - INVALID_ARGUMENT: the RID is malformed, the title is longer than 130 characters, there are more than 20 tags,
+	//     a tag is longer than 50 characters, priority is set but unspecified, or the integration is a Microsoft Teams or
+	//     PagerDuty integration, which cannot send messages.
+	//   - NOT_FOUND: the integration does not exist, or the caller cannot edit integrations in its workspace.
 	SendMessage(ctx context.Context, in *SendMessageRequest, opts ...grpc.CallOption) (*SendMessageResponse, error)
-	// Rotates and returns a secure webhook integration's signing key.
+	// Replaces the HMAC signing key of a secure webhook integration, and returns the new key.
+	//
+	// The old key stops working immediately. The new key is returned only by this call and by
+	// CreateSecureWebhookIntegration, so the caller must store it. The caller needs permission to edit integrations
+	// in the integration's workspace.
+	//
+	// Errors:
+	// - INVALID_ARGUMENT: the RID is malformed, or the integration is not a secure webhook integration.
+	// - NOT_FOUND: the integration does not exist, or the caller cannot edit integrations in its workspace.
 	RotateSecureWebhookIntegrationSigningKey(ctx context.Context, in *RotateSecureWebhookIntegrationSigningKeyRequest, opts ...grpc.CallOption) (*RotateSecureWebhookIntegrationSigningKeyResponse, error)
 }
 
@@ -71,6 +125,26 @@ func (c *integrationsServiceClient) CreateIntegration(ctx context.Context, in *C
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(CreateIntegrationResponse)
 	err := c.cc.Invoke(ctx, IntegrationsService_CreateIntegration_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *integrationsServiceClient) CreateSlackAuthorizationUrl(ctx context.Context, in *CreateSlackAuthorizationUrlRequest, opts ...grpc.CallOption) (*CreateSlackAuthorizationUrlResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(CreateSlackAuthorizationUrlResponse)
+	err := c.cc.Invoke(ctx, IntegrationsService_CreateSlackAuthorizationUrl_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *integrationsServiceClient) CreateSlackWebhookIntegration(ctx context.Context, in *CreateSlackWebhookIntegrationRequest, opts ...grpc.CallOption) (*CreateSlackWebhookIntegrationResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(CreateSlackWebhookIntegrationResponse)
+	err := c.cc.Invoke(ctx, IntegrationsService_CreateSlackWebhookIntegration_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -175,23 +249,75 @@ func (c *integrationsServiceClient) RotateSecureWebhookIntegrationSigningKey(ctx
 type IntegrationsServiceServer interface {
 	// Creates an integration and stores its supplied credentials as workspace-scoped secrets.
 	CreateIntegration(context.Context, *CreateIntegrationRequest) (*CreateIntegrationResponse, error)
+	// Creates the Slack OAuth URL that grants Nominal an incoming webhook in a Slack workspace.
+	CreateSlackAuthorizationUrl(context.Context, *CreateSlackAuthorizationUrlRequest) (*CreateSlackAuthorizationUrlResponse, error)
+	// Completes Slack OAuth with the code Slack returned and creates the Slack webhook integration. The caller must be
+	// the user who created the authorization URL.
+	CreateSlackWebhookIntegration(context.Context, *CreateSlackWebhookIntegrationRequest) (*CreateSlackWebhookIntegrationResponse, error)
 	// Creates a secure webhook integration and returns its newly generated signing key.
 	CreateSecureWebhookIntegration(context.Context, *CreateSecureWebhookIntegrationRequest) (*CreateSecureWebhookIntegrationResponse, error)
 	// Delivers a signed payload through a secure webhook integration.
 	SendSecureWebhookMessage(context.Context, *SendSecureWebhookMessageRequest) (*SendSecureWebhookMessageResponse, error)
-	// Archives an integration.
+	// Archives an integration, so ListIntegrations no longer returns it. The integration is not removed.
+	//
+	// An archived integration can still be read with GetIntegration, with archived set. SendMessage and
+	// SendSecureWebhookMessage on it send nothing and succeed. Archiving an archived integration succeeds. The
+	// caller needs permission to edit integrations in the integration's workspace.
+	//
+	// Errors:
+	// - INVALID_ARGUMENT: the RID is malformed.
+	// - NOT_FOUND: the integration does not exist, or the caller cannot edit integrations in its workspace.
 	DeleteIntegration(context.Context, *DeleteIntegrationRequest) (*DeleteIntegrationResponse, error)
-	// Updates an integration's display metadata.
+	// Updates the name and description of an integration, and returns the integration.
+	//
+	// Only the fields that are set change. The connection details and credentials do not change: use
+	// UpdateIntegrationDetails for those. The caller needs permission to edit integrations in the integration's
+	// workspace.
+	//
+	// Errors:
+	// - INVALID_ARGUMENT: the RID is malformed.
+	// - NOT_FOUND: the integration does not exist, or the caller cannot edit integrations in its workspace.
 	UpdateIntegrationMetadata(context.Context, *UpdateIntegrationMetadataRequest) (*UpdateIntegrationMetadataResponse, error)
 	// Replaces an integration's connection details and rotates supplied credentials.
 	UpdateIntegrationDetails(context.Context, *UpdateIntegrationDetailsRequest) (*UpdateIntegrationDetailsResponse, error)
-	// Gets an integration by RID.
+	// Gets an integration: a connection from Nominal to Slack, Opsgenie, PagerDuty, Microsoft Teams, or a webhook,
+	// with its name, description, connection details, and archived state.
+	//
+	// Archived integrations are returned, with archived set. Credentials are never returned. The caller needs
+	// permission to view the integration's workspace.
+	//
+	// Errors:
+	// - NOT_FOUND: the integration does not exist, or the caller cannot view its workspace.
 	GetIntegration(context.Context, *GetIntegrationRequest) (*GetIntegrationResponse, error)
-	// Lists integrations visible in the requested workspaces.
+	// Lists integrations visible in the requested workspaces. Workspaces the caller lacks
+	// workspace:view on are filtered out rather than failing the call.
 	ListIntegrations(context.Context, *ListIntegrationsRequest) (*ListIntegrationsResponse, error)
-	// Sends a message through an integration.
+	// Sends a message through an integration to its external service: a Slack channel, an Opsgenie alert, or a
+	// webhook.
+	//
+	// Slack and simple webhook integrations post the message text, with the title on a first line when a title is
+	// set. An Opsgenie integration creates an alert whose description is the message and whose message is the title,
+	// or the start of the message, cut at a word boundary to 130 characters, when no title is set. Tags, priority, and
+	// opsgenie_alias apply only to Opsgenie. A secure webhook integration receives a JSON body with the title (when
+	// set) and the message. A failed delivery to Slack, Opsgenie, or a simple webhook is not reported: the call still
+	// succeeds. Sending through an archived integration sends nothing and succeeds. The caller needs permission to
+	// edit integrations in the integration's workspace.
+	//
+	// Errors:
+	//   - INVALID_ARGUMENT: the RID is malformed, the title is longer than 130 characters, there are more than 20 tags,
+	//     a tag is longer than 50 characters, priority is set but unspecified, or the integration is a Microsoft Teams or
+	//     PagerDuty integration, which cannot send messages.
+	//   - NOT_FOUND: the integration does not exist, or the caller cannot edit integrations in its workspace.
 	SendMessage(context.Context, *SendMessageRequest) (*SendMessageResponse, error)
-	// Rotates and returns a secure webhook integration's signing key.
+	// Replaces the HMAC signing key of a secure webhook integration, and returns the new key.
+	//
+	// The old key stops working immediately. The new key is returned only by this call and by
+	// CreateSecureWebhookIntegration, so the caller must store it. The caller needs permission to edit integrations
+	// in the integration's workspace.
+	//
+	// Errors:
+	// - INVALID_ARGUMENT: the RID is malformed, or the integration is not a secure webhook integration.
+	// - NOT_FOUND: the integration does not exist, or the caller cannot edit integrations in its workspace.
 	RotateSecureWebhookIntegrationSigningKey(context.Context, *RotateSecureWebhookIntegrationSigningKeyRequest) (*RotateSecureWebhookIntegrationSigningKeyResponse, error)
 	mustEmbedUnimplementedIntegrationsServiceServer()
 }
@@ -205,6 +331,12 @@ type UnimplementedIntegrationsServiceServer struct{}
 
 func (UnimplementedIntegrationsServiceServer) CreateIntegration(context.Context, *CreateIntegrationRequest) (*CreateIntegrationResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method CreateIntegration not implemented")
+}
+func (UnimplementedIntegrationsServiceServer) CreateSlackAuthorizationUrl(context.Context, *CreateSlackAuthorizationUrlRequest) (*CreateSlackAuthorizationUrlResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method CreateSlackAuthorizationUrl not implemented")
+}
+func (UnimplementedIntegrationsServiceServer) CreateSlackWebhookIntegration(context.Context, *CreateSlackWebhookIntegrationRequest) (*CreateSlackWebhookIntegrationResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method CreateSlackWebhookIntegration not implemented")
 }
 func (UnimplementedIntegrationsServiceServer) CreateSecureWebhookIntegration(context.Context, *CreateSecureWebhookIntegrationRequest) (*CreateSecureWebhookIntegrationResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method CreateSecureWebhookIntegration not implemented")
@@ -268,6 +400,42 @@ func _IntegrationsService_CreateIntegration_Handler(srv interface{}, ctx context
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(IntegrationsServiceServer).CreateIntegration(ctx, req.(*CreateIntegrationRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _IntegrationsService_CreateSlackAuthorizationUrl_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CreateSlackAuthorizationUrlRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(IntegrationsServiceServer).CreateSlackAuthorizationUrl(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: IntegrationsService_CreateSlackAuthorizationUrl_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(IntegrationsServiceServer).CreateSlackAuthorizationUrl(ctx, req.(*CreateSlackAuthorizationUrlRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _IntegrationsService_CreateSlackWebhookIntegration_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CreateSlackWebhookIntegrationRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(IntegrationsServiceServer).CreateSlackWebhookIntegration(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: IntegrationsService_CreateSlackWebhookIntegration_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(IntegrationsServiceServer).CreateSlackWebhookIntegration(ctx, req.(*CreateSlackWebhookIntegrationRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -444,6 +612,14 @@ var IntegrationsService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "CreateIntegration",
 			Handler:    _IntegrationsService_CreateIntegration_Handler,
+		},
+		{
+			MethodName: "CreateSlackAuthorizationUrl",
+			Handler:    _IntegrationsService_CreateSlackAuthorizationUrl_Handler,
+		},
+		{
+			MethodName: "CreateSlackWebhookIntegration",
+			Handler:    _IntegrationsService_CreateSlackWebhookIntegration_Handler,
 		},
 		{
 			MethodName: "CreateSecureWebhookIntegration",

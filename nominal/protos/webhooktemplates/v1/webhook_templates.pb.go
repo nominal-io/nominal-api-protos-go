@@ -8,6 +8,7 @@ package webhooktemplatesv1
 
 import (
 	_ "buf.build/gen/go/bufbuild/protovalidate/protocolbuffers/go/buf/validate"
+	_ "github.com/nominal-io/nominal-api-protos-go/nominal/protos/authz/v1"
 	_ "github.com/nominal-io/nominal-api-protos-go/nominal/protos/gen/v1"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
@@ -403,7 +404,7 @@ var File_nominal_protos_webhooktemplates_v1_webhook_templates_proto protoreflect
 
 const file_nominal_protos_webhooktemplates_v1_webhook_templates_proto_rawDesc = "" +
 	"\n" +
-	":nominal/protos/webhooktemplates/v1/webhook_templates.proto\x12\x1bnominal.webhooktemplates.v1\x1a\x1bbuf/validate/validate.proto\x1a\x1cgoogle/api/annotations.proto\x1a!nominal/protos/gen/v1/alias.proto\x1a!nominal/protos/gen/v1/error.proto\"{\n" +
+	":nominal/protos/webhooktemplates/v1/webhook_templates.proto\x12\x1bnominal.webhooktemplates.v1\x1a\x1bbuf/validate/validate.proto\x1a\x1cgoogle/api/annotations.proto\x1a)nominal/protos/authz/v1/annotations.proto\x1a!nominal/protos/gen/v1/alias.proto\x1a!nominal/protos/gen/v1/error.proto\"{\n" +
 	"\x17ValidateTemplateRequest\x12%\n" +
 	"\btemplate\x18\x01 \x01(\tB\t\xbaH\x06r\x04\x18\x80\x80\x10R\btemplate\x129\n" +
 	"\x13sample_context_json\x18\x02 \x01(\tB\t\xbaH\x06r\x04(\x80\x80\x04R\x11sampleContextJson\"+\n" +
@@ -435,10 +436,12 @@ const file_nominal_protos_webhooktemplates_v1_webhook_templates_proto_rawDesc = 
 	"\x12_evaluated_payload*y\n" +
 	"\x14WebhookTemplateError\x12a\n" +
 	"&WEBHOOK_TEMPLATE_ERROR_INVALID_REQUEST\x10\x00\x1a5\xb2\xb2\x1a1\n" +
-	"\x10INVALID_ARGUMENT\x12\x1dInvalidWebhookTemplateRequest2\xf7\x02\n" +
-	"\x17WebhookTemplatesService\x12\xb6\x01\n" +
-	"\x10ValidateTemplate\x124.nominal.webhooktemplates.v1.ValidateTemplateRequest\x1a5.nominal.webhooktemplates.v1.ValidateTemplateResponse\"5\x82\xd3\xe4\x93\x02/:\x01*\"*/webhook-templates/v1/template-validations\x12\xa2\x01\n" +
-	"\vTestWebhook\x12/.nominal.webhooktemplates.v1.TestWebhookRequest\x1a0.nominal.webhooktemplates.v1.TestWebhookResponse\"0\x82\xd3\xe4\x93\x02*:\x01*\"%/webhook-templates/v1/test-deliveriesB\xa9\x02\n" +
+	"\x10INVALID_ARGUMENT\x12\x1dInvalidWebhookTemplateRequest2\xa0\x03\n" +
+	"\x17WebhookTemplatesService\x12\xba\x01\n" +
+	"\x10ValidateTemplate\x124.nominal.webhooktemplates.v1.ValidateTemplateRequest\x1a5.nominal.webhooktemplates.v1.ValidateTemplateResponse\"9\xba\xb2\x1a\x00\x82\xd3\xe4\x93\x02/:\x01*\"*/webhook-templates/v1/template-validations\x12\xc7\x01\n" +
+	"\vTestWebhook\x12/.nominal.webhooktemplates.v1.TestWebhookRequest\x1a0.nominal.webhooktemplates.v1.TestWebhookResponse\"U\xba\xb2\x1a!\n" +
+	"\x1f\n" +
+	"\x1bworkspace:edit_integrations\"\x00\x82\xd3\xe4\x93\x02*:\x01*\"%/webhook-templates/v1/test-deliveriesB\xa9\x02\n" +
 	"\x1fcom.nominal.webhooktemplates.v1B\x15WebhookTemplatesProtoP\x01Zagithub.com/nominal-io/nominal-api-protos-go/nominal/protos/webhooktemplates/v1;webhooktemplatesv1\xa2\x02\x03NWX\xaa\x02\x1bNominal.Webhooktemplates.V1\xca\x02\x1bNominal\\Webhooktemplates\\V1\xe2\x02'Nominal\\Webhooktemplates\\V1\\GPBMetadata\xea\x02\x1dNominal::Webhooktemplates::V1b\x06proto3"
 
 var (

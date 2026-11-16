@@ -31,7 +31,7 @@ const (
 // independent of the complexity of user prompts.
 type ModelProviderHealthServiceClient interface {
 	// GetProviderStatus returns the current health status of the model provider based on recent health checks.
-	// The status is HEALTHY if all checks in the last 30 minutes passed latency thresholds,
+	// The status is HEALTHY if all recent checks passed latency thresholds,
 	// or DEGRADED if any checks exceeded latency thresholds or failed entirely.
 	GetProviderStatus(ctx context.Context, in *GetProviderStatusRequest, opts ...grpc.CallOption) (*GetProviderStatusResponse, error)
 }
@@ -63,7 +63,7 @@ func (c *modelProviderHealthServiceClient) GetProviderStatus(ctx context.Context
 // independent of the complexity of user prompts.
 type ModelProviderHealthServiceServer interface {
 	// GetProviderStatus returns the current health status of the model provider based on recent health checks.
-	// The status is HEALTHY if all checks in the last 30 minutes passed latency thresholds,
+	// The status is HEALTHY if all recent checks passed latency thresholds,
 	// or DEGRADED if any checks exceeded latency thresholds or failed entirely.
 	GetProviderStatus(context.Context, *GetProviderStatusRequest) (*GetProviderStatusResponse, error)
 	mustEmbedUnimplementedModelProviderHealthServiceServer()

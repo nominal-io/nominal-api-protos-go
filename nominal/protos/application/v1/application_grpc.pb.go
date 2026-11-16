@@ -28,7 +28,7 @@ const (
 //
 // A service that returns metadata about the Core application.
 type ApplicationServiceClient interface {
-	// Get the application url
+	// Returns the URL of the Nominal web app for this deployment. Requires a signed-in caller.
 	GetApplicationUrl(ctx context.Context, in *GetApplicationUrlRequest, opts ...grpc.CallOption) (*GetApplicationUrlResponse, error)
 }
 
@@ -56,7 +56,7 @@ func (c *applicationServiceClient) GetApplicationUrl(ctx context.Context, in *Ge
 //
 // A service that returns metadata about the Core application.
 type ApplicationServiceServer interface {
-	// Get the application url
+	// Returns the URL of the Nominal web app for this deployment. Requires a signed-in caller.
 	GetApplicationUrl(context.Context, *GetApplicationUrlRequest) (*GetApplicationUrlResponse, error)
 	mustEmbedUnimplementedApplicationServiceServer()
 }

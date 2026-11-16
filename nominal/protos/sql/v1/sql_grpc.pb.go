@@ -30,12 +30,46 @@ const (
 //
 // Executes read-only SQL queries against Scout telemetry tables.
 type SqlServiceClient interface {
-	// Validate, authorize, lower, and execute a bounded SQL query.
+	// Runs one read-only SQL SELECT over a workspace's data and streams back the rows: channel data points, logs,
+	// channels, datasets, assets, runs, events, and more (see GetSqlCatalog).
+	//
+	// The caller needs `workspace:view` on the workspace. Each dataset the query names must be in the workspace and
+	// readable by the caller, or the query fails as if the dataset did not exist. A query on telemetry tables alone,
+	// such as channel data points, must filter them by dataset_rid. The query_history table lists only the caller's own
+	// queries, unless the caller is an organization admin. The query ID is in the x-nominal-query-id response header.
+	// A result over 1 GiB fails: use Export for large results.
+	//
+	// Errors:
+	//   - INVALID_ARGUMENT: the query is empty or invalid, names a dataset that SQL cannot read yet, runs past the time
+	//     limit, or returns a result over the size limit.
+	//   - PERMISSION_DENIED: the caller cannot view the workspace.
+	//   - NOT_FOUND: a named dataset does not exist, is in another workspace, or is not readable by the caller, or a
+	//     dataset has no data of the requested type.
+	//   - RESOURCE_EXHAUSTED: the request is throttled and a retry later may work, or the query exceeds a resource limit.
+	//   - CANCELLED: the query was cancelled.
+	//   - INTERNAL: the query is too large for the server to run, or the server fails while running it.
 	Query(ctx context.Context, in *SqlServiceQueryRequest, opts ...grpc.CallOption) (grpc.ServerStreamingClient[SqlServiceQueryResponse], error)
-	// Validate, authorize, lower, and execute an unbounded SQL query, writing the full result to
-	// object storage as CSV and returning a presigned URL.
+	// Runs one read-only SQL SELECT like Query, but writes the full result as a CSV or Parquet file to object storage
+	// and returns a presigned URL for it instead of streaming the rows.
+	//
+	// The call returns when the file is written. It needs the same `workspace:view` permission and dataset access as
+	// Query, and the same time limit applies. Rows are written in the order the query returns them, so add ORDER BY to
+	// get a sorted file. No result size limit applies. The URL expires after a set time and downloads the file as an attachment named after the query
+	// ID.
+	//
+	// Errors:
+	//   - INVALID_ARGUMENT: the query is empty or invalid, names a dataset that SQL cannot read yet, runs past the time
+	//     limit, or runs inside the server and reads no stored data, which cannot be exported.
+	//   - PERMISSION_DENIED: the caller cannot view the workspace.
+	//   - NOT_FOUND: a named dataset does not exist, is in another workspace, or is not readable by the caller, or a
+	//     dataset has no data of the requested type.
+	//   - FAILED_PRECONDITION: export is not configured for this deployment.
+	//   - RESOURCE_EXHAUSTED: the request is throttled and a retry later may work, or the query exceeds a resource limit.
+	//   - CANCELLED: the query was cancelled.
+	//   - INTERNAL: the query is too large for the server to run, or the server fails while running it.
 	Export(ctx context.Context, in *SqlServiceExportRequest, opts ...grpc.CallOption) (*SqlServiceExportResponse, error)
-	// Get the queryable SQL surface: tables, columns, and allowed functions.
+	// Lists the tables, with their columns and types, and the functions that SQL queries may use. Needs a valid
+	// session but no workspace; every caller gets the same list, sorted by name.
 	GetSqlCatalog(ctx context.Context, in *GetSqlCatalogRequest, opts ...grpc.CallOption) (*GetSqlCatalogResponse, error)
 }
 
@@ -92,12 +126,46 @@ func (c *sqlServiceClient) GetSqlCatalog(ctx context.Context, in *GetSqlCatalogR
 //
 // Executes read-only SQL queries against Scout telemetry tables.
 type SqlServiceServer interface {
-	// Validate, authorize, lower, and execute a bounded SQL query.
+	// Runs one read-only SQL SELECT over a workspace's data and streams back the rows: channel data points, logs,
+	// channels, datasets, assets, runs, events, and more (see GetSqlCatalog).
+	//
+	// The caller needs `workspace:view` on the workspace. Each dataset the query names must be in the workspace and
+	// readable by the caller, or the query fails as if the dataset did not exist. A query on telemetry tables alone,
+	// such as channel data points, must filter them by dataset_rid. The query_history table lists only the caller's own
+	// queries, unless the caller is an organization admin. The query ID is in the x-nominal-query-id response header.
+	// A result over 1 GiB fails: use Export for large results.
+	//
+	// Errors:
+	//   - INVALID_ARGUMENT: the query is empty or invalid, names a dataset that SQL cannot read yet, runs past the time
+	//     limit, or returns a result over the size limit.
+	//   - PERMISSION_DENIED: the caller cannot view the workspace.
+	//   - NOT_FOUND: a named dataset does not exist, is in another workspace, or is not readable by the caller, or a
+	//     dataset has no data of the requested type.
+	//   - RESOURCE_EXHAUSTED: the request is throttled and a retry later may work, or the query exceeds a resource limit.
+	//   - CANCELLED: the query was cancelled.
+	//   - INTERNAL: the query is too large for the server to run, or the server fails while running it.
 	Query(*SqlServiceQueryRequest, grpc.ServerStreamingServer[SqlServiceQueryResponse]) error
-	// Validate, authorize, lower, and execute an unbounded SQL query, writing the full result to
-	// object storage as CSV and returning a presigned URL.
+	// Runs one read-only SQL SELECT like Query, but writes the full result as a CSV or Parquet file to object storage
+	// and returns a presigned URL for it instead of streaming the rows.
+	//
+	// The call returns when the file is written. It needs the same `workspace:view` permission and dataset access as
+	// Query, and the same time limit applies. Rows are written in the order the query returns them, so add ORDER BY to
+	// get a sorted file. No result size limit applies. The URL expires after a set time and downloads the file as an attachment named after the query
+	// ID.
+	//
+	// Errors:
+	//   - INVALID_ARGUMENT: the query is empty or invalid, names a dataset that SQL cannot read yet, runs past the time
+	//     limit, or runs inside the server and reads no stored data, which cannot be exported.
+	//   - PERMISSION_DENIED: the caller cannot view the workspace.
+	//   - NOT_FOUND: a named dataset does not exist, is in another workspace, or is not readable by the caller, or a
+	//     dataset has no data of the requested type.
+	//   - FAILED_PRECONDITION: export is not configured for this deployment.
+	//   - RESOURCE_EXHAUSTED: the request is throttled and a retry later may work, or the query exceeds a resource limit.
+	//   - CANCELLED: the query was cancelled.
+	//   - INTERNAL: the query is too large for the server to run, or the server fails while running it.
 	Export(context.Context, *SqlServiceExportRequest) (*SqlServiceExportResponse, error)
-	// Get the queryable SQL surface: tables, columns, and allowed functions.
+	// Lists the tables, with their columns and types, and the functions that SQL queries may use. Needs a valid
+	// session but no workspace; every caller gets the same list, sorted by name.
 	GetSqlCatalog(context.Context, *GetSqlCatalogRequest) (*GetSqlCatalogResponse, error)
 	mustEmbedUnimplementedSqlServiceServer()
 }

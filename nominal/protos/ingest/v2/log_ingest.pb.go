@@ -23,7 +23,7 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
-// Single-channel log or journal ingest work.
+// One JSON-lines log file, such as a journald export, ingested into a single log channel.
 type LogIngestItem struct {
 	state             protoimpl.MessageState `protogen:"open.v1"`
 	Source            *IngestSource          `protobuf:"bytes,1,opt,name=source,proto3" json:"source,omitempty"`

@@ -8,6 +8,7 @@ package dataset_lineagev1
 
 import (
 	_ "buf.build/gen/go/bufbuild/protovalidate/protocolbuffers/go/buf/validate"
+	_ "github.com/nominal-io/nominal-api-protos-go/nominal/protos/authz/v1"
 	_ "github.com/nominal-io/nominal-api-protos-go/nominal/protos/gen/v1"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
@@ -341,7 +342,7 @@ var File_nominal_protos_dataset_lineage_v1_dataset_lineage_proto protoreflect.Fi
 
 const file_nominal_protos_dataset_lineage_v1_dataset_lineage_proto_rawDesc = "" +
 	"\n" +
-	"7nominal/protos/dataset_lineage/v1/dataset_lineage.proto\x12\x1anominal.dataset_lineage.v1\x1a\x1bbuf/validate/validate.proto\x1a\x1cgoogle/api/annotations.proto\x1a!nominal/protos/gen/v1/alias.proto\x1a!nominal/protos/gen/v1/error.proto\"\xe6\x02\n" +
+	"7nominal/protos/dataset_lineage/v1/dataset_lineage.proto\x12\x1anominal.dataset_lineage.v1\x1a\x1bbuf/validate/validate.proto\x1a\x1cgoogle/api/annotations.proto\x1a)nominal/protos/authz/v1/annotations.proto\x1a!nominal/protos/gen/v1/alias.proto\x1a!nominal/protos/gen/v1/error.proto\"\xe6\x02\n" +
 	"\x18ListDatasetInputsRequest\x12O\n" +
 	"\vdataset_rid\x18\x01 \x01(\tB.\xbaH\ar\x05\x10\x01\x18\x80\x04\x9a\xb2\x1a \n" +
 	"\x1eio.nominal.api.rids.DatasetRidR\n" +
@@ -385,10 +386,20 @@ const file_nominal_protos_dataset_lineage_v1_dataset_lineage_proto_rawDesc = "" 
 	"%DATASET_LINEAGE_ERROR_INVALID_REQUEST\x10\x01\x1a4\xb2\xb2\x1a0\n" +
 	"\x10INVALID_ARGUMENT\x12\x1cInvalidDatasetLineageRequest\x12E\n" +
 	"\x1fDATASET_LINEAGE_ERROR_NOT_FOUND\x10\x02\x1a \xb2\xb2\x1a\x1c\n" +
-	"\tNOT_FOUND\x12\x0fDatasetNotFound2\xa3\x03\n" +
-	"\x15DatasetLineageService\x12\xbb\x01\n" +
-	"\x11ListDatasetInputs\x124.nominal.dataset_lineage.v1.ListDatasetInputsRequest\x1a5.nominal.dataset_lineage.v1.ListDatasetInputsResponse\"9\x82\xd3\xe4\x93\x023\x121/dataset-lineage/v1/datasets/{dataset_rid}/inputs\x12\xcb\x01\n" +
-	"\x15ListDatasetDependents\x128.nominal.dataset_lineage.v1.ListDatasetDependentsRequest\x1a9.nominal.dataset_lineage.v1.ListDatasetDependentsResponse\"=\x82\xd3\xe4\x93\x027\x125/dataset-lineage/v1/datasets/{dataset_rid}/dependentsB\x9c\x02\n" +
+	"\tNOT_FOUND\x12\x0fDatasetNotFound2\xaa\x04\n" +
+	"\x15DatasetLineageService\x12\xfe\x01\n" +
+	"\x11ListDatasetInputs\x124.nominal.dataset_lineage.v1.ListDatasetInputsRequest\x1a5.nominal.dataset_lineage.v1.ListDatasetInputsResponse\"|\xba\xb2\x1a?\n" +
+	"\x12\n" +
+	"\x0eworkspace:view\"\x00\n" +
+	")\n" +
+	"\x18datasource:read_metadata\x12\r\n" +
+	"\vdataset_rid\x82\xd3\xe4\x93\x023\x121/dataset-lineage/v1/datasets/{dataset_rid}/inputs\x12\x8f\x02\n" +
+	"\x15ListDatasetDependents\x128.nominal.dataset_lineage.v1.ListDatasetDependentsRequest\x1a9.nominal.dataset_lineage.v1.ListDatasetDependentsResponse\"\x80\x01\xba\xb2\x1a?\n" +
+	"\x12\n" +
+	"\x0eworkspace:view\"\x00\n" +
+	")\n" +
+	"\x18datasource:read_metadata\x12\r\n" +
+	"\vdataset_rid\x82\xd3\xe4\x93\x027\x125/dataset-lineage/v1/datasets/{dataset_rid}/dependentsB\x9c\x02\n" +
 	"\x1ecom.nominal.dataset_lineage.v1B\x13DatasetLineageProtoP\x01Z_github.com/nominal-io/nominal-api-protos-go/nominal/protos/dataset_lineage/v1;dataset_lineagev1\xa2\x02\x03NDX\xaa\x02\x19Nominal.DatasetLineage.V1\xca\x02\x19Nominal\\DatasetLineage\\V1\xe2\x02%Nominal\\DatasetLineage\\V1\\GPBMetadata\xea\x02\x1bNominal::DatasetLineage::V1b\x06proto3"
 
 var (

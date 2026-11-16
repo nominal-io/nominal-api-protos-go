@@ -47,7 +47,14 @@ type CommandDeliveryEnvelope struct {
 	HubId    string                 `protobuf:"bytes,5,opt,name=hub_id,json=hubId,proto3" json:"hub_id,omitempty"`
 	// Channels are unique within an envelope. SendCommandsRequest.commands
 	// bounds the count.
-	Commands      []*ChannelCommand `protobuf:"bytes,8,rep,name=commands,proto3" json:"commands,omitempty"`
+	Commands []*ChannelCommand `protobuf:"bytes,8,rep,name=commands,proto3" json:"commands,omitempty"`
+	// The user who sent the command, so the Hub can record who commanded each
+	// channel.
+	IssuedBy string `protobuf:"bytes,9,opt,name=issued_by,json=issuedBy,proto3" json:"issued_by,omitempty"`
+	// The sender's email when Core sent the command, so a Hub log reads without a
+	// user lookup. Empty when Core could not resolve it. issued_by is the
+	// identity of record. SENSITIVE: Core never logs this value.
+	IssuedByEmail string `protobuf:"bytes,10,opt,name=issued_by_email,json=issuedByEmail,proto3" json:"issued_by_email,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -122,6 +129,20 @@ func (x *CommandDeliveryEnvelope) GetCommands() []*ChannelCommand {
 		return x.Commands
 	}
 	return nil
+}
+
+func (x *CommandDeliveryEnvelope) GetIssuedBy() string {
+	if x != nil {
+		return x.IssuedBy
+	}
+	return ""
+}
+
+func (x *CommandDeliveryEnvelope) GetIssuedByEmail() string {
+	if x != nil {
+		return x.IssuedByEmail
+	}
+	return ""
 }
 
 // One channel and the value to command it to.
@@ -488,7 +509,7 @@ var File_nominal_protos_command_v1_command_delivery_proto protoreflect.FileDescr
 
 const file_nominal_protos_command_v1_command_delivery_proto_rawDesc = "" +
 	"\n" +
-	"0nominal/protos/command/v1/command_delivery.proto\x12\x12nominal.command.v1\x1a\x1bbuf/validate/validate.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a!nominal/protos/gen/v1/alias.proto\"\xb8\x02\n" +
+	"0nominal/protos/command/v1/command_delivery.proto\x12\x12nominal.command.v1\x1a\x1bbuf/validate/validate.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a!nominal/protos/gen/v1/alias.proto\"\xaa\x03\n" +
 	"\x17CommandDeliveryEnvelope\x12\x1d\n" +
 	"\n" +
 	"command_id\x18\x01 \x01(\tR\tcommandId\x12\x1a\n" +
@@ -496,7 +517,11 @@ const file_nominal_protos_command_v1_command_delivery_proto_rawDesc = "" +
 	"\tissued_at\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampR\bissuedAt\x126\n" +
 	"\bdeadline\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampR\bdeadline\x12\x15\n" +
 	"\x06hub_id\x18\x05 \x01(\tR\x05hubId\x12>\n" +
-	"\bcommands\x18\b \x03(\v2\".nominal.command.v1.ChannelCommandR\bcommandsJ\x04\b\x06\x10\aJ\x04\b\a\x10\bR\achannelR\x05value\"\x92\x01\n" +
+	"\bcommands\x18\b \x03(\v2\".nominal.command.v1.ChannelCommandR\bcommands\x12H\n" +
+	"\tissued_by\x18\t \x01(\tB+\x9a\xb2\x1a'\n" +
+	"%io.nominal.authentication.api.UserRidR\bissuedBy\x12&\n" +
+	"\x0fissued_by_email\x18\n" +
+	" \x01(\tR\rissuedByEmailJ\x04\b\x06\x10\aJ\x04\b\a\x10\bR\achannelR\x05value\"\x92\x01\n" +
 	"\x0eChannelCommand\x12@\n" +
 	"\achannel\x18\x01 \x01(\tB&\xbaH\ar\x05\x10\x01\x18\x80 \x9a\xb2\x1a\x18\n" +
 	"\x16io.nominal.api.ChannelR\achannel\x12>\n" +

@@ -8,6 +8,7 @@ package storagev1
 
 import (
 	_ "buf.build/gen/go/bufbuild/protovalidate/protocolbuffers/go/buf/validate"
+	_ "github.com/nominal-io/nominal-api-protos-go/nominal/protos/authz/v1"
 	_ "github.com/nominal-io/nominal-api-protos-go/nominal/protos/gen/v1"
 	time "github.com/nominal-io/nominal-api-protos-go/nominal/protos/types/time"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
@@ -37,9 +38,8 @@ type DeleteDataRequest struct {
 	// If specified, will only delete data that has an exact channel name match with the given names.
 	// If not specified, will delete data across all channels.
 	ChannelNames []string `protobuf:"bytes,4,rep,name=channel_names,json=channelNames,proto3" json:"channel_names,omitempty"`
-	// If true and tags, channelNames, and timeRange are empty, will also delete associated channel metadata.
-	// Otherwise, will only delete raw data. This is to guarantee that you are not orphaning data unintentionally
-	// by deleting the metadata.
+	// If true, also deletes the channel metadata of the data source. Rejected when time_range, tags, or channel_names
+	// is set, so that metadata is never deleted while data remains. If false, only raw data is deleted.
 	DeleteMetadata bool `protobuf:"varint,5,opt,name=delete_metadata,json=deleteMetadata,proto3" json:"delete_metadata,omitempty"`
 	unknownFields  protoimpl.UnknownFields
 	sizeCache      protoimpl.SizeCache
@@ -146,7 +146,7 @@ func (*DeleteDataResponse) Descriptor() ([]byte, []int) {
 	return file_nominal_protos_storage_v1_data_deletion_proto_rawDescGZIP(), []int{1}
 }
 
-// Identifies a channel with its associated tags.
+// Identifies one series: a channel name with its complete tag set.
 type ChannelWithTags struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Channel       string                 `protobuf:"bytes,1,opt,name=channel,proto3" json:"channel,omitempty"`
@@ -202,9 +202,9 @@ func (x *ChannelWithTags) GetTags() map[string]string {
 type DeleteChannelWithTagsRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	DataSourceRid string                 `protobuf:"bytes,1,opt,name=data_source_rid,json=dataSourceRid,proto3" json:"data_source_rid,omitempty"`
-	// If channel is provided, only channels with tags matching that channel will be deleted.
+	// Limits the match to this channel name. If omitted, matches all channels.
 	Channel *string `protobuf:"bytes,2,opt,name=channel,proto3,oneof" json:"channel,omitempty"`
-	// At least one tag must be specified in the request. Deletes all data containing the specified tags.
+	// Matches the series that have all of these tag key and value pairs.
 	Tags map[string]string `protobuf:"bytes,3,rep,name=tags,proto3" json:"tags,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
 	// When false, the request does not apply the deletions and instead returns the list of channels with tags
 	// that would be deleted. When true, the deletions are applied.
@@ -317,9 +317,10 @@ func (x *DeleteChannelWithTagsResponse) GetChannelWithTags() []*ChannelWithTags 
 }
 
 type UndeleteChannelWithTagsRequest struct {
-	state           protoimpl.MessageState `protogen:"open.v1"`
-	DataSourceRid   string                 `protobuf:"bytes,1,opt,name=data_source_rid,json=dataSourceRid,proto3" json:"data_source_rid,omitempty"`
-	ChannelWithTags []*ChannelWithTags     `protobuf:"bytes,2,rep,name=channel_with_tags,json=channelWithTags,proto3" json:"channel_with_tags,omitempty"`
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	DataSourceRid string                 `protobuf:"bytes,1,opt,name=data_source_rid,json=dataSourceRid,proto3" json:"data_source_rid,omitempty"`
+	// Each entry matches series by its channel name and exactly this tag set.
+	ChannelWithTags []*ChannelWithTags `protobuf:"bytes,2,rep,name=channel_with_tags,json=channelWithTags,proto3" json:"channel_with_tags,omitempty"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -408,7 +409,7 @@ var File_nominal_protos_storage_v1_data_deletion_proto protoreflect.FileDescript
 
 const file_nominal_protos_storage_v1_data_deletion_proto_rawDesc = "" +
 	"\n" +
-	"-nominal/protos/storage/v1/data_deletion.proto\x12\x12nominal.storage.v1\x1a\x1bbuf/validate/validate.proto\x1a\x1cgoogle/api/annotations.proto\x1a!nominal/protos/gen/v1/alias.proto\x1a$nominal/protos/types/time/time.proto\"\xe3\x03\n" +
+	"-nominal/protos/storage/v1/data_deletion.proto\x12\x12nominal.storage.v1\x1a\x1bbuf/validate/validate.proto\x1a\x1cgoogle/api/annotations.proto\x1a)nominal/protos/authz/v1/annotations.proto\x1a!nominal/protos/gen/v1/alias.proto\x1a$nominal/protos/types/time/time.proto\"\xe3\x03\n" +
 	"\x11DeleteDataRequest\x12_\n" +
 	"\x0fdata_source_rid\x18\x01 \x01(\tB7\x9a\xb2\x1a3\n" +
 	"1io.nominal.api.rids.NominalDataSourceOrDatasetRidR\rdataSourceRid\x12=\n" +
@@ -448,12 +449,21 @@ const file_nominal_protos_storage_v1_data_deletion_proto_rawDesc = "" +
 	"\x0fdata_source_rid\x18\x01 \x01(\tB=\xbaH\x03\xc8\x01\x01\x9a\xb2\x1a3\n" +
 	"1io.nominal.api.rids.NominalDataSourceOrDatasetRidR\rdataSourceRid\x12\\\n" +
 	"\x11channel_with_tags\x18\x02 \x03(\v2#.nominal.storage.v1.ChannelWithTagsB\v\xbaH\b\x92\x01\x05\b\x01\x10\xe8\aR\x0fchannelWithTags\"!\n" +
-	"\x1fUndeleteChannelWithTagsResponse2\xac\x04\n" +
-	"\x13DataDeletionService\x12\x90\x01\n" +
+	"\x1fUndeleteChannelWithTagsResponse2\xbf\x05\n" +
+	"\x13DataDeletionService\x12\xc1\x01\n" +
 	"\n" +
-	"DeleteData\x12%.nominal.storage.v1.DeleteDataRequest\x1a&.nominal.storage.v1.DeleteDataResponse\"3\x82\xd3\xe4\x93\x02*:\x01*\"%/storage/data-deletion/v1/delete-data\x88\x02\x01\x12\xbb\x01\n" +
-	"\x15DeleteChannelWithTags\x120.nominal.storage.v1.DeleteChannelWithTagsRequest\x1a1.nominal.storage.v1.DeleteChannelWithTagsResponse\"=\x82\xd3\xe4\x93\x027:\x01*\"2/storage/data-deletion/v1/delete-channel-with-tags\x12\xc3\x01\n" +
-	"\x17UndeleteChannelWithTags\x122.nominal.storage.v1.UndeleteChannelWithTagsRequest\x1a3.nominal.storage.v1.UndeleteChannelWithTagsResponse\"?\x82\xd3\xe4\x93\x029:\x01*\"4/storage/data-deletion/v1/undelete-channel-with-tagsB\xe6\x01\n" +
+	"DeleteData\x12%.nominal.storage.v1.DeleteDataRequest\x1a&.nominal.storage.v1.DeleteDataResponse\"d\xba\xb2\x1a-\n" +
+	"+\n" +
+	"\x16datasource:delete_data\x12\x11\n" +
+	"\x0fdata_source_rid\x82\xd3\xe4\x93\x02*:\x01*\"%/storage/data-deletion/v1/delete-data\x88\x02\x01\x12\xec\x01\n" +
+	"\x15DeleteChannelWithTags\x120.nominal.storage.v1.DeleteChannelWithTagsRequest\x1a1.nominal.storage.v1.DeleteChannelWithTagsResponse\"n\xba\xb2\x1a-\n" +
+	"+\n" +
+	"\x16datasource:delete_data\x12\x11\n" +
+	"\x0fdata_source_rid\x82\xd3\xe4\x93\x027:\x01*\"2/storage/data-deletion/v1/delete-channel-with-tags\x12\xf4\x01\n" +
+	"\x17UndeleteChannelWithTags\x122.nominal.storage.v1.UndeleteChannelWithTagsRequest\x1a3.nominal.storage.v1.UndeleteChannelWithTagsResponse\"p\xba\xb2\x1a-\n" +
+	"+\n" +
+	"\x16datasource:delete_data\x12\x11\n" +
+	"\x0fdata_source_rid\x82\xd3\xe4\x93\x029:\x01*\"4/storage/data-deletion/v1/undelete-channel-with-tagsB\xe6\x01\n" +
 	"\x16com.nominal.storage.v1B\x11DataDeletionProtoP\x01ZOgithub.com/nominal-io/nominal-api-protos-go/nominal/protos/storage/v1;storagev1\xa2\x02\x03NSX\xaa\x02\x12Nominal.Storage.V1\xca\x02\x12Nominal\\Storage\\V1\xe2\x02\x1eNominal\\Storage\\V1\\GPBMetadata\xea\x02\x14Nominal::Storage::V1b\x06proto3"
 
 var (

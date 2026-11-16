@@ -28,7 +28,23 @@ const (
 //
 // Starts V2 ingest jobs and returns the RID used to track asynchronous progress.
 type IngestServiceClient interface {
-	// Submit a V2 ingest job.
+	// Submits an ingest job that loads files, logs, video, MCAP, dataflash, or custom file extractor
+	// (containerized) items into one existing dataset. Returns an ingest job RID to track progress, because
+	// the data loads asynchronously.
+	//
+	// Request-level tags apply to every item, and item-level tags win on conflict. A file in storage outside
+	// Nominal's uploads is copied in as part of the job. The caller needs permission to write data to the
+	// dataset.
+	//
+	// Errors:
+	//   - NOT_FOUND: the dataset does not exist or the caller cannot write data to it, or a video item names an
+	//     S3 source in Nominal's uploads that is not in the workspace's uploads.
+	//   - INVALID_ARGUMENT: the request has no items, an item has no type or is a point cloud, an item lacks
+	//     a source or option that its type needs or uses one that v2 ingest does not support, or the dataset
+	//     is a composition (derived dataset). A video source in an external bucket that is not set up for the
+	//     workspace, or a presigned URL that returns a client error, also returns this error.
+	//   - FAILED_PRECONDITION: an MCAP or dataflash item needs an extractor that this deployment does not
+	//     provide.
 	Ingest(ctx context.Context, in *IngestRequest, opts ...grpc.CallOption) (*IngestResponse, error)
 }
 
@@ -56,7 +72,23 @@ func (c *ingestServiceClient) Ingest(ctx context.Context, in *IngestRequest, opt
 //
 // Starts V2 ingest jobs and returns the RID used to track asynchronous progress.
 type IngestServiceServer interface {
-	// Submit a V2 ingest job.
+	// Submits an ingest job that loads files, logs, video, MCAP, dataflash, or custom file extractor
+	// (containerized) items into one existing dataset. Returns an ingest job RID to track progress, because
+	// the data loads asynchronously.
+	//
+	// Request-level tags apply to every item, and item-level tags win on conflict. A file in storage outside
+	// Nominal's uploads is copied in as part of the job. The caller needs permission to write data to the
+	// dataset.
+	//
+	// Errors:
+	//   - NOT_FOUND: the dataset does not exist or the caller cannot write data to it, or a video item names an
+	//     S3 source in Nominal's uploads that is not in the workspace's uploads.
+	//   - INVALID_ARGUMENT: the request has no items, an item has no type or is a point cloud, an item lacks
+	//     a source or option that its type needs or uses one that v2 ingest does not support, or the dataset
+	//     is a composition (derived dataset). A video source in an external bucket that is not set up for the
+	//     workspace, or a presigned URL that returns a client error, also returns this error.
+	//   - FAILED_PRECONDITION: an MCAP or dataflash item needs an extractor that this deployment does not
+	//     provide.
 	Ingest(context.Context, *IngestRequest) (*IngestResponse, error)
 	mustEmbedUnimplementedIngestServiceServer()
 }

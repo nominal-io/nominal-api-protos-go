@@ -37,17 +37,55 @@ const (
 type ConnectAppsServiceClient interface {
 	// Create a new Connect App, either with a bundle file or as an empty app
 	CreateConnectApp(ctx context.Context, in *CreateConnectAppRequest, opts ...grpc.CallOption) (*CreateConnectAppResponse, error)
-	// Get a Connect App by its RID
+	// Returns a Connect app: its metadata, its bundle, and the commit that the response describes.
+	//
+	// A commit selects the version to return. A branch, or no value, selects the latest commit on
+	// the main branch, whatever the branch name is. The bundle is absent when that commit has no
+	// bundle, for example for an app that was created empty. Archived apps can be read. The caller
+	// needs view access to the workspace of the app.
+	//
+	// Errors:
+	// - PERMISSION_DENIED: the app does not exist, or the caller cannot view its workspace.
+	// - NOT_FOUND: the commit does not exist for this app.
 	GetConnectApp(ctx context.Context, in *GetConnectAppRequest, opts ...grpc.CallOption) (*GetConnectAppResponse, error)
-	// Update metadata fields of a Connect App
+	// Updates the metadata of a Connect app and returns the new metadata. The bundle is not changed;
+	// use Commit to change it.
+	//
+	// Only the fields that are set change. Display name, description, and the published and archived
+	// flags are replaced. When labels or properties are set, the whole list or map is replaced, so
+	// a label or property that is left out is removed. Setting the archived flag archives or
+	// unarchives the app, as ArchiveConnectApps and UnarchiveConnectApps do. The workspace of the app
+	// cannot change. The caller needs permission to edit connectivity in the workspace of the app.
+	//
+	// Errors:
+	//   - PERMISSION_DENIED: the app does not exist, or the caller cannot edit connectivity in its
+	//     workspace.
 	UpdateConnectAppMetadata(ctx context.Context, in *UpdateConnectAppMetadataRequest, opts ...grpc.CallOption) (*UpdateConnectAppMetadataResponse, error)
 	// Commit a bundle to the main branch
 	Commit(ctx context.Context, in *CommitRequest, opts ...grpc.CallOption) (*CommitResponse, error)
-	// Searches for Connect Apps, returning paged results
+	// Searches for Connect Apps, returning paged results. Workspaces the caller lacks
+	// workspace:view on are filtered out rather than failing the call.
 	SearchConnectApps(ctx context.Context, in *SearchConnectAppsRequest, opts ...grpc.CallOption) (*SearchConnectAppsResponse, error)
-	// Archive Connect Apps
+	// Archives Connect apps and returns the RIDs that were requested.
+	//
+	// Archiving keeps the app, its metadata, and its commits, and an archived app can still be read
+	// and searched. It cannot receive new commits until UnarchiveConnectApps restores it. Archiving
+	// an app that is already archived changes nothing. The call succeeds for all apps or for none.
+	// The caller needs permission to edit connectivity in the workspace of every app.
+	//
+	// Errors:
+	//   - PERMISSION_DENIED: an app does not exist, or the caller cannot edit connectivity in its
+	//     workspace. No app is archived.
 	ArchiveConnectApps(ctx context.Context, in *ArchiveConnectAppsRequest, opts ...grpc.CallOption) (*ArchiveConnectAppsResponse, error)
-	// Unarchive Connect Apps
+	// Unarchives Connect apps so that they accept commits again, and returns the RIDs that were
+	// requested.
+	//
+	// Unarchiving an app that is not archived changes nothing. The call succeeds for all apps or for
+	// none. The caller needs permission to edit connectivity in the workspace of every app.
+	//
+	// Errors:
+	//   - PERMISSION_DENIED: an app does not exist, or the caller cannot edit connectivity in its
+	//     workspace. No app is unarchived.
 	UnarchiveConnectApps(ctx context.Context, in *UnarchiveConnectAppsRequest, opts ...grpc.CallOption) (*UnarchiveConnectAppsResponse, error)
 	// Get a pre-signed URL for downloading the bundle of a Connect App at a specific commit or the latest commit on the main branch
 	GetConnectAppBundleDownloadUrl(ctx context.Context, in *GetConnectAppBundleDownloadUrlRequest, opts ...grpc.CallOption) (*GetConnectAppBundleDownloadUrlResponse, error)
@@ -149,17 +187,55 @@ func (c *connectAppsServiceClient) GetConnectAppBundleDownloadUrl(ctx context.Co
 type ConnectAppsServiceServer interface {
 	// Create a new Connect App, either with a bundle file or as an empty app
 	CreateConnectApp(context.Context, *CreateConnectAppRequest) (*CreateConnectAppResponse, error)
-	// Get a Connect App by its RID
+	// Returns a Connect app: its metadata, its bundle, and the commit that the response describes.
+	//
+	// A commit selects the version to return. A branch, or no value, selects the latest commit on
+	// the main branch, whatever the branch name is. The bundle is absent when that commit has no
+	// bundle, for example for an app that was created empty. Archived apps can be read. The caller
+	// needs view access to the workspace of the app.
+	//
+	// Errors:
+	// - PERMISSION_DENIED: the app does not exist, or the caller cannot view its workspace.
+	// - NOT_FOUND: the commit does not exist for this app.
 	GetConnectApp(context.Context, *GetConnectAppRequest) (*GetConnectAppResponse, error)
-	// Update metadata fields of a Connect App
+	// Updates the metadata of a Connect app and returns the new metadata. The bundle is not changed;
+	// use Commit to change it.
+	//
+	// Only the fields that are set change. Display name, description, and the published and archived
+	// flags are replaced. When labels or properties are set, the whole list or map is replaced, so
+	// a label or property that is left out is removed. Setting the archived flag archives or
+	// unarchives the app, as ArchiveConnectApps and UnarchiveConnectApps do. The workspace of the app
+	// cannot change. The caller needs permission to edit connectivity in the workspace of the app.
+	//
+	// Errors:
+	//   - PERMISSION_DENIED: the app does not exist, or the caller cannot edit connectivity in its
+	//     workspace.
 	UpdateConnectAppMetadata(context.Context, *UpdateConnectAppMetadataRequest) (*UpdateConnectAppMetadataResponse, error)
 	// Commit a bundle to the main branch
 	Commit(context.Context, *CommitRequest) (*CommitResponse, error)
-	// Searches for Connect Apps, returning paged results
+	// Searches for Connect Apps, returning paged results. Workspaces the caller lacks
+	// workspace:view on are filtered out rather than failing the call.
 	SearchConnectApps(context.Context, *SearchConnectAppsRequest) (*SearchConnectAppsResponse, error)
-	// Archive Connect Apps
+	// Archives Connect apps and returns the RIDs that were requested.
+	//
+	// Archiving keeps the app, its metadata, and its commits, and an archived app can still be read
+	// and searched. It cannot receive new commits until UnarchiveConnectApps restores it. Archiving
+	// an app that is already archived changes nothing. The call succeeds for all apps or for none.
+	// The caller needs permission to edit connectivity in the workspace of every app.
+	//
+	// Errors:
+	//   - PERMISSION_DENIED: an app does not exist, or the caller cannot edit connectivity in its
+	//     workspace. No app is archived.
 	ArchiveConnectApps(context.Context, *ArchiveConnectAppsRequest) (*ArchiveConnectAppsResponse, error)
-	// Unarchive Connect Apps
+	// Unarchives Connect apps so that they accept commits again, and returns the RIDs that were
+	// requested.
+	//
+	// Unarchiving an app that is not archived changes nothing. The call succeeds for all apps or for
+	// none. The caller needs permission to edit connectivity in the workspace of every app.
+	//
+	// Errors:
+	//   - PERMISSION_DENIED: an app does not exist, or the caller cannot edit connectivity in its
+	//     workspace. No app is unarchived.
 	UnarchiveConnectApps(context.Context, *UnarchiveConnectAppsRequest) (*UnarchiveConnectAppsResponse, error)
 	// Get a pre-signed URL for downloading the bundle of a Connect App at a specific commit or the latest commit on the main branch
 	GetConnectAppBundleDownloadUrl(context.Context, *GetConnectAppBundleDownloadUrlRequest) (*GetConnectAppBundleDownloadUrlResponse, error)

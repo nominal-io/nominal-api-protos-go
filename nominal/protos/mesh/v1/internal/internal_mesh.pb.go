@@ -112,18 +112,217 @@ func (*UpdateRemoteConnectionStatusResponse) Descriptor() ([]byte, []int) {
 	return file_nominal_protos_mesh_v1_internal_internal_mesh_proto_rawDescGZIP(), []int{1}
 }
 
+type GetMeshArtifactPayloadsRequest struct {
+	state               protoimpl.MessageState `protogen:"open.v1"`
+	RemoteConnectionRid string                 `protobuf:"bytes,1,opt,name=remote_connection_rid,json=remoteConnectionRid,proto3" json:"remote_connection_rid,omitempty"`
+	MeshArtifactIds     []int64                `protobuf:"varint,2,rep,packed,name=mesh_artifact_ids,json=meshArtifactIds,proto3" json:"mesh_artifact_ids,omitempty"`
+	unknownFields       protoimpl.UnknownFields
+	sizeCache           protoimpl.SizeCache
+}
+
+func (x *GetMeshArtifactPayloadsRequest) Reset() {
+	*x = GetMeshArtifactPayloadsRequest{}
+	mi := &file_nominal_protos_mesh_v1_internal_internal_mesh_proto_msgTypes[2]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetMeshArtifactPayloadsRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetMeshArtifactPayloadsRequest) ProtoMessage() {}
+
+func (x *GetMeshArtifactPayloadsRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_nominal_protos_mesh_v1_internal_internal_mesh_proto_msgTypes[2]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetMeshArtifactPayloadsRequest.ProtoReflect.Descriptor instead.
+func (*GetMeshArtifactPayloadsRequest) Descriptor() ([]byte, []int) {
+	return file_nominal_protos_mesh_v1_internal_internal_mesh_proto_rawDescGZIP(), []int{2}
+}
+
+func (x *GetMeshArtifactPayloadsRequest) GetRemoteConnectionRid() string {
+	if x != nil {
+		return x.RemoteConnectionRid
+	}
+	return ""
+}
+
+func (x *GetMeshArtifactPayloadsRequest) GetMeshArtifactIds() []int64 {
+	if x != nil {
+		return x.MeshArtifactIds
+	}
+	return nil
+}
+
+type GetMeshArtifactPayloadsResponse struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Leaves out an artifact the connection does not carry or whose edits the peer has all acknowledged.
+	Artifacts     []*v1.MeshArtifactPayload `protobuf:"bytes,1,rep,name=artifacts,proto3" json:"artifacts,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GetMeshArtifactPayloadsResponse) Reset() {
+	*x = GetMeshArtifactPayloadsResponse{}
+	mi := &file_nominal_protos_mesh_v1_internal_internal_mesh_proto_msgTypes[3]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetMeshArtifactPayloadsResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetMeshArtifactPayloadsResponse) ProtoMessage() {}
+
+func (x *GetMeshArtifactPayloadsResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_nominal_protos_mesh_v1_internal_internal_mesh_proto_msgTypes[3]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetMeshArtifactPayloadsResponse.ProtoReflect.Descriptor instead.
+func (*GetMeshArtifactPayloadsResponse) Descriptor() ([]byte, []int) {
+	return file_nominal_protos_mesh_v1_internal_internal_mesh_proto_rawDescGZIP(), []int{3}
+}
+
+func (x *GetMeshArtifactPayloadsResponse) GetArtifacts() []*v1.MeshArtifactPayload {
+	if x != nil {
+		return x.Artifacts
+	}
+	return nil
+}
+
+type UpdateMeshArtifactAcksRequest struct {
+	state               protoimpl.MessageState `protogen:"open.v1"`
+	RemoteConnectionRid string                 `protobuf:"bytes,1,opt,name=remote_connection_rid,json=remoteConnectionRid,proto3" json:"remote_connection_rid,omitempty"`
+	// What the peer returned for an artifacts import over Mesh. Each vector is merged into the one already acknowledged.
+	Artifacts     []*v1.ImportedArtifact `protobuf:"bytes,2,rep,name=artifacts,proto3" json:"artifacts,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *UpdateMeshArtifactAcksRequest) Reset() {
+	*x = UpdateMeshArtifactAcksRequest{}
+	mi := &file_nominal_protos_mesh_v1_internal_internal_mesh_proto_msgTypes[4]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *UpdateMeshArtifactAcksRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*UpdateMeshArtifactAcksRequest) ProtoMessage() {}
+
+func (x *UpdateMeshArtifactAcksRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_nominal_protos_mesh_v1_internal_internal_mesh_proto_msgTypes[4]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use UpdateMeshArtifactAcksRequest.ProtoReflect.Descriptor instead.
+func (*UpdateMeshArtifactAcksRequest) Descriptor() ([]byte, []int) {
+	return file_nominal_protos_mesh_v1_internal_internal_mesh_proto_rawDescGZIP(), []int{4}
+}
+
+func (x *UpdateMeshArtifactAcksRequest) GetRemoteConnectionRid() string {
+	if x != nil {
+		return x.RemoteConnectionRid
+	}
+	return ""
+}
+
+func (x *UpdateMeshArtifactAcksRequest) GetArtifacts() []*v1.ImportedArtifact {
+	if x != nil {
+		return x.Artifacts
+	}
+	return nil
+}
+
+type UpdateMeshArtifactAcksResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *UpdateMeshArtifactAcksResponse) Reset() {
+	*x = UpdateMeshArtifactAcksResponse{}
+	mi := &file_nominal_protos_mesh_v1_internal_internal_mesh_proto_msgTypes[5]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *UpdateMeshArtifactAcksResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*UpdateMeshArtifactAcksResponse) ProtoMessage() {}
+
+func (x *UpdateMeshArtifactAcksResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_nominal_protos_mesh_v1_internal_internal_mesh_proto_msgTypes[5]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use UpdateMeshArtifactAcksResponse.ProtoReflect.Descriptor instead.
+func (*UpdateMeshArtifactAcksResponse) Descriptor() ([]byte, []int) {
+	return file_nominal_protos_mesh_v1_internal_internal_mesh_proto_rawDescGZIP(), []int{5}
+}
+
 var File_nominal_protos_mesh_v1_internal_internal_mesh_proto protoreflect.FileDescriptor
 
 const file_nominal_protos_mesh_v1_internal_internal_mesh_proto_rawDesc = "" +
 	"\n" +
-	"3nominal/protos/mesh/v1/internal/internal_mesh.proto\x12\x18nominal.mesh.v1.internal\x1a\x1bbuf/validate/validate.proto\x1a!nominal/protos/gen/v1/alias.proto\x1a/nominal/protos/mesh/v1/remote_connections.proto\"\xcf\x01\n" +
+	"3nominal/protos/mesh/v1/internal/internal_mesh.proto\x12\x18nominal.mesh.v1.internal\x1a\x1bbuf/validate/validate.proto\x1a!nominal/protos/gen/v1/alias.proto\x1a-nominal/protos/mesh/v1/artifact_imports.proto\x1a%nominal/protos/mesh/v1/payloads.proto\x1a/nominal/protos/mesh/v1/remote_connections.proto\"\xcf\x01\n" +
 	"#UpdateRemoteConnectionStatusRequest\x12g\n" +
 	"\x15remote_connection_rid\x18\x01 \x01(\tB3\xbaH\x03\xc8\x01\x01\x9a\xb2\x1a)\n" +
 	"'io.nominal.api.rids.RemoteConnectionRidR\x13remoteConnectionRid\x12?\n" +
 	"\x06status\x18\x02 \x01(\x0e2'.nominal.mesh.v1.RemoteConnectionStatusR\x06status\"&\n" +
-	"$UpdateRemoteConnectionStatusResponse2\xb5\x01\n" +
+	"$UpdateRemoteConnectionStatusResponse\"\xc8\x01\n" +
+	"\x1eGetMeshArtifactPayloadsRequest\x12g\n" +
+	"\x15remote_connection_rid\x18\x01 \x01(\tB3\xbaH\x03\xc8\x01\x01\x9a\xb2\x1a)\n" +
+	"'io.nominal.api.rids.RemoteConnectionRidR\x13remoteConnectionRid\x12=\n" +
+	"\x11mesh_artifact_ids\x18\x02 \x03(\x03B\x11\xbaH\x0e\x92\x01\v\b\x01\x10\xf4\x03\"\x04\"\x02 \x00R\x0fmeshArtifactIds\"e\n" +
+	"\x1fGetMeshArtifactPayloadsResponse\x12B\n" +
+	"\tartifacts\x18\x01 \x03(\v2$.nominal.mesh.v1.MeshArtifactPayloadR\tartifacts\"\xd6\x01\n" +
+	"\x1dUpdateMeshArtifactAcksRequest\x12g\n" +
+	"\x15remote_connection_rid\x18\x01 \x01(\tB3\xbaH\x03\xc8\x01\x01\x9a\xb2\x1a)\n" +
+	"'io.nominal.api.rids.RemoteConnectionRidR\x13remoteConnectionRid\x12L\n" +
+	"\tartifacts\x18\x02 \x03(\v2!.nominal.mesh.v1.ImportedArtifactB\v\xbaH\b\x92\x01\x05\b\x01\x10\xf4\x03R\tartifacts\" \n" +
+	"\x1eUpdateMeshArtifactAcksResponse2\xd4\x03\n" +
 	"\x13InternalMeshService\x12\x9d\x01\n" +
-	"\x1cUpdateRemoteConnectionStatus\x12=.nominal.mesh.v1.internal.UpdateRemoteConnectionStatusRequest\x1a>.nominal.mesh.v1.internal.UpdateRemoteConnectionStatusResponseB\x82\x02\n" +
+	"\x1cUpdateRemoteConnectionStatus\x12=.nominal.mesh.v1.internal.UpdateRemoteConnectionStatusRequest\x1a>.nominal.mesh.v1.internal.UpdateRemoteConnectionStatusResponse\x12\x8e\x01\n" +
+	"\x17GetMeshArtifactPayloads\x128.nominal.mesh.v1.internal.GetMeshArtifactPayloadsRequest\x1a9.nominal.mesh.v1.internal.GetMeshArtifactPayloadsResponse\x12\x8b\x01\n" +
+	"\x16UpdateMeshArtifactAcks\x127.nominal.mesh.v1.internal.UpdateMeshArtifactAcksRequest\x1a8.nominal.mesh.v1.internal.UpdateMeshArtifactAcksResponseB\x82\x02\n" +
 	"\x1ccom.nominal.mesh.v1.internalB\x11InternalMeshProtoP\x01ZKgithub.com/nominal-io/nominal-api-protos-go/nominal/protos/mesh/v1/internal\xa2\x02\x04NMVI\xaa\x02\x18Nominal.Mesh.V1.Internal\xca\x02\x18Nominal\\Mesh\\V1\\Internal\xe2\x02$Nominal\\Mesh\\V1\\Internal\\GPBMetadata\xea\x02\x1bNominal::Mesh::V1::Internalb\x06proto3"
 
 var (
@@ -138,21 +337,33 @@ func file_nominal_protos_mesh_v1_internal_internal_mesh_proto_rawDescGZIP() []by
 	return file_nominal_protos_mesh_v1_internal_internal_mesh_proto_rawDescData
 }
 
-var file_nominal_protos_mesh_v1_internal_internal_mesh_proto_msgTypes = make([]protoimpl.MessageInfo, 2)
+var file_nominal_protos_mesh_v1_internal_internal_mesh_proto_msgTypes = make([]protoimpl.MessageInfo, 6)
 var file_nominal_protos_mesh_v1_internal_internal_mesh_proto_goTypes = []any{
 	(*UpdateRemoteConnectionStatusRequest)(nil),  // 0: nominal.mesh.v1.internal.UpdateRemoteConnectionStatusRequest
 	(*UpdateRemoteConnectionStatusResponse)(nil), // 1: nominal.mesh.v1.internal.UpdateRemoteConnectionStatusResponse
-	(v1.RemoteConnectionStatus)(0),               // 2: nominal.mesh.v1.RemoteConnectionStatus
+	(*GetMeshArtifactPayloadsRequest)(nil),       // 2: nominal.mesh.v1.internal.GetMeshArtifactPayloadsRequest
+	(*GetMeshArtifactPayloadsResponse)(nil),      // 3: nominal.mesh.v1.internal.GetMeshArtifactPayloadsResponse
+	(*UpdateMeshArtifactAcksRequest)(nil),        // 4: nominal.mesh.v1.internal.UpdateMeshArtifactAcksRequest
+	(*UpdateMeshArtifactAcksResponse)(nil),       // 5: nominal.mesh.v1.internal.UpdateMeshArtifactAcksResponse
+	(v1.RemoteConnectionStatus)(0),               // 6: nominal.mesh.v1.RemoteConnectionStatus
+	(*v1.MeshArtifactPayload)(nil),               // 7: nominal.mesh.v1.MeshArtifactPayload
+	(*v1.ImportedArtifact)(nil),                  // 8: nominal.mesh.v1.ImportedArtifact
 }
 var file_nominal_protos_mesh_v1_internal_internal_mesh_proto_depIdxs = []int32{
-	2, // 0: nominal.mesh.v1.internal.UpdateRemoteConnectionStatusRequest.status:type_name -> nominal.mesh.v1.RemoteConnectionStatus
-	0, // 1: nominal.mesh.v1.internal.InternalMeshService.UpdateRemoteConnectionStatus:input_type -> nominal.mesh.v1.internal.UpdateRemoteConnectionStatusRequest
-	1, // 2: nominal.mesh.v1.internal.InternalMeshService.UpdateRemoteConnectionStatus:output_type -> nominal.mesh.v1.internal.UpdateRemoteConnectionStatusResponse
-	2, // [2:3] is the sub-list for method output_type
-	1, // [1:2] is the sub-list for method input_type
-	1, // [1:1] is the sub-list for extension type_name
-	1, // [1:1] is the sub-list for extension extendee
-	0, // [0:1] is the sub-list for field type_name
+	6, // 0: nominal.mesh.v1.internal.UpdateRemoteConnectionStatusRequest.status:type_name -> nominal.mesh.v1.RemoteConnectionStatus
+	7, // 1: nominal.mesh.v1.internal.GetMeshArtifactPayloadsResponse.artifacts:type_name -> nominal.mesh.v1.MeshArtifactPayload
+	8, // 2: nominal.mesh.v1.internal.UpdateMeshArtifactAcksRequest.artifacts:type_name -> nominal.mesh.v1.ImportedArtifact
+	0, // 3: nominal.mesh.v1.internal.InternalMeshService.UpdateRemoteConnectionStatus:input_type -> nominal.mesh.v1.internal.UpdateRemoteConnectionStatusRequest
+	2, // 4: nominal.mesh.v1.internal.InternalMeshService.GetMeshArtifactPayloads:input_type -> nominal.mesh.v1.internal.GetMeshArtifactPayloadsRequest
+	4, // 5: nominal.mesh.v1.internal.InternalMeshService.UpdateMeshArtifactAcks:input_type -> nominal.mesh.v1.internal.UpdateMeshArtifactAcksRequest
+	1, // 6: nominal.mesh.v1.internal.InternalMeshService.UpdateRemoteConnectionStatus:output_type -> nominal.mesh.v1.internal.UpdateRemoteConnectionStatusResponse
+	3, // 7: nominal.mesh.v1.internal.InternalMeshService.GetMeshArtifactPayloads:output_type -> nominal.mesh.v1.internal.GetMeshArtifactPayloadsResponse
+	5, // 8: nominal.mesh.v1.internal.InternalMeshService.UpdateMeshArtifactAcks:output_type -> nominal.mesh.v1.internal.UpdateMeshArtifactAcksResponse
+	6, // [6:9] is the sub-list for method output_type
+	3, // [3:6] is the sub-list for method input_type
+	3, // [3:3] is the sub-list for extension type_name
+	3, // [3:3] is the sub-list for extension extendee
+	0, // [0:3] is the sub-list for field type_name
 }
 
 func init() { file_nominal_protos_mesh_v1_internal_internal_mesh_proto_init() }
@@ -166,7 +377,7 @@ func file_nominal_protos_mesh_v1_internal_internal_mesh_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_nominal_protos_mesh_v1_internal_internal_mesh_proto_rawDesc), len(file_nominal_protos_mesh_v1_internal_internal_mesh_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   2,
+			NumMessages:   6,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

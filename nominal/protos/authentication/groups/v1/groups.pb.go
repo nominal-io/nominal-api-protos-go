@@ -8,6 +8,7 @@ package groupsv1
 
 import (
 	_ "buf.build/gen/go/bufbuild/protovalidate/protocolbuffers/go/buf/validate"
+	_ "github.com/nominal-io/nominal-api-protos-go/nominal/protos/authz/v1"
 	_ "github.com/nominal-io/nominal-api-protos-go/nominal/protos/gen/v1"
 	v1 "github.com/nominal-io/nominal-api-protos-go/nominal/protos/scout/elements/v1"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
@@ -324,6 +325,7 @@ type SearchGroupsQuery struct {
 	//	*SearchGroupsQuery_ExactSubstringText
 	//	*SearchGroupsQuery_And
 	//	*SearchGroupsQuery_Or
+	//	*SearchGroupsQuery_MemberUsers
 	Query         isSearchGroupsQuery_Query `protobuf_oneof:"query"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -393,6 +395,15 @@ func (x *SearchGroupsQuery) GetOr() *SearchQueryOr {
 	return nil
 }
 
+func (x *SearchGroupsQuery) GetMemberUsers() *SearchQueryMemberUsers {
+	if x != nil {
+		if x, ok := x.Query.(*SearchGroupsQuery_MemberUsers); ok {
+			return x.MemberUsers
+		}
+	}
+	return nil
+}
+
 type isSearchGroupsQuery_Query interface {
 	isSearchGroupsQuery_Query()
 }
@@ -410,11 +421,63 @@ type SearchGroupsQuery_Or struct {
 	Or *SearchQueryOr `protobuf:"bytes,3,opt,name=or,proto3,oneof"`
 }
 
+type SearchGroupsQuery_MemberUsers struct {
+	MemberUsers *SearchQueryMemberUsers `protobuf:"bytes,4,opt,name=member_users,json=memberUsers,proto3,oneof"`
+}
+
 func (*SearchGroupsQuery_ExactSubstringText) isSearchGroupsQuery_Query() {}
 
 func (*SearchGroupsQuery_And) isSearchGroupsQuery_Query() {}
 
 func (*SearchGroupsQuery_Or) isSearchGroupsQuery_Query() {}
+
+func (*SearchGroupsQuery_MemberUsers) isSearchGroupsQuery_Query() {}
+
+// Matches the groups that any of the users is a direct member of, whether that membership is synced
+// from the identity provider or managed manually.
+type SearchQueryMemberUsers struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	UserRids      []string               `protobuf:"bytes,1,rep,name=user_rids,json=userRids,proto3" json:"user_rids,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *SearchQueryMemberUsers) Reset() {
+	*x = SearchQueryMemberUsers{}
+	mi := &file_nominal_protos_authentication_groups_v1_groups_proto_msgTypes[4]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *SearchQueryMemberUsers) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*SearchQueryMemberUsers) ProtoMessage() {}
+
+func (x *SearchQueryMemberUsers) ProtoReflect() protoreflect.Message {
+	mi := &file_nominal_protos_authentication_groups_v1_groups_proto_msgTypes[4]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use SearchQueryMemberUsers.ProtoReflect.Descriptor instead.
+func (*SearchQueryMemberUsers) Descriptor() ([]byte, []int) {
+	return file_nominal_protos_authentication_groups_v1_groups_proto_rawDescGZIP(), []int{4}
+}
+
+func (x *SearchQueryMemberUsers) GetUserRids() []string {
+	if x != nil {
+		return x.UserRids
+	}
+	return nil
+}
 
 type SearchQueryAnd struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
@@ -425,7 +488,7 @@ type SearchQueryAnd struct {
 
 func (x *SearchQueryAnd) Reset() {
 	*x = SearchQueryAnd{}
-	mi := &file_nominal_protos_authentication_groups_v1_groups_proto_msgTypes[4]
+	mi := &file_nominal_protos_authentication_groups_v1_groups_proto_msgTypes[5]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -437,7 +500,7 @@ func (x *SearchQueryAnd) String() string {
 func (*SearchQueryAnd) ProtoMessage() {}
 
 func (x *SearchQueryAnd) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_authentication_groups_v1_groups_proto_msgTypes[4]
+	mi := &file_nominal_protos_authentication_groups_v1_groups_proto_msgTypes[5]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -450,7 +513,7 @@ func (x *SearchQueryAnd) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SearchQueryAnd.ProtoReflect.Descriptor instead.
 func (*SearchQueryAnd) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_authentication_groups_v1_groups_proto_rawDescGZIP(), []int{4}
+	return file_nominal_protos_authentication_groups_v1_groups_proto_rawDescGZIP(), []int{5}
 }
 
 func (x *SearchQueryAnd) GetQueries() []*SearchGroupsQuery {
@@ -469,7 +532,7 @@ type SearchQueryOr struct {
 
 func (x *SearchQueryOr) Reset() {
 	*x = SearchQueryOr{}
-	mi := &file_nominal_protos_authentication_groups_v1_groups_proto_msgTypes[5]
+	mi := &file_nominal_protos_authentication_groups_v1_groups_proto_msgTypes[6]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -481,7 +544,7 @@ func (x *SearchQueryOr) String() string {
 func (*SearchQueryOr) ProtoMessage() {}
 
 func (x *SearchQueryOr) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_authentication_groups_v1_groups_proto_msgTypes[5]
+	mi := &file_nominal_protos_authentication_groups_v1_groups_proto_msgTypes[6]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -494,7 +557,7 @@ func (x *SearchQueryOr) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SearchQueryOr.ProtoReflect.Descriptor instead.
 func (*SearchQueryOr) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_authentication_groups_v1_groups_proto_rawDescGZIP(), []int{5}
+	return file_nominal_protos_authentication_groups_v1_groups_proto_rawDescGZIP(), []int{6}
 }
 
 func (x *SearchQueryOr) GetQueries() []*SearchGroupsQuery {
@@ -516,7 +579,7 @@ type SearchGroupsRequest struct {
 
 func (x *SearchGroupsRequest) Reset() {
 	*x = SearchGroupsRequest{}
-	mi := &file_nominal_protos_authentication_groups_v1_groups_proto_msgTypes[6]
+	mi := &file_nominal_protos_authentication_groups_v1_groups_proto_msgTypes[7]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -528,7 +591,7 @@ func (x *SearchGroupsRequest) String() string {
 func (*SearchGroupsRequest) ProtoMessage() {}
 
 func (x *SearchGroupsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_authentication_groups_v1_groups_proto_msgTypes[6]
+	mi := &file_nominal_protos_authentication_groups_v1_groups_proto_msgTypes[7]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -541,7 +604,7 @@ func (x *SearchGroupsRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SearchGroupsRequest.ProtoReflect.Descriptor instead.
 func (*SearchGroupsRequest) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_authentication_groups_v1_groups_proto_rawDescGZIP(), []int{6}
+	return file_nominal_protos_authentication_groups_v1_groups_proto_rawDescGZIP(), []int{7}
 }
 
 func (x *SearchGroupsRequest) GetPageSize() int32 {
@@ -575,7 +638,7 @@ type SearchGroupsResponse struct {
 
 func (x *SearchGroupsResponse) Reset() {
 	*x = SearchGroupsResponse{}
-	mi := &file_nominal_protos_authentication_groups_v1_groups_proto_msgTypes[7]
+	mi := &file_nominal_protos_authentication_groups_v1_groups_proto_msgTypes[8]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -587,7 +650,7 @@ func (x *SearchGroupsResponse) String() string {
 func (*SearchGroupsResponse) ProtoMessage() {}
 
 func (x *SearchGroupsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_authentication_groups_v1_groups_proto_msgTypes[7]
+	mi := &file_nominal_protos_authentication_groups_v1_groups_proto_msgTypes[8]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -600,7 +663,7 @@ func (x *SearchGroupsResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SearchGroupsResponse.ProtoReflect.Descriptor instead.
 func (*SearchGroupsResponse) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_authentication_groups_v1_groups_proto_rawDescGZIP(), []int{7}
+	return file_nominal_protos_authentication_groups_v1_groups_proto_rawDescGZIP(), []int{8}
 }
 
 func (x *SearchGroupsResponse) GetResults() []*Group {
@@ -626,7 +689,7 @@ type GetGroupRequest struct {
 
 func (x *GetGroupRequest) Reset() {
 	*x = GetGroupRequest{}
-	mi := &file_nominal_protos_authentication_groups_v1_groups_proto_msgTypes[8]
+	mi := &file_nominal_protos_authentication_groups_v1_groups_proto_msgTypes[9]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -638,7 +701,7 @@ func (x *GetGroupRequest) String() string {
 func (*GetGroupRequest) ProtoMessage() {}
 
 func (x *GetGroupRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_authentication_groups_v1_groups_proto_msgTypes[8]
+	mi := &file_nominal_protos_authentication_groups_v1_groups_proto_msgTypes[9]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -651,7 +714,7 @@ func (x *GetGroupRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetGroupRequest.ProtoReflect.Descriptor instead.
 func (*GetGroupRequest) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_authentication_groups_v1_groups_proto_rawDescGZIP(), []int{8}
+	return file_nominal_protos_authentication_groups_v1_groups_proto_rawDescGZIP(), []int{9}
 }
 
 func (x *GetGroupRequest) GetGroupRid() string {
@@ -670,7 +733,7 @@ type GetGroupResponse struct {
 
 func (x *GetGroupResponse) Reset() {
 	*x = GetGroupResponse{}
-	mi := &file_nominal_protos_authentication_groups_v1_groups_proto_msgTypes[9]
+	mi := &file_nominal_protos_authentication_groups_v1_groups_proto_msgTypes[10]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -682,7 +745,7 @@ func (x *GetGroupResponse) String() string {
 func (*GetGroupResponse) ProtoMessage() {}
 
 func (x *GetGroupResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_authentication_groups_v1_groups_proto_msgTypes[9]
+	mi := &file_nominal_protos_authentication_groups_v1_groups_proto_msgTypes[10]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -695,7 +758,7 @@ func (x *GetGroupResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetGroupResponse.ProtoReflect.Descriptor instead.
 func (*GetGroupResponse) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_authentication_groups_v1_groups_proto_rawDescGZIP(), []int{9}
+	return file_nominal_protos_authentication_groups_v1_groups_proto_rawDescGZIP(), []int{10}
 }
 
 func (x *GetGroupResponse) GetGroup() *Group {
@@ -714,7 +777,7 @@ type GetGroupByIdRequest struct {
 
 func (x *GetGroupByIdRequest) Reset() {
 	*x = GetGroupByIdRequest{}
-	mi := &file_nominal_protos_authentication_groups_v1_groups_proto_msgTypes[10]
+	mi := &file_nominal_protos_authentication_groups_v1_groups_proto_msgTypes[11]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -726,7 +789,7 @@ func (x *GetGroupByIdRequest) String() string {
 func (*GetGroupByIdRequest) ProtoMessage() {}
 
 func (x *GetGroupByIdRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_authentication_groups_v1_groups_proto_msgTypes[10]
+	mi := &file_nominal_protos_authentication_groups_v1_groups_proto_msgTypes[11]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -739,7 +802,7 @@ func (x *GetGroupByIdRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetGroupByIdRequest.ProtoReflect.Descriptor instead.
 func (*GetGroupByIdRequest) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_authentication_groups_v1_groups_proto_rawDescGZIP(), []int{10}
+	return file_nominal_protos_authentication_groups_v1_groups_proto_rawDescGZIP(), []int{11}
 }
 
 func (x *GetGroupByIdRequest) GetGroupId() string {
@@ -758,7 +821,7 @@ type GetGroupByIdResponse struct {
 
 func (x *GetGroupByIdResponse) Reset() {
 	*x = GetGroupByIdResponse{}
-	mi := &file_nominal_protos_authentication_groups_v1_groups_proto_msgTypes[11]
+	mi := &file_nominal_protos_authentication_groups_v1_groups_proto_msgTypes[12]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -770,7 +833,7 @@ func (x *GetGroupByIdResponse) String() string {
 func (*GetGroupByIdResponse) ProtoMessage() {}
 
 func (x *GetGroupByIdResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_authentication_groups_v1_groups_proto_msgTypes[11]
+	mi := &file_nominal_protos_authentication_groups_v1_groups_proto_msgTypes[12]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -783,7 +846,7 @@ func (x *GetGroupByIdResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetGroupByIdResponse.ProtoReflect.Descriptor instead.
 func (*GetGroupByIdResponse) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_authentication_groups_v1_groups_proto_rawDescGZIP(), []int{11}
+	return file_nominal_protos_authentication_groups_v1_groups_proto_rawDescGZIP(), []int{12}
 }
 
 func (x *GetGroupByIdResponse) GetGroup() *Group {
@@ -802,7 +865,7 @@ type GetGroupsRequest struct {
 
 func (x *GetGroupsRequest) Reset() {
 	*x = GetGroupsRequest{}
-	mi := &file_nominal_protos_authentication_groups_v1_groups_proto_msgTypes[12]
+	mi := &file_nominal_protos_authentication_groups_v1_groups_proto_msgTypes[13]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -814,7 +877,7 @@ func (x *GetGroupsRequest) String() string {
 func (*GetGroupsRequest) ProtoMessage() {}
 
 func (x *GetGroupsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_authentication_groups_v1_groups_proto_msgTypes[12]
+	mi := &file_nominal_protos_authentication_groups_v1_groups_proto_msgTypes[13]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -827,7 +890,7 @@ func (x *GetGroupsRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetGroupsRequest.ProtoReflect.Descriptor instead.
 func (*GetGroupsRequest) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_authentication_groups_v1_groups_proto_rawDescGZIP(), []int{12}
+	return file_nominal_protos_authentication_groups_v1_groups_proto_rawDescGZIP(), []int{13}
 }
 
 func (x *GetGroupsRequest) GetGroupRids() []string {
@@ -846,7 +909,7 @@ type GetGroupsResponse struct {
 
 func (x *GetGroupsResponse) Reset() {
 	*x = GetGroupsResponse{}
-	mi := &file_nominal_protos_authentication_groups_v1_groups_proto_msgTypes[13]
+	mi := &file_nominal_protos_authentication_groups_v1_groups_proto_msgTypes[14]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -858,7 +921,7 @@ func (x *GetGroupsResponse) String() string {
 func (*GetGroupsResponse) ProtoMessage() {}
 
 func (x *GetGroupsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_authentication_groups_v1_groups_proto_msgTypes[13]
+	mi := &file_nominal_protos_authentication_groups_v1_groups_proto_msgTypes[14]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -871,7 +934,7 @@ func (x *GetGroupsResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetGroupsResponse.ProtoReflect.Descriptor instead.
 func (*GetGroupsResponse) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_authentication_groups_v1_groups_proto_rawDescGZIP(), []int{13}
+	return file_nominal_protos_authentication_groups_v1_groups_proto_rawDescGZIP(), []int{14}
 }
 
 func (x *GetGroupsResponse) GetGroups() map[string]*Group {
@@ -892,7 +955,7 @@ type UpdateGroupMetadataRequest struct {
 
 func (x *UpdateGroupMetadataRequest) Reset() {
 	*x = UpdateGroupMetadataRequest{}
-	mi := &file_nominal_protos_authentication_groups_v1_groups_proto_msgTypes[14]
+	mi := &file_nominal_protos_authentication_groups_v1_groups_proto_msgTypes[15]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -904,7 +967,7 @@ func (x *UpdateGroupMetadataRequest) String() string {
 func (*UpdateGroupMetadataRequest) ProtoMessage() {}
 
 func (x *UpdateGroupMetadataRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_authentication_groups_v1_groups_proto_msgTypes[14]
+	mi := &file_nominal_protos_authentication_groups_v1_groups_proto_msgTypes[15]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -917,7 +980,7 @@ func (x *UpdateGroupMetadataRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UpdateGroupMetadataRequest.ProtoReflect.Descriptor instead.
 func (*UpdateGroupMetadataRequest) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_authentication_groups_v1_groups_proto_rawDescGZIP(), []int{14}
+	return file_nominal_protos_authentication_groups_v1_groups_proto_rawDescGZIP(), []int{15}
 }
 
 func (x *UpdateGroupMetadataRequest) GetDisplayName() string {
@@ -951,7 +1014,7 @@ type UpdateGroupMetadataRequestWrapper struct {
 
 func (x *UpdateGroupMetadataRequestWrapper) Reset() {
 	*x = UpdateGroupMetadataRequestWrapper{}
-	mi := &file_nominal_protos_authentication_groups_v1_groups_proto_msgTypes[15]
+	mi := &file_nominal_protos_authentication_groups_v1_groups_proto_msgTypes[16]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -963,7 +1026,7 @@ func (x *UpdateGroupMetadataRequestWrapper) String() string {
 func (*UpdateGroupMetadataRequestWrapper) ProtoMessage() {}
 
 func (x *UpdateGroupMetadataRequestWrapper) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_authentication_groups_v1_groups_proto_msgTypes[15]
+	mi := &file_nominal_protos_authentication_groups_v1_groups_proto_msgTypes[16]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -976,7 +1039,7 @@ func (x *UpdateGroupMetadataRequestWrapper) ProtoReflect() protoreflect.Message 
 
 // Deprecated: Use UpdateGroupMetadataRequestWrapper.ProtoReflect.Descriptor instead.
 func (*UpdateGroupMetadataRequestWrapper) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_authentication_groups_v1_groups_proto_rawDescGZIP(), []int{15}
+	return file_nominal_protos_authentication_groups_v1_groups_proto_rawDescGZIP(), []int{16}
 }
 
 func (x *UpdateGroupMetadataRequestWrapper) GetGroupRid() string {
@@ -1002,7 +1065,7 @@ type UpdateGroupMetadataResponse struct {
 
 func (x *UpdateGroupMetadataResponse) Reset() {
 	*x = UpdateGroupMetadataResponse{}
-	mi := &file_nominal_protos_authentication_groups_v1_groups_proto_msgTypes[16]
+	mi := &file_nominal_protos_authentication_groups_v1_groups_proto_msgTypes[17]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1014,7 +1077,7 @@ func (x *UpdateGroupMetadataResponse) String() string {
 func (*UpdateGroupMetadataResponse) ProtoMessage() {}
 
 func (x *UpdateGroupMetadataResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_authentication_groups_v1_groups_proto_msgTypes[16]
+	mi := &file_nominal_protos_authentication_groups_v1_groups_proto_msgTypes[17]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1027,7 +1090,7 @@ func (x *UpdateGroupMetadataResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UpdateGroupMetadataResponse.ProtoReflect.Descriptor instead.
 func (*UpdateGroupMetadataResponse) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_authentication_groups_v1_groups_proto_rawDescGZIP(), []int{16}
+	return file_nominal_protos_authentication_groups_v1_groups_proto_rawDescGZIP(), []int{17}
 }
 
 func (x *UpdateGroupMetadataResponse) GetGroup() *Group {
@@ -1046,7 +1109,7 @@ type CreateOrUpdateGroupRequest struct {
 
 func (x *CreateOrUpdateGroupRequest) Reset() {
 	*x = CreateOrUpdateGroupRequest{}
-	mi := &file_nominal_protos_authentication_groups_v1_groups_proto_msgTypes[17]
+	mi := &file_nominal_protos_authentication_groups_v1_groups_proto_msgTypes[18]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1058,7 +1121,7 @@ func (x *CreateOrUpdateGroupRequest) String() string {
 func (*CreateOrUpdateGroupRequest) ProtoMessage() {}
 
 func (x *CreateOrUpdateGroupRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_authentication_groups_v1_groups_proto_msgTypes[17]
+	mi := &file_nominal_protos_authentication_groups_v1_groups_proto_msgTypes[18]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1071,7 +1134,7 @@ func (x *CreateOrUpdateGroupRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CreateOrUpdateGroupRequest.ProtoReflect.Descriptor instead.
 func (*CreateOrUpdateGroupRequest) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_authentication_groups_v1_groups_proto_rawDescGZIP(), []int{17}
+	return file_nominal_protos_authentication_groups_v1_groups_proto_rawDescGZIP(), []int{18}
 }
 
 func (x *CreateOrUpdateGroupRequest) GetGroup() *Group {
@@ -1090,7 +1153,7 @@ type CreateOrUpdateGroupResponse struct {
 
 func (x *CreateOrUpdateGroupResponse) Reset() {
 	*x = CreateOrUpdateGroupResponse{}
-	mi := &file_nominal_protos_authentication_groups_v1_groups_proto_msgTypes[18]
+	mi := &file_nominal_protos_authentication_groups_v1_groups_proto_msgTypes[19]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1102,7 +1165,7 @@ func (x *CreateOrUpdateGroupResponse) String() string {
 func (*CreateOrUpdateGroupResponse) ProtoMessage() {}
 
 func (x *CreateOrUpdateGroupResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_authentication_groups_v1_groups_proto_msgTypes[18]
+	mi := &file_nominal_protos_authentication_groups_v1_groups_proto_msgTypes[19]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1115,7 +1178,7 @@ func (x *CreateOrUpdateGroupResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CreateOrUpdateGroupResponse.ProtoReflect.Descriptor instead.
 func (*CreateOrUpdateGroupResponse) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_authentication_groups_v1_groups_proto_rawDescGZIP(), []int{18}
+	return file_nominal_protos_authentication_groups_v1_groups_proto_rawDescGZIP(), []int{19}
 }
 
 func (x *CreateOrUpdateGroupResponse) GetGroup() *Group {
@@ -1134,7 +1197,7 @@ type CreateGroupMembershipRequest struct {
 
 func (x *CreateGroupMembershipRequest) Reset() {
 	*x = CreateGroupMembershipRequest{}
-	mi := &file_nominal_protos_authentication_groups_v1_groups_proto_msgTypes[19]
+	mi := &file_nominal_protos_authentication_groups_v1_groups_proto_msgTypes[20]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1146,7 +1209,7 @@ func (x *CreateGroupMembershipRequest) String() string {
 func (*CreateGroupMembershipRequest) ProtoMessage() {}
 
 func (x *CreateGroupMembershipRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_authentication_groups_v1_groups_proto_msgTypes[19]
+	mi := &file_nominal_protos_authentication_groups_v1_groups_proto_msgTypes[20]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1159,7 +1222,7 @@ func (x *CreateGroupMembershipRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CreateGroupMembershipRequest.ProtoReflect.Descriptor instead.
 func (*CreateGroupMembershipRequest) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_authentication_groups_v1_groups_proto_rawDescGZIP(), []int{19}
+	return file_nominal_protos_authentication_groups_v1_groups_proto_rawDescGZIP(), []int{20}
 }
 
 func (x *CreateGroupMembershipRequest) GetGroupMembership() *GroupMembership {
@@ -1178,7 +1241,7 @@ type CreateGroupMembershipResponse struct {
 
 func (x *CreateGroupMembershipResponse) Reset() {
 	*x = CreateGroupMembershipResponse{}
-	mi := &file_nominal_protos_authentication_groups_v1_groups_proto_msgTypes[20]
+	mi := &file_nominal_protos_authentication_groups_v1_groups_proto_msgTypes[21]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1190,7 +1253,7 @@ func (x *CreateGroupMembershipResponse) String() string {
 func (*CreateGroupMembershipResponse) ProtoMessage() {}
 
 func (x *CreateGroupMembershipResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_authentication_groups_v1_groups_proto_msgTypes[20]
+	mi := &file_nominal_protos_authentication_groups_v1_groups_proto_msgTypes[21]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1203,7 +1266,7 @@ func (x *CreateGroupMembershipResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CreateGroupMembershipResponse.ProtoReflect.Descriptor instead.
 func (*CreateGroupMembershipResponse) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_authentication_groups_v1_groups_proto_rawDescGZIP(), []int{20}
+	return file_nominal_protos_authentication_groups_v1_groups_proto_rawDescGZIP(), []int{21}
 }
 
 func (x *CreateGroupMembershipResponse) GetGroupMembership() *GroupMembership {
@@ -1222,7 +1285,7 @@ type DeleteGroupMembershipRequest struct {
 
 func (x *DeleteGroupMembershipRequest) Reset() {
 	*x = DeleteGroupMembershipRequest{}
-	mi := &file_nominal_protos_authentication_groups_v1_groups_proto_msgTypes[21]
+	mi := &file_nominal_protos_authentication_groups_v1_groups_proto_msgTypes[22]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1234,7 +1297,7 @@ func (x *DeleteGroupMembershipRequest) String() string {
 func (*DeleteGroupMembershipRequest) ProtoMessage() {}
 
 func (x *DeleteGroupMembershipRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_authentication_groups_v1_groups_proto_msgTypes[21]
+	mi := &file_nominal_protos_authentication_groups_v1_groups_proto_msgTypes[22]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1247,7 +1310,7 @@ func (x *DeleteGroupMembershipRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DeleteGroupMembershipRequest.ProtoReflect.Descriptor instead.
 func (*DeleteGroupMembershipRequest) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_authentication_groups_v1_groups_proto_rawDescGZIP(), []int{21}
+	return file_nominal_protos_authentication_groups_v1_groups_proto_rawDescGZIP(), []int{22}
 }
 
 func (x *DeleteGroupMembershipRequest) GetKey() *GroupMembershipKey {
@@ -1265,7 +1328,7 @@ type DeleteGroupMembershipResponse struct {
 
 func (x *DeleteGroupMembershipResponse) Reset() {
 	*x = DeleteGroupMembershipResponse{}
-	mi := &file_nominal_protos_authentication_groups_v1_groups_proto_msgTypes[22]
+	mi := &file_nominal_protos_authentication_groups_v1_groups_proto_msgTypes[23]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1277,7 +1340,7 @@ func (x *DeleteGroupMembershipResponse) String() string {
 func (*DeleteGroupMembershipResponse) ProtoMessage() {}
 
 func (x *DeleteGroupMembershipResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_authentication_groups_v1_groups_proto_msgTypes[22]
+	mi := &file_nominal_protos_authentication_groups_v1_groups_proto_msgTypes[23]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1290,7 +1353,7 @@ func (x *DeleteGroupMembershipResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DeleteGroupMembershipResponse.ProtoReflect.Descriptor instead.
 func (*DeleteGroupMembershipResponse) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_authentication_groups_v1_groups_proto_rawDescGZIP(), []int{22}
+	return file_nominal_protos_authentication_groups_v1_groups_proto_rawDescGZIP(), []int{23}
 }
 
 type UpdateGroupMetadataRequest_UpdateGroupSymbolWrapper struct {
@@ -1302,7 +1365,7 @@ type UpdateGroupMetadataRequest_UpdateGroupSymbolWrapper struct {
 
 func (x *UpdateGroupMetadataRequest_UpdateGroupSymbolWrapper) Reset() {
 	*x = UpdateGroupMetadataRequest_UpdateGroupSymbolWrapper{}
-	mi := &file_nominal_protos_authentication_groups_v1_groups_proto_msgTypes[24]
+	mi := &file_nominal_protos_authentication_groups_v1_groups_proto_msgTypes[25]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1314,7 +1377,7 @@ func (x *UpdateGroupMetadataRequest_UpdateGroupSymbolWrapper) String() string {
 func (*UpdateGroupMetadataRequest_UpdateGroupSymbolWrapper) ProtoMessage() {}
 
 func (x *UpdateGroupMetadataRequest_UpdateGroupSymbolWrapper) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_authentication_groups_v1_groups_proto_msgTypes[24]
+	mi := &file_nominal_protos_authentication_groups_v1_groups_proto_msgTypes[25]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1327,7 +1390,7 @@ func (x *UpdateGroupMetadataRequest_UpdateGroupSymbolWrapper) ProtoReflect() pro
 
 // Deprecated: Use UpdateGroupMetadataRequest_UpdateGroupSymbolWrapper.ProtoReflect.Descriptor instead.
 func (*UpdateGroupMetadataRequest_UpdateGroupSymbolWrapper) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_authentication_groups_v1_groups_proto_rawDescGZIP(), []int{14, 0}
+	return file_nominal_protos_authentication_groups_v1_groups_proto_rawDescGZIP(), []int{15, 0}
 }
 
 func (x *UpdateGroupMetadataRequest_UpdateGroupSymbolWrapper) GetValue() *v1.Symbol {
@@ -1341,7 +1404,7 @@ var File_nominal_protos_authentication_groups_v1_groups_proto protoreflect.FileD
 
 const file_nominal_protos_authentication_groups_v1_groups_proto_rawDesc = "" +
 	"\n" +
-	"4nominal/protos/authentication/groups/v1/groups.proto\x12 nominal.authentication.groups.v1\x1a\x1bbuf/validate/validate.proto\x1a\x1cgoogle/api/annotations.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a!nominal/protos/gen/v1/alias.proto\x1a!nominal/protos/gen/v1/error.proto\x1a/nominal/protos/scout/elements/v1/elements.proto\"\xc8\x04\n" +
+	"4nominal/protos/authentication/groups/v1/groups.proto\x12 nominal.authentication.groups.v1\x1a\x1bbuf/validate/validate.proto\x1a\x1cgoogle/api/annotations.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a)nominal/protos/authz/v1/annotations.proto\x1a!nominal/protos/gen/v1/alias.proto\x1a!nominal/protos/gen/v1/error.proto\x1a/nominal/protos/scout/elements/v1/elements.proto\"\xc8\x04\n" +
 	"\x05Group\x12:\n" +
 	"\x03rid\x18\x01 \x01(\tB(\x9a\xb2\x1a$\n" +
 	"\"io.nominal.scout.rids.api.GroupRidR\x03rid\x12F\n" +
@@ -1367,12 +1430,16 @@ const file_nominal_protos_authentication_groups_v1_groups_proto_rawDesc = "" +
 	"member_rid\x18\x02 \x01(\tB3\xbaH\b\xc8\x01\x01r\x03\x18\x80\x02\x9a\xb2\x1a$\n" +
 	"\"com.palantir.ri.ResourceIdentifierR\tmemberRid\"a\n" +
 	"\x0fGroupMembership\x12N\n" +
-	"\x03key\x18\x01 \x01(\v24.nominal.authentication.groups.v1.GroupMembershipKeyB\x06\xbaH\x03\xc8\x01\x01R\x03key\"\xd9\x01\n" +
+	"\x03key\x18\x01 \x01(\v24.nominal.authentication.groups.v1.GroupMembershipKeyB\x06\xbaH\x03\xc8\x01\x01R\x03key\"\xb8\x02\n" +
 	"\x11SearchGroupsQuery\x122\n" +
 	"\x14exact_substring_text\x18\x01 \x01(\tH\x00R\x12exactSubstringText\x12D\n" +
 	"\x03and\x18\x02 \x01(\v20.nominal.authentication.groups.v1.SearchQueryAndH\x00R\x03and\x12A\n" +
-	"\x02or\x18\x03 \x01(\v2/.nominal.authentication.groups.v1.SearchQueryOrH\x00R\x02orB\a\n" +
-	"\x05query\"_\n" +
+	"\x02or\x18\x03 \x01(\v2/.nominal.authentication.groups.v1.SearchQueryOrH\x00R\x02or\x12]\n" +
+	"\fmember_users\x18\x04 \x01(\v28.nominal.authentication.groups.v1.SearchQueryMemberUsersH\x00R\vmemberUsersB\a\n" +
+	"\x05query\"t\n" +
+	"\x16SearchQueryMemberUsers\x12Z\n" +
+	"\tuser_rids\x18\x01 \x03(\tB=\xbaH\x0f\x92\x01\f\b\x01\x10\xe8\a\"\x05r\x03\x18\x80\x02\x9a\xb2\x1a'\n" +
+	"%io.nominal.authentication.api.UserRidR\buserRids\"_\n" +
 	"\x0eSearchQueryAnd\x12M\n" +
 	"\aqueries\x18\x01 \x03(\v23.nominal.authentication.groups.v1.SearchGroupsQueryR\aqueries\"^\n" +
 	"\rSearchQueryOr\x12M\n" +
@@ -1453,17 +1520,30 @@ const file_nominal_protos_authentication_groups_v1_groups_proto_rawDesc = "" +
 	",GROUP_ERRORS_MEMBERSHIP_NOT_MANAGED_MANUALLY\x10\a\x1a@\xb2\xb2\x1a<\n" +
 	"\x10INVALID_ARGUMENT\x12(Group membership is not managed manually\x12J\n" +
 	"\x18GROUP_ERRORS_INVALID_RID\x10\b\x1a,\xb2\xb2\x1a(\n" +
-	"\x10INVALID_ARGUMENT\x12\x14RID field is invalid2\xf8\f\n" +
-	"\fGroupService\x12\xa7\x01\n" +
-	"\bGetGroup\x121.nominal.authentication.groups.v1.GetGroupRequest\x1a2.nominal.authentication.groups.v1.GetGroupResponse\"4\x82\xd3\xe4\x93\x02.b\x05group\x12%/authentication/groups/v1/{group_rid}\x12\xb5\x01\n" +
-	"\tGetGroups\x122.nominal.authentication.groups.v1.GetGroupsRequest\x1a3.nominal.authentication.groups.v1.GetGroupsResponse\"?\x82\xd3\xe4\x93\x029:\n" +
-	"group_ridsb\x06groups\"#/authentication/groups/v1/batch-get\x12\xb5\x01\n" +
-	"\fGetGroupById\x125.nominal.authentication.groups.v1.GetGroupByIdRequest\x1a6.nominal.authentication.groups.v1.GetGroupByIdResponse\"6\x82\xd3\xe4\x93\x020b\x05group\x12'/authentication/groups/v1/id/{group_id}\x12\xe1\x01\n" +
-	"\x13UpdateGroupMetadata\x12C.nominal.authentication.groups.v1.UpdateGroupMetadataRequestWrapper\x1a=.nominal.authentication.groups.v1.UpdateGroupMetadataResponse\"F\x82\xd3\xe4\x93\x02@:\arequestb\x05group\x1a./authentication/groups/v1/{group_rid}/metadata\x12\xad\x01\n" +
-	"\fSearchGroups\x125.nominal.authentication.groups.v1.SearchGroupsRequest\x1a6.nominal.authentication.groups.v1.SearchGroupsResponse\".\x82\xd3\xe4\x93\x02(:\x01*b\x01*\" /authentication/groups/v1/search\x12\xbf\x01\n" +
-	"\x13CreateOrUpdateGroup\x12<.nominal.authentication.groups.v1.CreateOrUpdateGroupRequest\x1a=.nominal.authentication.groups.v1.CreateOrUpdateGroupResponse\"+\x82\xd3\xe4\x93\x02%:\x01*b\x05group\"\x19/authentication/groups/v1\x12\x8c\x02\n" +
-	"\x15CreateGroupMembership\x12>.nominal.authentication.groups.v1.CreateGroupMembershipRequest\x1a?.nominal.authentication.groups.v1.CreateGroupMembershipResponse\"r\x82\xd3\xe4\x93\x02l:\x10group_membershipb\x10group_membership\"F/authentication/groups/v1/{group_membership.key.group_rid}/memberships\x12\xe8\x01\n" +
-	"\x15DeleteGroupMembership\x12>.nominal.authentication.groups.v1.DeleteGroupMembershipRequest\x1a?.nominal.authentication.groups.v1.DeleteGroupMembershipResponse\"N\x82\xd3\xe4\x93\x02H*F/authentication/groups/v1/{key.group_rid}/memberships/{key.member_rid}B\xb4\x02\n" +
+	"\x10INVALID_ARGUMENT\x12\x14RID field is invalid2\xcc\x0e\n" +
+	"\fGroupService\x12\xc9\x01\n" +
+	"\bGetGroup\x121.nominal.authentication.groups.v1.GetGroupRequest\x1a2.nominal.authentication.groups.v1.GetGroupResponse\"V\xba\xb2\x1a\x1b\n" +
+	"\x19\n" +
+	"\n" +
+	"group:read\x12\v\n" +
+	"\tgroup_rid\x82\xd3\xe4\x93\x02.b\x05group\x12%/authentication/groups/v1/{group_rid}\x90\x02\x01\x12\xbc\x01\n" +
+	"\tGetGroups\x122.nominal.authentication.groups.v1.GetGroupsRequest\x1a3.nominal.authentication.groups.v1.GetGroupsResponse\"F\xba\xb2\x1a\x00\x82\xd3\xe4\x93\x029:\n" +
+	"group_ridsb\x06groups\"#/authentication/groups/v1/batch-get\x90\x02\x01\x12\xbc\x01\n" +
+	"\fGetGroupById\x125.nominal.authentication.groups.v1.GetGroupByIdRequest\x1a6.nominal.authentication.groups.v1.GetGroupByIdResponse\"=\xba\xb2\x1a\x00\x82\xd3\xe4\x93\x020b\x05group\x12'/authentication/groups/v1/id/{group_id}\x90\x02\x01\x12\x8e\x02\n" +
+	"\x13UpdateGroupMetadata\x12C.nominal.authentication.groups.v1.UpdateGroupMetadataRequestWrapper\x1a=.nominal.authentication.groups.v1.UpdateGroupMetadataResponse\"s\xba\xb2\x1a&\n" +
+	"$\n" +
+	"\x15group:update_metadata\x12\v\n" +
+	"\tgroup_rid\x82\xd3\xe4\x93\x02@:\arequestb\x05group\x1a./authentication/groups/v1/{group_rid}/metadata\x90\x02\x02\x12\xb4\x01\n" +
+	"\fSearchGroups\x125.nominal.authentication.groups.v1.SearchGroupsRequest\x1a6.nominal.authentication.groups.v1.SearchGroupsResponse\"5\xba\xb2\x1a\x00\x82\xd3\xe4\x93\x02(:\x01*b\x01*\" /authentication/groups/v1/search\x90\x02\x01\x12\xe2\x01\n" +
+	"\x13CreateOrUpdateGroup\x12<.nominal.authentication.groups.v1.CreateOrUpdateGroupRequest\x1a=.nominal.authentication.groups.v1.CreateOrUpdateGroupResponse\"N\xba\xb2\x1a\x1f\n" +
+	"\x1d\n" +
+	"\x19organization:create_group\x1a\x00\x82\xd3\xe4\x93\x02%:\x01*b\x05group\"\x19/authentication/groups/v1\x12\xb3\x02\n" +
+	"\x15CreateGroupMembership\x12>.nominal.authentication.groups.v1.CreateGroupMembershipRequest\x1a?.nominal.authentication.groups.v1.CreateGroupMembershipResponse\"\x98\x01\xba\xb2\x1a\x1f\n" +
+	"\x1d\n" +
+	"\x19organization:create_group\x1a\x00\x82\xd3\xe4\x93\x02l:\x10group_membershipb\x10group_membership\"F/authentication/groups/v1/{group_membership.key.group_rid}/memberships\x90\x02\x02\x12\x8e\x02\n" +
+	"\x15DeleteGroupMembership\x12>.nominal.authentication.groups.v1.DeleteGroupMembershipRequest\x1a?.nominal.authentication.groups.v1.DeleteGroupMembershipResponse\"t\xba\xb2\x1a\x1f\n" +
+	"\x1d\n" +
+	"\x19organization:create_group\x1a\x00\x82\xd3\xe4\x93\x02H*F/authentication/groups/v1/{key.group_rid}/memberships/{key.member_rid}\x90\x02\x02B\xb4\x02\n" +
 	"$com.nominal.authentication.groups.v1B\vGroupsProtoP\x01Z\\github.com/nominal-io/nominal-api-protos-go/nominal/protos/authentication/groups/v1;groupsv1\xa2\x02\x03NAG\xaa\x02 Nominal.Authentication.Groups.V1\xca\x02 Nominal\\Authentication\\Groups\\V1\xe2\x02,Nominal\\Authentication\\Groups\\V1\\GPBMetadata\xea\x02#Nominal::Authentication::Groups::V1b\x06proto3"
 
 var (
@@ -1479,82 +1559,84 @@ func file_nominal_protos_authentication_groups_v1_groups_proto_rawDescGZIP() []b
 }
 
 var file_nominal_protos_authentication_groups_v1_groups_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
-var file_nominal_protos_authentication_groups_v1_groups_proto_msgTypes = make([]protoimpl.MessageInfo, 25)
+var file_nominal_protos_authentication_groups_v1_groups_proto_msgTypes = make([]protoimpl.MessageInfo, 26)
 var file_nominal_protos_authentication_groups_v1_groups_proto_goTypes = []any{
 	(GroupErrors)(0),                                            // 0: nominal.authentication.groups.v1.GroupErrors
 	(*Group)(nil),                                               // 1: nominal.authentication.groups.v1.Group
 	(*GroupMembershipKey)(nil),                                  // 2: nominal.authentication.groups.v1.GroupMembershipKey
 	(*GroupMembership)(nil),                                     // 3: nominal.authentication.groups.v1.GroupMembership
 	(*SearchGroupsQuery)(nil),                                   // 4: nominal.authentication.groups.v1.SearchGroupsQuery
-	(*SearchQueryAnd)(nil),                                      // 5: nominal.authentication.groups.v1.SearchQueryAnd
-	(*SearchQueryOr)(nil),                                       // 6: nominal.authentication.groups.v1.SearchQueryOr
-	(*SearchGroupsRequest)(nil),                                 // 7: nominal.authentication.groups.v1.SearchGroupsRequest
-	(*SearchGroupsResponse)(nil),                                // 8: nominal.authentication.groups.v1.SearchGroupsResponse
-	(*GetGroupRequest)(nil),                                     // 9: nominal.authentication.groups.v1.GetGroupRequest
-	(*GetGroupResponse)(nil),                                    // 10: nominal.authentication.groups.v1.GetGroupResponse
-	(*GetGroupByIdRequest)(nil),                                 // 11: nominal.authentication.groups.v1.GetGroupByIdRequest
-	(*GetGroupByIdResponse)(nil),                                // 12: nominal.authentication.groups.v1.GetGroupByIdResponse
-	(*GetGroupsRequest)(nil),                                    // 13: nominal.authentication.groups.v1.GetGroupsRequest
-	(*GetGroupsResponse)(nil),                                   // 14: nominal.authentication.groups.v1.GetGroupsResponse
-	(*UpdateGroupMetadataRequest)(nil),                          // 15: nominal.authentication.groups.v1.UpdateGroupMetadataRequest
-	(*UpdateGroupMetadataRequestWrapper)(nil),                   // 16: nominal.authentication.groups.v1.UpdateGroupMetadataRequestWrapper
-	(*UpdateGroupMetadataResponse)(nil),                         // 17: nominal.authentication.groups.v1.UpdateGroupMetadataResponse
-	(*CreateOrUpdateGroupRequest)(nil),                          // 18: nominal.authentication.groups.v1.CreateOrUpdateGroupRequest
-	(*CreateOrUpdateGroupResponse)(nil),                         // 19: nominal.authentication.groups.v1.CreateOrUpdateGroupResponse
-	(*CreateGroupMembershipRequest)(nil),                        // 20: nominal.authentication.groups.v1.CreateGroupMembershipRequest
-	(*CreateGroupMembershipResponse)(nil),                       // 21: nominal.authentication.groups.v1.CreateGroupMembershipResponse
-	(*DeleteGroupMembershipRequest)(nil),                        // 22: nominal.authentication.groups.v1.DeleteGroupMembershipRequest
-	(*DeleteGroupMembershipResponse)(nil),                       // 23: nominal.authentication.groups.v1.DeleteGroupMembershipResponse
-	nil,                                                         // 24: nominal.authentication.groups.v1.GetGroupsResponse.GroupsEntry
-	(*UpdateGroupMetadataRequest_UpdateGroupSymbolWrapper)(nil), // 25: nominal.authentication.groups.v1.UpdateGroupMetadataRequest.UpdateGroupSymbolWrapper
-	(*timestamppb.Timestamp)(nil),                               // 26: google.protobuf.Timestamp
-	(*v1.Symbol)(nil),                                           // 27: nominal.scout.elements.v1.Symbol
+	(*SearchQueryMemberUsers)(nil),                              // 5: nominal.authentication.groups.v1.SearchQueryMemberUsers
+	(*SearchQueryAnd)(nil),                                      // 6: nominal.authentication.groups.v1.SearchQueryAnd
+	(*SearchQueryOr)(nil),                                       // 7: nominal.authentication.groups.v1.SearchQueryOr
+	(*SearchGroupsRequest)(nil),                                 // 8: nominal.authentication.groups.v1.SearchGroupsRequest
+	(*SearchGroupsResponse)(nil),                                // 9: nominal.authentication.groups.v1.SearchGroupsResponse
+	(*GetGroupRequest)(nil),                                     // 10: nominal.authentication.groups.v1.GetGroupRequest
+	(*GetGroupResponse)(nil),                                    // 11: nominal.authentication.groups.v1.GetGroupResponse
+	(*GetGroupByIdRequest)(nil),                                 // 12: nominal.authentication.groups.v1.GetGroupByIdRequest
+	(*GetGroupByIdResponse)(nil),                                // 13: nominal.authentication.groups.v1.GetGroupByIdResponse
+	(*GetGroupsRequest)(nil),                                    // 14: nominal.authentication.groups.v1.GetGroupsRequest
+	(*GetGroupsResponse)(nil),                                   // 15: nominal.authentication.groups.v1.GetGroupsResponse
+	(*UpdateGroupMetadataRequest)(nil),                          // 16: nominal.authentication.groups.v1.UpdateGroupMetadataRequest
+	(*UpdateGroupMetadataRequestWrapper)(nil),                   // 17: nominal.authentication.groups.v1.UpdateGroupMetadataRequestWrapper
+	(*UpdateGroupMetadataResponse)(nil),                         // 18: nominal.authentication.groups.v1.UpdateGroupMetadataResponse
+	(*CreateOrUpdateGroupRequest)(nil),                          // 19: nominal.authentication.groups.v1.CreateOrUpdateGroupRequest
+	(*CreateOrUpdateGroupResponse)(nil),                         // 20: nominal.authentication.groups.v1.CreateOrUpdateGroupResponse
+	(*CreateGroupMembershipRequest)(nil),                        // 21: nominal.authentication.groups.v1.CreateGroupMembershipRequest
+	(*CreateGroupMembershipResponse)(nil),                       // 22: nominal.authentication.groups.v1.CreateGroupMembershipResponse
+	(*DeleteGroupMembershipRequest)(nil),                        // 23: nominal.authentication.groups.v1.DeleteGroupMembershipRequest
+	(*DeleteGroupMembershipResponse)(nil),                       // 24: nominal.authentication.groups.v1.DeleteGroupMembershipResponse
+	nil,                                                         // 25: nominal.authentication.groups.v1.GetGroupsResponse.GroupsEntry
+	(*UpdateGroupMetadataRequest_UpdateGroupSymbolWrapper)(nil), // 26: nominal.authentication.groups.v1.UpdateGroupMetadataRequest.UpdateGroupSymbolWrapper
+	(*timestamppb.Timestamp)(nil),                               // 27: google.protobuf.Timestamp
+	(*v1.Symbol)(nil),                                           // 28: nominal.scout.elements.v1.Symbol
 }
 var file_nominal_protos_authentication_groups_v1_groups_proto_depIdxs = []int32{
-	26, // 0: nominal.authentication.groups.v1.Group.created_at:type_name -> google.protobuf.Timestamp
-	26, // 1: nominal.authentication.groups.v1.Group.updated_at:type_name -> google.protobuf.Timestamp
-	27, // 2: nominal.authentication.groups.v1.Group.symbol:type_name -> nominal.scout.elements.v1.Symbol
+	27, // 0: nominal.authentication.groups.v1.Group.created_at:type_name -> google.protobuf.Timestamp
+	27, // 1: nominal.authentication.groups.v1.Group.updated_at:type_name -> google.protobuf.Timestamp
+	28, // 2: nominal.authentication.groups.v1.Group.symbol:type_name -> nominal.scout.elements.v1.Symbol
 	2,  // 3: nominal.authentication.groups.v1.GroupMembership.key:type_name -> nominal.authentication.groups.v1.GroupMembershipKey
-	5,  // 4: nominal.authentication.groups.v1.SearchGroupsQuery.and:type_name -> nominal.authentication.groups.v1.SearchQueryAnd
-	6,  // 5: nominal.authentication.groups.v1.SearchGroupsQuery.or:type_name -> nominal.authentication.groups.v1.SearchQueryOr
-	4,  // 6: nominal.authentication.groups.v1.SearchQueryAnd.queries:type_name -> nominal.authentication.groups.v1.SearchGroupsQuery
-	4,  // 7: nominal.authentication.groups.v1.SearchQueryOr.queries:type_name -> nominal.authentication.groups.v1.SearchGroupsQuery
-	4,  // 8: nominal.authentication.groups.v1.SearchGroupsRequest.query:type_name -> nominal.authentication.groups.v1.SearchGroupsQuery
-	1,  // 9: nominal.authentication.groups.v1.SearchGroupsResponse.results:type_name -> nominal.authentication.groups.v1.Group
-	1,  // 10: nominal.authentication.groups.v1.GetGroupResponse.group:type_name -> nominal.authentication.groups.v1.Group
-	1,  // 11: nominal.authentication.groups.v1.GetGroupByIdResponse.group:type_name -> nominal.authentication.groups.v1.Group
-	24, // 12: nominal.authentication.groups.v1.GetGroupsResponse.groups:type_name -> nominal.authentication.groups.v1.GetGroupsResponse.GroupsEntry
-	25, // 13: nominal.authentication.groups.v1.UpdateGroupMetadataRequest.symbol:type_name -> nominal.authentication.groups.v1.UpdateGroupMetadataRequest.UpdateGroupSymbolWrapper
-	15, // 14: nominal.authentication.groups.v1.UpdateGroupMetadataRequestWrapper.request:type_name -> nominal.authentication.groups.v1.UpdateGroupMetadataRequest
-	1,  // 15: nominal.authentication.groups.v1.UpdateGroupMetadataResponse.group:type_name -> nominal.authentication.groups.v1.Group
-	1,  // 16: nominal.authentication.groups.v1.CreateOrUpdateGroupRequest.group:type_name -> nominal.authentication.groups.v1.Group
-	1,  // 17: nominal.authentication.groups.v1.CreateOrUpdateGroupResponse.group:type_name -> nominal.authentication.groups.v1.Group
-	3,  // 18: nominal.authentication.groups.v1.CreateGroupMembershipRequest.group_membership:type_name -> nominal.authentication.groups.v1.GroupMembership
-	3,  // 19: nominal.authentication.groups.v1.CreateGroupMembershipResponse.group_membership:type_name -> nominal.authentication.groups.v1.GroupMembership
-	2,  // 20: nominal.authentication.groups.v1.DeleteGroupMembershipRequest.key:type_name -> nominal.authentication.groups.v1.GroupMembershipKey
-	1,  // 21: nominal.authentication.groups.v1.GetGroupsResponse.GroupsEntry.value:type_name -> nominal.authentication.groups.v1.Group
-	27, // 22: nominal.authentication.groups.v1.UpdateGroupMetadataRequest.UpdateGroupSymbolWrapper.value:type_name -> nominal.scout.elements.v1.Symbol
-	9,  // 23: nominal.authentication.groups.v1.GroupService.GetGroup:input_type -> nominal.authentication.groups.v1.GetGroupRequest
-	13, // 24: nominal.authentication.groups.v1.GroupService.GetGroups:input_type -> nominal.authentication.groups.v1.GetGroupsRequest
-	11, // 25: nominal.authentication.groups.v1.GroupService.GetGroupById:input_type -> nominal.authentication.groups.v1.GetGroupByIdRequest
-	16, // 26: nominal.authentication.groups.v1.GroupService.UpdateGroupMetadata:input_type -> nominal.authentication.groups.v1.UpdateGroupMetadataRequestWrapper
-	7,  // 27: nominal.authentication.groups.v1.GroupService.SearchGroups:input_type -> nominal.authentication.groups.v1.SearchGroupsRequest
-	18, // 28: nominal.authentication.groups.v1.GroupService.CreateOrUpdateGroup:input_type -> nominal.authentication.groups.v1.CreateOrUpdateGroupRequest
-	20, // 29: nominal.authentication.groups.v1.GroupService.CreateGroupMembership:input_type -> nominal.authentication.groups.v1.CreateGroupMembershipRequest
-	22, // 30: nominal.authentication.groups.v1.GroupService.DeleteGroupMembership:input_type -> nominal.authentication.groups.v1.DeleteGroupMembershipRequest
-	10, // 31: nominal.authentication.groups.v1.GroupService.GetGroup:output_type -> nominal.authentication.groups.v1.GetGroupResponse
-	14, // 32: nominal.authentication.groups.v1.GroupService.GetGroups:output_type -> nominal.authentication.groups.v1.GetGroupsResponse
-	12, // 33: nominal.authentication.groups.v1.GroupService.GetGroupById:output_type -> nominal.authentication.groups.v1.GetGroupByIdResponse
-	17, // 34: nominal.authentication.groups.v1.GroupService.UpdateGroupMetadata:output_type -> nominal.authentication.groups.v1.UpdateGroupMetadataResponse
-	8,  // 35: nominal.authentication.groups.v1.GroupService.SearchGroups:output_type -> nominal.authentication.groups.v1.SearchGroupsResponse
-	19, // 36: nominal.authentication.groups.v1.GroupService.CreateOrUpdateGroup:output_type -> nominal.authentication.groups.v1.CreateOrUpdateGroupResponse
-	21, // 37: nominal.authentication.groups.v1.GroupService.CreateGroupMembership:output_type -> nominal.authentication.groups.v1.CreateGroupMembershipResponse
-	23, // 38: nominal.authentication.groups.v1.GroupService.DeleteGroupMembership:output_type -> nominal.authentication.groups.v1.DeleteGroupMembershipResponse
-	31, // [31:39] is the sub-list for method output_type
-	23, // [23:31] is the sub-list for method input_type
-	23, // [23:23] is the sub-list for extension type_name
-	23, // [23:23] is the sub-list for extension extendee
-	0,  // [0:23] is the sub-list for field type_name
+	6,  // 4: nominal.authentication.groups.v1.SearchGroupsQuery.and:type_name -> nominal.authentication.groups.v1.SearchQueryAnd
+	7,  // 5: nominal.authentication.groups.v1.SearchGroupsQuery.or:type_name -> nominal.authentication.groups.v1.SearchQueryOr
+	5,  // 6: nominal.authentication.groups.v1.SearchGroupsQuery.member_users:type_name -> nominal.authentication.groups.v1.SearchQueryMemberUsers
+	4,  // 7: nominal.authentication.groups.v1.SearchQueryAnd.queries:type_name -> nominal.authentication.groups.v1.SearchGroupsQuery
+	4,  // 8: nominal.authentication.groups.v1.SearchQueryOr.queries:type_name -> nominal.authentication.groups.v1.SearchGroupsQuery
+	4,  // 9: nominal.authentication.groups.v1.SearchGroupsRequest.query:type_name -> nominal.authentication.groups.v1.SearchGroupsQuery
+	1,  // 10: nominal.authentication.groups.v1.SearchGroupsResponse.results:type_name -> nominal.authentication.groups.v1.Group
+	1,  // 11: nominal.authentication.groups.v1.GetGroupResponse.group:type_name -> nominal.authentication.groups.v1.Group
+	1,  // 12: nominal.authentication.groups.v1.GetGroupByIdResponse.group:type_name -> nominal.authentication.groups.v1.Group
+	25, // 13: nominal.authentication.groups.v1.GetGroupsResponse.groups:type_name -> nominal.authentication.groups.v1.GetGroupsResponse.GroupsEntry
+	26, // 14: nominal.authentication.groups.v1.UpdateGroupMetadataRequest.symbol:type_name -> nominal.authentication.groups.v1.UpdateGroupMetadataRequest.UpdateGroupSymbolWrapper
+	16, // 15: nominal.authentication.groups.v1.UpdateGroupMetadataRequestWrapper.request:type_name -> nominal.authentication.groups.v1.UpdateGroupMetadataRequest
+	1,  // 16: nominal.authentication.groups.v1.UpdateGroupMetadataResponse.group:type_name -> nominal.authentication.groups.v1.Group
+	1,  // 17: nominal.authentication.groups.v1.CreateOrUpdateGroupRequest.group:type_name -> nominal.authentication.groups.v1.Group
+	1,  // 18: nominal.authentication.groups.v1.CreateOrUpdateGroupResponse.group:type_name -> nominal.authentication.groups.v1.Group
+	3,  // 19: nominal.authentication.groups.v1.CreateGroupMembershipRequest.group_membership:type_name -> nominal.authentication.groups.v1.GroupMembership
+	3,  // 20: nominal.authentication.groups.v1.CreateGroupMembershipResponse.group_membership:type_name -> nominal.authentication.groups.v1.GroupMembership
+	2,  // 21: nominal.authentication.groups.v1.DeleteGroupMembershipRequest.key:type_name -> nominal.authentication.groups.v1.GroupMembershipKey
+	1,  // 22: nominal.authentication.groups.v1.GetGroupsResponse.GroupsEntry.value:type_name -> nominal.authentication.groups.v1.Group
+	28, // 23: nominal.authentication.groups.v1.UpdateGroupMetadataRequest.UpdateGroupSymbolWrapper.value:type_name -> nominal.scout.elements.v1.Symbol
+	10, // 24: nominal.authentication.groups.v1.GroupService.GetGroup:input_type -> nominal.authentication.groups.v1.GetGroupRequest
+	14, // 25: nominal.authentication.groups.v1.GroupService.GetGroups:input_type -> nominal.authentication.groups.v1.GetGroupsRequest
+	12, // 26: nominal.authentication.groups.v1.GroupService.GetGroupById:input_type -> nominal.authentication.groups.v1.GetGroupByIdRequest
+	17, // 27: nominal.authentication.groups.v1.GroupService.UpdateGroupMetadata:input_type -> nominal.authentication.groups.v1.UpdateGroupMetadataRequestWrapper
+	8,  // 28: nominal.authentication.groups.v1.GroupService.SearchGroups:input_type -> nominal.authentication.groups.v1.SearchGroupsRequest
+	19, // 29: nominal.authentication.groups.v1.GroupService.CreateOrUpdateGroup:input_type -> nominal.authentication.groups.v1.CreateOrUpdateGroupRequest
+	21, // 30: nominal.authentication.groups.v1.GroupService.CreateGroupMembership:input_type -> nominal.authentication.groups.v1.CreateGroupMembershipRequest
+	23, // 31: nominal.authentication.groups.v1.GroupService.DeleteGroupMembership:input_type -> nominal.authentication.groups.v1.DeleteGroupMembershipRequest
+	11, // 32: nominal.authentication.groups.v1.GroupService.GetGroup:output_type -> nominal.authentication.groups.v1.GetGroupResponse
+	15, // 33: nominal.authentication.groups.v1.GroupService.GetGroups:output_type -> nominal.authentication.groups.v1.GetGroupsResponse
+	13, // 34: nominal.authentication.groups.v1.GroupService.GetGroupById:output_type -> nominal.authentication.groups.v1.GetGroupByIdResponse
+	18, // 35: nominal.authentication.groups.v1.GroupService.UpdateGroupMetadata:output_type -> nominal.authentication.groups.v1.UpdateGroupMetadataResponse
+	9,  // 36: nominal.authentication.groups.v1.GroupService.SearchGroups:output_type -> nominal.authentication.groups.v1.SearchGroupsResponse
+	20, // 37: nominal.authentication.groups.v1.GroupService.CreateOrUpdateGroup:output_type -> nominal.authentication.groups.v1.CreateOrUpdateGroupResponse
+	22, // 38: nominal.authentication.groups.v1.GroupService.CreateGroupMembership:output_type -> nominal.authentication.groups.v1.CreateGroupMembershipResponse
+	24, // 39: nominal.authentication.groups.v1.GroupService.DeleteGroupMembership:output_type -> nominal.authentication.groups.v1.DeleteGroupMembershipResponse
+	32, // [32:40] is the sub-list for method output_type
+	24, // [24:32] is the sub-list for method input_type
+	24, // [24:24] is the sub-list for extension type_name
+	24, // [24:24] is the sub-list for extension extendee
+	0,  // [0:24] is the sub-list for field type_name
 }
 
 func init() { file_nominal_protos_authentication_groups_v1_groups_proto_init() }
@@ -1567,18 +1649,19 @@ func file_nominal_protos_authentication_groups_v1_groups_proto_init() {
 		(*SearchGroupsQuery_ExactSubstringText)(nil),
 		(*SearchGroupsQuery_And)(nil),
 		(*SearchGroupsQuery_Or)(nil),
+		(*SearchGroupsQuery_MemberUsers)(nil),
 	}
-	file_nominal_protos_authentication_groups_v1_groups_proto_msgTypes[6].OneofWrappers = []any{}
 	file_nominal_protos_authentication_groups_v1_groups_proto_msgTypes[7].OneofWrappers = []any{}
-	file_nominal_protos_authentication_groups_v1_groups_proto_msgTypes[14].OneofWrappers = []any{}
-	file_nominal_protos_authentication_groups_v1_groups_proto_msgTypes[24].OneofWrappers = []any{}
+	file_nominal_protos_authentication_groups_v1_groups_proto_msgTypes[8].OneofWrappers = []any{}
+	file_nominal_protos_authentication_groups_v1_groups_proto_msgTypes[15].OneofWrappers = []any{}
+	file_nominal_protos_authentication_groups_v1_groups_proto_msgTypes[25].OneofWrappers = []any{}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_nominal_protos_authentication_groups_v1_groups_proto_rawDesc), len(file_nominal_protos_authentication_groups_v1_groups_proto_rawDesc)),
 			NumEnums:      1,
-			NumMessages:   25,
+			NumMessages:   26,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

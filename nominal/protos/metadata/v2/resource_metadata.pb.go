@@ -7,6 +7,7 @@
 package metadatav2
 
 import (
+	_ "github.com/nominal-io/nominal-api-protos-go/nominal/protos/authz/v1"
 	_ "github.com/nominal-io/nominal-api-protos-go/nominal/protos/gen/v1"
 	types "github.com/nominal-io/nominal-api-protos-go/nominal/protos/types"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
@@ -24,6 +25,7 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
+// Kinds of resources that carry labels and properties.
 // buf:lint:ignore ENUM_VALUE_PREFIX
 type ResourceType int32
 
@@ -103,9 +105,15 @@ type MetadataSortField int32
 
 const (
 	MetadataSortField_METADATA_SORT_FIELD_UNSPECIFIED MetadataSortField = 0
-	MetadataSortField_ALPHABETICAL                    MetadataSortField = 1
-	MetadataSortField_USAGE_COUNT                     MetadataSortField = 2
-	MetadataSortField_PROPERTY_VALUE_COUNT            MetadataSortField = 3
+	// By name.
+	MetadataSortField_ALPHABETICAL MetadataSortField = 1
+	// By the number of resources that use the label, key, or value, with ties ordered by name. For property keys this
+	// ranks every key in the workspace, so on large workspaces pass search_text or the request may fail with
+	// METADATA_ERROR_QUERY_TOO_BROAD.
+	MetadataSortField_USAGE_COUNT MetadataSortField = 2
+	// By the number of distinct string values of a property key. Valid only for SearchPropertyKeys, with the same
+	// METADATA_ERROR_QUERY_TOO_BROAD risk as USAGE_COUNT.
+	MetadataSortField_PROPERTY_VALUE_COUNT MetadataSortField = 3
 )
 
 // Enum value maps for MetadataSortField.
@@ -156,15 +164,20 @@ type MetadataError int32
 
 const (
 	MetadataError_METADATA_ERROR_INVALID_METADATA_REQUEST MetadataError = 0
+	// The query timed out, and its shape is one the service does not index for. The "hint" metadata entry says how to
+	// narrow it.
+	MetadataError_METADATA_ERROR_QUERY_TOO_BROAD MetadataError = 1
 )
 
 // Enum value maps for MetadataError.
 var (
 	MetadataError_name = map[int32]string{
 		0: "METADATA_ERROR_INVALID_METADATA_REQUEST",
+		1: "METADATA_ERROR_QUERY_TOO_BROAD",
 	}
 	MetadataError_value = map[string]int32{
 		"METADATA_ERROR_INVALID_METADATA_REQUEST": 0,
+		"METADATA_ERROR_QUERY_TOO_BROAD":          1,
 	}
 )
 
@@ -195,10 +208,12 @@ func (MetadataError) EnumDescriptor() ([]byte, []int) {
 	return file_nominal_protos_metadata_v2_resource_metadata_proto_rawDescGZIP(), []int{2}
 }
 
+// A label or property key spelling and the number of resources that use it.
 type MatchCount struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Value         string                 `protobuf:"bytes,1,opt,name=value,proto3" json:"value,omitempty"`
-	DocumentCount int32                  `protobuf:"varint,2,opt,name=document_count,json=documentCount,proto3" json:"document_count,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	Value string                 `protobuf:"bytes,1,opt,name=value,proto3" json:"value,omitempty"`
+	// Number of non-archived resources that use this spelling.
+	DocumentCount int32 `protobuf:"varint,2,opt,name=document_count,json=documentCount,proto3" json:"document_count,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -248,9 +263,10 @@ func (x *MatchCount) GetDocumentCount() int32 {
 }
 
 type LabelWithCount struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Label         string                 `protobuf:"bytes,1,opt,name=label,proto3" json:"label,omitempty"`
-	DocumentCount int32                  `protobuf:"varint,2,opt,name=document_count,json=documentCount,proto3" json:"document_count,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	Label string                 `protobuf:"bytes,1,opt,name=label,proto3" json:"label,omitempty"`
+	// Number of non-archived resources with this label.
+	DocumentCount int32 `protobuf:"varint,2,opt,name=document_count,json=documentCount,proto3" json:"document_count,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -406,7 +422,7 @@ func (x *NumericPropertySummary) GetMean() float64 {
 type PropertyKeyWithCount struct {
 	state       protoimpl.MessageState `protogen:"open.v1"`
 	PropertyKey string                 `protobuf:"bytes,1,opt,name=property_key,json=propertyKey,proto3" json:"property_key,omitempty"`
-	// Number of documents with either a string or numeric value for this key.
+	// Number of non-archived resources with either a string or numeric value for this key.
 	DocumentCount int32 `protobuf:"varint,2,opt,name=document_count,json=documentCount,proto3" json:"document_count,omitempty"`
 	// Deprecated: retained for backward compatibility. Use string.distinct_value_count instead.
 	// Number of distinct string values; numeric values are intentionally excluded.
@@ -490,7 +506,8 @@ func (x *PropertyKeyWithCount) GetNumeric() *NumericPropertySummary {
 type PropertyValueWithCount struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	PropertyValue string                 `protobuf:"bytes,1,opt,name=property_value,json=propertyValue,proto3" json:"property_value,omitempty"`
-	DocumentCount int32                  `protobuf:"varint,2,opt,name=document_count,json=documentCount,proto3" json:"document_count,omitempty"`
+	// Number of non-archived resources that hold this value under the key.
+	DocumentCount int32 `protobuf:"varint,2,opt,name=document_count,json=documentCount,proto3" json:"document_count,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -541,12 +558,10 @@ func (x *PropertyValueWithCount) GetDocumentCount() int32 {
 
 type ListPropertiesAndLabelsRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
-	// If omitted, all resource types are included. Note: on this idiomatic v2 surface an empty list is
-	// indistinguishable from omitted, so both mean "all types" (standard proto3). The frozen Conjure surface served by
-	// the Jersey shell instead treats an explicitly-empty resourceTypes set as "no types" (its `optional<set>` can carry
-	// that distinction), so a v2 client and a Conjure client sending "empty" intentionally get opposite results.
+	// If omitted, all resource types are included. On this API an empty list is the same as omitted. The Conjure
+	// metadata API instead treats an explicitly empty set as no types.
 	ResourceTypes []ResourceType `protobuf:"varint,1,rep,packed,name=resource_types,json=resourceTypes,proto3,enum=nominal.metadata.v2.ResourceType" json:"resource_types,omitempty"`
-	// If omitted, results will come from all workspaces the user belongs to.
+	// If omitted, all workspaces the caller can view. Workspaces the caller cannot view are ignored.
 	Workspaces    []string `protobuf:"bytes,2,rep,name=workspaces,proto3" json:"workspaces,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -596,6 +611,8 @@ func (x *ListPropertiesAndLabelsRequest) GetWorkspaces() []string {
 	return nil
 }
 
+// The labels, and the property names with their string values, in use on non-archived resources. Capped at the 500
+// most-used labels and, for each property name, its 500 most-used values.
 type ListPropertiesAndLabelsResponse struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Deprecated: use the paginated SearchPropertyKeys and SearchPropertyValues methods instead.
@@ -760,7 +777,7 @@ type GetMetadataUsageCountRequest struct {
 	Query *MetadataUsageQuery    `protobuf:"bytes,1,opt,name=query,proto3" json:"query,omitempty"`
 	// If omitted, all resource types are included.
 	ResourceTypes []ResourceType `protobuf:"varint,2,rep,packed,name=resource_types,json=resourceTypes,proto3,enum=nominal.metadata.v2.ResourceType" json:"resource_types,omitempty"`
-	// If omitted, results will come from all workspaces the user belongs to.
+	// If omitted, all workspaces the caller can view. Workspaces the caller cannot view are ignored.
 	Workspaces    []string `protobuf:"bytes,3,rep,name=workspaces,proto3" json:"workspaces,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -865,7 +882,7 @@ type FindSimilarLabelMatchesRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// If omitted, all resource types are included.
 	ResourceTypes []ResourceType `protobuf:"varint,1,rep,packed,name=resource_types,json=resourceTypes,proto3,enum=nominal.metadata.v2.ResourceType" json:"resource_types,omitempty"`
-	// If omitted, results will come from all workspaces the user belongs to.
+	// If omitted, all workspaces the caller can view. Workspaces the caller cannot view are ignored.
 	Workspaces    []string `protobuf:"bytes,2,rep,name=workspaces,proto3" json:"workspaces,omitempty"`
 	Labels        []string `protobuf:"bytes,3,rep,name=labels,proto3" json:"labels,omitempty"`
 	unknownFields protoimpl.UnknownFields
@@ -972,7 +989,7 @@ type FindSimilarPropertyKeyMatchesRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// If omitted, all resource types are included.
 	ResourceTypes []ResourceType `protobuf:"varint,1,rep,packed,name=resource_types,json=resourceTypes,proto3,enum=nominal.metadata.v2.ResourceType" json:"resource_types,omitempty"`
-	// If omitted, results will come from all workspaces the user belongs to.
+	// If omitted, all workspaces the caller can view. Workspaces the caller cannot view are ignored.
 	Workspaces    []string `protobuf:"bytes,2,rep,name=workspaces,proto3" json:"workspaces,omitempty"`
 	PropertyKeys  []string `protobuf:"bytes,3,rep,name=property_keys,json=propertyKeys,proto3" json:"property_keys,omitempty"`
 	unknownFields protoimpl.UnknownFields
@@ -1080,11 +1097,11 @@ type MetadataSearchParams struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// If omitted, all resource types are included.
 	ResourceTypes []ResourceType `protobuf:"varint,1,rep,packed,name=resource_types,json=resourceTypes,proto3,enum=nominal.metadata.v2.ResourceType" json:"resource_types,omitempty"`
-	// If omitted, results will come from all workspaces the user belongs to.
+	// If omitted, all workspaces the caller can view. Workspaces the caller cannot view are ignored.
 	Workspaces []string `protobuf:"bytes,2,rep,name=workspaces,proto3" json:"workspaces,omitempty"`
 	// Case-insensitive substring filter.
 	SearchText *string `protobuf:"bytes,3,opt,name=search_text,json=searchText,proto3,oneof" json:"search_text,omitempty"`
-	// Maximum number of items per page. Defaults to 1000 if not specified.
+	// Maximum number of items per page, at most 10000. Defaults to 1000 if not specified.
 	PageSize *int32 `protobuf:"varint,4,opt,name=page_size,json=pageSize,proto3,oneof" json:"page_size,omitempty"`
 	// Token for fetching the next page of results.
 	PageToken *string           `protobuf:"bytes,5,opt,name=page_token,json=pageToken,proto3,oneof" json:"page_token,omitempty"`
@@ -1471,8 +1488,8 @@ func (x *SearchPropertyValuesResponse) GetNextPageToken() string {
 }
 
 // Summary statistics over the numeric values stored under one property key. Document count and mean are
-// deliberately not repeated here: SearchPropertyKeys already returns both per key, from an incrementally
-// maintained summary table, so a caller that has the key list already has them.
+// deliberately not repeated here: SearchPropertyKeys already returns both per key, so a caller that has the key list
+// already has them.
 type NumericPropertyStatistics struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Min           float64                `protobuf:"fixed64,1,opt,name=min,proto3" json:"min,omitempty"`
@@ -1530,7 +1547,7 @@ type GetNumericPropertyStatisticsRequest struct {
 	PropertyKey string                 `protobuf:"bytes,1,opt,name=property_key,json=propertyKey,proto3" json:"property_key,omitempty"`
 	// If omitted, all resource types are included.
 	ResourceTypes []ResourceType `protobuf:"varint,2,rep,packed,name=resource_types,json=resourceTypes,proto3,enum=nominal.metadata.v2.ResourceType" json:"resource_types,omitempty"`
-	// If omitted, results will come from all workspaces the user belongs to.
+	// If omitted, all workspaces the caller can view. Workspaces the caller cannot view are ignored.
 	Workspaces    []string `protobuf:"bytes,3,rep,name=workspaces,proto3" json:"workspaces,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -1768,7 +1785,7 @@ var File_nominal_protos_metadata_v2_resource_metadata_proto protoreflect.FileDes
 
 const file_nominal_protos_metadata_v2_resource_metadata_proto_rawDesc = "" +
 	"\n" +
-	"2nominal/protos/metadata/v2/resource_metadata.proto\x12\x13nominal.metadata.v2\x1a\x1cgoogle/api/annotations.proto\x1a!nominal/protos/gen/v1/alias.proto\x1a!nominal/protos/gen/v1/error.proto\x1a nominal/protos/types/types.proto\"I\n" +
+	"2nominal/protos/metadata/v2/resource_metadata.proto\x12\x13nominal.metadata.v2\x1a\x1cgoogle/api/annotations.proto\x1a)nominal/protos/authz/v1/annotations.proto\x1a!nominal/protos/gen/v1/alias.proto\x1a!nominal/protos/gen/v1/error.proto\x1a nominal/protos/types/types.proto\"I\n" +
 	"\n" +
 	"MatchCount\x12\x14\n" +
 	"\x05value\x18\x01 \x01(\tR\x05value\x12%\n" +
@@ -1938,19 +1955,21 @@ const file_nominal_protos_metadata_v2_resource_metadata_proto_rawDesc = "" +
 	"\x1fMETADATA_SORT_FIELD_UNSPECIFIED\x10\x00\x12\x10\n" +
 	"\fALPHABETICAL\x10\x01\x12\x0f\n" +
 	"\vUSAGE_COUNT\x10\x02\x12\x18\n" +
-	"\x14PROPERTY_VALUE_COUNT\x10\x03*l\n" +
+	"\x14PROPERTY_VALUE_COUNT\x10\x03*\xbf\x01\n" +
 	"\rMetadataError\x12[\n" +
 	"'METADATA_ERROR_INVALID_METADATA_REQUEST\x10\x00\x1a.\xb2\xb2\x1a*\n" +
-	"\x10INVALID_ARGUMENT\x12\x16InvalidMetadataRequest2\x9d\v\n" +
-	"\x17ResourceMetadataService\x12\xb4\x01\n" +
-	"\x17ListPropertiesAndLabels\x123.nominal.metadata.v2.ListPropertiesAndLabelsRequest\x1a4.nominal.metadata.v2.ListPropertiesAndLabelsResponse\".\x82\xd3\xe4\x93\x02(:\x01*\"#/metadata/v2/list-properties-labels\x12\xa3\x01\n" +
-	"\x15GetMetadataUsageCount\x121.nominal.metadata.v2.GetMetadataUsageCountRequest\x1a2.nominal.metadata.v2.GetMetadataUsageCountResponse\"#\x82\xd3\xe4\x93\x02\x1d:\x01*\"\x18/metadata/v2/usage-count\x12\xb0\x01\n" +
-	"\x17FindSimilarLabelMatches\x123.nominal.metadata.v2.FindSimilarLabelMatchesRequest\x1a4.nominal.metadata.v2.FindSimilarLabelMatchesResponse\"*\x82\xd3\xe4\x93\x02$:\x01*\"\x1f/metadata/v2/label/find-similar\x12\xc5\x01\n" +
-	"\x1dFindSimilarPropertyKeyMatches\x129.nominal.metadata.v2.FindSimilarPropertyKeyMatchesRequest\x1a:.nominal.metadata.v2.FindSimilarPropertyKeyMatchesResponse\"-\x82\xd3\xe4\x93\x02':\x01*\"\"/metadata/v2/property/find-similar\x12\x8a\x01\n" +
-	"\fSearchLabels\x12(.nominal.metadata.v2.SearchLabelsRequest\x1a).nominal.metadata.v2.SearchLabelsResponse\"%\x82\xd3\xe4\x93\x02\x1f:\x01*\"\x1a/metadata/v2/search-labels\x12\xa3\x01\n" +
-	"\x12SearchPropertyKeys\x12..nominal.metadata.v2.SearchPropertyKeysRequest\x1a/.nominal.metadata.v2.SearchPropertyKeysResponse\",\x82\xd3\xe4\x93\x02&:\x01*\"!/metadata/v2/search-property-keys\x12\xab\x01\n" +
-	"\x14SearchPropertyValues\x120.nominal.metadata.v2.SearchPropertyValuesRequest\x1a1.nominal.metadata.v2.SearchPropertyValuesResponse\".\x82\xd3\xe4\x93\x02(:\x01*\"#/metadata/v2/search-property-values\x12\xc8\x01\n" +
-	"\x1cGetNumericPropertyStatistics\x128.nominal.metadata.v2.GetNumericPropertyStatisticsRequest\x1a9.nominal.metadata.v2.GetNumericPropertyStatisticsResponse\"3\x82\xd3\xe4\x93\x02-:\x01*\"(/metadata/v2/numeric-property-statisticsB\xf1\x01\n" +
+	"\x10INVALID_ARGUMENT\x12\x16InvalidMetadataRequest\x12Q\n" +
+	"\x1eMETADATA_ERROR_QUERY_TOO_BROAD\x10\x01\x1a-\xb2\xb2\x1a)\n" +
+	"\x10INVALID_ARGUMENT\x12\x15MetadataQueryTooBroad2\xbd\v\n" +
+	"\x17ResourceMetadataService\x12\xb8\x01\n" +
+	"\x17ListPropertiesAndLabels\x123.nominal.metadata.v2.ListPropertiesAndLabelsRequest\x1a4.nominal.metadata.v2.ListPropertiesAndLabelsResponse\"2\xba\xb2\x1a\x00\x82\xd3\xe4\x93\x02(:\x01*\"#/metadata/v2/list-properties-labels\x12\xa7\x01\n" +
+	"\x15GetMetadataUsageCount\x121.nominal.metadata.v2.GetMetadataUsageCountRequest\x1a2.nominal.metadata.v2.GetMetadataUsageCountResponse\"'\xba\xb2\x1a\x00\x82\xd3\xe4\x93\x02\x1d:\x01*\"\x18/metadata/v2/usage-count\x12\xb4\x01\n" +
+	"\x17FindSimilarLabelMatches\x123.nominal.metadata.v2.FindSimilarLabelMatchesRequest\x1a4.nominal.metadata.v2.FindSimilarLabelMatchesResponse\".\xba\xb2\x1a\x00\x82\xd3\xe4\x93\x02$:\x01*\"\x1f/metadata/v2/label/find-similar\x12\xc9\x01\n" +
+	"\x1dFindSimilarPropertyKeyMatches\x129.nominal.metadata.v2.FindSimilarPropertyKeyMatchesRequest\x1a:.nominal.metadata.v2.FindSimilarPropertyKeyMatchesResponse\"1\xba\xb2\x1a\x00\x82\xd3\xe4\x93\x02':\x01*\"\"/metadata/v2/property/find-similar\x12\x8e\x01\n" +
+	"\fSearchLabels\x12(.nominal.metadata.v2.SearchLabelsRequest\x1a).nominal.metadata.v2.SearchLabelsResponse\")\xba\xb2\x1a\x00\x82\xd3\xe4\x93\x02\x1f:\x01*\"\x1a/metadata/v2/search-labels\x12\xa7\x01\n" +
+	"\x12SearchPropertyKeys\x12..nominal.metadata.v2.SearchPropertyKeysRequest\x1a/.nominal.metadata.v2.SearchPropertyKeysResponse\"0\xba\xb2\x1a\x00\x82\xd3\xe4\x93\x02&:\x01*\"!/metadata/v2/search-property-keys\x12\xaf\x01\n" +
+	"\x14SearchPropertyValues\x120.nominal.metadata.v2.SearchPropertyValuesRequest\x1a1.nominal.metadata.v2.SearchPropertyValuesResponse\"2\xba\xb2\x1a\x00\x82\xd3\xe4\x93\x02(:\x01*\"#/metadata/v2/search-property-values\x12\xcc\x01\n" +
+	"\x1cGetNumericPropertyStatistics\x128.nominal.metadata.v2.GetNumericPropertyStatisticsRequest\x1a9.nominal.metadata.v2.GetNumericPropertyStatisticsResponse\"7\xba\xb2\x1a\x00\x82\xd3\xe4\x93\x02-:\x01*\"(/metadata/v2/numeric-property-statisticsB\xf1\x01\n" +
 	"\x17com.nominal.metadata.v2B\x15ResourceMetadataProtoP\x01ZQgithub.com/nominal-io/nominal-api-protos-go/nominal/protos/metadata/v2;metadatav2\xa2\x02\x03NMX\xaa\x02\x13Nominal.Metadata.V2\xca\x02\x13Nominal\\Metadata\\V2\xe2\x02\x1fNominal\\Metadata\\V2\\GPBMetadata\xea\x02\x15Nominal::Metadata::V2b\x06proto3"
 
 var (

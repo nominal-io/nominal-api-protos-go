@@ -28,7 +28,17 @@ const (
 //
 // Service for user-defined functions.
 type UdfServiceClient interface {
-	// Compiles a user-defined function and returns a key for the compiled artifact.
+	// Compiles a user-defined function (UDF) written in Rust and returns a key for the compiled function.
+	//
+	// The caller needs permission to edit configuration in the workspace. The call waits for the compilation to finish.
+	// The same source with the same output type and the same kind of inputs (all VALUE or all VECTOR) gives the same
+	// key and reuses the earlier compilation.
+	//
+	// Errors:
+	//   - NOT_FOUND: the caller cannot edit configuration in the workspace (reported as workspace not found).
+	//   - INVALID_ARGUMENT: no workspace is given and the caller has no default workspace; the inputs mix VALUE and
+	//     VECTOR; the output shape does not fit the output type or inputs; no source is set; the source fails validation
+	//     or compilation; or the declared inputs and output shape do not match the compiled function.
 	CompileUdf(ctx context.Context, in *CompileUdfRequest, opts ...grpc.CallOption) (*CompileUdfResponse, error)
 }
 
@@ -56,7 +66,17 @@ func (c *udfServiceClient) CompileUdf(ctx context.Context, in *CompileUdfRequest
 //
 // Service for user-defined functions.
 type UdfServiceServer interface {
-	// Compiles a user-defined function and returns a key for the compiled artifact.
+	// Compiles a user-defined function (UDF) written in Rust and returns a key for the compiled function.
+	//
+	// The caller needs permission to edit configuration in the workspace. The call waits for the compilation to finish.
+	// The same source with the same output type and the same kind of inputs (all VALUE or all VECTOR) gives the same
+	// key and reuses the earlier compilation.
+	//
+	// Errors:
+	//   - NOT_FOUND: the caller cannot edit configuration in the workspace (reported as workspace not found).
+	//   - INVALID_ARGUMENT: no workspace is given and the caller has no default workspace; the inputs mix VALUE and
+	//     VECTOR; the output shape does not fit the output type or inputs; no source is set; the source fails validation
+	//     or compilation; or the declared inputs and output shape do not match the compiled function.
 	CompileUdf(context.Context, *CompileUdfRequest) (*CompileUdfResponse, error)
 	mustEmbedUnimplementedUdfServiceServer()
 }

@@ -8,6 +8,8 @@ package proceduresv1
 
 import (
 	_ "buf.build/gen/go/bufbuild/protovalidate/protocolbuffers/go/buf/validate"
+	_ "github.com/nominal-io/nominal-api-protos-go/nominal/protos/authn/v1"
+	_ "github.com/nominal-io/nominal-api-protos-go/nominal/protos/authz/v1"
 	_ "github.com/nominal-io/nominal-api-protos-go/nominal/protos/gen/v1"
 	types "github.com/nominal-io/nominal-api-protos-go/nominal/protos/types"
 	time "github.com/nominal-io/nominal-api-protos-go/nominal/protos/types/time"
@@ -268,7 +270,7 @@ func (ChannelValidationSuccessCondition_COMPARATOR) EnumDescriptor() ([]byte, []
 // ProcedureState is the versioned state of a procedure template.
 type ProcedureState struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
-	// TODO(niwong): global_fields is deprecated, remove in a future version.
+	// Deprecated.
 	GlobalFields map[string]*FormField `protobuf:"bytes,1,rep,name=global_fields,json=globalFields,proto3" json:"global_fields,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
 	// Global fields are set at the beginning of the procedure execution.
 	// These fields can be referenced by any step in the procedure by using {field_id}.
@@ -419,7 +421,7 @@ type NestedProcedure struct {
 	Description *string `protobuf:"bytes,2,opt,name=description,proto3,oneof" json:"description,omitempty"`
 	// Steps in the procedure
 	Steps []*NestedProcedureNode `protobuf:"bytes,3,rep,name=steps,proto3" json:"steps,omitempty"`
-	// TODO(niwong): global_fields is deprecated, remove in a future version.
+	// Deprecated.
 	GlobalFields map[string]*FormField `protobuf:"bytes,4,rep,name=global_fields,json=globalFields,proto3" json:"global_fields,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
 	// Global fields are set at the beginning of the procedure execution.
 	// These fields can be referenced by any step in the procedure by using {field_id}.
@@ -1068,7 +1070,7 @@ type AutoProceedConfig_Disabled_ struct {
 
 type AutoProceedConfig_Enabled_ struct {
 	// The step will automatically submit the step contents once the requirements are met and
-	// begin the transition to either PASSED or ERRORED.
+	// begin the transition to either SUCCEEDED or ERRORED.
 	Enabled *AutoProceedConfig_Enabled `protobuf:"bytes,2,opt,name=enabled,proto3,oneof"`
 }
 
@@ -1836,7 +1838,7 @@ func (x *WebhookDeliveryConfig) GetTimeoutSeconds() int64 {
 
 // An action that will be taken when a step transitions to a completed state
 // (succeeded, errored, or skipped). These actions are executed after the step
-// contents are submitted and the PassCondition (if any) is satisfied. These
+// contents are submitted and the SuccessCondition (if any) is satisfied. These
 // actions are executed synchronously with the state transition and generally
 // should be quick to complete.
 // Almost all actions will be executed only if the step transitions to SUCCEEDED.
@@ -2005,7 +2007,7 @@ type CreateEventConfig struct {
 	AssetFieldIds []string `protobuf:"bytes,5,rep,name=asset_field_ids,json=assetFieldIds,proto3" json:"asset_field_ids,omitempty"`
 	// The assets to associate the event with. There must be at least one.
 	// asset_references takes precedence over (deprecated) asset_field_ids if both are set.
-	AssetReferences []*AssetReference `protobuf:"bytes,6,rep,name=asset_references,json=assetReferences,proto3" json:"asset_references,omitempty"` // TODO(niwong): re-add after client updates [(buf.validate.field).repeated.min_items = 1];
+	AssetReferences []*AssetReference `protobuf:"bytes,6,rep,name=asset_references,json=assetReferences,proto3" json:"asset_references,omitempty"`
 	// Properties to apply to the event
 	PropertyRefs  []*PropertyReference `protobuf:"bytes,7,rep,name=property_refs,json=propertyRefs,proto3" json:"property_refs,omitempty"`
 	unknownFields protoimpl.UnknownFields
@@ -2265,8 +2267,8 @@ type UpdateRunConfig struct {
 	Name        *StringReference      `protobuf:"bytes,2,opt,name=name,proto3,oneof" json:"name,omitempty"`
 	Description *StringReference      `protobuf:"bytes,3,opt,name=description,proto3,oneof" json:"description,omitempty"`
 	TimeRange   *TimeRangeReference   `protobuf:"bytes,4,opt,name=time_range,json=timeRange,proto3,oneof" json:"time_range,omitempty"`
-	Labels      *MultiStringReference `protobuf:"bytes,5,opt,name=labels,proto3,oneof" json:"labels,omitempty"`   // TODO(ryanyost): support patch-behavior for labels
-	Properties  []*PropertyReference  `protobuf:"bytes,6,rep,name=properties,proto3" json:"properties,omitempty"` // TODO(ryanyost): support patch-behavior for properties
+	Labels      *MultiStringReference `protobuf:"bytes,5,opt,name=labels,proto3,oneof" json:"labels,omitempty"`
+	Properties  []*PropertyReference  `protobuf:"bytes,6,rep,name=properties,proto3" json:"properties,omitempty"`
 	// When true, time fields overwrite existing values. When false, start only moves earlier, end only moves later (aligns with runs API strictOverwrite).
 	StrictOverwrite *bool `protobuf:"varint,7,opt,name=strict_overwrite,json=strictOverwrite,proto3,oneof" json:"strict_overwrite,omitempty"`
 	unknownFields   protoimpl.UnknownFields
@@ -3710,7 +3712,7 @@ type isMultiAssetReference_Option interface {
 }
 
 type MultiAssetReference_List struct {
-	List *MultiAssetReference_AssetReferenceList `protobuf:"bytes,1,opt,name=list,proto3,oneof"` // TODO: add support for a field that contains a list of asset RIDs
+	List *MultiAssetReference_AssetReferenceList `protobuf:"bytes,1,opt,name=list,proto3,oneof"`
 }
 
 func (*MultiAssetReference_List) isMultiAssetReference_Option() {}
@@ -4033,7 +4035,7 @@ type isMultiRunReference_Option interface {
 }
 
 type MultiRunReference_List struct {
-	List *MultiRunReference_RunReferenceList `protobuf:"bytes,1,opt,name=list,proto3,oneof"` // TODO: add support for a field that contains a list of run RIDs
+	List *MultiRunReference_RunReferenceList `protobuf:"bytes,1,opt,name=list,proto3,oneof"`
 }
 
 func (*MultiRunReference_List) isMultiRunReference_Option() {}
@@ -4168,7 +4170,7 @@ type isMultiWorkbookTemplateReference_Option interface {
 }
 
 type MultiWorkbookTemplateReference_List struct {
-	List *MultiWorkbookTemplateReference_WorkbookTemplateReferenceList `protobuf:"bytes,1,opt,name=list,proto3,oneof"` // TODO: add support for a field that contains a list of workbook template RIDs
+	List *MultiWorkbookTemplateReference_WorkbookTemplateReferenceList `protobuf:"bytes,1,opt,name=list,proto3,oneof"`
 }
 
 func (*MultiWorkbookTemplateReference_List) isMultiWorkbookTemplateReference_Option() {}
@@ -4303,7 +4305,7 @@ type isMultiChecklistReference_Option interface {
 }
 
 type MultiChecklistReference_List struct {
-	List *MultiChecklistReference_ChecklistReferenceList `protobuf:"bytes,1,opt,name=list,proto3,oneof"` // TODO: add support for a field that contains a list of checklist RIDs
+	List *MultiChecklistReference_ChecklistReferenceList `protobuf:"bytes,1,opt,name=list,proto3,oneof"`
 }
 
 func (*MultiChecklistReference_List) isMultiChecklistReference_Option() {}
@@ -5012,7 +5014,7 @@ type TextField struct {
 	// Label to show for this text field
 	// deprecated in favor of label directly on FormField
 	Label string `protobuf:"bytes,1,opt,name=label,proto3" json:"label,omitempty"`
-	// type of form input to render. Defaults to SIMPLE.
+	// type of form input to render. Exactly one must be set.
 	//
 	// Types that are valid to be assigned to InputType:
 	//
@@ -5828,6 +5830,7 @@ type ProcedureMetadata struct {
 	Labels      []string               `protobuf:"bytes,4,rep,name=labels,proto3" json:"labels,omitempty"`
 	Properties  map[string]string      `protobuf:"bytes,5,rep,name=properties,proto3" json:"properties,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
 	IsArchived  bool                   `protobuf:"varint,6,opt,name=is_archived,json=isArchived,proto3" json:"is_archived,omitempty"`
+	// New procedures are published unless the create request says otherwise.
 	IsPublished bool                   `protobuf:"varint,7,opt,name=is_published,json=isPublished,proto3" json:"is_published,omitempty"`
 	CreatedAt   *timestamppb.Timestamp `protobuf:"bytes,8,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
 	CreatedBy   string                 `protobuf:"bytes,9,opt,name=created_by,json=createdBy,proto3" json:"created_by,omitempty"`
@@ -5961,7 +5964,7 @@ func (x *ProcedureMetadata) GetExecutionCount() int64 {
 	return 0
 }
 
-// A procedure describes a series of steps to be performed, typically in a specific order,
+// A procedure at one commit: its metadata and its versioned state of steps.
 type Procedure struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// The RID of the procedure.
@@ -6035,16 +6038,21 @@ func (x *Procedure) GetState() *ProcedureState {
 }
 
 type CreateProcedureRequest struct {
-	state             protoimpl.MessageState `protogen:"open.v1"`
-	Title             string                 `protobuf:"bytes,1,opt,name=title,proto3" json:"title,omitempty"`
-	Description       *string                `protobuf:"bytes,2,opt,name=description,proto3,oneof" json:"description,omitempty"`
-	Labels            []string               `protobuf:"bytes,3,rep,name=labels,proto3" json:"labels,omitempty"`
-	Properties        map[string]string      `protobuf:"bytes,4,rep,name=properties,proto3" json:"properties,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
-	State             *ProcedureState        `protobuf:"bytes,5,opt,name=state,proto3,oneof" json:"state,omitempty"`
-	IsPublished       *bool                  `protobuf:"varint,6,opt,name=is_published,json=isPublished,proto3,oneof" json:"is_published,omitempty"`
-	Workspace         string                 `protobuf:"bytes,7,opt,name=workspace,proto3" json:"workspace,omitempty"`
-	CommitMessage     string                 `protobuf:"bytes,8,opt,name=commit_message,json=commitMessage,proto3" json:"commit_message,omitempty"`
-	InitialBranchName *string                `protobuf:"bytes,9,opt,name=initial_branch_name,json=initialBranchName,proto3,oneof" json:"initial_branch_name,omitempty"`
+	state       protoimpl.MessageState `protogen:"open.v1"`
+	Title       string                 `protobuf:"bytes,1,opt,name=title,proto3" json:"title,omitempty"`
+	Description *string                `protobuf:"bytes,2,opt,name=description,proto3,oneof" json:"description,omitempty"`
+	Labels      []string               `protobuf:"bytes,3,rep,name=labels,proto3" json:"labels,omitempty"`
+	Properties  map[string]string      `protobuf:"bytes,4,rep,name=properties,proto3" json:"properties,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
+	// Steps of the initial commit. An empty state is used when omitted.
+	State *ProcedureState `protobuf:"bytes,5,opt,name=state,proto3,oneof" json:"state,omitempty"`
+	// Defaults to true when omitted.
+	IsPublished *bool `protobuf:"varint,6,opt,name=is_published,json=isPublished,proto3,oneof" json:"is_published,omitempty"`
+	// Workspace that will hold the procedure.
+	Workspace string `protobuf:"bytes,7,opt,name=workspace,proto3" json:"workspace,omitempty"`
+	// Message of the initial commit.
+	CommitMessage string `protobuf:"bytes,8,opt,name=commit_message,json=commitMessage,proto3" json:"commit_message,omitempty"`
+	// When set, a branch with this name is created at the initial commit.
+	InitialBranchName *string `protobuf:"bytes,9,opt,name=initial_branch_name,json=initialBranchName,proto3,oneof" json:"initial_branch_name,omitempty"`
 	unknownFields     protoimpl.UnknownFields
 	sizeCache         protoimpl.SizeCache
 }
@@ -6143,9 +6151,10 @@ func (x *CreateProcedureRequest) GetInitialBranchName() string {
 }
 
 type CreateProcedureResponse struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Procedure     *Procedure             `protobuf:"bytes,1,opt,name=procedure,proto3" json:"procedure,omitempty"`
-	BranchName    *string                `protobuf:"bytes,2,opt,name=branch_name,json=branchName,proto3,oneof" json:"branch_name,omitempty"`
+	state     protoimpl.MessageState `protogen:"open.v1"`
+	Procedure *Procedure             `protobuf:"bytes,1,opt,name=procedure,proto3" json:"procedure,omitempty"`
+	// The branch created at the initial commit. Absent when no initial branch name was given.
+	BranchName    *string `protobuf:"bytes,2,opt,name=branch_name,json=branchName,proto3,oneof" json:"branch_name,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -6195,9 +6204,10 @@ func (x *CreateProcedureResponse) GetBranchName() string {
 }
 
 type GetProcedureRequest struct {
-	state          protoimpl.MessageState `protogen:"open.v1"`
-	Rid            string                 `protobuf:"bytes,1,opt,name=rid,proto3" json:"rid,omitempty"`
-	BranchOrCommit *v1.BranchOrCommit     `protobuf:"bytes,2,opt,name=branch_or_commit,json=branchOrCommit,proto3" json:"branch_or_commit,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	Rid   string                 `protobuf:"bytes,1,opt,name=rid,proto3" json:"rid,omitempty"`
+	// Branch or commit to read. Reads the main branch when omitted.
+	BranchOrCommit *v1.BranchOrCommit `protobuf:"bytes,2,opt,name=branch_or_commit,json=branchOrCommit,proto3" json:"branch_or_commit,omitempty"`
 	// If true, the display graph will be included in the response.
 	// Default is false.
 	IncludeDisplayGraph bool `protobuf:"varint,3,opt,name=include_display_graph,json=includeDisplayGraph,proto3" json:"include_display_graph,omitempty"`
@@ -6397,6 +6407,7 @@ func (x *BatchGetProcedureMetadataResponse) GetProcedureMetadatas() []*Procedure
 	return nil
 }
 
+// Fields left unset keep their current value. A set labels or properties value replaces the existing one as a whole.
 type UpdateProcedureMetadataRequest struct {
 	state         protoimpl.MessageState       `protogen:"open.v1"`
 	Rid           string                       `protobuf:"bytes,1,opt,name=rid,proto3" json:"rid,omitempty"`
@@ -6641,9 +6652,10 @@ func (x *ParseNestedProcedureResponse) GetDisplayGraph() *ProcedureDisplayGraph 
 }
 
 type GetProcedureAsNestedRequest struct {
-	state          protoimpl.MessageState `protogen:"open.v1"`
-	Rid            string                 `protobuf:"bytes,1,opt,name=rid,proto3" json:"rid,omitempty"`
-	BranchOrCommit *v1.BranchOrCommit     `protobuf:"bytes,2,opt,name=branch_or_commit,json=branchOrCommit,proto3" json:"branch_or_commit,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	Rid   string                 `protobuf:"bytes,1,opt,name=rid,proto3" json:"rid,omitempty"`
+	// Branch or commit to read. Reads the main branch when omitted.
+	BranchOrCommit *v1.BranchOrCommit `protobuf:"bytes,2,opt,name=branch_or_commit,json=branchOrCommit,proto3" json:"branch_or_commit,omitempty"`
 	unknownFields  protoimpl.UnknownFields
 	sizeCache      protoimpl.SizeCache
 }
@@ -6737,9 +6749,10 @@ func (x *GetProcedureAsNestedResponse) GetNestedProcedure() *NestedProcedure {
 }
 
 type MergeToMainRequest struct {
-	state  protoimpl.MessageState `protogen:"open.v1"`
-	Rid    string                 `protobuf:"bytes,1,opt,name=rid,proto3" json:"rid,omitempty"`
-	Branch string                 `protobuf:"bytes,2,opt,name=branch,proto3" json:"branch,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	Rid   string                 `protobuf:"bytes,1,opt,name=rid,proto3" json:"rid,omitempty"`
+	// Branch to merge into main. The branch is deleted after the merge.
+	Branch string `protobuf:"bytes,2,opt,name=branch,proto3" json:"branch,omitempty"`
 	// If present, this commit ID must match the latest commit on main for the merge to succeed.
 	LatestCommitOnMain *string `protobuf:"bytes,3,opt,name=latest_commit_on_main,json=latestCommitOnMain,proto3,oneof" json:"latest_commit_on_main,omitempty"`
 	Message            string  `protobuf:"bytes,4,opt,name=message,proto3" json:"message,omitempty"`
@@ -6850,10 +6863,12 @@ func (x *MergeToMainResponse) GetProcedure() *Procedure {
 }
 
 type SaveWorkingStateRequest struct {
-	state   protoimpl.MessageState `protogen:"open.v1"`
-	Rid     string                 `protobuf:"bytes,1,opt,name=rid,proto3" json:"rid,omitempty"`
-	Branch  *string                `protobuf:"bytes,2,opt,name=branch,proto3,oneof" json:"branch,omitempty"`
-	Message string                 `protobuf:"bytes,3,opt,name=message,proto3" json:"message,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	Rid   string                 `protobuf:"bytes,1,opt,name=rid,proto3" json:"rid,omitempty"`
+	// Branch to save on. Defaults to main.
+	Branch *string `protobuf:"bytes,2,opt,name=branch,proto3,oneof" json:"branch,omitempty"`
+	// Commit message. A default message ("auto-save") is used when empty.
+	Message string `protobuf:"bytes,3,opt,name=message,proto3" json:"message,omitempty"`
 	// If present, this commit ID must match the latest commit on the branch for the save to succeed.
 	LatestCommitOnBranch *string         `protobuf:"bytes,4,opt,name=latest_commit_on_branch,json=latestCommitOnBranch,proto3,oneof" json:"latest_commit_on_branch,omitempty"`
 	State                *ProcedureState `protobuf:"bytes,5,opt,name=state,proto3" json:"state,omitempty"`
@@ -6971,9 +6986,10 @@ func (x *SaveWorkingStateResponse) GetProcedure() *Procedure {
 }
 
 type CommitRequest struct {
-	state  protoimpl.MessageState `protogen:"open.v1"`
-	Rid    string                 `protobuf:"bytes,1,opt,name=rid,proto3" json:"rid,omitempty"`
-	Branch *string                `protobuf:"bytes,2,opt,name=branch,proto3,oneof" json:"branch,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	Rid   string                 `protobuf:"bytes,1,opt,name=rid,proto3" json:"rid,omitempty"`
+	// Branch to commit to. Defaults to main.
+	Branch *string `protobuf:"bytes,2,opt,name=branch,proto3,oneof" json:"branch,omitempty"`
 	// If present, this commit ID must match the latest commit on the branch for the commit to succeed.
 	LatestCommitOnBranch *string         `protobuf:"bytes,3,opt,name=latest_commit_on_branch,json=latestCommitOnBranch,proto3,oneof" json:"latest_commit_on_branch,omitempty"`
 	Message              string          `protobuf:"bytes,4,opt,name=message,proto3" json:"message,omitempty"`
@@ -7093,6 +7109,8 @@ func (x *CommitResponse) GetProcedure() *Procedure {
 
 type ProcedureSearchQuery struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
+	// A filter on procedures. Exactly one variant is set; and/or combine nested queries.
+	//
 	// Types that are valid to be assigned to Query:
 	//
 	//	*ProcedureSearchQuery_SearchText
@@ -7246,10 +7264,12 @@ type ProcedureSearchQuery_Workspace struct {
 }
 
 type ProcedureSearchQuery_CreatedBy struct {
+	// RID of the user who created the procedure.
 	CreatedBy string `protobuf:"bytes,7,opt,name=created_by,json=createdBy,proto3,oneof"`
 }
 
 type ProcedureSearchQuery_IsArchived struct {
+	// True matches only archived procedures; false matches only unarchived ones.
 	IsArchived bool `protobuf:"varint,8,opt,name=is_archived,json=isArchived,proto3,oneof"`
 }
 
@@ -7328,7 +7348,7 @@ type SearchProceduresRequest struct {
 	Query *ProcedureSearchQuery  `protobuf:"bytes,1,opt,name=query,proto3" json:"query,omitempty"`
 	// If not set, default is to sort by created_at descending
 	SortOptions *SearchProceduresSortOptions `protobuf:"bytes,2,opt,name=sort_options,json=sortOptions,proto3,oneof" json:"sort_options,omitempty"`
-	// Page sizes greater than 1_000 will be rejected. Default pageSize is 100.
+	// Defaults to 100 when omitted.
 	PageSize      *int32  `protobuf:"varint,3,opt,name=page_size,json=pageSize,proto3,oneof" json:"page_size,omitempty"`
 	NextPageToken *string `protobuf:"bytes,4,opt,name=next_page_token,json=nextPageToken,proto3,oneof" json:"next_page_token,omitempty"`
 	unknownFields protoimpl.UnknownFields
@@ -9524,7 +9544,7 @@ var File_nominal_protos_procedures_v1_procedures_proto protoreflect.FileDescript
 
 const file_nominal_protos_procedures_v1_procedures_proto_rawDesc = "" +
 	"\n" +
-	"-nominal/protos/procedures/v1/procedures.proto\x12\x15nominal.procedures.v1\x1a\x1bbuf/validate/validate.proto\x1a\x1cgoogle/api/annotations.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a!nominal/protos/gen/v1/alias.proto\x1a!nominal/protos/gen/v1/error.proto\x1a,nominal/protos/procedures/v1/id_format.proto\x1a1nominal/protos/types/time/timestamp_parsers.proto\x1a nominal/protos/types/types.proto\x1a-nominal/protos/versioning/v1/versioning.proto\"\xf7\x06\n" +
+	"-nominal/protos/procedures/v1/procedures.proto\x12\x15nominal.procedures.v1\x1a\x1bbuf/validate/validate.proto\x1a\x1cgoogle/api/annotations.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a)nominal/protos/authn/v1/annotations.proto\x1a)nominal/protos/authz/v1/annotations.proto\x1a!nominal/protos/gen/v1/alias.proto\x1a!nominal/protos/gen/v1/error.proto\x1a,nominal/protos/procedures/v1/id_format.proto\x1a1nominal/protos/types/time/timestamp_parsers.proto\x1a nominal/protos/types/types.proto\x1a-nominal/protos/versioning/v1/versioning.proto\"\xf7\x06\n" +
 	"\x0eProcedureState\x12k\n" +
 	"\rglobal_fields\x18\x01 \x03(\v27.nominal.procedures.v1.ProcedureState.GlobalFieldsEntryB\r\xbaH\n" +
 	"\x9a\x01\a\"\x05r\x03\xc8>\x01R\fglobalFields\x12L\n" +
@@ -10369,20 +10389,40 @@ const file_nominal_protos_procedures_v1_procedures_proto_rawDesc = "" +
 	"&PROCEDURES_SERVICE_ERROR_INVALID_GRAPH\x10\x05\x1a/\xb2\xb2\x1a+\n" +
 	"\x10INVALID_ARGUMENT\x12\x17Invalid procedure graph\x12_\n" +
 	"-PROCEDURES_SERVICE_ERROR_INVALID_SEARCH_TOKEN\x10\x06\x1a,\xb2\xb2\x1a(\n" +
-	"\x10INVALID_ARGUMENT\x12\x14Invalid search token2\x94\x10\n" +
-	"\x11ProceduresService\x12\x96\x01\n" +
-	"\x0fCreateProcedure\x12-.nominal.procedures.v1.CreateProcedureRequest\x1a..nominal.procedures.v1.CreateProcedureResponse\"$\x82\xd3\xe4\x93\x02\x1e:\x01*\"\x19/procedures/v1/procedures\x12\x90\x01\n" +
-	"\fGetProcedure\x12*.nominal.procedures.v1.GetProcedureRequest\x1a+.nominal.procedures.v1.GetProcedureResponse\"'\x82\xd3\xe4\x93\x02!\x12\x1f/procedures/v1/procedures/{rid}\x12\xc7\x01\n" +
-	"\x19BatchGetProcedureMetadata\x127.nominal.procedures.v1.BatchGetProcedureMetadataRequest\x1a8.nominal.procedures.v1.BatchGetProcedureMetadataResponse\"7\x82\xd3\xe4\x93\x021:\x01*\",/procedures/v1/procedures/batch-get-metadata\x12\xbd\x01\n" +
-	"\x17UpdateProcedureMetadata\x125.nominal.procedures.v1.UpdateProcedureMetadataRequest\x1a6.nominal.procedures.v1.UpdateProcedureMetadataResponse\"3\x82\xd3\xe4\x93\x02-:\x01*\x1a(/procedures/v1/procedures/{rid}/metadata\x12\xbc\x01\n" +
-	"\x14ParseNestedProcedure\x122.nominal.procedures.v1.ParseNestedProcedureRequest\x1a3.nominal.procedures.v1.ParseNestedProcedureResponse\";\x82\xd3\xe4\x93\x025:\x01*\"0/procedures/v1/procedures/parse-nested-procedure\x12\xaf\x01\n" +
-	"\x14GetProcedureAsNested\x122.nominal.procedures.v1.GetProcedureAsNestedRequest\x1a3.nominal.procedures.v1.GetProcedureAsNestedResponse\".\x82\xd3\xe4\x93\x02(\x12&/procedures/v1/procedures/nested/{rid}\x12\x9e\x01\n" +
-	"\vMergeToMain\x12).nominal.procedures.v1.MergeToMainRequest\x1a*.nominal.procedures.v1.MergeToMainResponse\"8\x82\xd3\xe4\x93\x022:\x01*\"-/procedures/v1/procedures/{rid}/merge-to-main\x12\xb2\x01\n" +
-	"\x10SaveWorkingState\x12..nominal.procedures.v1.SaveWorkingStateRequest\x1a/.nominal.procedures.v1.SaveWorkingStateResponse\"=\x82\xd3\xe4\x93\x027:\x01*\"2/procedures/v1/procedures/{rid}/save-working-state\x12\x88\x01\n" +
-	"\x06Commit\x12$.nominal.procedures.v1.CommitRequest\x1a%.nominal.procedures.v1.CommitResponse\"1\x82\xd3\xe4\x93\x02+:\x01*\"&/procedures/v1/procedures/{rid}/commit\x12\xa0\x01\n" +
-	"\x10SearchProcedures\x12..nominal.procedures.v1.SearchProceduresRequest\x1a/.nominal.procedures.v1.SearchProceduresResponse\"+\x82\xd3\xe4\x93\x02%:\x01*\" /procedures/v1/procedures/search\x12\xa4\x01\n" +
-	"\x11ArchiveProcedures\x12/.nominal.procedures.v1.ArchiveProceduresRequest\x1a0.nominal.procedures.v1.ArchiveProceduresResponse\",\x82\xd3\xe4\x93\x02&:\x01*\"!/procedures/v1/procedures/archive\x12\xac\x01\n" +
-	"\x13UnarchiveProcedures\x121.nominal.procedures.v1.UnarchiveProceduresRequest\x1a2.nominal.procedures.v1.UnarchiveProceduresResponse\".\x82\xd3\xe4\x93\x02(:\x01*\"#/procedures/v1/procedures/unarchiveB\xf9\x01\n" +
+	"\x10INVALID_ARGUMENT\x12\x14Invalid search token2\xdd\x12\n" +
+	"\x11ProceduresService\x12\xb9\x01\n" +
+	"\x0fCreateProcedure\x12-.nominal.procedures.v1.CreateProcedureRequest\x1a..nominal.procedures.v1.CreateProcedureResponse\"G\xba\xb2\x1a\x1f\n" +
+	"\x1d\n" +
+	"\x19workspace:edit_procedures\"\x00\x82\xd3\xe4\x93\x02\x1e:\x01*\"\x19/procedures/v1/procedures\x12\xa8\x01\n" +
+	"\fGetProcedure\x12*.nominal.procedures.v1.GetProcedureRequest\x1a+.nominal.procedures.v1.GetProcedureResponse\"?\xba\xb2\x1a\x14\n" +
+	"\x12\n" +
+	"\x0eworkspace:view\"\x00\x82\xd3\xe4\x93\x02!\x12\x1f/procedures/v1/procedures/{rid}\x12\xdf\x01\n" +
+	"\x19BatchGetProcedureMetadata\x127.nominal.procedures.v1.BatchGetProcedureMetadataRequest\x1a8.nominal.procedures.v1.BatchGetProcedureMetadataResponse\"O\xba\xb2\x1a\x14\n" +
+	"\x12\n" +
+	"\x0eworkspace:view\"\x00\x82\xd3\xe4\x93\x021:\x01*\",/procedures/v1/procedures/batch-get-metadata\x12\xe0\x01\n" +
+	"\x17UpdateProcedureMetadata\x125.nominal.procedures.v1.UpdateProcedureMetadataRequest\x1a6.nominal.procedures.v1.UpdateProcedureMetadataResponse\"V\xba\xb2\x1a\x1f\n" +
+	"\x1d\n" +
+	"\x19workspace:edit_procedures\"\x00\x82\xd3\xe4\x93\x02-:\x01*\x1a(/procedures/v1/procedures/{rid}/metadata\x12\xc4\x01\n" +
+	"\x14ParseNestedProcedure\x122.nominal.procedures.v1.ParseNestedProcedureRequest\x1a3.nominal.procedures.v1.ParseNestedProcedureResponse\"C\xba\xb2\x1a\x00\xc0\xb2\x1a\x01\x82\xd3\xe4\x93\x025:\x01*\"0/procedures/v1/procedures/parse-nested-procedure\x12\xc7\x01\n" +
+	"\x14GetProcedureAsNested\x122.nominal.procedures.v1.GetProcedureAsNestedRequest\x1a3.nominal.procedures.v1.GetProcedureAsNestedResponse\"F\xba\xb2\x1a\x14\n" +
+	"\x12\n" +
+	"\x0eworkspace:view\"\x00\x82\xd3\xe4\x93\x02(\x12&/procedures/v1/procedures/nested/{rid}\x12\xc1\x01\n" +
+	"\vMergeToMain\x12).nominal.procedures.v1.MergeToMainRequest\x1a*.nominal.procedures.v1.MergeToMainResponse\"[\xba\xb2\x1a\x1f\n" +
+	"\x1d\n" +
+	"\x19workspace:edit_procedures\"\x00\x82\xd3\xe4\x93\x022:\x01*\"-/procedures/v1/procedures/{rid}/merge-to-main\x12\xd5\x01\n" +
+	"\x10SaveWorkingState\x12..nominal.procedures.v1.SaveWorkingStateRequest\x1a/.nominal.procedures.v1.SaveWorkingStateResponse\"`\xba\xb2\x1a\x1f\n" +
+	"\x1d\n" +
+	"\x19workspace:edit_procedures\"\x00\x82\xd3\xe4\x93\x027:\x01*\"2/procedures/v1/procedures/{rid}/save-working-state\x12\xab\x01\n" +
+	"\x06Commit\x12$.nominal.procedures.v1.CommitRequest\x1a%.nominal.procedures.v1.CommitResponse\"T\xba\xb2\x1a\x1f\n" +
+	"\x1d\n" +
+	"\x19workspace:edit_procedures\"\x00\x82\xd3\xe4\x93\x02+:\x01*\"&/procedures/v1/procedures/{rid}/commit\x12\xa4\x01\n" +
+	"\x10SearchProcedures\x12..nominal.procedures.v1.SearchProceduresRequest\x1a/.nominal.procedures.v1.SearchProceduresResponse\"/\xba\xb2\x1a\x00\x82\xd3\xe4\x93\x02%:\x01*\" /procedures/v1/procedures/search\x12\xc7\x01\n" +
+	"\x11ArchiveProcedures\x12/.nominal.procedures.v1.ArchiveProceduresRequest\x1a0.nominal.procedures.v1.ArchiveProceduresResponse\"O\xba\xb2\x1a\x1f\n" +
+	"\x1d\n" +
+	"\x19workspace:edit_procedures\"\x00\x82\xd3\xe4\x93\x02&:\x01*\"!/procedures/v1/procedures/archive\x12\xcf\x01\n" +
+	"\x13UnarchiveProcedures\x121.nominal.procedures.v1.UnarchiveProceduresRequest\x1a2.nominal.procedures.v1.UnarchiveProceduresResponse\"Q\xba\xb2\x1a\x1f\n" +
+	"\x1d\n" +
+	"\x19workspace:edit_procedures\"\x00\x82\xd3\xe4\x93\x02(:\x01*\"#/procedures/v1/procedures/unarchiveB\xf9\x01\n" +
 	"\x19com.nominal.procedures.v1B\x0fProceduresProtoP\x01ZUgithub.com/nominal-io/nominal-api-protos-go/nominal/protos/procedures/v1;proceduresv1\xa2\x02\x03NPX\xaa\x02\x15Nominal.Procedures.V1\xca\x02\x15Nominal\\Procedures\\V1\xe2\x02!Nominal\\Procedures\\V1\\GPBMetadata\xea\x02\x17Nominal::Procedures::V1b\x06proto3"
 
 var (

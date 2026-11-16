@@ -32,15 +32,55 @@ const (
 //
 // Themes service manages themes for exporting charts.
 type ThemesServiceClient interface {
-	// Get all chart themes saved to the requested workspaces.
+	// Lists export themes (chart themes in the API), the saved style settings for chart image exports, with their full
+	// content. Returns every theme in the requested workspaces, not a page.
+	//
+	// With no workspaces given, lists the themes in every workspace the caller can view in full. Workspaces the caller
+	// cannot view are ignored, and so are workspaces whose edition does not include workbooks. Deleted themes are not
+	// listed.
 	ListChartThemes(ctx context.Context, in *ListChartThemesRequest, opts ...grpc.CallOption) (*ListChartThemesResponse, error)
-	// Get a specific chart theme by RID.
+	// Gets one export theme (chart theme in the API) by RID, with its title, caption, legend, background, and time
+	// series chart styling.
+	//
+	// Errors:
+	// - NOT_FOUND: the RID does not identify a theme, the theme was deleted, or the caller cannot view its workspace.
+	// - PERMISSION_DENIED: the workspace edition does not include workbooks.
 	GetChartTheme(ctx context.Context, in *GetChartThemeRequest, opts ...grpc.CallOption) (*GetChartThemeResponse, error)
-	// Create a new chart theme.
+	// Creates an export theme (chart theme in the API): saved style settings for chart image exports. Returns the new
+	// theme.
+	//
+	// The server assigns the RID and records the caller as the creator. The theme is created in the given workspace, or
+	// in the caller's default workspace when none is given. The caller needs permission to edit the configuration of
+	// that workspace. Theme names are not required to be unique.
+	//
+	// Errors:
+	//   - INVALID_ARGUMENT: no workspace is given and the caller has no default workspace, or the content has an unset
+	//     version (or time series version) or an unspecified title alignment, caption alignment, legend position, or
+	//     legend placement.
+	//   - NOT_FOUND: the workspace does not exist or the caller cannot edit its configuration.
+	//   - PERMISSION_DENIED: the workspace edition does not include workbooks.
 	CreateChartTheme(ctx context.Context, in *CreateChartThemeRequest, opts ...grpc.CallOption) (*CreateChartThemeResponse, error)
-	// Update an existing chart theme.
+	// Replaces the name and all styling of an export theme (chart theme in the API) with the request values. Returns
+	// the updated theme.
+	//
+	// The theme keeps its RID, creator, and workspace. The update records the caller and the time. Every content field
+	// is overwritten, so send the full content. The caller needs permission to edit the configuration of the theme's
+	// workspace.
+	//
+	// Errors:
+	//   - INVALID_ARGUMENT: the content has an unset version (or time series version) or an unspecified
+	//     title alignment, caption alignment, legend position, or legend placement.
+	//   - NOT_FOUND: the RID does not identify a theme, the theme was deleted, or the caller cannot edit its workspace.
+	//   - PERMISSION_DENIED: the workspace edition does not include workbooks.
 	UpdateChartTheme(ctx context.Context, in *UpdateChartThemeRequest, opts ...grpc.CallOption) (*UpdateChartThemeResponse, error)
-	// Delete an existing chart theme.
+	// Deletes an export theme (chart theme in the API). A deleted theme no longer appears in ListChartThemes, and
+	// GetChartTheme returns NOT_FOUND for it. The caller needs permission to edit the configuration of the theme's
+	// workspace.
+	//
+	// Errors:
+	//   - NOT_FOUND: the RID does not identify a theme, the theme is already deleted, or the caller cannot edit its
+	//     workspace.
+	//   - PERMISSION_DENIED: the workspace edition does not include workbooks.
 	DeleteChartTheme(ctx context.Context, in *DeleteChartThemeRequest, opts ...grpc.CallOption) (*DeleteChartThemeResponse, error)
 }
 
@@ -108,15 +148,55 @@ func (c *themesServiceClient) DeleteChartTheme(ctx context.Context, in *DeleteCh
 //
 // Themes service manages themes for exporting charts.
 type ThemesServiceServer interface {
-	// Get all chart themes saved to the requested workspaces.
+	// Lists export themes (chart themes in the API), the saved style settings for chart image exports, with their full
+	// content. Returns every theme in the requested workspaces, not a page.
+	//
+	// With no workspaces given, lists the themes in every workspace the caller can view in full. Workspaces the caller
+	// cannot view are ignored, and so are workspaces whose edition does not include workbooks. Deleted themes are not
+	// listed.
 	ListChartThemes(context.Context, *ListChartThemesRequest) (*ListChartThemesResponse, error)
-	// Get a specific chart theme by RID.
+	// Gets one export theme (chart theme in the API) by RID, with its title, caption, legend, background, and time
+	// series chart styling.
+	//
+	// Errors:
+	// - NOT_FOUND: the RID does not identify a theme, the theme was deleted, or the caller cannot view its workspace.
+	// - PERMISSION_DENIED: the workspace edition does not include workbooks.
 	GetChartTheme(context.Context, *GetChartThemeRequest) (*GetChartThemeResponse, error)
-	// Create a new chart theme.
+	// Creates an export theme (chart theme in the API): saved style settings for chart image exports. Returns the new
+	// theme.
+	//
+	// The server assigns the RID and records the caller as the creator. The theme is created in the given workspace, or
+	// in the caller's default workspace when none is given. The caller needs permission to edit the configuration of
+	// that workspace. Theme names are not required to be unique.
+	//
+	// Errors:
+	//   - INVALID_ARGUMENT: no workspace is given and the caller has no default workspace, or the content has an unset
+	//     version (or time series version) or an unspecified title alignment, caption alignment, legend position, or
+	//     legend placement.
+	//   - NOT_FOUND: the workspace does not exist or the caller cannot edit its configuration.
+	//   - PERMISSION_DENIED: the workspace edition does not include workbooks.
 	CreateChartTheme(context.Context, *CreateChartThemeRequest) (*CreateChartThemeResponse, error)
-	// Update an existing chart theme.
+	// Replaces the name and all styling of an export theme (chart theme in the API) with the request values. Returns
+	// the updated theme.
+	//
+	// The theme keeps its RID, creator, and workspace. The update records the caller and the time. Every content field
+	// is overwritten, so send the full content. The caller needs permission to edit the configuration of the theme's
+	// workspace.
+	//
+	// Errors:
+	//   - INVALID_ARGUMENT: the content has an unset version (or time series version) or an unspecified
+	//     title alignment, caption alignment, legend position, or legend placement.
+	//   - NOT_FOUND: the RID does not identify a theme, the theme was deleted, or the caller cannot edit its workspace.
+	//   - PERMISSION_DENIED: the workspace edition does not include workbooks.
 	UpdateChartTheme(context.Context, *UpdateChartThemeRequest) (*UpdateChartThemeResponse, error)
-	// Delete an existing chart theme.
+	// Deletes an export theme (chart theme in the API). A deleted theme no longer appears in ListChartThemes, and
+	// GetChartTheme returns NOT_FOUND for it. The caller needs permission to edit the configuration of the theme's
+	// workspace.
+	//
+	// Errors:
+	//   - NOT_FOUND: the RID does not identify a theme, the theme is already deleted, or the caller cannot edit its
+	//     workspace.
+	//   - PERMISSION_DENIED: the workspace edition does not include workbooks.
 	DeleteChartTheme(context.Context, *DeleteChartThemeRequest) (*DeleteChartThemeResponse, error)
 	mustEmbedUnimplementedThemesServiceServer()
 }

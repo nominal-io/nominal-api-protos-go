@@ -12,6 +12,7 @@
 package secretsv1
 
 import (
+	_ "github.com/nominal-io/nominal-api-protos-go/nominal/protos/authz/v1"
 	_ "github.com/nominal-io/nominal-api-protos-go/nominal/protos/gen/v1"
 	types "github.com/nominal-io/nominal-api-protos-go/nominal/protos/types"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
@@ -1228,7 +1229,7 @@ var File_nominal_protos_secrets_v1_secrets_proto protoreflect.FileDescriptor
 
 const file_nominal_protos_secrets_v1_secrets_proto_rawDesc = "" +
 	"\n" +
-	"'nominal/protos/secrets/v1/secrets.proto\x12\x12nominal.secrets.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a!nominal/protos/gen/v1/alias.proto\x1a!nominal/protos/gen/v1/error.proto\x1a nominal/protos/types/types.proto\"\xdb\x03\n" +
+	"'nominal/protos/secrets/v1/secrets.proto\x12\x12nominal.secrets.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a)nominal/protos/authz/v1/annotations.proto\x1a!nominal/protos/gen/v1/alias.proto\x1a!nominal/protos/gen/v1/error.proto\x1a nominal/protos/types/types.proto\"\xdb\x03\n" +
 	"\x13CreateSecretRequest\x12\x12\n" +
 	"\x04name\x18\x01 \x01(\tR\x04name\x12 \n" +
 	"\vdescription\x18\x02 \x01(\tR\vdescription\x12'\n" +
@@ -1355,16 +1356,28 @@ const file_nominal_protos_secrets_v1_secrets_proto_rawDesc = "" +
 	"&SECRETS_ERROR_UNABLE_TO_ENCRYPT_SECRET\x10\x02\x1a0\xb2\xb2\x1a,\n" +
 	"\x13FAILED_PRECONDITION\x12\x15UnableToEncryptSecret\x12K\n" +
 	"\x1eSECRETS_ERROR_INVALID_ARGUMENT\x10\x03\x1a'\xb2\xb2\x1a#\n" +
-	"\x10INVALID_ARGUMENT\x12\x0fInvalidArgument2\xf0\a\n" +
-	"\rSecretService\x12u\n" +
-	"\x06Create\x12'.nominal.secrets.v1.CreateSecretRequest\x1a\".nominal.secrets.v1.CreateResponse\"\x1e\x82\xd3\xe4\x93\x02\x18:\x01*\"\x13/secrets/v2/secrets\x12i\n" +
-	"\x03Get\x12\x1e.nominal.secrets.v1.GetRequest\x1a\x1f.nominal.secrets.v1.GetResponse\"!\x82\xd3\xe4\x93\x02\x1b\x12\x19/secrets/v2/secrets/{rid}\x12\x83\x01\n" +
-	"\bGetBatch\x12%.nominal.secrets.v1.GetSecretsRequest\x1a&.nominal.secrets.v1.GetSecretsResponse\"(\x82\xd3\xe4\x93\x02\":\x01*\"\x1d/secrets/v2/secrets/batch-get\x12u\n" +
-	"\x06Update\x12!.nominal.secrets.v1.UpdateRequest\x1a\".nominal.secrets.v1.UpdateResponse\"$\x82\xd3\xe4\x93\x02\x1e:\x01*\x1a\x19/secrets/v2/secrets/{rid}\x12r\n" +
-	"\x06Delete\x12!.nominal.secrets.v1.DeleteRequest\x1a\".nominal.secrets.v1.DeleteResponse\"!\x82\xd3\xe4\x93\x02\x1b*\x19/secrets/v2/secrets/{rid}\x12}\n" +
-	"\aArchive\x12\".nominal.secrets.v1.ArchiveRequest\x1a#.nominal.secrets.v1.ArchiveResponse\")\x82\xd3\xe4\x93\x02#\"!/secrets/v2/secrets/{rid}/archive\x12\x85\x01\n" +
-	"\tUnarchive\x12$.nominal.secrets.v1.UnarchiveRequest\x1a%.nominal.secrets.v1.UnarchiveResponse\"+\x82\xd3\xe4\x93\x02%\"#/secrets/v2/secrets/{rid}/unarchive\x12\x84\x01\n" +
-	"\x06Search\x12(.nominal.secrets.v1.SearchSecretsRequest\x1a).nominal.secrets.v1.SearchSecretsResponse\"%\x82\xd3\xe4\x93\x02\x1f:\x01*\"\x1a/secrets/v2/secrets/searchB\xe1\x01\n" +
+	"\x10INVALID_ARGUMENT\x12\x0fInvalidArgument2\xb5\t\n" +
+	"\rSecretService\x12\x95\x01\n" +
+	"\x06Create\x12'.nominal.secrets.v1.CreateSecretRequest\x1a\".nominal.secrets.v1.CreateResponse\">\xba\xb2\x1a\x1c\n" +
+	"\x1a\n" +
+	"\x16workspace:edit_secrets\"\x00\x82\xd3\xe4\x93\x02\x18:\x01*\"\x13/secrets/v2/secrets\x12\x81\x01\n" +
+	"\x03Get\x12\x1e.nominal.secrets.v1.GetRequest\x1a\x1f.nominal.secrets.v1.GetResponse\"9\xba\xb2\x1a\x14\n" +
+	"\x12\n" +
+	"\x0eworkspace:view\"\x00\x82\xd3\xe4\x93\x02\x1b\x12\x19/secrets/v2/secrets/{rid}\x12\x87\x01\n" +
+	"\bGetBatch\x12%.nominal.secrets.v1.GetSecretsRequest\x1a&.nominal.secrets.v1.GetSecretsResponse\",\xba\xb2\x1a\x00\x82\xd3\xe4\x93\x02\":\x01*\"\x1d/secrets/v2/secrets/batch-get\x12\x95\x01\n" +
+	"\x06Update\x12!.nominal.secrets.v1.UpdateRequest\x1a\".nominal.secrets.v1.UpdateResponse\"D\xba\xb2\x1a\x1c\n" +
+	"\x1a\n" +
+	"\x16workspace:edit_secrets\"\x00\x82\xd3\xe4\x93\x02\x1e:\x01*\x1a\x19/secrets/v2/secrets/{rid}\x12\x92\x01\n" +
+	"\x06Delete\x12!.nominal.secrets.v1.DeleteRequest\x1a\".nominal.secrets.v1.DeleteResponse\"A\xba\xb2\x1a\x1c\n" +
+	"\x1a\n" +
+	"\x16workspace:edit_secrets\"\x00\x82\xd3\xe4\x93\x02\x1b*\x19/secrets/v2/secrets/{rid}\x12\x9d\x01\n" +
+	"\aArchive\x12\".nominal.secrets.v1.ArchiveRequest\x1a#.nominal.secrets.v1.ArchiveResponse\"I\xba\xb2\x1a\x1c\n" +
+	"\x1a\n" +
+	"\x16workspace:edit_secrets\"\x00\x82\xd3\xe4\x93\x02#\"!/secrets/v2/secrets/{rid}/archive\x12\xa5\x01\n" +
+	"\tUnarchive\x12$.nominal.secrets.v1.UnarchiveRequest\x1a%.nominal.secrets.v1.UnarchiveResponse\"K\xba\xb2\x1a\x1c\n" +
+	"\x1a\n" +
+	"\x16workspace:edit_secrets\"\x00\x82\xd3\xe4\x93\x02%\"#/secrets/v2/secrets/{rid}/unarchive\x12\x88\x01\n" +
+	"\x06Search\x12(.nominal.secrets.v1.SearchSecretsRequest\x1a).nominal.secrets.v1.SearchSecretsResponse\")\xba\xb2\x1a\x00\x82\xd3\xe4\x93\x02\x1f:\x01*\"\x1a/secrets/v2/secrets/searchB\xe1\x01\n" +
 	"\x16com.nominal.secrets.v1B\fSecretsProtoP\x01ZOgithub.com/nominal-io/nominal-api-protos-go/nominal/protos/secrets/v1;secretsv1\xa2\x02\x03NSX\xaa\x02\x12Nominal.Secrets.V1\xca\x02\x12Nominal\\Secrets\\V1\xe2\x02\x1eNominal\\Secrets\\V1\\GPBMetadata\xea\x02\x14Nominal::Secrets::V1b\x06proto3"
 
 var (

@@ -7,6 +7,7 @@
 package themesv2
 
 import (
+	_ "github.com/nominal-io/nominal-api-protos-go/nominal/protos/authz/v1"
 	_ "github.com/nominal-io/nominal-api-protos-go/nominal/protos/gen/v1"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
@@ -236,6 +237,7 @@ func (ThemesError) EnumDescriptor() ([]byte, []int) {
 	return file_nominal_protos_themes_v2_themes_proto_rawDescGZIP(), []int{3}
 }
 
+// An export theme: saved style settings for chart image exports, owned by a workspace. Not the light or dark app theme.
 type ChartTheme struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Unique resource identifier for the theme.
@@ -335,10 +337,7 @@ func (x *ChartTheme) GetContent() *ChartThemeContent {
 	return nil
 }
 
-// A structurally-invalid ChartThemeContent (no arm set) is rejected by ThemesGrpcResource's structural guard with
-// ThemesError.INVALID_CHART_THEME (skill §4: structural guards throw the proto error enum). We deliberately do NOT use
-// `(buf.validate.oneof) = {required: true}` here: the ValidationInterceptor runs ahead of the resource and would
-// preempt the guard with a generic CONSTRAINT_VIOLATION, splitting the structural-error contract across two shapes.
+// The style settings of an export theme. A request with no version set fails with InvalidChartTheme.
 type ChartThemeContent struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Types that are valid to be assigned to ChartThemeContent:
@@ -405,6 +404,8 @@ type ChartThemeContent_V1 struct {
 
 func (*ChartThemeContent_V1) isChartThemeContent_ChartThemeContent() {}
 
+// Style settings for a chart image export: title, caption, background, legend, row gap, aspect ratio, and settings for
+// each chart type.
 type ChartThemeContentV1 struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Whether to show a title in the export.
@@ -659,8 +660,7 @@ func (x *ChartTypeThemes) GetTimeSeries() *TimeSeriesChartTheme {
 	return nil
 }
 
-// See ChartThemeContent for why this union carries no `(buf.validate.oneof)` — the unset case is rejected by
-// ThemesGrpcResource with ThemesError.INVALID_CHART_THEME.
+// The time series chart settings of an export theme. A request with no version set fails with InvalidChartTheme.
 type TimeSeriesChartTheme struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Types that are valid to be assigned to TimeSeriesChartTheme:
@@ -738,7 +738,7 @@ type TimeSeriesChartThemeV1 struct {
 	YAxisTitleFontSize int32 `protobuf:"varint,3,opt,name=y_axis_title_font_size,json=yAxisTitleFontSize,proto3" json:"y_axis_title_font_size,omitempty"`
 	// The font size of the y-axis ticks.
 	YAxisTickFontSize int32 `protobuf:"varint,4,opt,name=y_axis_tick_font_size,json=yAxisTickFontSize,proto3" json:"y_axis_tick_font_size,omitempty"`
-	// The line thickness in px of the threshold line.
+	// The line thickness in px of the threshold line. Defaults to 1 when omitted.
 	ThresholdLineWidth *int32 `protobuf:"varint,5,opt,name=threshold_line_width,json=thresholdLineWidth,proto3,oneof" json:"threshold_line_width,omitempty"`
 	unknownFields      protoimpl.UnknownFields
 	sizeCache          protoimpl.SizeCache
@@ -811,8 +811,8 @@ func (x *TimeSeriesChartThemeV1) GetThresholdLineWidth() int32 {
 
 type ListChartThemesRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
-	// If supplied, will return only results within the supplied workspaces. If empty
-	// will return all results within workspaces that the user is permitted to see.
+	// Workspaces to list from. Empty lists every workspace the caller can view. Workspaces the caller cannot view are
+	// ignored.
 	Workspaces    []string `protobuf:"bytes,1,rep,name=workspaces,proto3" json:"workspaces,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -1288,7 +1288,7 @@ var File_nominal_protos_themes_v2_themes_proto protoreflect.FileDescriptor
 
 const file_nominal_protos_themes_v2_themes_proto_rawDesc = "" +
 	"\n" +
-	"%nominal/protos/themes/v2/themes.proto\x12\x11nominal.themes.v2\x1a\x1cgoogle/api/annotations.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a!nominal/protos/gen/v1/alias.proto\x1a!nominal/protos/gen/v1/error.proto\"\xcd\x03\n" +
+	"%nominal/protos/themes/v2/themes.proto\x12\x11nominal.themes.v2\x1a\x1cgoogle/api/annotations.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a)nominal/protos/authz/v1/annotations.proto\x1a!nominal/protos/gen/v1/alias.proto\x1a!nominal/protos/gen/v1/error.proto\"\xcd\x03\n" +
 	"\n" +
 	"ChartTheme\x12;\n" +
 	"\x03rid\x18\x01 \x01(\tB)\x9a\xb2\x1a%\n" +
@@ -1410,13 +1410,21 @@ const file_nominal_protos_themes_v2_themes_proto_rawDesc = "" +
 	"\"THEMES_ERROR_CHART_THEME_NOT_FOUND\x10\x01\x1a#\xb2\xb2\x1a\x1f\n" +
 	"\tNOT_FOUND\x12\x12ChartThemeNotFound\x12O\n" +
 	" THEMES_ERROR_INVALID_CHART_THEME\x10\x02\x1a)\xb2\xb2\x1a%\n" +
-	"\x10INVALID_ARGUMENT\x12\x11InvalidChartTheme2\x8a\x06\n" +
-	"\rThemesService\x12\x89\x01\n" +
-	"\x0fListChartThemes\x12).nominal.themes.v2.ListChartThemesRequest\x1a*.nominal.themes.v2.ListChartThemesResponse\"\x1f\x82\xd3\xe4\x93\x02\x19\x12\x17/themes/v2/chart-themes\x12\x95\x01\n" +
-	"\rGetChartTheme\x12'.nominal.themes.v2.GetChartThemeRequest\x1a(.nominal.themes.v2.GetChartThemeResponse\"1\x82\xd3\xe4\x93\x02+\x12)/themes/v2/chart-themes/{chart_theme_rid}\x12\x8f\x01\n" +
-	"\x10CreateChartTheme\x12*.nominal.themes.v2.CreateChartThemeRequest\x1a+.nominal.themes.v2.CreateChartThemeResponse\"\"\x82\xd3\xe4\x93\x02\x1c:\x01*\"\x17/themes/v2/chart-themes\x12\xa1\x01\n" +
-	"\x10UpdateChartTheme\x12*.nominal.themes.v2.UpdateChartThemeRequest\x1a+.nominal.themes.v2.UpdateChartThemeResponse\"4\x82\xd3\xe4\x93\x02.:\x01*\x1a)/themes/v2/chart-themes/{chart_theme_rid}\x12\x9e\x01\n" +
-	"\x10DeleteChartTheme\x12*.nominal.themes.v2.DeleteChartThemeRequest\x1a+.nominal.themes.v2.DeleteChartThemeResponse\"1\x82\xd3\xe4\x93\x02+*)/themes/v2/chart-themes/{chart_theme_rid}B\xd9\x01\n" +
+	"\x10INVALID_ARGUMENT\x12\x11InvalidChartTheme2\x98\a\n" +
+	"\rThemesService\x12\x8d\x01\n" +
+	"\x0fListChartThemes\x12).nominal.themes.v2.ListChartThemesRequest\x1a*.nominal.themes.v2.ListChartThemesResponse\"#\xba\xb2\x1a\x00\x82\xd3\xe4\x93\x02\x19\x12\x17/themes/v2/chart-themes\x12\xad\x01\n" +
+	"\rGetChartTheme\x12'.nominal.themes.v2.GetChartThemeRequest\x1a(.nominal.themes.v2.GetChartThemeResponse\"I\xba\xb2\x1a\x14\n" +
+	"\x12\n" +
+	"\x0eworkspace:view\"\x00\x82\xd3\xe4\x93\x02+\x12)/themes/v2/chart-themes/{chart_theme_rid}\x12\xb5\x01\n" +
+	"\x10CreateChartTheme\x12*.nominal.themes.v2.CreateChartThemeRequest\x1a+.nominal.themes.v2.CreateChartThemeResponse\"H\xba\xb2\x1a\"\n" +
+	" \n" +
+	"\x1cworkspace:edit_configuration\"\x00\x82\xd3\xe4\x93\x02\x1c:\x01*\"\x17/themes/v2/chart-themes\x12\xc7\x01\n" +
+	"\x10UpdateChartTheme\x12*.nominal.themes.v2.UpdateChartThemeRequest\x1a+.nominal.themes.v2.UpdateChartThemeResponse\"Z\xba\xb2\x1a\"\n" +
+	" \n" +
+	"\x1cworkspace:edit_configuration\"\x00\x82\xd3\xe4\x93\x02.:\x01*\x1a)/themes/v2/chart-themes/{chart_theme_rid}\x12\xc4\x01\n" +
+	"\x10DeleteChartTheme\x12*.nominal.themes.v2.DeleteChartThemeRequest\x1a+.nominal.themes.v2.DeleteChartThemeResponse\"W\xba\xb2\x1a\"\n" +
+	" \n" +
+	"\x1cworkspace:edit_configuration\"\x00\x82\xd3\xe4\x93\x02+*)/themes/v2/chart-themes/{chart_theme_rid}B\xd9\x01\n" +
 	"\x15com.nominal.themes.v2B\vThemesProtoP\x01ZMgithub.com/nominal-io/nominal-api-protos-go/nominal/protos/themes/v2;themesv2\xa2\x02\x03NTX\xaa\x02\x11Nominal.Themes.V2\xca\x02\x11Nominal\\Themes\\V2\xe2\x02\x1dNominal\\Themes\\V2\\GPBMetadata\xea\x02\x13Nominal::Themes::V2b\x06proto3"
 
 var (

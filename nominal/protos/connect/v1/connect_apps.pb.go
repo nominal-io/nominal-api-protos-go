@@ -8,6 +8,7 @@ package connectv1
 
 import (
 	_ "buf.build/gen/go/bufbuild/protovalidate/protocolbuffers/go/buf/validate"
+	_ "github.com/nominal-io/nominal-api-protos-go/nominal/protos/authz/v1"
 	_ "github.com/nominal-io/nominal-api-protos-go/nominal/protos/gen/v1"
 	types "github.com/nominal-io/nominal-api-protos-go/nominal/protos/types"
 	v1 "github.com/nominal-io/nominal-api-protos-go/nominal/protos/versioning/v1"
@@ -1643,7 +1644,7 @@ var File_nominal_protos_connect_v1_connect_apps_proto protoreflect.FileDescripto
 
 const file_nominal_protos_connect_v1_connect_apps_proto_rawDesc = "" +
 	"\n" +
-	",nominal/protos/connect/v1/connect_apps.proto\x12\x12nominal.connect.v1\x1a\x1bbuf/validate/validate.proto\x1a\x1cgoogle/api/annotations.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a!nominal/protos/gen/v1/alias.proto\x1a!nominal/protos/gen/v1/error.proto\x1a nominal/protos/types/types.proto\x1a-nominal/protos/versioning/v1/versioning.proto\"\x82\x05\n" +
+	",nominal/protos/connect/v1/connect_apps.proto\x12\x12nominal.connect.v1\x1a\x1bbuf/validate/validate.proto\x1a\x1cgoogle/api/annotations.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a)nominal/protos/authz/v1/annotations.proto\x1a!nominal/protos/gen/v1/alias.proto\x1a!nominal/protos/gen/v1/error.proto\x1a nominal/protos/types/types.proto\x1a-nominal/protos/versioning/v1/versioning.proto\"\x82\x05\n" +
 	"\x17CreateConnectAppRequest\x12*\n" +
 	"\fdisplay_name\x18\x01 \x01(\tB\a\xbaH\x04r\x02\x10\x01R\vdisplayName\x12%\n" +
 	"\vdescription\x18\x02 \x01(\tH\x00R\vdescription\x88\x01\x01\x122\n" +
@@ -1818,16 +1819,30 @@ const file_nominal_protos_connect_v1_connect_apps_proto_rawDesc = "" +
 	"/CONNECT_APPS_SERVICE_ERROR_INVALID_SEARCH_TOKEN\x10\x04\x1a,\xb2\xb2\x1a(\n" +
 	"\x10INVALID_ARGUMENT\x12\x14Invalid search token\x12l\n" +
 	")CONNECT_APPS_SERVICE_ERROR_MISSING_BUNDLE\x10\x05\x1a=\xb2\xb2\x1a9\n" +
-	"\tNOT_FOUND\x12,Connect app bundle is missing in this commit2\xf6\t\n" +
-	"\x12ConnectAppsService\x12\x8a\x01\n" +
-	"\x10CreateConnectApp\x12+.nominal.connect.v1.CreateConnectAppRequest\x1a,.nominal.connect.v1.CreateConnectAppResponse\"\x1b\x82\xd3\xe4\x93\x02\x15:\x01*\"\x10/connect/v1/apps\x12\x84\x01\n" +
-	"\rGetConnectApp\x12(.nominal.connect.v1.GetConnectAppRequest\x1a).nominal.connect.v1.GetConnectAppResponse\"\x1e\x82\xd3\xe4\x93\x02\x18\x12\x16/connect/v1/apps/{rid}\x12\xb1\x01\n" +
-	"\x18UpdateConnectAppMetadata\x123.nominal.connect.v1.UpdateConnectAppMetadataRequest\x1a4.nominal.connect.v1.UpdateConnectAppMetadataResponse\"*\x82\xd3\xe4\x93\x02$:\x01*\x1a\x1f/connect/v1/apps/{rid}/metadata\x12y\n" +
-	"\x06Commit\x12!.nominal.connect.v1.CommitRequest\x1a\".nominal.connect.v1.CommitResponse\"(\x82\xd3\xe4\x93\x02\":\x01*\"\x1d/connect/v1/apps/{rid}/commit\x12\x94\x01\n" +
-	"\x11SearchConnectApps\x12,.nominal.connect.v1.SearchConnectAppsRequest\x1a-.nominal.connect.v1.SearchConnectAppsResponse\"\"\x82\xd3\xe4\x93\x02\x1c:\x01*\"\x17/connect/v1/apps/search\x12\x98\x01\n" +
-	"\x12ArchiveConnectApps\x12-.nominal.connect.v1.ArchiveConnectAppsRequest\x1a..nominal.connect.v1.ArchiveConnectAppsResponse\"#\x82\xd3\xe4\x93\x02\x1d:\x01*\"\x18/connect/v1/apps/archive\x12\xa0\x01\n" +
-	"\x14UnarchiveConnectApps\x12/.nominal.connect.v1.UnarchiveConnectAppsRequest\x1a0.nominal.connect.v1.UnarchiveConnectAppsResponse\"%\x82\xd3\xe4\x93\x02\x1f:\x01*\"\x1a/connect/v1/apps/unarchive\x12\xc7\x01\n" +
-	"\x1eGetConnectAppBundleDownloadUrl\x129.nominal.connect.v1.GetConnectAppBundleDownloadUrlRequest\x1a:.nominal.connect.v1.GetConnectAppBundleDownloadUrlResponse\".\x82\xd3\xe4\x93\x02(\x12&/connect/v1/apps/{rid}/bundle-downloadB\xe5\x01\n" +
+	"\tNOT_FOUND\x12,Connect app bundle is missing in this commit2\xe4\v\n" +
+	"\x12ConnectAppsService\x12\xaf\x01\n" +
+	"\x10CreateConnectApp\x12+.nominal.connect.v1.CreateConnectAppRequest\x1a,.nominal.connect.v1.CreateConnectAppResponse\"@\xba\xb2\x1a!\n" +
+	"\x1f\n" +
+	"\x1bworkspace:edit_connectivity\"\x00\x82\xd3\xe4\x93\x02\x15:\x01*\"\x10/connect/v1/apps\x12\x9c\x01\n" +
+	"\rGetConnectApp\x12(.nominal.connect.v1.GetConnectAppRequest\x1a).nominal.connect.v1.GetConnectAppResponse\"6\xba\xb2\x1a\x14\n" +
+	"\x12\n" +
+	"\x0eworkspace:view\"\x00\x82\xd3\xe4\x93\x02\x18\x12\x16/connect/v1/apps/{rid}\x12\xd6\x01\n" +
+	"\x18UpdateConnectAppMetadata\x123.nominal.connect.v1.UpdateConnectAppMetadataRequest\x1a4.nominal.connect.v1.UpdateConnectAppMetadataResponse\"O\xba\xb2\x1a!\n" +
+	"\x1f\n" +
+	"\x1bworkspace:edit_connectivity\"\x00\x82\xd3\xe4\x93\x02$:\x01*\x1a\x1f/connect/v1/apps/{rid}/metadata\x12\x9e\x01\n" +
+	"\x06Commit\x12!.nominal.connect.v1.CommitRequest\x1a\".nominal.connect.v1.CommitResponse\"M\xba\xb2\x1a!\n" +
+	"\x1f\n" +
+	"\x1bworkspace:edit_connectivity\"\x00\x82\xd3\xe4\x93\x02\":\x01*\"\x1d/connect/v1/apps/{rid}/commit\x12\x98\x01\n" +
+	"\x11SearchConnectApps\x12,.nominal.connect.v1.SearchConnectAppsRequest\x1a-.nominal.connect.v1.SearchConnectAppsResponse\"&\xba\xb2\x1a\x00\x82\xd3\xe4\x93\x02\x1c:\x01*\"\x17/connect/v1/apps/search\x12\xbd\x01\n" +
+	"\x12ArchiveConnectApps\x12-.nominal.connect.v1.ArchiveConnectAppsRequest\x1a..nominal.connect.v1.ArchiveConnectAppsResponse\"H\xba\xb2\x1a!\n" +
+	"\x1f\n" +
+	"\x1bworkspace:edit_connectivity\"\x00\x82\xd3\xe4\x93\x02\x1d:\x01*\"\x18/connect/v1/apps/archive\x12\xc5\x01\n" +
+	"\x14UnarchiveConnectApps\x12/.nominal.connect.v1.UnarchiveConnectAppsRequest\x1a0.nominal.connect.v1.UnarchiveConnectAppsResponse\"J\xba\xb2\x1a!\n" +
+	"\x1f\n" +
+	"\x1bworkspace:edit_connectivity\"\x00\x82\xd3\xe4\x93\x02\x1f:\x01*\"\x1a/connect/v1/apps/unarchive\x12\xdf\x01\n" +
+	"\x1eGetConnectAppBundleDownloadUrl\x129.nominal.connect.v1.GetConnectAppBundleDownloadUrlRequest\x1a:.nominal.connect.v1.GetConnectAppBundleDownloadUrlResponse\"F\xba\xb2\x1a\x14\n" +
+	"\x12\n" +
+	"\x0eworkspace:view\"\x00\x82\xd3\xe4\x93\x02(\x12&/connect/v1/apps/{rid}/bundle-downloadB\xe5\x01\n" +
 	"\x16com.nominal.connect.v1B\x10ConnectAppsProtoP\x01ZOgithub.com/nominal-io/nominal-api-protos-go/nominal/protos/connect/v1;connectv1\xa2\x02\x03NCX\xaa\x02\x12Nominal.Connect.V1\xca\x02\x12Nominal\\Connect\\V1\xe2\x02\x1eNominal\\Connect\\V1\\GPBMetadata\xea\x02\x14Nominal::Connect::V1b\x06proto3"
 
 var (

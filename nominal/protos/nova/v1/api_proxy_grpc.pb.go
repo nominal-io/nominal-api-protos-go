@@ -32,7 +32,23 @@ const (
 // Declares the API proxies a workspace's apps may reach. Giving an app access to
 // one is AppProxyService's job.
 type ApiProxyServiceClient interface {
-	// Declares an API proxy in a workspace.
+	// Declares an API proxy in a workspace: a third party API that Nova apps in the workspace can be given
+	// access to through the proxy.
+	//
+	// The server assigns the RID and sets the creator to the caller. The name must be unique in the
+	// workspace. For bearer or basic authentication, auth_secret_rid names a secret in the same workspace, and
+	// the proxy adds the credential to calls. The caller needs permission to edit Nova apps in the workspace.
+	// For an authenticated proxy, the caller also needs permission to edit secrets in the workspace that holds
+	// the secret. Giving an app access to the proxy is a separate step, in AppProxyService.
+	//
+	// Errors:
+	//   - INVALID_ARGUMENT: the name is not 1 to 255 characters of lowercase letters, digits, underscores, and
+	//     hyphens; base_url does not start with https:// or is over 2048 characters; or auth_secret_rid is set
+	//     for an unauthenticated proxy or missing for an authenticated one.
+	//   - NOT_FOUND: the workspace does not exist or the caller cannot edit Nova apps in it, or the secret does
+	//     not exist, is in another workspace, or the caller cannot edit secrets in its workspace.
+	//   - ALREADY_EXISTS: the workspace already has an API proxy with this name.
+	//   - PERMISSION_DENIED: Nova is not enabled for the caller's organization.
 	CreateApiProxy(ctx context.Context, in *CreateApiProxyRequest, opts ...grpc.CallOption) (*CreateApiProxyResponse, error)
 	// Returns one API proxy. Absent and unauthorized proxies are indistinguishable.
 	GetApiProxy(ctx context.Context, in *GetApiProxyRequest, opts ...grpc.CallOption) (*GetApiProxyResponse, error)
@@ -97,7 +113,23 @@ func (c *apiProxyServiceClient) DeleteApiProxy(ctx context.Context, in *DeleteAp
 // Declares the API proxies a workspace's apps may reach. Giving an app access to
 // one is AppProxyService's job.
 type ApiProxyServiceServer interface {
-	// Declares an API proxy in a workspace.
+	// Declares an API proxy in a workspace: a third party API that Nova apps in the workspace can be given
+	// access to through the proxy.
+	//
+	// The server assigns the RID and sets the creator to the caller. The name must be unique in the
+	// workspace. For bearer or basic authentication, auth_secret_rid names a secret in the same workspace, and
+	// the proxy adds the credential to calls. The caller needs permission to edit Nova apps in the workspace.
+	// For an authenticated proxy, the caller also needs permission to edit secrets in the workspace that holds
+	// the secret. Giving an app access to the proxy is a separate step, in AppProxyService.
+	//
+	// Errors:
+	//   - INVALID_ARGUMENT: the name is not 1 to 255 characters of lowercase letters, digits, underscores, and
+	//     hyphens; base_url does not start with https:// or is over 2048 characters; or auth_secret_rid is set
+	//     for an unauthenticated proxy or missing for an authenticated one.
+	//   - NOT_FOUND: the workspace does not exist or the caller cannot edit Nova apps in it, or the secret does
+	//     not exist, is in another workspace, or the caller cannot edit secrets in its workspace.
+	//   - ALREADY_EXISTS: the workspace already has an API proxy with this name.
+	//   - PERMISSION_DENIED: Nova is not enabled for the caller's organization.
 	CreateApiProxy(context.Context, *CreateApiProxyRequest) (*CreateApiProxyResponse, error)
 	// Returns one API proxy. Absent and unauthorized proxies are indistinguishable.
 	GetApiProxy(context.Context, *GetApiProxyRequest) (*GetApiProxyResponse, error)

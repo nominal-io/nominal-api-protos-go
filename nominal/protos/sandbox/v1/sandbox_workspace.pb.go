@@ -12,6 +12,7 @@
 package sandboxv1
 
 import (
+	_ "github.com/nominal-io/nominal-api-protos-go/nominal/protos/authz/v1"
 	_ "github.com/nominal-io/nominal-api-protos-go/nominal/protos/gen/v1"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
@@ -403,7 +404,7 @@ var File_nominal_protos_sandbox_v1_sandbox_workspace_proto protoreflect.FileDesc
 
 const file_nominal_protos_sandbox_v1_sandbox_workspace_proto_rawDesc = "" +
 	"\n" +
-	"1nominal/protos/sandbox/v1/sandbox_workspace.proto\x12\x12nominal.sandbox.v1\x1a\x1cgoogle/api/annotations.proto\x1a!nominal/protos/gen/v1/alias.proto\"\xc9\x01\n" +
+	"1nominal/protos/sandbox/v1/sandbox_workspace.proto\x12\x12nominal.sandbox.v1\x1a\x1cgoogle/api/annotations.proto\x1a)nominal/protos/authz/v1/annotations.proto\x1a!nominal/protos/gen/v1/alias.proto\"\xc9\x01\n" +
 	"\x17AddDemoWorkbooksRequest\x12P\n" +
 	"\rnotebook_rids\x18\x01 \x03(\tB+\x9a\xb2\x1a'\n" +
 	"%io.nominal.scout.rids.api.NotebookRidR\fnotebookRids\x12>\n" +
@@ -427,11 +428,17 @@ const file_nominal_protos_sandbox_v1_sandbox_workspace_proto_rawDesc = "" +
 	"\rworkspace_rid\x18\x01 \x01(\tB&\x9a\xb2\x1a\"\n" +
 	" io.nominal.api.rids.WorkspaceRidR\fworkspaceRid\x12E\n" +
 	"\arequest\x18\x02 \x01(\v2+.nominal.sandbox.v1.AddDemoWorkbooksRequestR\arequest\"\x1a\n" +
-	"\x18AddDemoWorkbooksResponse2\xc6\x04\n" +
-	"\x17SandboxWorkspaceService\x12\xac\x01\n" +
-	"\x10GetDemoWorkbooks\x12+.nominal.sandbox.v1.GetDemoWorkbooksRequest\x1a,.nominal.sandbox.v1.GetDemoWorkbooksResponse\"=\x82\xd3\xe4\x93\x027\x125/sandbox/v1/workspaces/{workspace_rid}/demo-workbooks\x12\xbc\x01\n" +
-	"\x10SetDemoWorkbooks\x122.nominal.sandbox.v1.SetDemoWorkbooksRequestWrapper\x1a,.nominal.sandbox.v1.SetDemoWorkbooksResponse\"F\x82\xd3\xe4\x93\x02@:\arequest\x1a5/sandbox/v1/workspaces/{workspace_rid}/demo-workbooks\x12\xbc\x01\n" +
-	"\x10AddDemoWorkbooks\x122.nominal.sandbox.v1.AddDemoWorkbooksRequestWrapper\x1a,.nominal.sandbox.v1.AddDemoWorkbooksResponse\"F\x82\xd3\xe4\x93\x02@:\arequest\"5/sandbox/v1/workspaces/{workspace_rid}/demo-workbooksB\xea\x01\n" +
+	"\x18AddDemoWorkbooksResponse2\xaa\x05\n" +
+	"\x17SandboxWorkspaceService\x12\xc4\x01\n" +
+	"\x10GetDemoWorkbooks\x12+.nominal.sandbox.v1.GetDemoWorkbooksRequest\x1a,.nominal.sandbox.v1.GetDemoWorkbooksResponse\"U\xba\xb2\x1a\x14\n" +
+	"\x12\n" +
+	"\x0eworkspace:view\"\x00\x82\xd3\xe4\x93\x027\x125/sandbox/v1/workspaces/{workspace_rid}/demo-workbooks\x12\xe2\x01\n" +
+	"\x10SetDemoWorkbooks\x122.nominal.sandbox.v1.SetDemoWorkbooksRequestWrapper\x1a,.nominal.sandbox.v1.SetDemoWorkbooksResponse\"l\xba\xb2\x1a\"\n" +
+	" \n" +
+	"\x1cworkspace:edit_configuration\"\x00\x82\xd3\xe4\x93\x02@:\arequest\x1a5/sandbox/v1/workspaces/{workspace_rid}/demo-workbooks\x12\xe2\x01\n" +
+	"\x10AddDemoWorkbooks\x122.nominal.sandbox.v1.AddDemoWorkbooksRequestWrapper\x1a,.nominal.sandbox.v1.AddDemoWorkbooksResponse\"l\xba\xb2\x1a\"\n" +
+	" \n" +
+	"\x1cworkspace:edit_configuration\"\x00\x82\xd3\xe4\x93\x02@:\arequest\"5/sandbox/v1/workspaces/{workspace_rid}/demo-workbooksB\xea\x01\n" +
 	"\x16com.nominal.sandbox.v1B\x15SandboxWorkspaceProtoP\x01ZOgithub.com/nominal-io/nominal-api-protos-go/nominal/protos/sandbox/v1;sandboxv1\xa2\x02\x03NSX\xaa\x02\x12Nominal.Sandbox.V1\xca\x02\x12Nominal\\Sandbox\\V1\xe2\x02\x1eNominal\\Sandbox\\V1\\GPBMetadata\xea\x02\x14Nominal::Sandbox::V1b\x06proto3"
 
 var (

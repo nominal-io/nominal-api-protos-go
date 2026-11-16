@@ -23,7 +23,7 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
-// Direct file ingest work.
+// One CSV, Parquet, or Avro file ingested into the dataset: the source file to read and how to parse it.
 type FileIngestItem struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Source        *IngestSource          `protobuf:"bytes,1,opt,name=source,proto3" json:"source,omitempty"`

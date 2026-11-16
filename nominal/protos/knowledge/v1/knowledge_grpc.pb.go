@@ -24,27 +24,81 @@ const (
 	KnowledgeService_ListDriveIndexJobs_FullMethodName       = "/nominal.knowledge.v1.KnowledgeService/ListDriveIndexJobs"
 	KnowledgeService_ListDriveIndexJobSources_FullMethodName = "/nominal.knowledge.v1.KnowledgeService/ListDriveIndexJobSources"
 	KnowledgeService_Query_FullMethodName                    = "/nominal.knowledge.v1.KnowledgeService/Query"
+	KnowledgeService_ListSourceChunkDebug_FullMethodName     = "/nominal.knowledge.v1.KnowledgeService/ListSourceChunkDebug"
 )
 
 // KnowledgeServiceClient is the client API for KnowledgeService service.
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 //
-// Queues File Store drives for indexing and searches the resulting index.
+// Queues File Store drives for indexing and searches the resulting index. Every operation returns NOT_FOUND on
+// deployments where the knowledge index is not available.
 type KnowledgeServiceClient interface {
-	// Creates a job that indexes a drive.
-	CreateDriveIndexJob(ctx context.Context, in *CreateDriveIndexJobRequest, opts ...grpc.CallOption) (*CreateDriveIndexJobResponse, error)
-	// Gets caller-authorized execution status for a previously created drive-index job.
-	GetDriveIndexJob(ctx context.Context, in *GetDriveIndexJobRequest, opts ...grpc.CallOption) (*GetDriveIndexJobResponse, error)
-	// Lists caller-authorized drive-index executions in the current workspace, newest first.
-	ListDriveIndexJobs(ctx context.Context, in *ListDriveIndexJobsRequest, opts ...grpc.CallOption) (*ListDriveIndexJobsResponse, error)
-	// Lists every per-source outcome recorded for one drive-index job, oldest first.
+	// Starts indexing the files of a drive for knowledge search. Returns the drive index job in state QUEUED.
 	//
-	// DriveIndexJob.sources carries only the first 100 as a summary. A drive with more sources than that
-	// is exactly the drive an operator needs the whole list for, so the full list pages through here.
+	// The job and its indexed chunks belong to the workspace that owns the drive. A drive has one job RID, so
+	// calling again while the job runs does not start a second run, and calling again after it finishes starts
+	// a new run that replaces the earlier status. The caller needs read-metadata permission on the drive and
+	// edit-configuration permission on the workspace that owns it. The workspace must be one the caller can
+	// fully view.
+	//
+	// Errors:
+	//   - NOT_FOUND: the knowledge index is not available, or the drive does not exist, the caller lacks
+	//     either permission, or the caller cannot fully view its workspace.
+	CreateDriveIndexJob(ctx context.Context, in *CreateDriveIndexJobRequest, opts ...grpc.CallOption) (*CreateDriveIndexJobResponse, error)
+	// Gets the status of a drive index job: its state, how many sources were admitted and finished, how many
+	// chunks were stored, and the outcomes of the first 100 sources.
+	//
+	// Use ListDriveIndexJobSources to read every source outcome. The caller needs read-metadata permission on
+	// the job's drive, in a workspace the caller can fully view.
+	//
+	// Errors:
+	//   - NOT_FOUND: the knowledge index is not available, the job does not exist, or the caller cannot read the
+	//     metadata of the job's drive.
+	GetDriveIndexJob(ctx context.Context, in *GetDriveIndexJobRequest, opts ...grpc.CallOption) (*GetDriveIndexJobResponse, error)
+	// Lists drive index jobs, newest first, across the workspaces the caller can fully view.
+	//
+	// Jobs on drives whose metadata the caller cannot read are removed after paging, so a page can hold fewer
+	// than page_size. With drive_rid set, lists only that drive's job, in any workspace the caller can fully
+	// view, and needs read-metadata permission on the drive; page_token is not read in that form.
+	//
+	// Debug-only. Unstable: may change or be removed without notice. Production and API callers must not rely
+	// on it.
+	//
+	// Errors:
+	//   - NOT_FOUND: the knowledge index is not available, or drive_rid is set and the drive does not exist or
+	//     the caller cannot read its metadata.
+	//   - INVALID_ARGUMENT: drive_rid is not set and page_token is invalid.
+	ListDriveIndexJobs(ctx context.Context, in *ListDriveIndexJobsRequest, opts ...grpc.CallOption) (*ListDriveIndexJobsResponse, error)
+	// Lists every per-source outcome recorded for one drive index job, ordered by source RID, a page at a
+	// time.
+	//
+	// DriveIndexJob.sources carries only the first 100, so use this to read all of them. The caller needs
+	// read-metadata permission on the job's drive, in a workspace the caller can fully view.
+	//
+	// Errors:
+	//   - NOT_FOUND: the knowledge index is not available, the job does not exist, or the caller cannot read the
+	//     metadata of the job's drive.
+	//   - INVALID_ARGUMENT: page_token is invalid.
 	ListDriveIndexJobSources(ctx context.Context, in *ListDriveIndexJobSourcesRequest, opts ...grpc.CallOption) (*ListDriveIndexJobSourcesResponse, error)
-	// Returns relevance-ranked indexed chunks for a query.
+	// Searches the indexed drive files of the workspace that owns the given drive. Returns pointers to the
+	// best matching chunks, ranked by relevance, a page at a time.
+	//
+	// The search covers the whole workspace, not only the given drive. The response holds no chunk text. A
+	// page holds 20 chunks unless page_size is set. The caller needs read-metadata permission on the drive, in
+	// a workspace the caller can fully view.
+	//
+	// Errors:
+	//   - NOT_FOUND: the knowledge index is not available, or the drive does not exist, the caller lacks the
+	//     permission, or the caller cannot fully view its workspace.
+	//   - INVALID_ARGUMENT: page_token is invalid.
 	Query(ctx context.Context, in *QueryRequest, opts ...grpc.CallOption) (*QueryResponse, error)
+	// Debug-only. Unstable: may change or be removed without notice. Production and API callers must not rely on it.
+	// Read-only. Lists the stored chunks of one indexed source, in document order, with a summary of the source on
+	// every page. Returns NOT_FOUND when the knowledge index is off.
+	//
+	// Requires drive:read_file on the requested drive.
+	ListSourceChunkDebug(ctx context.Context, in *ListSourceChunkDebugRequest, opts ...grpc.CallOption) (*ListSourceChunkDebugResponse, error)
 }
 
 type knowledgeServiceClient struct {
@@ -105,25 +159,88 @@ func (c *knowledgeServiceClient) Query(ctx context.Context, in *QueryRequest, op
 	return out, nil
 }
 
+func (c *knowledgeServiceClient) ListSourceChunkDebug(ctx context.Context, in *ListSourceChunkDebugRequest, opts ...grpc.CallOption) (*ListSourceChunkDebugResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(ListSourceChunkDebugResponse)
+	err := c.cc.Invoke(ctx, KnowledgeService_ListSourceChunkDebug_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // KnowledgeServiceServer is the server API for KnowledgeService service.
 // All implementations must embed UnimplementedKnowledgeServiceServer
 // for forward compatibility.
 //
-// Queues File Store drives for indexing and searches the resulting index.
+// Queues File Store drives for indexing and searches the resulting index. Every operation returns NOT_FOUND on
+// deployments where the knowledge index is not available.
 type KnowledgeServiceServer interface {
-	// Creates a job that indexes a drive.
-	CreateDriveIndexJob(context.Context, *CreateDriveIndexJobRequest) (*CreateDriveIndexJobResponse, error)
-	// Gets caller-authorized execution status for a previously created drive-index job.
-	GetDriveIndexJob(context.Context, *GetDriveIndexJobRequest) (*GetDriveIndexJobResponse, error)
-	// Lists caller-authorized drive-index executions in the current workspace, newest first.
-	ListDriveIndexJobs(context.Context, *ListDriveIndexJobsRequest) (*ListDriveIndexJobsResponse, error)
-	// Lists every per-source outcome recorded for one drive-index job, oldest first.
+	// Starts indexing the files of a drive for knowledge search. Returns the drive index job in state QUEUED.
 	//
-	// DriveIndexJob.sources carries only the first 100 as a summary. A drive with more sources than that
-	// is exactly the drive an operator needs the whole list for, so the full list pages through here.
+	// The job and its indexed chunks belong to the workspace that owns the drive. A drive has one job RID, so
+	// calling again while the job runs does not start a second run, and calling again after it finishes starts
+	// a new run that replaces the earlier status. The caller needs read-metadata permission on the drive and
+	// edit-configuration permission on the workspace that owns it. The workspace must be one the caller can
+	// fully view.
+	//
+	// Errors:
+	//   - NOT_FOUND: the knowledge index is not available, or the drive does not exist, the caller lacks
+	//     either permission, or the caller cannot fully view its workspace.
+	CreateDriveIndexJob(context.Context, *CreateDriveIndexJobRequest) (*CreateDriveIndexJobResponse, error)
+	// Gets the status of a drive index job: its state, how many sources were admitted and finished, how many
+	// chunks were stored, and the outcomes of the first 100 sources.
+	//
+	// Use ListDriveIndexJobSources to read every source outcome. The caller needs read-metadata permission on
+	// the job's drive, in a workspace the caller can fully view.
+	//
+	// Errors:
+	//   - NOT_FOUND: the knowledge index is not available, the job does not exist, or the caller cannot read the
+	//     metadata of the job's drive.
+	GetDriveIndexJob(context.Context, *GetDriveIndexJobRequest) (*GetDriveIndexJobResponse, error)
+	// Lists drive index jobs, newest first, across the workspaces the caller can fully view.
+	//
+	// Jobs on drives whose metadata the caller cannot read are removed after paging, so a page can hold fewer
+	// than page_size. With drive_rid set, lists only that drive's job, in any workspace the caller can fully
+	// view, and needs read-metadata permission on the drive; page_token is not read in that form.
+	//
+	// Debug-only. Unstable: may change or be removed without notice. Production and API callers must not rely
+	// on it.
+	//
+	// Errors:
+	//   - NOT_FOUND: the knowledge index is not available, or drive_rid is set and the drive does not exist or
+	//     the caller cannot read its metadata.
+	//   - INVALID_ARGUMENT: drive_rid is not set and page_token is invalid.
+	ListDriveIndexJobs(context.Context, *ListDriveIndexJobsRequest) (*ListDriveIndexJobsResponse, error)
+	// Lists every per-source outcome recorded for one drive index job, ordered by source RID, a page at a
+	// time.
+	//
+	// DriveIndexJob.sources carries only the first 100, so use this to read all of them. The caller needs
+	// read-metadata permission on the job's drive, in a workspace the caller can fully view.
+	//
+	// Errors:
+	//   - NOT_FOUND: the knowledge index is not available, the job does not exist, or the caller cannot read the
+	//     metadata of the job's drive.
+	//   - INVALID_ARGUMENT: page_token is invalid.
 	ListDriveIndexJobSources(context.Context, *ListDriveIndexJobSourcesRequest) (*ListDriveIndexJobSourcesResponse, error)
-	// Returns relevance-ranked indexed chunks for a query.
+	// Searches the indexed drive files of the workspace that owns the given drive. Returns pointers to the
+	// best matching chunks, ranked by relevance, a page at a time.
+	//
+	// The search covers the whole workspace, not only the given drive. The response holds no chunk text. A
+	// page holds 20 chunks unless page_size is set. The caller needs read-metadata permission on the drive, in
+	// a workspace the caller can fully view.
+	//
+	// Errors:
+	//   - NOT_FOUND: the knowledge index is not available, or the drive does not exist, the caller lacks the
+	//     permission, or the caller cannot fully view its workspace.
+	//   - INVALID_ARGUMENT: page_token is invalid.
 	Query(context.Context, *QueryRequest) (*QueryResponse, error)
+	// Debug-only. Unstable: may change or be removed without notice. Production and API callers must not rely on it.
+	// Read-only. Lists the stored chunks of one indexed source, in document order, with a summary of the source on
+	// every page. Returns NOT_FOUND when the knowledge index is off.
+	//
+	// Requires drive:read_file on the requested drive.
+	ListSourceChunkDebug(context.Context, *ListSourceChunkDebugRequest) (*ListSourceChunkDebugResponse, error)
 	mustEmbedUnimplementedKnowledgeServiceServer()
 }
 
@@ -148,6 +265,9 @@ func (UnimplementedKnowledgeServiceServer) ListDriveIndexJobSources(context.Cont
 }
 func (UnimplementedKnowledgeServiceServer) Query(context.Context, *QueryRequest) (*QueryResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method Query not implemented")
+}
+func (UnimplementedKnowledgeServiceServer) ListSourceChunkDebug(context.Context, *ListSourceChunkDebugRequest) (*ListSourceChunkDebugResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method ListSourceChunkDebug not implemented")
 }
 func (UnimplementedKnowledgeServiceServer) mustEmbedUnimplementedKnowledgeServiceServer() {}
 func (UnimplementedKnowledgeServiceServer) testEmbeddedByValue()                          {}
@@ -260,6 +380,24 @@ func _KnowledgeService_Query_Handler(srv interface{}, ctx context.Context, dec f
 	return interceptor(ctx, in, info, handler)
 }
 
+func _KnowledgeService_ListSourceChunkDebug_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ListSourceChunkDebugRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(KnowledgeServiceServer).ListSourceChunkDebug(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: KnowledgeService_ListSourceChunkDebug_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(KnowledgeServiceServer).ListSourceChunkDebug(ctx, req.(*ListSourceChunkDebugRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // KnowledgeService_ServiceDesc is the grpc.ServiceDesc for KnowledgeService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -286,6 +424,10 @@ var KnowledgeService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "Query",
 			Handler:    _KnowledgeService_Query_Handler,
+		},
+		{
+			MethodName: "ListSourceChunkDebug",
+			Handler:    _KnowledgeService_ListSourceChunkDebug_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

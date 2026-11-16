@@ -23,9 +23,14 @@ const (
 	AIAgentService_StreamChat_FullMethodName                     = "/nominal.ai.v1.AIAgentService/StreamChat"
 	AIAgentService_GetConversation_FullMethodName                = "/nominal.ai.v1.AIAgentService/GetConversation"
 	AIAgentService_GetConversationMetadata_FullMethodName        = "/nominal.ai.v1.AIAgentService/GetConversationMetadata"
+	AIAgentService_GetConversationDrive_FullMethodName           = "/nominal.ai.v1.AIAgentService/GetConversationDrive"
 	AIAgentService_GetConversationMessages_FullMethodName        = "/nominal.ai.v1.AIAgentService/GetConversationMessages"
 	AIAgentService_ListConversations_FullMethodName              = "/nominal.ai.v1.AIAgentService/ListConversations"
+	AIAgentService_ListSubagents_FullMethodName                  = "/nominal.ai.v1.AIAgentService/ListSubagents"
+	AIAgentService_GetSubagent_FullMethodName                    = "/nominal.ai.v1.AIAgentService/GetSubagent"
 	AIAgentService_BatchGetConversationActiveRuns_FullMethodName = "/nominal.ai.v1.AIAgentService/BatchGetConversationActiveRuns"
+	AIAgentService_BatchGetConversationSandboxes_FullMethodName  = "/nominal.ai.v1.AIAgentService/BatchGetConversationSandboxes"
+	AIAgentService_ResumeConversationSandbox_FullMethodName      = "/nominal.ai.v1.AIAgentService/ResumeConversationSandbox"
 	AIAgentService_CreateConversation_FullMethodName             = "/nominal.ai.v1.AIAgentService/CreateConversation"
 	AIAgentService_UpdateConversationMetadata_FullMethodName     = "/nominal.ai.v1.AIAgentService/UpdateConversationMetadata"
 	AIAgentService_DeleteConversation_FullMethodName             = "/nominal.ai.v1.AIAgentService/DeleteConversation"
@@ -35,10 +40,11 @@ const (
 	AIAgentService_CompactConversation_FullMethodName            = "/nominal.ai.v1.AIAgentService/CompactConversation"
 	AIAgentService_SubmitMessageFeedback_FullMethodName          = "/nominal.ai.v1.AIAgentService/SubmitMessageFeedback"
 	AIAgentService_UpdateConversationResources_FullMethodName    = "/nominal.ai.v1.AIAgentService/UpdateConversationResources"
-	AIAgentService_CreateQueuedMessage_FullMethodName            = "/nominal.ai.v1.AIAgentService/CreateQueuedMessage"
-	AIAgentService_ListQueuedMessages_FullMethodName             = "/nominal.ai.v1.AIAgentService/ListQueuedMessages"
-	AIAgentService_DeleteQueuedMessage_FullMethodName            = "/nominal.ai.v1.AIAgentService/DeleteQueuedMessage"
 	AIAgentService_CancelAgentRun_FullMethodName                 = "/nominal.ai.v1.AIAgentService/CancelAgentRun"
+	AIAgentService_SteerAgentRun_FullMethodName                  = "/nominal.ai.v1.AIAgentService/SteerAgentRun"
+	AIAgentService_BatchGetCitations_FullMethodName              = "/nominal.ai.v1.AIAgentService/BatchGetCitations"
+	AIAgentService_AnswerShouldKnowOffer_FullMethodName          = "/nominal.ai.v1.AIAgentService/AnswerShouldKnowOffer"
+	AIAgentService_CreateExperimentEvent_FullMethodName          = "/nominal.ai.v1.AIAgentService/CreateExperimentEvent"
 )
 
 // AIAgentServiceClient is the client API for AIAgentService service.
@@ -49,24 +55,78 @@ const (
 type AIAgentServiceClient interface {
 	// ListModels returns the internal Analyst model options configured for this deployment.
 	ListModels(ctx context.Context, in *ListModelsRequest, opts ...grpc.CallOption) (*ListModelsResponse, error)
-	// StreamChat handles bidirectional streaming chat for AI agent
+	// Runs one turn of an Analyst conversation and streams the agent's events until the turn finishes. The turn is
+	// a new user message, a retry, a tool approval, or an answer to a user question.
+	//
+	// The caller needs edit permission on the conversation and the Analyst capability in its workspace. The
+	// server starts one agent run for the turn, and a conversation has at most one active run. With reattach_only
+	// set, the call starts no turn: it needs only view permission and streams the conversation's active run, or
+	// returns Finish when none is active. model_selection is accepted only on a new user message.
+	//
+	// Errors:
+	//   - INVALID_ARGUMENT: the conversation RID is empty, a user message has no prompt or breaks the image or
+	//     attachment limits, an approval or answer has nothing pending, or model_selection is invalid or misplaced.
+	//   - UNAUTHENTICATED: the caller's session token is missing, unreadable, or expired.
+	//   - PERMISSION_DENIED: the token is missing or rejected, the workspace edition lacks the Analyst capability,
+	//     or the caller cannot use model_selection.
+	//   - NOT_FOUND: the conversation does not exist or the caller lacks the permission, also for a conversation of
+	//     another organization.
+	//   - FAILED_PRECONDITION: the conversation is archived or has an active run, a pending approval or question
+	//     must be resolved first, the message is too large, the session is close to expiry, or the run failed after
+	//     repeated tool errors.
 	StreamChat(ctx context.Context, in *StreamChatRequest, opts ...grpc.CallOption) (grpc.ServerStreamingClient[StreamChatResponse], error)
 	// Deprecated: Do not use.
 	// GetConversation [DEPRACATED] handles getting a complete conversation list, with an optional limit on number of messages returned
 	GetConversation(ctx context.Context, in *GetConversationRequest, opts ...grpc.CallOption) (*GetConversationResponse, error)
 	// GetConversationMetadata handles getting the conversation metadata like title, current token count etc
 	GetConversationMetadata(ctx context.Context, in *GetConversationMetadataRequest, opts ...grpc.CallOption) (*GetConversationMetadataResponse, error)
+	// GetConversationDrive returns the drive backing the conversation, creating it on the first call. A forked
+	// conversation's drive branches from the source's, which can take arbitrarily long for a drive with many files. A
+	// call returns without the drive after about 20 seconds.
+	GetConversationDrive(ctx context.Context, in *GetConversationDriveRequest, opts ...grpc.CallOption) (*GetConversationDriveResponse, error)
 	// GetConversationMessages handles retrieving the set of conversation messages. Supports pagination
 	GetConversationMessages(ctx context.Context, in *GetConversationMessagesRequest, opts ...grpc.CallOption) (*GetConversationMessagesResponse, error)
 	// ListConversations handles getting the list of conversation ids ordered by most recently updated
 	ListConversations(ctx context.Context, in *ListConversationsRequest, opts ...grpc.CallOption) (*ListConversationsResponse, error)
+	// Lists caller-owned subagent tasks in a workspace, optionally for one parent conversation.
+	ListSubagents(ctx context.Context, in *ListSubagentsRequest, opts ...grpc.CallOption) (*ListSubagentsResponse, error)
+	// Returns one caller-owned subagent task and its latest execution status.
+	GetSubagent(ctx context.Context, in *GetSubagentRequest, opts ...grpc.CallOption) (*GetSubagentResponse, error)
 	// Reports running durable runs for a bounded set of caller-owned conversations.
 	BatchGetConversationActiveRuns(ctx context.Context, in *BatchGetConversationActiveRunsRequest, opts ...grpc.CallOption) (*BatchGetConversationActiveRunsResponse, error)
+	// Reports the sandbox compute status for a bounded set of caller-owned conversations. Never starts compute.
+	BatchGetConversationSandboxes(ctx context.Context, in *BatchGetConversationSandboxesRequest, opts ...grpc.CallOption) (*BatchGetConversationSandboxesResponse, error)
+	// Starts resuming the caller's idle conversation sandbox in the background and returns at once. Never creates a
+	// sandbox. A conversation without an idle sandbox, or one the caller cannot access, is a no-op.
+	ResumeConversationSandbox(ctx context.Context, in *ResumeConversationSandboxRequest, opts ...grpc.CallOption) (*ResumeConversationSandboxResponse, error)
 	// CreateConversation handles creating a conversation and assigning it a conversation rid
 	CreateConversation(ctx context.Context, in *CreateConversationRequest, opts ...grpc.CallOption) (*CreateConversationResponse, error)
-	// UpdateConversationMetadata handles updating any metadata associated with a conversation
+	// Changes the title or the mode of an Analyst conversation.
+	//
+	// A field that is not set keeps its stored value. A value equal to the stored one changes nothing. The
+	// caller needs permission to edit the conversation's metadata, and changing the mode also needs permission to
+	// edit the conversation, because the mode sets what the agent may do. An archived conversation cannot be
+	// updated.
+	//
+	// Errors:
+	//   - INVALID_ARGUMENT: the conversation RID is empty.
+	//   - PERMISSION_DENIED: the caller's token is missing or rejected.
+	//   - NOT_FOUND: the conversation does not exist, or the caller lacks the permission. This also applies to a
+	//     conversation of another organization.
+	//   - FAILED_PRECONDITION: the conversation is archived.
 	UpdateConversationMetadata(ctx context.Context, in *UpdateConversationMetadataRequest, opts ...grpc.CallOption) (*UpdateConversationMetadataResponse, error)
-	// DeleteConversation handles deleting a specific conversation by conversation rid
+	// Deletes an Analyst conversation together with its subagent chats, and requests removal of their drives.
+	//
+	// The caller needs permission to delete the conversation and each of its subagent chats. The call also
+	// deletes an archived conversation. The drives are purged after the call returns.
+	//
+	// Errors:
+	//   - INVALID_ARGUMENT: the conversation RID is empty.
+	//   - PERMISSION_DENIED: the caller's token is missing or rejected.
+	//   - NOT_FOUND: the conversation does not exist, or the caller lacks the permission to delete it or one of
+	//     its subagent chats. This also applies to a conversation of another organization.
+	//   - FAILED_PRECONDITION: the conversation has too many subagent chats to delete at once, or its subagent chats
+	//     changed during the call. In the second case, retry.
 	DeleteConversation(ctx context.Context, in *DeleteConversationRequest, opts ...grpc.CallOption) (*DeleteConversationResponse, error)
 	// ArchiveConversation hides a conversation from the default ListConversations page and
 	// closes it to further writes. Idempotent. Rejected while an agent run is in flight —
@@ -87,14 +147,36 @@ type AIAgentServiceClient interface {
 	// Set semantics by rid — idempotent and commutative, so concurrent updates from
 	// multiple surfaces cannot clobber each other.
 	UpdateConversationResources(ctx context.Context, in *UpdateConversationResourcesRequest, opts ...grpc.CallOption) (*UpdateConversationResourcesResponse, error)
-	// Enqueues a user prompt for server-owned FIFO dispatch, including while idle.
-	CreateQueuedMessage(ctx context.Context, in *CreateQueuedMessageRequest, opts ...grpc.CallOption) (*CreateQueuedMessageResponse, error)
-	// Lists outstanding entries in FIFO order, including visible failures.
-	ListQueuedMessages(ctx context.Context, in *ListQueuedMessagesRequest, opts ...grpc.CallOption) (*ListQueuedMessagesResponse, error)
-	// Deletes only queued or failed entries; never cancels an active turn.
-	DeleteQueuedMessage(ctx context.Context, in *DeleteQueuedMessageRequest, opts ...grpc.CallOption) (*DeleteQueuedMessageResponse, error)
-	// Cancels an active agent run.
+	// Cancels the running agent turn of an Analyst conversation and marks the run as canceled.
+	//
+	// The call succeeds without effect when the conversation has no active run, or its active run has a different
+	// ID. The caller needs permission to edit the conversation. The call also works on an archived conversation.
+	//
+	// Errors:
+	//   - INVALID_ARGUMENT: the conversation RID is empty, or the run ID is not a UUID.
+	//   - PERMISSION_DENIED: the caller's token is missing or rejected.
+	//   - NOT_FOUND: the conversation does not exist, or the caller lacks the permission. This also applies to a
+	//     conversation of another organization.
+	//   - FAILED_PRECONDITION: the active run is an inline run, which cannot be canceled.
 	CancelAgentRun(ctx context.Context, in *CancelAgentRunRequest, opts ...grpc.CallOption) (*CancelAgentRunResponse, error)
+	// Sends a user message to the active durable run. The run hands it to the model with its next
+	// model request and reports that on the run's stream as SteeringMessage. A run that finishes
+	// first never reports it, so the caller sends the text as a new turn.
+	//
+	// FAILED_PRECONDITION means the run is not active or no longer takes messages.
+	SteerAgentRun(ctx context.Context, in *SteerAgentRunRequest, opts ...grpc.CallOption) (*SteerAgentRunResponse, error)
+	// Retrieves the listed citations for a given conversation.
+	BatchGetCitations(ctx context.Context, in *BatchGetCitationsRequest, opts ...grpc.CallOption) (*BatchGetCitationsResponse, error)
+	// Records the caller's answer to a ShouldKnowOffer streamed by one of their runs. Answers that
+	// mean the caller already understood the line keep later offers from repeating it. NOT_FOUND
+	// means no offer with that id was made to the caller.
+	AnswerShouldKnowOffer(ctx context.Context, in *AnswerShouldKnowOfferRequest, opts ...grpc.CallOption) (*AnswerShouldKnowOfferResponse, error)
+	// Records something the caller did in an experiment's UI for the experiment's analysis. The event is checked against the actions the experiment declares, given the arm and the ids of
+	// the run its subject belongs to, and sent to product analytics.
+	//
+	// Nothing is stored, and a lost event is not retried. INVALID_ARGUMENT means the experiment, action or a property is not declared, or a value is invalid; NOT_FOUND means the subject
+	// does not exist or is not the caller's.
+	CreateExperimentEvent(ctx context.Context, in *CreateExperimentEventRequest, opts ...grpc.CallOption) (*CreateExperimentEventResponse, error)
 }
 
 type aIAgentServiceClient struct {
@@ -155,6 +237,16 @@ func (c *aIAgentServiceClient) GetConversationMetadata(ctx context.Context, in *
 	return out, nil
 }
 
+func (c *aIAgentServiceClient) GetConversationDrive(ctx context.Context, in *GetConversationDriveRequest, opts ...grpc.CallOption) (*GetConversationDriveResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(GetConversationDriveResponse)
+	err := c.cc.Invoke(ctx, AIAgentService_GetConversationDrive_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *aIAgentServiceClient) GetConversationMessages(ctx context.Context, in *GetConversationMessagesRequest, opts ...grpc.CallOption) (*GetConversationMessagesResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(GetConversationMessagesResponse)
@@ -175,10 +267,50 @@ func (c *aIAgentServiceClient) ListConversations(ctx context.Context, in *ListCo
 	return out, nil
 }
 
+func (c *aIAgentServiceClient) ListSubagents(ctx context.Context, in *ListSubagentsRequest, opts ...grpc.CallOption) (*ListSubagentsResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(ListSubagentsResponse)
+	err := c.cc.Invoke(ctx, AIAgentService_ListSubagents_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *aIAgentServiceClient) GetSubagent(ctx context.Context, in *GetSubagentRequest, opts ...grpc.CallOption) (*GetSubagentResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(GetSubagentResponse)
+	err := c.cc.Invoke(ctx, AIAgentService_GetSubagent_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *aIAgentServiceClient) BatchGetConversationActiveRuns(ctx context.Context, in *BatchGetConversationActiveRunsRequest, opts ...grpc.CallOption) (*BatchGetConversationActiveRunsResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(BatchGetConversationActiveRunsResponse)
 	err := c.cc.Invoke(ctx, AIAgentService_BatchGetConversationActiveRuns_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *aIAgentServiceClient) BatchGetConversationSandboxes(ctx context.Context, in *BatchGetConversationSandboxesRequest, opts ...grpc.CallOption) (*BatchGetConversationSandboxesResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(BatchGetConversationSandboxesResponse)
+	err := c.cc.Invoke(ctx, AIAgentService_BatchGetConversationSandboxes_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *aIAgentServiceClient) ResumeConversationSandbox(ctx context.Context, in *ResumeConversationSandboxRequest, opts ...grpc.CallOption) (*ResumeConversationSandboxResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(ResumeConversationSandboxResponse)
+	err := c.cc.Invoke(ctx, AIAgentService_ResumeConversationSandbox_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -275,40 +407,50 @@ func (c *aIAgentServiceClient) UpdateConversationResources(ctx context.Context, 
 	return out, nil
 }
 
-func (c *aIAgentServiceClient) CreateQueuedMessage(ctx context.Context, in *CreateQueuedMessageRequest, opts ...grpc.CallOption) (*CreateQueuedMessageResponse, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(CreateQueuedMessageResponse)
-	err := c.cc.Invoke(ctx, AIAgentService_CreateQueuedMessage_FullMethodName, in, out, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *aIAgentServiceClient) ListQueuedMessages(ctx context.Context, in *ListQueuedMessagesRequest, opts ...grpc.CallOption) (*ListQueuedMessagesResponse, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(ListQueuedMessagesResponse)
-	err := c.cc.Invoke(ctx, AIAgentService_ListQueuedMessages_FullMethodName, in, out, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *aIAgentServiceClient) DeleteQueuedMessage(ctx context.Context, in *DeleteQueuedMessageRequest, opts ...grpc.CallOption) (*DeleteQueuedMessageResponse, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(DeleteQueuedMessageResponse)
-	err := c.cc.Invoke(ctx, AIAgentService_DeleteQueuedMessage_FullMethodName, in, out, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
 func (c *aIAgentServiceClient) CancelAgentRun(ctx context.Context, in *CancelAgentRunRequest, opts ...grpc.CallOption) (*CancelAgentRunResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(CancelAgentRunResponse)
 	err := c.cc.Invoke(ctx, AIAgentService_CancelAgentRun_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *aIAgentServiceClient) SteerAgentRun(ctx context.Context, in *SteerAgentRunRequest, opts ...grpc.CallOption) (*SteerAgentRunResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(SteerAgentRunResponse)
+	err := c.cc.Invoke(ctx, AIAgentService_SteerAgentRun_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *aIAgentServiceClient) BatchGetCitations(ctx context.Context, in *BatchGetCitationsRequest, opts ...grpc.CallOption) (*BatchGetCitationsResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(BatchGetCitationsResponse)
+	err := c.cc.Invoke(ctx, AIAgentService_BatchGetCitations_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *aIAgentServiceClient) AnswerShouldKnowOffer(ctx context.Context, in *AnswerShouldKnowOfferRequest, opts ...grpc.CallOption) (*AnswerShouldKnowOfferResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(AnswerShouldKnowOfferResponse)
+	err := c.cc.Invoke(ctx, AIAgentService_AnswerShouldKnowOffer_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *aIAgentServiceClient) CreateExperimentEvent(ctx context.Context, in *CreateExperimentEventRequest, opts ...grpc.CallOption) (*CreateExperimentEventResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(CreateExperimentEventResponse)
+	err := c.cc.Invoke(ctx, AIAgentService_CreateExperimentEvent_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -323,24 +465,78 @@ func (c *aIAgentServiceClient) CancelAgentRun(ctx context.Context, in *CancelAge
 type AIAgentServiceServer interface {
 	// ListModels returns the internal Analyst model options configured for this deployment.
 	ListModels(context.Context, *ListModelsRequest) (*ListModelsResponse, error)
-	// StreamChat handles bidirectional streaming chat for AI agent
+	// Runs one turn of an Analyst conversation and streams the agent's events until the turn finishes. The turn is
+	// a new user message, a retry, a tool approval, or an answer to a user question.
+	//
+	// The caller needs edit permission on the conversation and the Analyst capability in its workspace. The
+	// server starts one agent run for the turn, and a conversation has at most one active run. With reattach_only
+	// set, the call starts no turn: it needs only view permission and streams the conversation's active run, or
+	// returns Finish when none is active. model_selection is accepted only on a new user message.
+	//
+	// Errors:
+	//   - INVALID_ARGUMENT: the conversation RID is empty, a user message has no prompt or breaks the image or
+	//     attachment limits, an approval or answer has nothing pending, or model_selection is invalid or misplaced.
+	//   - UNAUTHENTICATED: the caller's session token is missing, unreadable, or expired.
+	//   - PERMISSION_DENIED: the token is missing or rejected, the workspace edition lacks the Analyst capability,
+	//     or the caller cannot use model_selection.
+	//   - NOT_FOUND: the conversation does not exist or the caller lacks the permission, also for a conversation of
+	//     another organization.
+	//   - FAILED_PRECONDITION: the conversation is archived or has an active run, a pending approval or question
+	//     must be resolved first, the message is too large, the session is close to expiry, or the run failed after
+	//     repeated tool errors.
 	StreamChat(*StreamChatRequest, grpc.ServerStreamingServer[StreamChatResponse]) error
 	// Deprecated: Do not use.
 	// GetConversation [DEPRACATED] handles getting a complete conversation list, with an optional limit on number of messages returned
 	GetConversation(context.Context, *GetConversationRequest) (*GetConversationResponse, error)
 	// GetConversationMetadata handles getting the conversation metadata like title, current token count etc
 	GetConversationMetadata(context.Context, *GetConversationMetadataRequest) (*GetConversationMetadataResponse, error)
+	// GetConversationDrive returns the drive backing the conversation, creating it on the first call. A forked
+	// conversation's drive branches from the source's, which can take arbitrarily long for a drive with many files. A
+	// call returns without the drive after about 20 seconds.
+	GetConversationDrive(context.Context, *GetConversationDriveRequest) (*GetConversationDriveResponse, error)
 	// GetConversationMessages handles retrieving the set of conversation messages. Supports pagination
 	GetConversationMessages(context.Context, *GetConversationMessagesRequest) (*GetConversationMessagesResponse, error)
 	// ListConversations handles getting the list of conversation ids ordered by most recently updated
 	ListConversations(context.Context, *ListConversationsRequest) (*ListConversationsResponse, error)
+	// Lists caller-owned subagent tasks in a workspace, optionally for one parent conversation.
+	ListSubagents(context.Context, *ListSubagentsRequest) (*ListSubagentsResponse, error)
+	// Returns one caller-owned subagent task and its latest execution status.
+	GetSubagent(context.Context, *GetSubagentRequest) (*GetSubagentResponse, error)
 	// Reports running durable runs for a bounded set of caller-owned conversations.
 	BatchGetConversationActiveRuns(context.Context, *BatchGetConversationActiveRunsRequest) (*BatchGetConversationActiveRunsResponse, error)
+	// Reports the sandbox compute status for a bounded set of caller-owned conversations. Never starts compute.
+	BatchGetConversationSandboxes(context.Context, *BatchGetConversationSandboxesRequest) (*BatchGetConversationSandboxesResponse, error)
+	// Starts resuming the caller's idle conversation sandbox in the background and returns at once. Never creates a
+	// sandbox. A conversation without an idle sandbox, or one the caller cannot access, is a no-op.
+	ResumeConversationSandbox(context.Context, *ResumeConversationSandboxRequest) (*ResumeConversationSandboxResponse, error)
 	// CreateConversation handles creating a conversation and assigning it a conversation rid
 	CreateConversation(context.Context, *CreateConversationRequest) (*CreateConversationResponse, error)
-	// UpdateConversationMetadata handles updating any metadata associated with a conversation
+	// Changes the title or the mode of an Analyst conversation.
+	//
+	// A field that is not set keeps its stored value. A value equal to the stored one changes nothing. The
+	// caller needs permission to edit the conversation's metadata, and changing the mode also needs permission to
+	// edit the conversation, because the mode sets what the agent may do. An archived conversation cannot be
+	// updated.
+	//
+	// Errors:
+	//   - INVALID_ARGUMENT: the conversation RID is empty.
+	//   - PERMISSION_DENIED: the caller's token is missing or rejected.
+	//   - NOT_FOUND: the conversation does not exist, or the caller lacks the permission. This also applies to a
+	//     conversation of another organization.
+	//   - FAILED_PRECONDITION: the conversation is archived.
 	UpdateConversationMetadata(context.Context, *UpdateConversationMetadataRequest) (*UpdateConversationMetadataResponse, error)
-	// DeleteConversation handles deleting a specific conversation by conversation rid
+	// Deletes an Analyst conversation together with its subagent chats, and requests removal of their drives.
+	//
+	// The caller needs permission to delete the conversation and each of its subagent chats. The call also
+	// deletes an archived conversation. The drives are purged after the call returns.
+	//
+	// Errors:
+	//   - INVALID_ARGUMENT: the conversation RID is empty.
+	//   - PERMISSION_DENIED: the caller's token is missing or rejected.
+	//   - NOT_FOUND: the conversation does not exist, or the caller lacks the permission to delete it or one of
+	//     its subagent chats. This also applies to a conversation of another organization.
+	//   - FAILED_PRECONDITION: the conversation has too many subagent chats to delete at once, or its subagent chats
+	//     changed during the call. In the second case, retry.
 	DeleteConversation(context.Context, *DeleteConversationRequest) (*DeleteConversationResponse, error)
 	// ArchiveConversation hides a conversation from the default ListConversations page and
 	// closes it to further writes. Idempotent. Rejected while an agent run is in flight —
@@ -361,14 +557,36 @@ type AIAgentServiceServer interface {
 	// Set semantics by rid — idempotent and commutative, so concurrent updates from
 	// multiple surfaces cannot clobber each other.
 	UpdateConversationResources(context.Context, *UpdateConversationResourcesRequest) (*UpdateConversationResourcesResponse, error)
-	// Enqueues a user prompt for server-owned FIFO dispatch, including while idle.
-	CreateQueuedMessage(context.Context, *CreateQueuedMessageRequest) (*CreateQueuedMessageResponse, error)
-	// Lists outstanding entries in FIFO order, including visible failures.
-	ListQueuedMessages(context.Context, *ListQueuedMessagesRequest) (*ListQueuedMessagesResponse, error)
-	// Deletes only queued or failed entries; never cancels an active turn.
-	DeleteQueuedMessage(context.Context, *DeleteQueuedMessageRequest) (*DeleteQueuedMessageResponse, error)
-	// Cancels an active agent run.
+	// Cancels the running agent turn of an Analyst conversation and marks the run as canceled.
+	//
+	// The call succeeds without effect when the conversation has no active run, or its active run has a different
+	// ID. The caller needs permission to edit the conversation. The call also works on an archived conversation.
+	//
+	// Errors:
+	//   - INVALID_ARGUMENT: the conversation RID is empty, or the run ID is not a UUID.
+	//   - PERMISSION_DENIED: the caller's token is missing or rejected.
+	//   - NOT_FOUND: the conversation does not exist, or the caller lacks the permission. This also applies to a
+	//     conversation of another organization.
+	//   - FAILED_PRECONDITION: the active run is an inline run, which cannot be canceled.
 	CancelAgentRun(context.Context, *CancelAgentRunRequest) (*CancelAgentRunResponse, error)
+	// Sends a user message to the active durable run. The run hands it to the model with its next
+	// model request and reports that on the run's stream as SteeringMessage. A run that finishes
+	// first never reports it, so the caller sends the text as a new turn.
+	//
+	// FAILED_PRECONDITION means the run is not active or no longer takes messages.
+	SteerAgentRun(context.Context, *SteerAgentRunRequest) (*SteerAgentRunResponse, error)
+	// Retrieves the listed citations for a given conversation.
+	BatchGetCitations(context.Context, *BatchGetCitationsRequest) (*BatchGetCitationsResponse, error)
+	// Records the caller's answer to a ShouldKnowOffer streamed by one of their runs. Answers that
+	// mean the caller already understood the line keep later offers from repeating it. NOT_FOUND
+	// means no offer with that id was made to the caller.
+	AnswerShouldKnowOffer(context.Context, *AnswerShouldKnowOfferRequest) (*AnswerShouldKnowOfferResponse, error)
+	// Records something the caller did in an experiment's UI for the experiment's analysis. The event is checked against the actions the experiment declares, given the arm and the ids of
+	// the run its subject belongs to, and sent to product analytics.
+	//
+	// Nothing is stored, and a lost event is not retried. INVALID_ARGUMENT means the experiment, action or a property is not declared, or a value is invalid; NOT_FOUND means the subject
+	// does not exist or is not the caller's.
+	CreateExperimentEvent(context.Context, *CreateExperimentEventRequest) (*CreateExperimentEventResponse, error)
 	mustEmbedUnimplementedAIAgentServiceServer()
 }
 
@@ -391,14 +609,29 @@ func (UnimplementedAIAgentServiceServer) GetConversation(context.Context, *GetCo
 func (UnimplementedAIAgentServiceServer) GetConversationMetadata(context.Context, *GetConversationMetadataRequest) (*GetConversationMetadataResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method GetConversationMetadata not implemented")
 }
+func (UnimplementedAIAgentServiceServer) GetConversationDrive(context.Context, *GetConversationDriveRequest) (*GetConversationDriveResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method GetConversationDrive not implemented")
+}
 func (UnimplementedAIAgentServiceServer) GetConversationMessages(context.Context, *GetConversationMessagesRequest) (*GetConversationMessagesResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method GetConversationMessages not implemented")
 }
 func (UnimplementedAIAgentServiceServer) ListConversations(context.Context, *ListConversationsRequest) (*ListConversationsResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method ListConversations not implemented")
 }
+func (UnimplementedAIAgentServiceServer) ListSubagents(context.Context, *ListSubagentsRequest) (*ListSubagentsResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method ListSubagents not implemented")
+}
+func (UnimplementedAIAgentServiceServer) GetSubagent(context.Context, *GetSubagentRequest) (*GetSubagentResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method GetSubagent not implemented")
+}
 func (UnimplementedAIAgentServiceServer) BatchGetConversationActiveRuns(context.Context, *BatchGetConversationActiveRunsRequest) (*BatchGetConversationActiveRunsResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method BatchGetConversationActiveRuns not implemented")
+}
+func (UnimplementedAIAgentServiceServer) BatchGetConversationSandboxes(context.Context, *BatchGetConversationSandboxesRequest) (*BatchGetConversationSandboxesResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method BatchGetConversationSandboxes not implemented")
+}
+func (UnimplementedAIAgentServiceServer) ResumeConversationSandbox(context.Context, *ResumeConversationSandboxRequest) (*ResumeConversationSandboxResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method ResumeConversationSandbox not implemented")
 }
 func (UnimplementedAIAgentServiceServer) CreateConversation(context.Context, *CreateConversationRequest) (*CreateConversationResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method CreateConversation not implemented")
@@ -427,17 +660,20 @@ func (UnimplementedAIAgentServiceServer) SubmitMessageFeedback(context.Context, 
 func (UnimplementedAIAgentServiceServer) UpdateConversationResources(context.Context, *UpdateConversationResourcesRequest) (*UpdateConversationResourcesResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method UpdateConversationResources not implemented")
 }
-func (UnimplementedAIAgentServiceServer) CreateQueuedMessage(context.Context, *CreateQueuedMessageRequest) (*CreateQueuedMessageResponse, error) {
-	return nil, status.Error(codes.Unimplemented, "method CreateQueuedMessage not implemented")
-}
-func (UnimplementedAIAgentServiceServer) ListQueuedMessages(context.Context, *ListQueuedMessagesRequest) (*ListQueuedMessagesResponse, error) {
-	return nil, status.Error(codes.Unimplemented, "method ListQueuedMessages not implemented")
-}
-func (UnimplementedAIAgentServiceServer) DeleteQueuedMessage(context.Context, *DeleteQueuedMessageRequest) (*DeleteQueuedMessageResponse, error) {
-	return nil, status.Error(codes.Unimplemented, "method DeleteQueuedMessage not implemented")
-}
 func (UnimplementedAIAgentServiceServer) CancelAgentRun(context.Context, *CancelAgentRunRequest) (*CancelAgentRunResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method CancelAgentRun not implemented")
+}
+func (UnimplementedAIAgentServiceServer) SteerAgentRun(context.Context, *SteerAgentRunRequest) (*SteerAgentRunResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method SteerAgentRun not implemented")
+}
+func (UnimplementedAIAgentServiceServer) BatchGetCitations(context.Context, *BatchGetCitationsRequest) (*BatchGetCitationsResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method BatchGetCitations not implemented")
+}
+func (UnimplementedAIAgentServiceServer) AnswerShouldKnowOffer(context.Context, *AnswerShouldKnowOfferRequest) (*AnswerShouldKnowOfferResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method AnswerShouldKnowOffer not implemented")
+}
+func (UnimplementedAIAgentServiceServer) CreateExperimentEvent(context.Context, *CreateExperimentEventRequest) (*CreateExperimentEventResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method CreateExperimentEvent not implemented")
 }
 func (UnimplementedAIAgentServiceServer) mustEmbedUnimplementedAIAgentServiceServer() {}
 func (UnimplementedAIAgentServiceServer) testEmbeddedByValue()                        {}
@@ -525,6 +761,24 @@ func _AIAgentService_GetConversationMetadata_Handler(srv interface{}, ctx contex
 	return interceptor(ctx, in, info, handler)
 }
 
+func _AIAgentService_GetConversationDrive_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetConversationDriveRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AIAgentServiceServer).GetConversationDrive(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: AIAgentService_GetConversationDrive_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AIAgentServiceServer).GetConversationDrive(ctx, req.(*GetConversationDriveRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _AIAgentService_GetConversationMessages_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(GetConversationMessagesRequest)
 	if err := dec(in); err != nil {
@@ -561,6 +815,42 @@ func _AIAgentService_ListConversations_Handler(srv interface{}, ctx context.Cont
 	return interceptor(ctx, in, info, handler)
 }
 
+func _AIAgentService_ListSubagents_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ListSubagentsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AIAgentServiceServer).ListSubagents(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: AIAgentService_ListSubagents_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AIAgentServiceServer).ListSubagents(ctx, req.(*ListSubagentsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _AIAgentService_GetSubagent_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetSubagentRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AIAgentServiceServer).GetSubagent(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: AIAgentService_GetSubagent_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AIAgentServiceServer).GetSubagent(ctx, req.(*GetSubagentRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _AIAgentService_BatchGetConversationActiveRuns_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(BatchGetConversationActiveRunsRequest)
 	if err := dec(in); err != nil {
@@ -575,6 +865,42 @@ func _AIAgentService_BatchGetConversationActiveRuns_Handler(srv interface{}, ctx
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(AIAgentServiceServer).BatchGetConversationActiveRuns(ctx, req.(*BatchGetConversationActiveRunsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _AIAgentService_BatchGetConversationSandboxes_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(BatchGetConversationSandboxesRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AIAgentServiceServer).BatchGetConversationSandboxes(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: AIAgentService_BatchGetConversationSandboxes_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AIAgentServiceServer).BatchGetConversationSandboxes(ctx, req.(*BatchGetConversationSandboxesRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _AIAgentService_ResumeConversationSandbox_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ResumeConversationSandboxRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AIAgentServiceServer).ResumeConversationSandbox(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: AIAgentService_ResumeConversationSandbox_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AIAgentServiceServer).ResumeConversationSandbox(ctx, req.(*ResumeConversationSandboxRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -741,60 +1067,6 @@ func _AIAgentService_UpdateConversationResources_Handler(srv interface{}, ctx co
 	return interceptor(ctx, in, info, handler)
 }
 
-func _AIAgentService_CreateQueuedMessage_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(CreateQueuedMessageRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(AIAgentServiceServer).CreateQueuedMessage(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: AIAgentService_CreateQueuedMessage_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(AIAgentServiceServer).CreateQueuedMessage(ctx, req.(*CreateQueuedMessageRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _AIAgentService_ListQueuedMessages_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(ListQueuedMessagesRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(AIAgentServiceServer).ListQueuedMessages(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: AIAgentService_ListQueuedMessages_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(AIAgentServiceServer).ListQueuedMessages(ctx, req.(*ListQueuedMessagesRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _AIAgentService_DeleteQueuedMessage_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(DeleteQueuedMessageRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(AIAgentServiceServer).DeleteQueuedMessage(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: AIAgentService_DeleteQueuedMessage_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(AIAgentServiceServer).DeleteQueuedMessage(ctx, req.(*DeleteQueuedMessageRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
 func _AIAgentService_CancelAgentRun_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(CancelAgentRunRequest)
 	if err := dec(in); err != nil {
@@ -809,6 +1081,78 @@ func _AIAgentService_CancelAgentRun_Handler(srv interface{}, ctx context.Context
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(AIAgentServiceServer).CancelAgentRun(ctx, req.(*CancelAgentRunRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _AIAgentService_SteerAgentRun_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(SteerAgentRunRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AIAgentServiceServer).SteerAgentRun(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: AIAgentService_SteerAgentRun_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AIAgentServiceServer).SteerAgentRun(ctx, req.(*SteerAgentRunRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _AIAgentService_BatchGetCitations_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(BatchGetCitationsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AIAgentServiceServer).BatchGetCitations(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: AIAgentService_BatchGetCitations_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AIAgentServiceServer).BatchGetCitations(ctx, req.(*BatchGetCitationsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _AIAgentService_AnswerShouldKnowOffer_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(AnswerShouldKnowOfferRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AIAgentServiceServer).AnswerShouldKnowOffer(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: AIAgentService_AnswerShouldKnowOffer_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AIAgentServiceServer).AnswerShouldKnowOffer(ctx, req.(*AnswerShouldKnowOfferRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _AIAgentService_CreateExperimentEvent_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CreateExperimentEventRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AIAgentServiceServer).CreateExperimentEvent(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: AIAgentService_CreateExperimentEvent_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AIAgentServiceServer).CreateExperimentEvent(ctx, req.(*CreateExperimentEventRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -833,6 +1177,10 @@ var AIAgentService_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _AIAgentService_GetConversationMetadata_Handler,
 		},
 		{
+			MethodName: "GetConversationDrive",
+			Handler:    _AIAgentService_GetConversationDrive_Handler,
+		},
+		{
 			MethodName: "GetConversationMessages",
 			Handler:    _AIAgentService_GetConversationMessages_Handler,
 		},
@@ -841,8 +1189,24 @@ var AIAgentService_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _AIAgentService_ListConversations_Handler,
 		},
 		{
+			MethodName: "ListSubagents",
+			Handler:    _AIAgentService_ListSubagents_Handler,
+		},
+		{
+			MethodName: "GetSubagent",
+			Handler:    _AIAgentService_GetSubagent_Handler,
+		},
+		{
 			MethodName: "BatchGetConversationActiveRuns",
 			Handler:    _AIAgentService_BatchGetConversationActiveRuns_Handler,
+		},
+		{
+			MethodName: "BatchGetConversationSandboxes",
+			Handler:    _AIAgentService_BatchGetConversationSandboxes_Handler,
+		},
+		{
+			MethodName: "ResumeConversationSandbox",
+			Handler:    _AIAgentService_ResumeConversationSandbox_Handler,
 		},
 		{
 			MethodName: "CreateConversation",
@@ -881,20 +1245,24 @@ var AIAgentService_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _AIAgentService_UpdateConversationResources_Handler,
 		},
 		{
-			MethodName: "CreateQueuedMessage",
-			Handler:    _AIAgentService_CreateQueuedMessage_Handler,
-		},
-		{
-			MethodName: "ListQueuedMessages",
-			Handler:    _AIAgentService_ListQueuedMessages_Handler,
-		},
-		{
-			MethodName: "DeleteQueuedMessage",
-			Handler:    _AIAgentService_DeleteQueuedMessage_Handler,
-		},
-		{
 			MethodName: "CancelAgentRun",
 			Handler:    _AIAgentService_CancelAgentRun_Handler,
+		},
+		{
+			MethodName: "SteerAgentRun",
+			Handler:    _AIAgentService_SteerAgentRun_Handler,
+		},
+		{
+			MethodName: "BatchGetCitations",
+			Handler:    _AIAgentService_BatchGetCitations_Handler,
+		},
+		{
+			MethodName: "AnswerShouldKnowOffer",
+			Handler:    _AIAgentService_AnswerShouldKnowOffer_Handler,
+		},
+		{
+			MethodName: "CreateExperimentEvent",
+			Handler:    _AIAgentService_CreateExperimentEvent_Handler,
 		},
 	},
 	Streams: []grpc.StreamDesc{

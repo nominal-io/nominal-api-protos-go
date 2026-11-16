@@ -8,6 +8,7 @@ package commandv1
 
 import (
 	_ "buf.build/gen/go/bufbuild/protovalidate/protocolbuffers/go/buf/validate"
+	_ "github.com/nominal-io/nominal-api-protos-go/nominal/protos/authz/v1"
 	_ "github.com/nominal-io/nominal-api-protos-go/nominal/protos/gen/v1"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
@@ -381,7 +382,7 @@ var File_nominal_protos_command_v1_command_hub_registry_proto protoreflect.FileD
 
 const file_nominal_protos_command_v1_command_hub_registry_proto_rawDesc = "" +
 	"\n" +
-	"4nominal/protos/command/v1/command_hub_registry.proto\x12\x12nominal.command.v1\x1a\x1bbuf/validate/validate.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a!nominal/protos/gen/v1/alias.proto\"\xcd\x02\n" +
+	"4nominal/protos/command/v1/command_hub_registry.proto\x12\x12nominal.command.v1\x1a\x1bbuf/validate/validate.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a)nominal/protos/authz/v1/annotations.proto\x1a!nominal/protos/gen/v1/alias.proto\"\xcd\x02\n" +
 	"\x19RegisterCommandHubRequest\x12L\n" +
 	"\vdataset_rid\x18\x02 \x01(\tB+\xbaH\x04r\x02\x10\x01\x9a\xb2\x1a \n" +
 	"\x1eio.nominal.api.rids.DatasetRidR\n" +
@@ -409,11 +410,18 @@ const file_nominal_protos_command_v1_command_hub_registry_proto_rawDesc = "" +
 	"expires_at\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampR\texpiresAt\"Q\n" +
 	"\x1bDeregisterCommandHubRequest\x122\n" +
 	"\x0fregistration_id\x18\x01 \x01(\tB\t\xbaH\x06r\x04\x10\x01\x18@R\x0eregistrationId\"\x1e\n" +
-	"\x1cDeregisterCommandHubResponse2\x83\x03\n" +
-	"\x19CommandHubRegistryService\x12s\n" +
-	"\x12RegisterCommandHub\x12-.nominal.command.v1.RegisterCommandHubRequest\x1a..nominal.command.v1.RegisterCommandHubResponse\x12v\n" +
-	"\x13HeartbeatCommandHub\x12..nominal.command.v1.HeartbeatCommandHubRequest\x1a/.nominal.command.v1.HeartbeatCommandHubResponse\x12y\n" +
-	"\x14DeregisterCommandHub\x12/.nominal.command.v1.DeregisterCommandHubRequest\x1a0.nominal.command.v1.DeregisterCommandHubResponseB\xec\x01\n" +
+	"\x1cDeregisterCommandHubResponse2\xe5\x03\n" +
+	"\x19CommandHubRegistryService\x12\x9e\x01\n" +
+	"\x12RegisterCommandHub\x12-.nominal.command.v1.RegisterCommandHubRequest\x1a..nominal.command.v1.RegisterCommandHubResponse\")\xba\xb2\x1a%\n" +
+	"#\n" +
+	"\x12datasource:command\x12\r\n" +
+	"\vdataset_rid\x12\x90\x01\n" +
+	"\x13HeartbeatCommandHub\x12..nominal.command.v1.HeartbeatCommandHubRequest\x1a/.nominal.command.v1.HeartbeatCommandHubResponse\"\x18\xba\xb2\x1a\x14\n" +
+	"\x12\n" +
+	"\x0eworkspace:view\"\x00\x12\x93\x01\n" +
+	"\x14DeregisterCommandHub\x12/.nominal.command.v1.DeregisterCommandHubRequest\x1a0.nominal.command.v1.DeregisterCommandHubResponse\"\x18\xba\xb2\x1a\x14\n" +
+	"\x12\n" +
+	"\x0eworkspace:view\"\x00B\xec\x01\n" +
 	"\x16com.nominal.command.v1B\x17CommandHubRegistryProtoP\x01ZOgithub.com/nominal-io/nominal-api-protos-go/nominal/protos/command/v1;commandv1\xa2\x02\x03NCX\xaa\x02\x12Nominal.Command.V1\xca\x02\x12Nominal\\Command\\V1\xe2\x02\x1eNominal\\Command\\V1\\GPBMetadata\xea\x02\x14Nominal::Command::V1b\x06proto3"
 
 var (

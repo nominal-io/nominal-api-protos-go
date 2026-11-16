@@ -35,7 +35,16 @@ type AppProxyServiceClient interface {
 	CreateAppProxy(ctx context.Context, in *CreateAppProxyRequest, opts ...grpc.CallOption) (*CreateAppProxyResponse, error)
 	// Removes an app's access to an API proxy.
 	DeleteAppProxy(ctx context.Context, in *DeleteAppProxyRequest, opts ...grpc.CallOption) (*DeleteAppProxyResponse, error)
-	// Lists the API proxies an app may reach.
+	// Lists the app proxies of a Nova app: each one is the access of the app to one API proxy, with
+	// the time the access was granted.
+	//
+	// The page size is 100 when it is not set. Pass next_page_token as page_token to get the next
+	// page. The caller needs view access to the workspace of the app.
+	//
+	// Errors:
+	// - PERMISSION_DENIED: Nova is not enabled for the organization of the caller.
+	// - NOT_FOUND: the app does not exist, or the caller cannot view its workspace.
+	// - INVALID_ARGUMENT: page_token is not a token that this operation returned.
 	ListAppProxies(ctx context.Context, in *ListAppProxiesRequest, opts ...grpc.CallOption) (*ListAppProxiesResponse, error)
 }
 
@@ -88,7 +97,16 @@ type AppProxyServiceServer interface {
 	CreateAppProxy(context.Context, *CreateAppProxyRequest) (*CreateAppProxyResponse, error)
 	// Removes an app's access to an API proxy.
 	DeleteAppProxy(context.Context, *DeleteAppProxyRequest) (*DeleteAppProxyResponse, error)
-	// Lists the API proxies an app may reach.
+	// Lists the app proxies of a Nova app: each one is the access of the app to one API proxy, with
+	// the time the access was granted.
+	//
+	// The page size is 100 when it is not set. Pass next_page_token as page_token to get the next
+	// page. The caller needs view access to the workspace of the app.
+	//
+	// Errors:
+	// - PERMISSION_DENIED: Nova is not enabled for the organization of the caller.
+	// - NOT_FOUND: the app does not exist, or the caller cannot view its workspace.
+	// - INVALID_ARGUMENT: page_token is not a token that this operation returned.
 	ListAppProxies(context.Context, *ListAppProxiesRequest) (*ListAppProxiesResponse, error)
 	mustEmbedUnimplementedAppProxyServiceServer()
 }

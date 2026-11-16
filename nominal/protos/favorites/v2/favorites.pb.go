@@ -30,11 +30,14 @@ const (
 	ResourceType_RESOURCE_TYPE_UNSPECIFIED ResourceType = 0
 	ResourceType_ASSET                     ResourceType = 1
 	ResourceType_RUN                       ResourceType = 2
-	ResourceType_NOTEBOOK                  ResourceType = 3
-	ResourceType_NOTEBOOK_TEMPLATE         ResourceType = 4
-	ResourceType_CHECKLIST                 ResourceType = 5
-	ResourceType_SAVED_VIEW                ResourceType = 6
-	ResourceType_PROCEDURE                 ResourceType = 7
+	// Workbooks.
+	ResourceType_NOTEBOOK ResourceType = 3
+	// Workbook templates.
+	ResourceType_NOTEBOOK_TEMPLATE ResourceType = 4
+	ResourceType_CHECKLIST         ResourceType = 5
+	ResourceType_SAVED_VIEW        ResourceType = 6
+	ResourceType_PROCEDURE         ResourceType = 7
+	ResourceType_PLAN              ResourceType = 8
 )
 
 // Enum value maps for ResourceType.
@@ -48,6 +51,7 @@ var (
 		5: "CHECKLIST",
 		6: "SAVED_VIEW",
 		7: "PROCEDURE",
+		8: "PLAN",
 	}
 	ResourceType_value = map[string]int32{
 		"RESOURCE_TYPE_UNSPECIFIED": 0,
@@ -58,6 +62,7 @@ var (
 		"CHECKLIST":                 5,
 		"SAVED_VIEW":                6,
 		"PROCEDURE":                 7,
+		"PLAN":                      8,
 	}
 )
 
@@ -138,11 +143,7 @@ func (FavoritesError) EnumDescriptor() ([]byte, []int) {
 	return file_nominal_protos_favorites_v2_favorites_proto_rawDescGZIP(), []int{1}
 }
 
-// A structurally-invalid FavoriteResource (no arm set) is rejected by FavoritesGrpcResource's structural guard with
-// FavoritesError.INVALID_FAVORITE, keeping the same error shape as an unspecified ResourceType (skill §4: structural
-// guards throw the proto error enum). We deliberately do NOT use `(buf.validate.oneof) = {required: true}` here: the
-// ValidationInterceptor runs ahead of the resource and would preempt the guard with a generic CONSTRAINT_VIOLATION,
-// splitting the structural-error contract across two shapes.
+// One resource a user has favorited. Exactly one field must be set; a request with none set fails with InvalidFavorite.
 type FavoriteResource struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Types that are valid to be assigned to FavoriteResource:
@@ -154,6 +155,7 @@ type FavoriteResource struct {
 	//	*FavoriteResource_Checklist
 	//	*FavoriteResource_SavedView
 	//	*FavoriteResource_Procedure
+	//	*FavoriteResource_Plan
 	FavoriteResource isFavoriteResource_FavoriteResource `protobuf_oneof:"favorite_resource"`
 	unknownFields    protoimpl.UnknownFields
 	sizeCache        protoimpl.SizeCache
@@ -259,6 +261,15 @@ func (x *FavoriteResource) GetProcedure() string {
 	return ""
 }
 
+func (x *FavoriteResource) GetPlan() string {
+	if x != nil {
+		if x, ok := x.FavoriteResource.(*FavoriteResource_Plan); ok {
+			return x.Plan
+		}
+	}
+	return ""
+}
+
 type isFavoriteResource_FavoriteResource interface {
 	isFavoriteResource_FavoriteResource()
 }
@@ -272,10 +283,12 @@ type FavoriteResource_Run struct {
 }
 
 type FavoriteResource_Notebook struct {
+	// A workbook (notebook in the API).
 	Notebook string `protobuf:"bytes,3,opt,name=notebook,proto3,oneof"`
 }
 
 type FavoriteResource_NotebookTemplate struct {
+	// A workbook template.
 	NotebookTemplate string `protobuf:"bytes,4,opt,name=notebook_template,json=notebookTemplate,proto3,oneof"`
 }
 
@@ -291,6 +304,10 @@ type FavoriteResource_Procedure struct {
 	Procedure string `protobuf:"bytes,7,opt,name=procedure,proto3,oneof"`
 }
 
+type FavoriteResource_Plan struct {
+	Plan string `protobuf:"bytes,8,opt,name=plan,proto3,oneof"`
+}
+
 func (*FavoriteResource_Asset) isFavoriteResource_FavoriteResource() {}
 
 func (*FavoriteResource_Run) isFavoriteResource_FavoriteResource() {}
@@ -304,6 +321,8 @@ func (*FavoriteResource_Checklist) isFavoriteResource_FavoriteResource() {}
 func (*FavoriteResource_SavedView) isFavoriteResource_FavoriteResource() {}
 
 func (*FavoriteResource_Procedure) isFavoriteResource_FavoriteResource() {}
+
+func (*FavoriteResource_Plan) isFavoriteResource_FavoriteResource() {}
 
 type GetFavoritesListRequest struct {
 	state        protoimpl.MessageState `protogen:"open.v1"`
@@ -406,8 +425,8 @@ func (x *GetFavoritesListResponse) GetFavorites() []*FavoriteResource {
 type SetFavoritesListRequest struct {
 	state        protoimpl.MessageState `protogen:"open.v1"`
 	WorkspaceRid string                 `protobuf:"bytes,1,opt,name=workspace_rid,json=workspaceRid,proto3" json:"workspace_rid,omitempty"`
-	// The resources to set as the user's favorites. Note that the provided list will overwrite
-	// all the user's previous favorites.
+	// The resources to set as the caller's favorites in this workspace, in display order. The list replaces all of the
+	// caller's previous favorites there, of every resource type.
 	Resources     []*FavoriteResource `protobuf:"bytes,2,rep,name=resources,proto3" json:"resources,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -505,7 +524,7 @@ var File_nominal_protos_favorites_v2_favorites_proto protoreflect.FileDescriptor
 
 const file_nominal_protos_favorites_v2_favorites_proto_rawDesc = "" +
 	"\n" +
-	"+nominal/protos/favorites/v2/favorites.proto\x12\x14nominal.favorites.v2\x1a\x1cgoogle/api/annotations.proto\x1a!nominal/protos/gen/v1/alias.proto\x1a!nominal/protos/gen/v1/error.proto\"\xb0\x04\n" +
+	"+nominal/protos/favorites/v2/favorites.proto\x12\x14nominal.favorites.v2\x1a\x1cgoogle/api/annotations.proto\x1a!nominal/protos/gen/v1/alias.proto\x1a!nominal/protos/gen/v1/error.proto\"\xef\x04\n" +
 	"\x10FavoriteResource\x12@\n" +
 	"\x05asset\x18\x01 \x01(\tB(\x9a\xb2\x1a$\n" +
 	"\"io.nominal.scout.rids.api.AssetRidH\x00R\x05asset\x129\n" +
@@ -521,7 +540,9 @@ const file_nominal_protos_favorites_v2_favorites_proto_rawDesc = "" +
 	"saved_view\x18\x06 \x01(\tB,\x9a\xb2\x1a(\n" +
 	"&io.nominal.scout.rids.api.SavedViewRidH\x00R\tsavedView\x12F\n" +
 	"\tprocedure\x18\a \x01(\tB&\x9a\xb2\x1a\"\n" +
-	" io.nominal.api.rids.ProcedureRidH\x00R\tprocedureB\x13\n" +
+	" io.nominal.api.rids.ProcedureRidH\x00R\tprocedure\x12=\n" +
+	"\x04plan\x18\b \x01(\tB'\x9a\xb2\x1a#\n" +
+	"!io.nominal.scout.plan.api.PlanRidH\x00R\x04planB\x13\n" +
 	"\x11favorite_resource\"\xb1\x01\n" +
 	"\x17GetFavoritesListRequest\x12K\n" +
 	"\rworkspace_rid\x18\x01 \x01(\tB&\x9a\xb2\x1a\"\n" +
@@ -534,7 +555,7 @@ const file_nominal_protos_favorites_v2_favorites_proto_rawDesc = "" +
 	" io.nominal.api.rids.WorkspaceRidR\fworkspaceRid\x12D\n" +
 	"\tresources\x18\x02 \x03(\v2&.nominal.favorites.v2.FavoriteResourceR\tresources\"`\n" +
 	"\x18SetFavoritesListResponse\x12D\n" +
-	"\tfavorites\x18\x01 \x03(\v2&.nominal.favorites.v2.FavoriteResourceR\tfavorites*\x94\x01\n" +
+	"\tfavorites\x18\x01 \x03(\v2&.nominal.favorites.v2.FavoriteResourceR\tfavorites*\x9e\x01\n" +
 	"\fResourceType\x12\x1d\n" +
 	"\x19RESOURCE_TYPE_UNSPECIFIED\x10\x00\x12\t\n" +
 	"\x05ASSET\x10\x01\x12\a\n" +
@@ -544,7 +565,8 @@ const file_nominal_protos_favorites_v2_favorites_proto_rawDesc = "" +
 	"\tCHECKLIST\x10\x05\x12\x0e\n" +
 	"\n" +
 	"SAVED_VIEW\x10\x06\x12\r\n" +
-	"\tPROCEDURE\x10\a*\x97\x02\n" +
+	"\tPROCEDURE\x10\a\x12\b\n" +
+	"\x04PLAN\x10\b*\x97\x02\n" +
 	"\x0eFavoritesError\x12^\n" +
 	")FAVORITES_ERROR_DUPLICATE_RESOURCES_ERROR\x10\x00\x1a/\xb2\xb2\x1a+\n" +
 	"\x10INVALID_ARGUMENT\x12\x17DuplicateResourcesError\x12V\n" +
@@ -609,6 +631,7 @@ func file_nominal_protos_favorites_v2_favorites_proto_init() {
 		(*FavoriteResource_Checklist)(nil),
 		(*FavoriteResource_SavedView)(nil),
 		(*FavoriteResource_Procedure)(nil),
+		(*FavoriteResource_Plan)(nil),
 	}
 	type x struct{}
 	out := protoimpl.TypeBuilder{

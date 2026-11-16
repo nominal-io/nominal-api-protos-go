@@ -26,7 +26,12 @@ const (
 type DeleteDatasetNamespaceRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Dataset whose Iceberg namespace and tables should be removed. The dataset catalog row is retained.
-	DatasetRid    string `protobuf:"bytes,1,opt,name=dataset_rid,json=datasetRid,proto3" json:"dataset_rid,omitempty"`
+	DatasetRid string `protobuf:"bytes,1,opt,name=dataset_rid,json=datasetRid,proto3" json:"dataset_rid,omitempty"`
+	// When true, each table is dropped with purge: after the call returns, the Iceberg catalog deletes the
+	// files the table's metadata references in the background. Files no metadata references, such as those
+	// of failed commits, are left. When false, every file of the tables is left in object storage, where
+	// orphan file cleanup can no longer reach it.
+	PurgeFiles    bool `protobuf:"varint,2,opt,name=purge_files,json=purgeFiles,proto3" json:"purge_files,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -66,6 +71,13 @@ func (x *DeleteDatasetNamespaceRequest) GetDatasetRid() string {
 		return x.DatasetRid
 	}
 	return ""
+}
+
+func (x *DeleteDatasetNamespaceRequest) GetPurgeFiles() bool {
+	if x != nil {
+		return x.PurgeFiles
+	}
+	return false
 }
 
 type DeleteDatasetNamespaceResponse struct {
@@ -108,11 +120,13 @@ var File_nominal_protos_internaliceberg_v1_internal_iceberg_dataset_proto protor
 
 const file_nominal_protos_internaliceberg_v1_internal_iceberg_dataset_proto_rawDesc = "" +
 	"\n" +
-	"@nominal/protos/internaliceberg/v1/internal_iceberg_dataset.proto\x12\x1anominal.internaliceberg.v1\x1a\x1bbuf/validate/validate.proto\x1a!nominal/protos/gen/v1/alias.proto\"l\n" +
+	"@nominal/protos/internaliceberg/v1/internal_iceberg_dataset.proto\x12\x1anominal.internaliceberg.v1\x1a\x1bbuf/validate/validate.proto\x1a!nominal/protos/gen/v1/alias.proto\"\x8d\x01\n" +
 	"\x1dDeleteDatasetNamespaceRequest\x12K\n" +
 	"\vdataset_rid\x18\x01 \x01(\tB*\xbaH\x03\xc8\x01\x01\x9a\xb2\x1a \n" +
 	"\x1eio.nominal.api.rids.DatasetRidR\n" +
-	"datasetRid\" \n" +
+	"datasetRid\x12\x1f\n" +
+	"\vpurge_files\x18\x02 \x01(\bR\n" +
+	"purgeFiles\" \n" +
 	"\x1eDeleteDatasetNamespaceResponse2\xb1\x01\n" +
 	"\x1dInternalIcebergDatasetService\x12\x8f\x01\n" +
 	"\x16DeleteDatasetNamespace\x129.nominal.internaliceberg.v1.DeleteDatasetNamespaceRequest\x1a:.nominal.internaliceberg.v1.DeleteDatasetNamespaceResponseB\xa8\x02\n" +

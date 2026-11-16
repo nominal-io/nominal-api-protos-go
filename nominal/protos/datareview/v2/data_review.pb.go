@@ -7,6 +7,7 @@
 package datareviewv2
 
 import (
+	_ "github.com/nominal-io/nominal-api-protos-go/nominal/protos/authz/v1"
 	_ "github.com/nominal-io/nominal-api-protos-go/nominal/protos/gen/v1"
 	types "github.com/nominal-io/nominal-api-protos-go/nominal/protos/types"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
@@ -622,6 +623,7 @@ func (*CheckAlertState_ClosedWithFurtherAction) isCheckAlertState_CheckAlertStat
 
 func (*CheckAlertState_ClosedWithIgnore) isCheckAlertState_CheckAlertState() {}
 
+// Awaiting review: a check alert (violation) or failed check execution that no one has closed yet.
 type PendingReviewAlertState struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	unknownFields protoimpl.UnknownFields
@@ -658,6 +660,7 @@ func (*PendingReviewAlertState) Descriptor() ([]byte, []int) {
 	return file_nominal_protos_datareview_v2_data_review_proto_rawDescGZIP(), []int{5}
 }
 
+// Closed by a reviewer as needing further action.
 type ClosedWithFurtherActionAlertState struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Comment       string                 `protobuf:"bytes,1,opt,name=comment,proto3" json:"comment,omitempty"`
@@ -710,6 +713,7 @@ func (x *ClosedWithFurtherActionAlertState) GetClosedBy() string {
 	return ""
 }
 
+// Closed by a reviewer as accepted (ignored in the API).
 type ClosedWithIgnoreAlertState struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Comment       string                 `protobuf:"bytes,1,opt,name=comment,proto3" json:"comment,omitempty"`
@@ -838,6 +842,7 @@ func (*UnarchiveDataReview) Descriptor() ([]byte, []int) {
 	return file_nominal_protos_datareview_v2_data_review_proto_rawDescGZIP(), []int{9}
 }
 
+// The result of running one automatic check of a checklist against a run's data in a data review.
 type AutomaticCheckEvaluation struct {
 	state    protoimpl.MessageState `protogen:"open.v1"`
 	Rid      string                 `protobuf:"bytes,1,opt,name=rid,proto3" json:"rid,omitempty"`
@@ -1034,6 +1039,7 @@ func (*AutomaticCheckEvaluationAction_ExecutionRetriggered) isAutomaticCheckEval
 func (*AutomaticCheckEvaluationAction_ExecutionStarted) isAutomaticCheckEvaluationAction_AutomaticCheckEvaluationAction() {
 }
 
+// Execution events of an automatic check evaluation, most recent first.
 type AutomaticCheckEvaluationActionLog struct {
 	state         protoimpl.MessageState                    `protogen:"open.v1"`
 	Entries       []*AutomaticCheckEvaluationActionLogEntry `protobuf:"bytes,1,rep,name=entries,proto3" json:"entries,omitempty"`
@@ -1369,6 +1375,8 @@ func (x *AutomaticCheckEvaluationReviewActionLogEntry) GetTimestamp() *timestamp
 	return nil
 }
 
+// Where an automatic check is in its run: waiting, executing, failed, passed, finished with violations, or finished
+// with too many.
 type AutomaticCheckEvaluationState struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Types that are valid to be assigned to AutomaticCheckEvaluationState:
@@ -1661,10 +1669,13 @@ func (x *AutomaticCheckExecutionStarted) GetJobRid() string {
 	return ""
 }
 
+// A violation: a time span of a run's data where a check condition was met, with its review state.
 type CheckAlert struct {
-	state                         protoimpl.MessageState `protogen:"open.v1"`
-	Rid                           string                 `protobuf:"bytes,1,opt,name=rid,proto3" json:"rid,omitempty"`
-	CheckRid                      string                 `protobuf:"bytes,2,opt,name=check_rid,json=checkRid,proto3" json:"check_rid,omitempty"`
+	state    protoimpl.MessageState `protogen:"open.v1"`
+	Rid      string                 `protobuf:"bytes,1,opt,name=rid,proto3" json:"rid,omitempty"`
+	CheckRid string                 `protobuf:"bytes,2,opt,name=check_rid,json=checkRid,proto3" json:"check_rid,omitempty"`
+	// Index of the check condition implementation that produced the violation. Checks can define one range computation
+	// that evaluates over several implementations of a context.
 	ImplementationIndex           *int32                 `protobuf:"varint,3,opt,name=implementation_index,json=implementationIndex,proto3,oneof" json:"implementation_index,omitempty"`
 	DataReviewRid                 string                 `protobuf:"bytes,4,opt,name=data_review_rid,json=dataReviewRid,proto3" json:"data_review_rid,omitempty"`
 	CheckEvaluationRid            string                 `protobuf:"bytes,5,opt,name=check_evaluation_rid,json=checkEvaluationRid,proto3" json:"check_evaluation_rid,omitempty"`
@@ -1678,9 +1689,10 @@ type CheckAlert struct {
 	Priority                      types.Priority         `protobuf:"varint,13,opt,name=priority,proto3,enum=nominal.types.Priority" json:"priority,omitempty"`
 	Chart                         *VersionedVizId        `protobuf:"bytes,14,opt,name=chart,proto3,oneof" json:"chart,omitempty"`
 	Notes                         *string                `protobuf:"bytes,15,opt,name=notes,proto3,oneof" json:"notes,omitempty"`
-	Notebook                      *string                `protobuf:"bytes,16,opt,name=notebook,proto3,oneof" json:"notebook,omitempty"`
-	unknownFields                 protoimpl.UnknownFields
-	sizeCache                     protoimpl.SizeCache
+	// RID of the workbook (notebook in the API) linked to this violation.
+	Notebook      *string `protobuf:"bytes,16,opt,name=notebook,proto3,oneof" json:"notebook,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
 }
 
 func (x *CheckAlert) Reset() {
@@ -2019,6 +2031,7 @@ func (*CheckAlertAction_ArchiveDataReview) isCheckAlertAction_CheckAlertAction()
 
 func (*CheckAlertAction_UnarchiveDataReview) isCheckAlertAction_CheckAlertAction() {}
 
+// Actions people took on a check alert (violation), most recent first.
 type CheckAlertActionLog struct {
 	state         protoimpl.MessageState      `protogen:"open.v1"`
 	Entries       []*CheckAlertActionLogEntry `protobuf:"bytes,1,rep,name=entries,proto3" json:"entries,omitempty"`
@@ -2123,6 +2136,8 @@ func (x *CheckAlertActionLogEntry) GetTimestamp() *timestamppb.Timestamp {
 	return nil
 }
 
+// Histogram buckets over violation start time. The variant follows the requested sub-grouping: none, priority, or
+// status.
 type CheckAlertsHistogramBuckets struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Types that are valid to be assigned to CheckAlertsHistogramBuckets:
@@ -3072,15 +3087,18 @@ func (x *CreateDataReviewRequest) GetCommit() string {
 	return ""
 }
 
+// The application of one pinned checklist to one run and asset, with the evaluation of each check.
 type DataReview struct {
-	state            protoimpl.MessageState      `protogen:"open.v1"`
-	Rid              string                      `protobuf:"bytes,1,opt,name=rid,proto3" json:"rid,omitempty"`
-	RunRid           string                      `protobuf:"bytes,2,opt,name=run_rid,json=runRid,proto3" json:"run_rid,omitempty"`
-	AssetRid         string                      `protobuf:"bytes,3,opt,name=asset_rid,json=assetRid,proto3" json:"asset_rid,omitempty"`
-	CreatedAt        *timestamppb.Timestamp      `protobuf:"bytes,4,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
-	CreatedBy        string                      `protobuf:"bytes,5,opt,name=created_by,json=createdBy,proto3" json:"created_by,omitempty"`
-	Checklist        *ChecklistEvaluation        `protobuf:"bytes,6,opt,name=checklist,proto3,oneof" json:"checklist,omitempty"`
-	ChecklistRef     *PinnedChecklistRef         `protobuf:"bytes,7,opt,name=checklist_ref,json=checklistRef,proto3" json:"checklist_ref,omitempty"`
+	state     protoimpl.MessageState `protogen:"open.v1"`
+	Rid       string                 `protobuf:"bytes,1,opt,name=rid,proto3" json:"rid,omitempty"`
+	RunRid    string                 `protobuf:"bytes,2,opt,name=run_rid,json=runRid,proto3" json:"run_rid,omitempty"`
+	AssetRid  string                 `protobuf:"bytes,3,opt,name=asset_rid,json=assetRid,proto3" json:"asset_rid,omitempty"`
+	CreatedAt *timestamppb.Timestamp `protobuf:"bytes,4,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
+	CreatedBy string                 `protobuf:"bytes,5,opt,name=created_by,json=createdBy,proto3" json:"created_by,omitempty"`
+	Checklist *ChecklistEvaluation   `protobuf:"bytes,6,opt,name=checklist,proto3,oneof" json:"checklist,omitempty"`
+	// The checklist and commit this data review applied.
+	ChecklistRef *PinnedChecklistRef `protobuf:"bytes,7,opt,name=checklist_ref,json=checklistRef,proto3" json:"checklist_ref,omitempty"`
+	// Evaluations of the automatic checks of the checklist.
 	CheckEvaluations []*AutomaticCheckEvaluation `protobuf:"bytes,8,rep,name=check_evaluations,json=checkEvaluations,proto3" json:"check_evaluations,omitempty"`
 	Archived         bool                        `protobuf:"varint,9,opt,name=archived,proto3" json:"archived,omitempty"`
 	unknownFields    protoimpl.UnknownFields
@@ -3180,6 +3198,7 @@ func (x *DataReview) GetArchived() bool {
 	return false
 }
 
+// The one run, asset, or data review whose automatic checks are counted. Leaving it unset is an invalid-argument error.
 type DataReviewCheckMetricsScope struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Types that are valid to be assigned to DataReviewCheckMetricsScope:
@@ -3406,6 +3425,7 @@ func (x *ExecutionRetriggered) GetJobRid() string {
 	return ""
 }
 
+// The check could not run. A reviewer closes the failure like a violation.
 type FailedToExecuteState struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	JobRid        string                 `protobuf:"bytes,1,opt,name=job_rid,json=jobRid,proto3" json:"job_rid,omitempty"`
@@ -3474,10 +3494,13 @@ func (x *FailedToExecuteState) GetAssigneeRids() []string {
 	return nil
 }
 
+// The check ran and its condition was met.
 type GeneratedAlertsState struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Rids          []string               `protobuf:"bytes,1,rep,name=rids,proto3" json:"rids,omitempty"`
-	EventRids     []string               `protobuf:"bytes,2,rep,name=event_rids,json=eventRids,proto3" json:"event_rids,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Check alerts (violations) the check generated.
+	Rids []string `protobuf:"bytes,1,rep,name=rids,proto3" json:"rids,omitempty"`
+	// Events the check generated.
+	EventRids     []string `protobuf:"bytes,2,rep,name=event_rids,json=eventRids,proto3" json:"event_rids,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -3526,6 +3549,7 @@ func (x *GeneratedAlertsState) GetEventRids() []string {
 	return nil
 }
 
+// A start-time bucket and the number of violations that start in it.
 type HistogramBucket struct {
 	state          protoimpl.MessageState `protogen:"open.v1"`
 	StartInclusive *timestamppb.Timestamp `protobuf:"bytes,1,opt,name=start_inclusive,json=startInclusive,proto3" json:"start_inclusive,omitempty"`
@@ -3586,6 +3610,7 @@ func (x *HistogramBucket) GetCount() int32 {
 	return 0
 }
 
+// What the histogram buckets over. Only start time is available.
 type HistogramDistributionVariable struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Types that are valid to be assigned to HistogramDistributionVariable:
@@ -3919,6 +3944,7 @@ func (*HistogramStatusVariable) Descriptor() ([]byte, []int) {
 	return file_nominal_protos_datareview_v2_data_review_proto_rawDescGZIP(), []int{55}
 }
 
+// How each bucket is split into stacked groups.
 type HistogramSubGroupVariable struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Types that are valid to be assigned to HistogramSubGroupVariable:
@@ -4301,6 +4327,8 @@ func (*ManualCheckAlertAction_UpdateNotes) isManualCheckAlertAction_ManualCheckA
 
 func (*ManualCheckAlertAction_LinkNotebook) isManualCheckAlertAction_ManualCheckAlertAction() {}
 
+// The evaluation of one manual check in a data review. Its state is pending review, passed, or closed with further
+// action.
 type ManualCheckEvaluation struct {
 	state         protoimpl.MessageState      `protogen:"open.v1"`
 	Rid           string                      `protobuf:"bytes,1,opt,name=rid,proto3" json:"rid,omitempty"`
@@ -4310,7 +4338,8 @@ type ManualCheckEvaluation struct {
 	AssigneeRids  []string                    `protobuf:"bytes,5,rep,name=assignee_rids,json=assigneeRids,proto3" json:"assignee_rids,omitempty"`
 	Chart         *VersionedVizId             `protobuf:"bytes,6,opt,name=chart,proto3,oneof" json:"chart,omitempty"`
 	Notes         *string                     `protobuf:"bytes,7,opt,name=notes,proto3,oneof" json:"notes,omitempty"`
-	Notebook      *string                     `protobuf:"bytes,8,opt,name=notebook,proto3,oneof" json:"notebook,omitempty"`
+	// RID of the workbook (notebook in the API) linked to this manual check evaluation.
+	Notebook      *string `protobuf:"bytes,8,opt,name=notebook,proto3,oneof" json:"notebook,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -4401,6 +4430,7 @@ func (x *ManualCheckEvaluation) GetNotebook() string {
 	return ""
 }
 
+// Actions people took on a manual check evaluation, most recent first.
 type ManualCheckEvaluationActionLog struct {
 	state         protoimpl.MessageState                 `protogen:"open.v1"`
 	Entries       []*ManualCheckEvaluationActionLogEntry `protobuf:"bytes,1,rep,name=entries,proto3" json:"entries,omitempty"`
@@ -4702,6 +4732,7 @@ func (x *PassState) GetClosedBy() string {
 	return ""
 }
 
+// The check ran and its condition was never met.
 type PassingExecutionState struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	unknownFields protoimpl.UnknownFields
@@ -4738,6 +4769,7 @@ func (*PassingExecutionState) Descriptor() ([]byte, []int) {
 	return file_nominal_protos_datareview_v2_data_review_proto_rawDescGZIP(), []int{66}
 }
 
+// The check is waiting to run.
 type PendingExecutionState struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	JobRid        string                 `protobuf:"bytes,1,opt,name=job_rid,json=jobRid,proto3" json:"job_rid,omitempty"`
@@ -5872,9 +5904,9 @@ func (*RerunFailedAutomaticChecksResponse) Descriptor() ([]byte, []int) {
 	return file_nominal_protos_datareview_v2_data_review_proto_rawDescGZIP(), []int{91}
 }
 
-// If both sets are empty, an empty page is returned.
-// If one set is empty, that field is not considered for filtering (like a wildcard).
-// If commitId is omitted from a ChecklistRef, it will match all commits.
+// A data review must match the run and asset selection and the checklist filter; an empty filter is ignored. If no
+// runs, assets, or checklists are given, an empty page is returned. A ChecklistRef without a commit matches all
+// commits of that checklist.
 type FindDataReviewsRequest struct {
 	state     protoimpl.MessageState `protogen:"open.v1"`
 	RunRids   []string               `protobuf:"bytes,1,rep,name=run_rids,json=runRids,proto3" json:"run_rids,omitempty"`
@@ -6293,17 +6325,20 @@ func (x *GetCheckAlertsForDataReviewResponse) GetCheckAlerts() []*CheckAlert {
 
 type GetCheckAlertsHistogramRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
-	// Defaults to 100. Throws if larger than 1_000.
+	// Number of buckets. Defaults to 100; must be from 1 to 1000.
 	NumBins *int32 `protobuf:"varint,1,opt,name=num_bins,json=numBins,proto3,oneof" json:"num_bins,omitempty"`
-	// Matches on check name
+	// Matches the check name, autogenerated check title, and autogenerated check description by case-insensitive
+	// substring or similar text.
 	SearchText *string `protobuf:"bytes,2,opt,name=search_text,json=searchText,proto3,oneof" json:"search_text,omitempty"`
 	// Represents the data points on the x-axis of a histogram.
 	DistributionVariable *HistogramDistributionVariable `protobuf:"bytes,3,opt,name=distribution_variable,json=distributionVariable,proto3" json:"distribution_variable,omitempty"`
 	// The variable that divides the data into distinct groups for comparison within the histogram.
 	SubGroupVariable *HistogramSubGroupVariable `protobuf:"bytes,4,opt,name=sub_group_variable,json=subGroupVariable,proto3,oneof" json:"sub_group_variable,omitempty"`
-	// Filters to start times after this time, inclusive.
+	// Filters to start times after this time, inclusive. Also the start of the histogram range; unset means the Unix
+	// epoch.
 	StartTimeAfter *timestamppb.Timestamp `protobuf:"bytes,5,opt,name=start_time_after,json=startTimeAfter,proto3" json:"start_time_after,omitempty"`
-	// Filters to start times before this time, exclusive.
+	// Filters to start times before this time, exclusive. Required: also the end of the histogram range, which must be
+	// later than start_time_after.
 	StartTimeBefore     *timestamppb.Timestamp `protobuf:"bytes,6,opt,name=start_time_before,json=startTimeBefore,proto3" json:"start_time_before,omitempty"`
 	Status              *CheckAlertStatusSet   `protobuf:"bytes,7,opt,name=status,proto3" json:"status,omitempty"`
 	CheckRids           *CheckRidSet           `protobuf:"bytes,8,opt,name=check_rids,json=checkRids,proto3" json:"check_rids,omitempty"`
@@ -6520,9 +6555,10 @@ type SearchCheckAlertsRequest struct {
 	NextPageToken *string                `protobuf:"bytes,1,opt,name=next_page_token,json=nextPageToken,proto3,oneof" json:"next_page_token,omitempty"`
 	// Defaults to 100. Will throw if larger than 1_000.
 	PageSize *int32 `protobuf:"varint,2,opt,name=page_size,json=pageSize,proto3,oneof" json:"page_size,omitempty"`
-	// If not present, will sort by start time in descending order.
+	// If not present, sorts by start time ascending (oldest first).
 	SortBy *SearchCheckAlertsSortOptions `protobuf:"bytes,3,opt,name=sort_by,json=sortBy,proto3,oneof" json:"sort_by,omitempty"`
-	// Matches on check name
+	// Matches the check name, autogenerated check title, and autogenerated check description by case-insensitive
+	// substring or similar text.
 	SearchText *string `protobuf:"bytes,4,opt,name=search_text,json=searchText,proto3,oneof" json:"search_text,omitempty"`
 	// Filters to start times after this time, inclusive.
 	After *timestamppb.Timestamp `protobuf:"bytes,5,opt,name=after,proto3,oneof" json:"after,omitempty"`
@@ -6879,8 +6915,9 @@ func (x *GetCheckAlertCountsForNotebooksRequest) GetNotebookRids() []string {
 }
 
 type GetCheckAlertCountsForNotebooksResponse struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Counts        map[string]int32       `protobuf:"bytes,1,rep,name=counts,proto3" json:"counts,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"varint,2,opt,name=value"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Number of violations linked to each requested workbook (notebook in the API).
+	Counts        map[string]int32 `protobuf:"bytes,1,rep,name=counts,proto3" json:"counts,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"varint,2,opt,name=value"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -7857,27 +7894,43 @@ func (x *GetDataReviewCheckMetricsRequest) GetScope() *DataReviewCheckMetricsSco
 }
 
 type GetDataReviewCheckMetricsResponse struct {
-	state                                        protoimpl.MessageState `protogen:"open.v1"`
-	ChecksPendingExecution                       int32                  `protobuf:"varint,1,opt,name=checks_pending_execution,json=checksPendingExecution,proto3" json:"checks_pending_execution,omitempty"`
-	ChecksExecuting                              int32                  `protobuf:"varint,2,opt,name=checks_executing,json=checksExecuting,proto3" json:"checks_executing,omitempty"`
-	ChecksPassed                                 int32                  `protobuf:"varint,3,opt,name=checks_passed,json=checksPassed,proto3" json:"checks_passed,omitempty"`
-	ChecksWithEventsPendingReview                int32                  `protobuf:"varint,4,opt,name=checks_with_events_pending_review,json=checksWithEventsPendingReview,proto3" json:"checks_with_events_pending_review,omitempty"`
-	ChecksWithEventsClosedWithIgnore             int32                  `protobuf:"varint,5,opt,name=checks_with_events_closed_with_ignore,json=checksWithEventsClosedWithIgnore,proto3" json:"checks_with_events_closed_with_ignore,omitempty"`
-	ChecksWithEventsClosedWithFurtherAction      int32                  `protobuf:"varint,6,opt,name=checks_with_events_closed_with_further_action,json=checksWithEventsClosedWithFurtherAction,proto3" json:"checks_with_events_closed_with_further_action,omitempty"`
-	ChecksWithEvents                             int32                  `protobuf:"varint,7,opt,name=checks_with_events,json=checksWithEvents,proto3" json:"checks_with_events,omitempty"`
-	ChecksWithTooManyEvents                      int32                  `protobuf:"varint,8,opt,name=checks_with_too_many_events,json=checksWithTooManyEvents,proto3" json:"checks_with_too_many_events,omitempty"`
-	ChecksFailedToExecutePendingReview           int32                  `protobuf:"varint,9,opt,name=checks_failed_to_execute_pending_review,json=checksFailedToExecutePendingReview,proto3" json:"checks_failed_to_execute_pending_review,omitempty"`
-	ChecksFailedToExecuteClosedWithIgnore        int32                  `protobuf:"varint,10,opt,name=checks_failed_to_execute_closed_with_ignore,json=checksFailedToExecuteClosedWithIgnore,proto3" json:"checks_failed_to_execute_closed_with_ignore,omitempty"`
-	ChecksFailedToExecuteClosedWithFurtherAction int32                  `protobuf:"varint,11,opt,name=checks_failed_to_execute_closed_with_further_action,json=checksFailedToExecuteClosedWithFurtherAction,proto3" json:"checks_failed_to_execute_closed_with_further_action,omitempty"`
-	ChecksFailedToExecute                        int32                  `protobuf:"varint,12,opt,name=checks_failed_to_execute,json=checksFailedToExecute,proto3" json:"checks_failed_to_execute,omitempty"`
-	ChecksExecuted                               int32                  `protobuf:"varint,13,opt,name=checks_executed,json=checksExecuted,proto3" json:"checks_executed,omitempty"`
-	ChecksTotal                                  int32                  `protobuf:"varint,14,opt,name=checks_total,json=checksTotal,proto3" json:"checks_total,omitempty"`
-	EventsPendingReview                          int32                  `protobuf:"varint,15,opt,name=events_pending_review,json=eventsPendingReview,proto3" json:"events_pending_review,omitempty"`
-	EventsClosedWithIgnore                       int32                  `protobuf:"varint,16,opt,name=events_closed_with_ignore,json=eventsClosedWithIgnore,proto3" json:"events_closed_with_ignore,omitempty"`
-	EventsClosedWithFurtherAction                int32                  `protobuf:"varint,17,opt,name=events_closed_with_further_action,json=eventsClosedWithFurtherAction,proto3" json:"events_closed_with_further_action,omitempty"`
-	EventsTotal                                  int32                  `protobuf:"varint,18,opt,name=events_total,json=eventsTotal,proto3" json:"events_total,omitempty"`
-	unknownFields                                protoimpl.UnknownFields
-	sizeCache                                    protoimpl.SizeCache
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Checks waiting to run.
+	ChecksPendingExecution int32 `protobuf:"varint,1,opt,name=checks_pending_execution,json=checksPendingExecution,proto3" json:"checks_pending_execution,omitempty"`
+	ChecksExecuting        int32 `protobuf:"varint,2,opt,name=checks_executing,json=checksExecuting,proto3" json:"checks_executing,omitempty"`
+	// Checks that ran and generated no events.
+	ChecksPassed int32 `protobuf:"varint,3,opt,name=checks_passed,json=checksPassed,proto3" json:"checks_passed,omitempty"`
+	// Checks with events whose review state is pending review. When a check's events differ, further action takes
+	// precedence over pending review, which takes precedence over ignored.
+	ChecksWithEventsPendingReview int32 `protobuf:"varint,4,opt,name=checks_with_events_pending_review,json=checksWithEventsPendingReview,proto3" json:"checks_with_events_pending_review,omitempty"`
+	// Checks with events whose review state is closed as ignored.
+	ChecksWithEventsClosedWithIgnore int32 `protobuf:"varint,5,opt,name=checks_with_events_closed_with_ignore,json=checksWithEventsClosedWithIgnore,proto3" json:"checks_with_events_closed_with_ignore,omitempty"`
+	// Checks with events whose review state is closed with further action.
+	ChecksWithEventsClosedWithFurtherAction int32 `protobuf:"varint,6,opt,name=checks_with_events_closed_with_further_action,json=checksWithEventsClosedWithFurtherAction,proto3" json:"checks_with_events_closed_with_further_action,omitempty"`
+	// Checks that ran and generated events.
+	ChecksWithEvents int32 `protobuf:"varint,7,opt,name=checks_with_events,json=checksWithEvents,proto3" json:"checks_with_events,omitempty"`
+	// Checks that generated more events than the maximum.
+	ChecksWithTooManyEvents int32 `protobuf:"varint,8,opt,name=checks_with_too_many_events,json=checksWithTooManyEvents,proto3" json:"checks_with_too_many_events,omitempty"`
+	// Checks that failed to run and whose failure is pending review.
+	ChecksFailedToExecutePendingReview int32 `protobuf:"varint,9,opt,name=checks_failed_to_execute_pending_review,json=checksFailedToExecutePendingReview,proto3" json:"checks_failed_to_execute_pending_review,omitempty"`
+	// Checks that failed to run and whose failure is closed as ignored.
+	ChecksFailedToExecuteClosedWithIgnore int32 `protobuf:"varint,10,opt,name=checks_failed_to_execute_closed_with_ignore,json=checksFailedToExecuteClosedWithIgnore,proto3" json:"checks_failed_to_execute_closed_with_ignore,omitempty"`
+	// Checks that failed to run and whose failure is closed with further action.
+	ChecksFailedToExecuteClosedWithFurtherAction int32 `protobuf:"varint,11,opt,name=checks_failed_to_execute_closed_with_further_action,json=checksFailedToExecuteClosedWithFurtherAction,proto3" json:"checks_failed_to_execute_closed_with_further_action,omitempty"`
+	// Checks that failed to run.
+	ChecksFailedToExecute int32 `protobuf:"varint,12,opt,name=checks_failed_to_execute,json=checksFailedToExecute,proto3" json:"checks_failed_to_execute,omitempty"`
+	// Checks that finished running: passed, generated events, or generated too many.
+	ChecksExecuted int32 `protobuf:"varint,13,opt,name=checks_executed,json=checksExecuted,proto3" json:"checks_executed,omitempty"`
+	// All automatic checks in scope.
+	ChecksTotal int32 `protobuf:"varint,14,opt,name=checks_total,json=checksTotal,proto3" json:"checks_total,omitempty"`
+	// Events whose review state is pending review.
+	EventsPendingReview           int32 `protobuf:"varint,15,opt,name=events_pending_review,json=eventsPendingReview,proto3" json:"events_pending_review,omitempty"`
+	EventsClosedWithIgnore        int32 `protobuf:"varint,16,opt,name=events_closed_with_ignore,json=eventsClosedWithIgnore,proto3" json:"events_closed_with_ignore,omitempty"`
+	EventsClosedWithFurtherAction int32 `protobuf:"varint,17,opt,name=events_closed_with_further_action,json=eventsClosedWithFurtherAction,proto3" json:"events_closed_with_further_action,omitempty"`
+	// All events the checks in scope generated.
+	EventsTotal   int32 `protobuf:"varint,18,opt,name=events_total,json=eventsTotal,proto3" json:"events_total,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
 }
 
 func (x *GetDataReviewCheckMetricsResponse) Reset() {
@@ -8040,7 +8093,7 @@ var File_nominal_protos_datareview_v2_data_review_proto protoreflect.FileDescrip
 
 const file_nominal_protos_datareview_v2_data_review_proto_rawDesc = "" +
 	"\n" +
-	".nominal/protos/datareview/v2/data_review.proto\x12\x15nominal.datareview.v2\x1a\x1cgoogle/api/annotations.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a!nominal/protos/gen/v1/alias.proto\x1a!nominal/protos/gen/v1/error.proto\x1a!nominal/protos/types/common.proto\x1a nominal/protos/types/types.proto\"c\n" +
+	".nominal/protos/datareview/v2/data_review.proto\x12\x15nominal.datareview.v2\x1a\x1cgoogle/api/annotations.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a)nominal/protos/authz/v1/annotations.proto\x1a!nominal/protos/gen/v1/alias.proto\x1a!nominal/protos/gen/v1/error.proto\x1a!nominal/protos/types/common.proto\x1a nominal/protos/types/types.proto\"c\n" +
 	"\x0eVersionedVizId\x127\n" +
 	"\x03rid\x18\x01 \x01(\tB%\x9a\xb2\x1a!\n" +
 	"\x1fio.nominal.scout.rids.api.VizIdR\x03rid\x12\x18\n" +
@@ -8662,29 +8715,73 @@ const file_nominal_protos_datareview_v2_data_review_proto_rawDesc = "" +
 	"\x04FAIL\x10\x02*v\n" +
 	"\x0fDataReviewError\x12c\n" +
 	"-DATA_REVIEW_ERROR_INVALID_DATA_REVIEW_REQUEST\x10\x00\x1a0\xb2\xb2\x1a,\n" +
-	"\x10INVALID_ARGUMENT\x12\x18InvalidDataReviewRequest2\xe5!\n" +
-	"\x11DataReviewService\x12\xa1\x01\n" +
-	"\rBatchInitiate\x12+.nominal.datareview.v2.BatchInitiateRequest\x1a,.nominal.datareview.v2.BatchInitiateResponse\"5\x82\xd3\xe4\x93\x02/:\x01*\"*/datareview/v2/data-reviews/batch-initiate\x12\xe6\x01\n" +
-	"\x1aRerunFailedAutomaticChecks\x128.nominal.datareview.v2.RerunFailedAutomaticChecksRequest\x1a9.nominal.datareview.v2.RerunFailedAutomaticChecksResponse\"S\x82\xd3\xe4\x93\x02M\"K/datareview/v2/data-reviews/{data_review_rid}/rerun-failed-automatic-checks\x12\x9f\x01\n" +
-	"\x0fFindDataReviews\x12-.nominal.datareview.v2.FindDataReviewsRequest\x1a..nominal.datareview.v2.FindDataReviewsResponse\"-\x82\xd3\xe4\x93\x02':\x01*\"\"/datareview/v2/data-reviews/search\x12\xa1\x01\n" +
-	"\rGetDataReview\x12+.nominal.datareview.v2.GetDataReviewRequest\x1a,.nominal.datareview.v2.GetDataReviewResponse\"5\x82\xd3\xe4\x93\x02/\x12-/datareview/v2/data-reviews/{data_review_rid}\x12\xa1\x01\n" +
-	"\rGetCheckAlert\x12+.nominal.datareview.v2.GetCheckAlertRequest\x1a,.nominal.datareview.v2.GetCheckAlertResponse\"5\x82\xd3\xe4\x93\x02/\x12-/datareview/v2/check-alerts/{check_alert_rid}\x12\xd8\x01\n" +
-	"\x1bGetCheckAlertsForDataReview\x129.nominal.datareview.v2.GetCheckAlertsForDataReviewRequest\x1a:.nominal.datareview.v2.GetCheckAlertsForDataReviewResponse\"B\x82\xd3\xe4\x93\x02<\x12:/datareview/v2/data-reviews/{data_review_rid}/check-alerts\x12\xba\x01\n" +
-	"\x17GetCheckAlertsHistogram\x125.nominal.datareview.v2.GetCheckAlertsHistogramRequest\x1a6.nominal.datareview.v2.GetCheckAlertsHistogramResponse\"0\x82\xd3\xe4\x93\x02*:\x01*\"%/datareview/v2/check-alerts/histogram\x12\xa5\x01\n" +
-	"\x11SearchCheckAlerts\x12/.nominal.datareview.v2.SearchCheckAlertsRequest\x1a0.nominal.datareview.v2.SearchCheckAlertsResponse\"-\x82\xd3\xe4\x93\x02':\x01*\"\"/datareview/v2/check-alerts/search\x12\xc7\x01\n" +
-	"\x16GetCheckAlertActionLog\x124.nominal.datareview.v2.GetCheckAlertActionLogRequest\x1a5.nominal.datareview.v2.GetCheckAlertActionLogResponse\"@\x82\xd3\xe4\x93\x02:\x128/datareview/v2/check-alerts/{check_alert_rid}/action-log\x12\xdd\x01\n" +
-	"\x1fGetCheckAlertCountsForNotebooks\x12=.nominal.datareview.v2.GetCheckAlertCountsForNotebooksRequest\x1a>.nominal.datareview.v2.GetCheckAlertCountsForNotebooksResponse\";\x82\xd3\xe4\x93\x025:\x01*\"0/datareview/v2/check-alerts/counts-for-notebooks\x12\xdd\x01\n" +
-	"\x1fGetCheckAlertStatusForNotebooks\x12=.nominal.datareview.v2.GetCheckAlertStatusForNotebooksRequest\x1a>.nominal.datareview.v2.GetCheckAlertStatusForNotebooksResponse\";\x82\xd3\xe4\x93\x025:\x01*\"0/datareview/v2/check-alerts/status-for-notebooks\x12\xc2\x01\n" +
-	"\x17PerformCheckAlertAction\x125.nominal.datareview.v2.PerformCheckAlertActionRequest\x1a6.nominal.datareview.v2.PerformCheckAlertActionResponse\"8\x82\xd3\xe4\x93\x022:\x01*\x1a-/datareview/v2/check-alerts/{check_alert_rid}\x12\xd4\x01\n" +
-	"\x1cBatchPerformCheckAlertAction\x12:.nominal.datareview.v2.BatchPerformCheckAlertActionRequest\x1a;.nominal.datareview.v2.BatchPerformCheckAlertActionResponse\";\x82\xd3\xe4\x93\x025:\x01*\"0/datareview/v2/check-alerts/batch-perform-action\x12\x9f\x02\n" +
-	"0BatchPerformAutomaticCheckEvaluationReviewAction\x12N.nominal.datareview.v2.BatchPerformAutomaticCheckEvaluationReviewActionRequest\x1aO.nominal.datareview.v2.BatchPerformAutomaticCheckEvaluationReviewActionResponse\"J\x82\xd3\xe4\x93\x02D:\x01*\"?/datareview/v2/automatic-check-evaluations/batch-perform-action\x12\xf4\x01\n" +
-	"$GetAutomaticCheckEvaluationActionLog\x12B.nominal.datareview.v2.GetAutomaticCheckEvaluationActionLogRequest\x1aC.nominal.datareview.v2.GetAutomaticCheckEvaluationActionLogResponse\"C\x82\xd3\xe4\x93\x02=\x12;/datareview/v2/automatic-check-evaluations/{rid}/action-log\x12\xf2\x01\n" +
-	"\"BatchPerformManualCheckAlertAction\x12@.nominal.datareview.v2.BatchPerformManualCheckAlertActionRequest\x1aA.nominal.datareview.v2.BatchPerformManualCheckAlertActionResponse\"G\x82\xd3\xe4\x93\x02A:\x01*\"</datareview/v2/manual-check-evaluations/batch-perform-action\x12\xe8\x01\n" +
-	"!GetManualCheckEvaluationActionLog\x12?.nominal.datareview.v2.GetManualCheckEvaluationActionLogRequest\x1a@.nominal.datareview.v2.GetManualCheckEvaluationActionLogResponse\"@\x82\xd3\xe4\x93\x02:\x128/datareview/v2/manual-check-evaluations/{rid}/action-log\x12\xb5\x01\n" +
-	"\x11ArchiveDataReview\x12/.nominal.datareview.v2.ArchiveDataReviewRequest\x1a0.nominal.datareview.v2.ArchiveDataReviewResponse\"=\x82\xd3\xe4\x93\x027\"5/datareview/v2/data-reviews/{data_review_rid}/archive\x12\xbb\x01\n" +
-	"\x16BatchArchiveDataReview\x124.nominal.datareview.v2.BatchArchiveDataReviewRequest\x1a5.nominal.datareview.v2.BatchArchiveDataReviewResponse\"4\x82\xd3\xe4\x93\x02.:\x01*\")/datareview/v2/data-reviews/batch-archive\x12\xbd\x01\n" +
-	"\x13UnarchiveDataReview\x121.nominal.datareview.v2.UnarchiveDataReviewRequest\x1a2.nominal.datareview.v2.UnarchiveDataReviewResponse\"?\x82\xd3\xe4\x93\x029\"7/datareview/v2/data-reviews/{data_review_rid}/unarchive\x12\xc3\x01\n" +
-	"\x19GetDataReviewCheckMetrics\x127.nominal.datareview.v2.GetDataReviewCheckMetricsRequest\x1a8.nominal.datareview.v2.GetDataReviewCheckMetricsResponse\"3\x82\xd3\xe4\x93\x02-:\x01*\"(/datareview/v2/data-review-check-metricsB\xf9\x01\n" +
+	"\x10INVALID_ARGUMENT\x12\x18InvalidDataReviewRequest2\xee&\n" +
+	"\x11DataReviewService\x12\xc6\x01\n" +
+	"\rBatchInitiate\x12+.nominal.datareview.v2.BatchInitiateRequest\x1a,.nominal.datareview.v2.BatchInitiateResponse\"Z\xba\xb2\x1a!\n" +
+	"\x1f\n" +
+	"\x1bworkspace:edit_data_reviews\"\x00\x82\xd3\xe4\x93\x02/:\x01*\"*/datareview/v2/data-reviews/batch-initiate\x12\x8b\x02\n" +
+	"\x1aRerunFailedAutomaticChecks\x128.nominal.datareview.v2.RerunFailedAutomaticChecksRequest\x1a9.nominal.datareview.v2.RerunFailedAutomaticChecksResponse\"x\xba\xb2\x1a!\n" +
+	"\x1f\n" +
+	"\x1bworkspace:edit_data_reviews\"\x00\x82\xd3\xe4\x93\x02M\"K/datareview/v2/data-reviews/{data_review_rid}/rerun-failed-automatic-checks\x12\xb7\x01\n" +
+	"\x0fFindDataReviews\x12-.nominal.datareview.v2.FindDataReviewsRequest\x1a..nominal.datareview.v2.FindDataReviewsResponse\"E\xba\xb2\x1a\x14\n" +
+	"\x12\n" +
+	"\x0eworkspace:view\"\x00\x82\xd3\xe4\x93\x02':\x01*\"\"/datareview/v2/data-reviews/search\x12\xb9\x01\n" +
+	"\rGetDataReview\x12+.nominal.datareview.v2.GetDataReviewRequest\x1a,.nominal.datareview.v2.GetDataReviewResponse\"M\xba\xb2\x1a\x14\n" +
+	"\x12\n" +
+	"\x0eworkspace:view\"\x00\x82\xd3\xe4\x93\x02/\x12-/datareview/v2/data-reviews/{data_review_rid}\x12\xb9\x01\n" +
+	"\rGetCheckAlert\x12+.nominal.datareview.v2.GetCheckAlertRequest\x1a,.nominal.datareview.v2.GetCheckAlertResponse\"M\xba\xb2\x1a\x14\n" +
+	"\x12\n" +
+	"\x0eworkspace:view\"\x00\x82\xd3\xe4\x93\x02/\x12-/datareview/v2/check-alerts/{check_alert_rid}\x12\xf0\x01\n" +
+	"\x1bGetCheckAlertsForDataReview\x129.nominal.datareview.v2.GetCheckAlertsForDataReviewRequest\x1a:.nominal.datareview.v2.GetCheckAlertsForDataReviewResponse\"Z\xba\xb2\x1a\x14\n" +
+	"\x12\n" +
+	"\x0eworkspace:view\"\x00\x82\xd3\xe4\x93\x02<\x12:/datareview/v2/data-reviews/{data_review_rid}/check-alerts\x12\xd2\x01\n" +
+	"\x17GetCheckAlertsHistogram\x125.nominal.datareview.v2.GetCheckAlertsHistogramRequest\x1a6.nominal.datareview.v2.GetCheckAlertsHistogramResponse\"H\xba\xb2\x1a\x14\n" +
+	"\x12\n" +
+	"\x0eworkspace:view\"\x00\x82\xd3\xe4\x93\x02*:\x01*\"%/datareview/v2/check-alerts/histogram\x12\xbd\x01\n" +
+	"\x11SearchCheckAlerts\x12/.nominal.datareview.v2.SearchCheckAlertsRequest\x1a0.nominal.datareview.v2.SearchCheckAlertsResponse\"E\xba\xb2\x1a\x14\n" +
+	"\x12\n" +
+	"\x0eworkspace:view\"\x00\x82\xd3\xe4\x93\x02':\x01*\"\"/datareview/v2/check-alerts/search\x12\xdf\x01\n" +
+	"\x16GetCheckAlertActionLog\x124.nominal.datareview.v2.GetCheckAlertActionLogRequest\x1a5.nominal.datareview.v2.GetCheckAlertActionLogResponse\"X\xba\xb2\x1a\x14\n" +
+	"\x12\n" +
+	"\x0eworkspace:view\"\x00\x82\xd3\xe4\x93\x02:\x128/datareview/v2/check-alerts/{check_alert_rid}/action-log\x12\x83\x02\n" +
+	"\x1fGetCheckAlertCountsForNotebooks\x12=.nominal.datareview.v2.GetCheckAlertCountsForNotebooksRequest\x1a>.nominal.datareview.v2.GetCheckAlertCountsForNotebooksResponse\"a\xba\xb2\x1a\"\n" +
+	" \n" +
+	"\rworkbook:view\x12\x0f\n" +
+	"\rnotebook_rids\x82\xd3\xe4\x93\x025:\x01*\"0/datareview/v2/check-alerts/counts-for-notebooks\x12\x83\x02\n" +
+	"\x1fGetCheckAlertStatusForNotebooks\x12=.nominal.datareview.v2.GetCheckAlertStatusForNotebooksRequest\x1a>.nominal.datareview.v2.GetCheckAlertStatusForNotebooksResponse\"a\xba\xb2\x1a\"\n" +
+	" \n" +
+	"\rworkbook:view\x12\x0f\n" +
+	"\rnotebook_rids\x82\xd3\xe4\x93\x025:\x01*\"0/datareview/v2/check-alerts/status-for-notebooks\x12\xe7\x01\n" +
+	"\x17PerformCheckAlertAction\x125.nominal.datareview.v2.PerformCheckAlertActionRequest\x1a6.nominal.datareview.v2.PerformCheckAlertActionResponse\"]\xba\xb2\x1a!\n" +
+	"\x1f\n" +
+	"\x1bworkspace:edit_data_reviews\"\x00\x82\xd3\xe4\x93\x022:\x01*\x1a-/datareview/v2/check-alerts/{check_alert_rid}\x12\xf9\x01\n" +
+	"\x1cBatchPerformCheckAlertAction\x12:.nominal.datareview.v2.BatchPerformCheckAlertActionRequest\x1a;.nominal.datareview.v2.BatchPerformCheckAlertActionResponse\"`\xba\xb2\x1a!\n" +
+	"\x1f\n" +
+	"\x1bworkspace:edit_data_reviews\"\x00\x82\xd3\xe4\x93\x025:\x01*\"0/datareview/v2/check-alerts/batch-perform-action\x12\xc4\x02\n" +
+	"0BatchPerformAutomaticCheckEvaluationReviewAction\x12N.nominal.datareview.v2.BatchPerformAutomaticCheckEvaluationReviewActionRequest\x1aO.nominal.datareview.v2.BatchPerformAutomaticCheckEvaluationReviewActionResponse\"o\xba\xb2\x1a!\n" +
+	"\x1f\n" +
+	"\x1bworkspace:edit_data_reviews\"\x00\x82\xd3\xe4\x93\x02D:\x01*\"?/datareview/v2/automatic-check-evaluations/batch-perform-action\x12\x8c\x02\n" +
+	"$GetAutomaticCheckEvaluationActionLog\x12B.nominal.datareview.v2.GetAutomaticCheckEvaluationActionLogRequest\x1aC.nominal.datareview.v2.GetAutomaticCheckEvaluationActionLogResponse\"[\xba\xb2\x1a\x14\n" +
+	"\x12\n" +
+	"\x0eworkspace:view\"\x00\x82\xd3\xe4\x93\x02=\x12;/datareview/v2/automatic-check-evaluations/{rid}/action-log\x12\x97\x02\n" +
+	"\"BatchPerformManualCheckAlertAction\x12@.nominal.datareview.v2.BatchPerformManualCheckAlertActionRequest\x1aA.nominal.datareview.v2.BatchPerformManualCheckAlertActionResponse\"l\xba\xb2\x1a!\n" +
+	"\x1f\n" +
+	"\x1bworkspace:edit_data_reviews\"\x00\x82\xd3\xe4\x93\x02A:\x01*\"</datareview/v2/manual-check-evaluations/batch-perform-action\x12\x80\x02\n" +
+	"!GetManualCheckEvaluationActionLog\x12?.nominal.datareview.v2.GetManualCheckEvaluationActionLogRequest\x1a@.nominal.datareview.v2.GetManualCheckEvaluationActionLogResponse\"X\xba\xb2\x1a\x14\n" +
+	"\x12\n" +
+	"\x0eworkspace:view\"\x00\x82\xd3\xe4\x93\x02:\x128/datareview/v2/manual-check-evaluations/{rid}/action-log\x12\xda\x01\n" +
+	"\x11ArchiveDataReview\x12/.nominal.datareview.v2.ArchiveDataReviewRequest\x1a0.nominal.datareview.v2.ArchiveDataReviewResponse\"b\xba\xb2\x1a!\n" +
+	"\x1f\n" +
+	"\x1bworkspace:edit_data_reviews\"\x00\x82\xd3\xe4\x93\x027\"5/datareview/v2/data-reviews/{data_review_rid}/archive\x12\xe0\x01\n" +
+	"\x16BatchArchiveDataReview\x124.nominal.datareview.v2.BatchArchiveDataReviewRequest\x1a5.nominal.datareview.v2.BatchArchiveDataReviewResponse\"Y\xba\xb2\x1a!\n" +
+	"\x1f\n" +
+	"\x1bworkspace:edit_data_reviews\"\x00\x82\xd3\xe4\x93\x02.:\x01*\")/datareview/v2/data-reviews/batch-archive\x12\xe2\x01\n" +
+	"\x13UnarchiveDataReview\x121.nominal.datareview.v2.UnarchiveDataReviewRequest\x1a2.nominal.datareview.v2.UnarchiveDataReviewResponse\"d\xba\xb2\x1a!\n" +
+	"\x1f\n" +
+	"\x1bworkspace:edit_data_reviews\"\x00\x82\xd3\xe4\x93\x029\"7/datareview/v2/data-reviews/{data_review_rid}/unarchive\x12\xdb\x01\n" +
+	"\x19GetDataReviewCheckMetrics\x127.nominal.datareview.v2.GetDataReviewCheckMetricsRequest\x1a8.nominal.datareview.v2.GetDataReviewCheckMetricsResponse\"K\xba\xb2\x1a\x14\n" +
+	"\x12\n" +
+	"\x0eworkspace:view\"\x00\x82\xd3\xe4\x93\x02-:\x01*\"(/datareview/v2/data-review-check-metricsB\xf9\x01\n" +
 	"\x19com.nominal.datareview.v2B\x0fDataReviewProtoP\x01ZUgithub.com/nominal-io/nominal-api-protos-go/nominal/protos/datareview/v2;datareviewv2\xa2\x02\x03NDX\xaa\x02\x15Nominal.Datareview.V2\xca\x02\x15Nominal\\Datareview\\V2\xe2\x02!Nominal\\Datareview\\V2\\GPBMetadata\xea\x02\x17Nominal::Datareview::V2b\x06proto3"
 
 var (

@@ -27,25 +27,27 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	AssetService_CreateAsset_FullMethodName            = "/nominal.asset.v2.AssetService/CreateAsset"
-	AssetService_UpdateAsset_FullMethodName            = "/nominal.asset.v2.AssetService/UpdateAsset"
-	AssetService_AddDataScopesToAsset_FullMethodName   = "/nominal.asset.v2.AssetService/AddDataScopesToAsset"
-	AssetService_GetAssets_FullMethodName              = "/nominal.asset.v2.AssetService/GetAssets"
-	AssetService_GetAssetsByDataSource_FullMethodName  = "/nominal.asset.v2.AssetService/GetAssetsByDataSource"
-	AssetService_Archive_FullMethodName                = "/nominal.asset.v2.AssetService/Archive"
-	AssetService_Unarchive_FullMethodName              = "/nominal.asset.v2.AssetService/Unarchive"
-	AssetService_SearchAssets_FullMethodName           = "/nominal.asset.v2.AssetService/SearchAssets"
-	AssetService_BatchEditAssetMetadata_FullMethodName = "/nominal.asset.v2.AssetService/BatchEditAssetMetadata"
-	AssetService_SearchTypes_FullMethodName            = "/nominal.asset.v2.AssetService/SearchTypes"
-	AssetService_UpdateAssetAttachments_FullMethodName = "/nominal.asset.v2.AssetService/UpdateAssetAttachments"
-	AssetService_UpdateAssetRefNames_FullMethodName    = "/nominal.asset.v2.AssetService/UpdateAssetRefNames"
-	AssetService_CreateType_FullMethodName             = "/nominal.asset.v2.AssetService/CreateType"
-	AssetService_UpdateType_FullMethodName             = "/nominal.asset.v2.AssetService/UpdateType"
-	AssetService_GetTypes_FullMethodName               = "/nominal.asset.v2.AssetService/GetTypes"
-	AssetService_GetTypesForDatasource_FullMethodName  = "/nominal.asset.v2.AssetService/GetTypesForDatasource"
-	AssetService_DeleteType_FullMethodName             = "/nominal.asset.v2.AssetService/DeleteType"
-	AssetService_ArchiveType_FullMethodName            = "/nominal.asset.v2.AssetService/ArchiveType"
-	AssetService_UnarchiveType_FullMethodName          = "/nominal.asset.v2.AssetService/UnarchiveType"
+	AssetService_CreateAsset_FullMethodName                     = "/nominal.asset.v2.AssetService/CreateAsset"
+	AssetService_CreateOrUpdateAssetByPrimaryKey_FullMethodName = "/nominal.asset.v2.AssetService/CreateOrUpdateAssetByPrimaryKey"
+	AssetService_UpdateAsset_FullMethodName                     = "/nominal.asset.v2.AssetService/UpdateAsset"
+	AssetService_AddDataScopesToAsset_FullMethodName            = "/nominal.asset.v2.AssetService/AddDataScopesToAsset"
+	AssetService_GetAssets_FullMethodName                       = "/nominal.asset.v2.AssetService/GetAssets"
+	AssetService_GetAssetDataConformance_FullMethodName         = "/nominal.asset.v2.AssetService/GetAssetDataConformance"
+	AssetService_GetAssetsByDataSource_FullMethodName           = "/nominal.asset.v2.AssetService/GetAssetsByDataSource"
+	AssetService_Archive_FullMethodName                         = "/nominal.asset.v2.AssetService/Archive"
+	AssetService_Unarchive_FullMethodName                       = "/nominal.asset.v2.AssetService/Unarchive"
+	AssetService_SearchAssets_FullMethodName                    = "/nominal.asset.v2.AssetService/SearchAssets"
+	AssetService_BatchEditAssetMetadata_FullMethodName          = "/nominal.asset.v2.AssetService/BatchEditAssetMetadata"
+	AssetService_SearchTypes_FullMethodName                     = "/nominal.asset.v2.AssetService/SearchTypes"
+	AssetService_UpdateAssetAttachments_FullMethodName          = "/nominal.asset.v2.AssetService/UpdateAssetAttachments"
+	AssetService_UpdateAssetRefNames_FullMethodName             = "/nominal.asset.v2.AssetService/UpdateAssetRefNames"
+	AssetService_CreateType_FullMethodName                      = "/nominal.asset.v2.AssetService/CreateType"
+	AssetService_UpdateType_FullMethodName                      = "/nominal.asset.v2.AssetService/UpdateType"
+	AssetService_GetTypes_FullMethodName                        = "/nominal.asset.v2.AssetService/GetTypes"
+	AssetService_DeleteType_FullMethodName                      = "/nominal.asset.v2.AssetService/DeleteType"
+	AssetService_ArchiveType_FullMethodName                     = "/nominal.asset.v2.AssetService/ArchiveType"
+	AssetService_UnarchiveType_FullMethodName                   = "/nominal.asset.v2.AssetService/UnarchiveType"
+	AssetService_TraverseLinks_FullMethodName                   = "/nominal.asset.v2.AssetService/TraverseLinks"
 )
 
 // AssetServiceClient is the client API for AssetService service.
@@ -56,48 +58,249 @@ const (
 // of some metadata about the data, as well as a set of data scopes that define the data belonging to the asset. API
 // endpoints allow for CRUD operations on asset objects.
 type AssetServiceClient interface {
-	// Creates a new asset.
-	CreateAsset(ctx context.Context, in *CreateAssetRequest, opts ...grpc.CallOption) (*CreateAssetResponse, error)
-	// Updates an existing asset's metadata.
-	UpdateAsset(ctx context.Context, in *UpdateAssetRequest, opts ...grpc.CallOption) (*UpdateAssetResponse, error)
-	// Adds data scopes to an asset.
+	// Creates an asset in a workspace, with its title, description, properties, labels, links, attachments, asset
+	// types, and data (data scopes, or a pipeline or dataset). Returns the new asset.
 	//
-	// Throws if the asset already has data scopes with data scope names matching those in the request.
+	// The server assigns the RID, creator, and timestamps. The asset is created in the default workspace when
+	// workspace is omitted. Data scopes, attachments, asset types, and any pipeline or dataset must be in that
+	// workspace, and the caller must be able to read each data source. Blank or null property keys and labels are
+	// dropped. To create or reuse an asset by primary key, use CreateOrUpdateAssetByPrimaryKey. The caller needs
+	// permission to create assets in the workspace.
+	//
+	// Errors:
+	//   - INVALID_ARGUMENT: no workspace is given and the caller has no default; an input (data scope, attachment, asset
+	//     type, pipeline, or dataset) is in another workspace; more than 10 asset types; two data scopes share a name;
+	//     dataset_rid and data are both set, or either is set with data scopes; a pipeline is archived; a pipeline or
+	//     derived dataset is already read by another asset; a property fails an asset type's rules; an asset type is
+	//     archived; another active asset has the same primary key for an asset type; or the data does not meet an asset
+	//     type's data requirements.
+	//   - NOT_FOUND: an asset type, attachment, data source, or pipeline does not exist or the caller cannot read it.
+	//   - PERMISSION_DENIED: the caller cannot create assets in the workspace.
+	//   - DEADLINE_EXCEEDED: checking data requirements took too long. Nothing is written, so retry.
+	CreateAsset(ctx context.Context, in *CreateAssetRequest, opts ...grpc.CallOption) (*CreateAssetResponse, error)
+	// Creates an asset identified by an asset type and its primary-key value, or finds the active asset that already
+	// has that key and returns or updates it, as if_exists says.
+	//
+	// Asset.types must include type_rid, and the asset must set the primary-key property of that type to a nonempty
+	// string. Archived assets are ignored, so a key held only by an archived asset creates a new asset. Concurrent
+	// calls with the same key resolve to one asset. A create follows CreateAsset. Every call needs permission to create
+	// assets in the workspace, and the caller must be able to view an existing asset.
+	//
+	// RETURN_EXISTING returns the existing asset unchanged. UPDATE_EXISTING also needs edit permission on that asset.
+	// It replaces the title, description, properties, labels, links, and asset types, and the data scopes unless the
+	// request sets dataset_rid or data. It leaves attachments, data, workspace, and primary key unchanged.
+	//
+	// Errors:
+	//   - INVALID_ARGUMENT: if_exists or asset is unset; type_rid is not in asset.types; the primary-key value is missing, blank,
+	//     or too long; an asset type is archived; or another condition that CreateAsset lists for
+	//     INVALID_ARGUMENT applies.
+	//   - NOT_FOUND: an asset type, attachment, data source, or pipeline does not exist or the caller cannot read it, or
+	//     an update lacks edit permission on the existing asset.
+	//   - PERMISSION_DENIED: the caller cannot create assets in the workspace, or cannot view the existing asset.
+	//   - DEADLINE_EXCEEDED: checking data requirements took too long. Retry.
+	CreateOrUpdateAssetByPrimaryKey(ctx context.Context, in *CreateOrUpdateAssetByPrimaryKeyRequest, opts ...grpc.CallOption) (*CreateOrUpdateAssetByPrimaryKeyResponse, error)
+	// Updates an asset's title, description, properties, labels, links, data scopes, asset types, data, or staged
+	// state. Returns the updated asset.
+	//
+	// Only the fields sent change. A properties, labels, links, data_scopes, typed_properties, or types field replaces
+	// the stored value, and a present field with no entries clears it. When data_scopes is replaced, scopes whose data
+	// source the caller cannot read are kept. The caller needs edit permission on the asset.
+	//
+	// Errors:
+	//   - INVALID_ARGUMENT: more than 10 asset types; data and nonempty data_scopes are combined; two data scopes share a
+	//     name; data scopes are edited while the asset reads a pipeline or dataset it does not own, or its data was edited
+	//     through its pipeline graph or dataset composition; a relink leaves data scopes in place or the caller cannot
+	//     read all of them; data names an archived pipeline, a pipeline already read by another asset, or a pipeline or
+	//     dataset in another workspace; a property fails the rules of an asset type the asset will have; a newly attached
+	//     asset type is archived; another active asset has the same primary key; the data does not meet the data
+	//     requirements of a newly attached asset type, or of any asset type when data is replaced; or the inputs are in
+	//     different workspaces.
+	//   - NOT_FOUND: the asset does not exist or the caller cannot edit it, or an asset type, data source, or pipeline
+	//     does not exist or the caller cannot read it.
+	//   - DEADLINE_EXCEEDED: checking data requirements took too long. Retry.
+	UpdateAsset(ctx context.Context, in *UpdateAssetRequest, opts ...grpc.CallOption) (*UpdateAssetResponse, error)
+	// Adds data scopes (filtered views of data sources, each with a ref name) to an asset and keeps its existing ones.
+	// Returns the updated asset.
+	//
+	// The caller needs edit permission on the asset and must be able to read each new data source. The data sources
+	// must be in the asset's workspace. The call fails when the asset reads a pipeline or dataset it does not own, or
+	// its data was edited through its pipeline graph or dataset composition.
+	//
+	// Errors:
+	//   - INVALID_ARGUMENT: a new ref name repeats in the request or matches an existing one; data scopes cannot be
+	//     edited as described above; or a data source is in another workspace.
+	//   - NOT_FOUND: the asset does not exist or the caller cannot edit it, or a data source does not exist or the caller
+	//     cannot read it.
 	AddDataScopesToAsset(ctx context.Context, in *AddDataScopesToAssetRequest, opts ...grpc.CallOption) (*AddDataScopesToAssetResponse, error)
-	// Returns the assets for the given asset RIDs.
+	// Returns assets by RID, as a map keyed by RID, with is_live set on each asset.
+	//
+	// RIDs that do not exist or that the caller cannot view are left out, without an error. Archived assets are
+	// returned. Data scopes whose data source the caller cannot read are left out of each asset.
 	GetAssets(ctx context.Context, in *GetAssetsRequest, opts ...grpc.CallOption) (*GetAssetsResponse, error)
-	// Returns all assets with the given data source as a data scope.
+	// Reports, for each asset, whether its current data meets the data requirements of its asset types.
+	//
+	// Requirements are only enforced when an asset type is attached, so an asset whose data changed since may no longer
+	// meet them. The result for an asset type is unknown when the caller cannot read the asset's data or looking up the
+	// series took too long. Takes 1 to 100 assets and needs view permission on each. Assets that are missing or not
+	// viewable are left out of the response.
+	//
+	// Errors:
+	// - INVALID_ARGUMENT: asset_rids is empty or has more than 100 assets.
+	GetAssetDataConformance(ctx context.Context, in *GetAssetDataConformanceRequest, opts ...grpc.CallOption) (*GetAssetDataConformanceResponse, error)
+	// Returns the assets that read a data source (a dataset, video, or connection) that the caller can read, among the
+	// assets the caller can view.
+	//
+	// Returns no assets when none read the data source.
+	//
+	// Errors:
+	// - NOT_FOUND: the data source does not exist or the caller cannot read its metadata.
 	GetAssetsByDataSource(ctx context.Context, in *GetAssetsByDataSourceRequest, opts ...grpc.CallOption) (*GetAssetsByDataSourceResponse, error)
-	// Archives the asset with the given RID.
+	// Archives an asset and all of its runs that are not already archived.
+	//
+	// With include_linked_workbooks, also archives the workbooks (notebooks in the API) linked to the asset or to those
+	// runs. Unarchive restores the runs and workbooks archived this way. SearchAssets leaves archived assets out by
+	// default. An archived asset no longer holds its primary keys, so another asset can use them. The caller needs
+	// edit permission on the asset.
+	//
+	// Errors:
+	// - NOT_FOUND: the asset does not exist or the caller cannot edit it.
 	Archive(ctx context.Context, in *ArchiveRequest, opts ...grpc.CallOption) (*ArchiveResponse, error)
-	// Unarchives the asset with the given RID.
+	// Unarchives an asset and the runs that were archived along with it.
+	//
+	// Runs archived directly stay archived. With include_linked_workbooks, also restores the workbooks (notebooks in
+	// the API) that were archived along with the asset. The caller needs edit permission on the asset.
+	//
+	// Errors:
+	//   - INVALID_ARGUMENT: the asset no longer meets the property rules of its asset types, or another active asset now
+	//     has its primary key for an asset type.
+	//   - NOT_FOUND: the asset does not exist or the caller cannot edit it.
 	Unarchive(ctx context.Context, in *UnarchiveRequest, opts ...grpc.CallOption) (*UnarchiveResponse, error)
-	// Searches for assets matching the given query.
+	// Searches assets in the workspaces the caller can view, by text, label, property, asset type, or liveness. Returns
+	// a page of assets in the requested sort order.
+	//
+	// The query must be set. Archived assets are excluded unless the query has an archived arm or archived_statuses
+	// includes them. Staged (auto created) assets are never returned.
+	//
+	// Errors:
+	//   - INVALID_ARGUMENT: the query or one of its arms is unset, search text contains a null character, no sort key or
+	//     field is given, page_size is over 10,000, or next_page_token is not a token from a previous response.
 	SearchAssets(ctx context.Context, in *SearchAssetsRequest, opts ...grpc.CallOption) (*SearchAssetsResponse, error)
-	// Batch edits metadata across multiple assets. Supports rename/merge for labels and properties.
-	// If more than 1000 assets are targeted, this endpoint will throw a 400.
+	// Renames labels, renames property keys, or merges property values across all assets that match an optional query
+	// and carry the source label or property. Returns the assets changed and the assets skipped.
+	//
+	// The edit covers matching assets in the workspaces the caller can access, archived assets included. Assets skipped
+	// because of a rename conflict are listed in conflicting_asset_rids. The caller needs edit permission on every
+	// matching asset, and the call changes nothing if it fails. When no asset matches, the response is empty. Property
+	// changes are checked against the asset types of each changed asset.
+	//
+	// Errors:
+	//   - INVALID_ARGUMENT: more than 1000 assets match; an OverwriteOnConflict priority list is not exactly the source
+	//     keys plus the target key, without duplicates; a changed asset no longer meets the property rules of its asset
+	//     types; or two active assets would share a primary key.
+	//   - NOT_FOUND: the caller cannot edit one of the matching assets.
 	BatchEditAssetMetadata(ctx context.Context, in *BatchEditAssetMetadataRequest, opts ...grpc.CallOption) (*BatchEditAssetMetadataResponse, error)
-	// Searches for asset types matching the given query.
+	// Searches asset types by text or property name in the workspaces the caller can view. Returns a page of asset
+	// types sorted by creation time.
+	//
+	// Archived asset types are excluded unless archived_statuses includes them.
+	//
+	// Errors:
+	// - INVALID_ARGUMENT: page_size is over 10,000, or next_page_token is not a token from a previous response.
 	SearchTypes(ctx context.Context, in *SearchTypesRequest, opts ...grpc.CallOption) (*SearchTypesResponse, error)
-	// Update the attachments associated with an asset.
+	// Adds attachments to an asset and removes others in one call.
+	//
+	// Adding an attachment the asset already has, or removing one it does not have, changes nothing. The caller needs
+	// edit permission on the asset.
+	//
+	// Errors:
+	//   - NOT_FOUND: the asset does not exist or the caller cannot edit it, or an attachment does not exist or the caller
+	//     cannot read it.
+	//   - INVALID_ARGUMENT: an attachment is in a different workspace from the asset, or is in both lists.
 	UpdateAssetAttachments(ctx context.Context, in *UpdateAssetAttachmentsRequest, opts ...grpc.CallOption) (*UpdateAssetAttachmentsResponse, error)
-	// Update the ref names for the data scopes on the asset. This update will also be applied on all associated
-	// workbooks.
+	// Renames data scopes on an asset, given a map from old ref name to new ref name.
+	//
+	// An old ref name that matches no data scope is ignored. Workbooks that use a renamed ref name are not changed. The
+	// caller needs edit permission on the asset.
+	//
+	// Errors:
+	//   - INVALID_ARGUMENT: two new ref names are the same, or the asset reads a pipeline or dataset it does not own, or
+	//     its data was edited through its pipeline graph or dataset composition.
+	//   - NOT_FOUND: the asset does not exist or the caller cannot edit it.
 	UpdateAssetRefNames(ctx context.Context, in *UpdateAssetRefNamesRequest, opts ...grpc.CallOption) (*UpdateAssetRefNamesResponse, error)
-	// Creates a new type.
+	// Creates an asset type: a named set of required or suggested properties with a primary key, optional data
+	// requirements, and links to other asset types. Returns the new asset type.
+	//
+	// The server assigns the RID. The asset type is created in the default workspace when workspace is omitted. The
+	// primary key must not appear in property_configs. Each link's property must be a string property declared in
+	// property_configs and must not be the primary key. Each link's target type must exist, be unarchived, be in the
+	// same workspace, and be viewable by the caller, and one property cannot link to two target types. The caller needs
+	// permission to edit the workspace configuration.
+	//
+	// Errors:
+	//   - INVALID_ARGUMENT: no workspace is given and the caller has no default; the name, the primary key, or a property
+	//     name is blank; the primary key is in property_configs; or the data requirements or a link are invalid.
+	//   - ALREADY_EXISTS: another unarchived asset type in the workspace has this name.
+	//   - NOT_FOUND: the target type of a link does not exist or the caller cannot view it.
+	//   - PERMISSION_DENIED: the caller cannot edit the workspace configuration.
 	CreateType(ctx context.Context, in *CreateTypeRequest, opts ...grpc.CallOption) (*CreateTypeResponse, error)
-	// Updates a type. Will throw unless all assets that reference the type pass the updated type check.
+	// Updates an asset type's name, description, icon, properties, primary key, data requirements, or links. Returns
+	// the updated asset type.
+	//
+	// Only the fields sent change. A change to properties or the primary key fails unless every active asset with the
+	// asset type still meets the new rules, and fails when the asset type has more than 10,000 active assets. The
+	// primary key cannot change once an asset has the asset type. Adding a link fails when an active asset of the asset
+	// type also has an asset type that links the same property to a different target type. The caller needs permission
+	// to edit the workspace configuration.
+	//
+	// Errors:
+	//   - INVALID_ARGUMENT: the name, the primary key, or a property name is blank; the primary key is in
+	//     property_configs or changes while an asset has the asset type; active assets would no longer conform, or too
+	//     many to check; or a link is invalid.
+	//   - ALREADY_EXISTS: another unarchived asset type in the workspace has this name.
+	//   - NOT_FOUND: the asset type does not exist or the caller cannot edit its workspace configuration, or the target
+	//     type of a new link does not exist or the caller cannot view it.
 	UpdateType(ctx context.Context, in *UpdateTypeRequest, opts ...grpc.CallOption) (*UpdateTypeResponse, error)
-	// Returns the asset types for the given type RIDs.
+	// Returns asset types by RID, as a map keyed by RID.
+	//
+	// RIDs that do not exist or that the caller cannot view are left out.
 	GetTypes(ctx context.Context, in *GetTypesRequest, opts ...grpc.CallOption) (*GetTypesResponse, error)
-	// Returns the asset types associated with the given data source.
-	GetTypesForDatasource(ctx context.Context, in *GetTypesForDatasourceRequest, opts ...grpc.CallOption) (*GetTypesForDatasourceResponse, error)
-	// Deletes a type. The type must not be referenced by any assets.
+	// Deletes an asset type that no asset or checklist uses.
+	//
+	// Fails if any asset, archived or not, has the asset type or any checklist references it. To retire an asset type that is in use, use
+	// ArchiveType. The caller needs permission to edit the workspace configuration.
+	//
+	// Errors:
+	// - NOT_FOUND: the asset type does not exist or the caller cannot edit its workspace configuration.
+	// - PERMISSION_DENIED: an asset has the asset type.
+	// - FAILED_PRECONDITION: a checklist references the asset type.
 	DeleteType(ctx context.Context, in *DeleteTypeRequest, opts ...grpc.CallOption) (*DeleteTypeResponse, error)
-	// Archives the asset type with the given RID.
+	// Archives an asset type, which hides it from type search by default.
+	//
+	// SearchTypes leaves archived asset types out by default, and a new link needs both of its asset types unarchived.
+	// Reverse it with UnarchiveType. The caller needs permission to edit the workspace configuration.
+	//
+	// Errors:
+	// - NOT_FOUND: the asset type does not exist or the caller cannot edit its workspace configuration.
 	ArchiveType(ctx context.Context, in *ArchiveTypeRequest, opts ...grpc.CallOption) (*ArchiveTypeResponse, error)
-	// Unarchives the asset type with the given RID.
+	// Unarchives an asset type, so SearchTypes returns it by default again.
+	//
+	// The caller needs permission to edit the workspace configuration.
+	//
+	// Errors:
+	// - ALREADY_EXISTS: another unarchived asset type in the workspace has this name.
+	// - NOT_FOUND: the asset type does not exist or the caller cannot edit its workspace configuration.
 	UnarchiveType(ctx context.Context, in *UnarchiveTypeRequest, opts ...grpc.CallOption) (*UnarchiveTypeResponse, error)
+	// Follows one asset type link, forward or inverse, from a batch of assets. Returns a page of edges, one for each
+	// active asset reached, ordered by requested asset.
+	//
+	// A forward edge holds the source property value when no asset the caller can view matches it. Inverse edges from
+	// assets the caller cannot view are left out.
+	//
+	// Errors:
+	//   - NOT_FOUND: the link does not exist or its source asset type is in a workspace the caller cannot view, or a
+	//     requested asset does not exist or the caller cannot view it.
+	//   - INVALID_ARGUMENT: page_token is not a token from a previous response.
+	TraverseLinks(ctx context.Context, in *TraverseLinksRequest, opts ...grpc.CallOption) (*TraverseLinksResponse, error)
 }
 
 type assetServiceClient struct {
@@ -112,6 +315,16 @@ func (c *assetServiceClient) CreateAsset(ctx context.Context, in *CreateAssetReq
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(CreateAssetResponse)
 	err := c.cc.Invoke(ctx, AssetService_CreateAsset_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *assetServiceClient) CreateOrUpdateAssetByPrimaryKey(ctx context.Context, in *CreateOrUpdateAssetByPrimaryKeyRequest, opts ...grpc.CallOption) (*CreateOrUpdateAssetByPrimaryKeyResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(CreateOrUpdateAssetByPrimaryKeyResponse)
+	err := c.cc.Invoke(ctx, AssetService_CreateOrUpdateAssetByPrimaryKey_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -142,6 +355,16 @@ func (c *assetServiceClient) GetAssets(ctx context.Context, in *GetAssetsRequest
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(GetAssetsResponse)
 	err := c.cc.Invoke(ctx, AssetService_GetAssets_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *assetServiceClient) GetAssetDataConformance(ctx context.Context, in *GetAssetDataConformanceRequest, opts ...grpc.CallOption) (*GetAssetDataConformanceResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(GetAssetDataConformanceResponse)
+	err := c.cc.Invoke(ctx, AssetService_GetAssetDataConformance_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -258,16 +481,6 @@ func (c *assetServiceClient) GetTypes(ctx context.Context, in *GetTypesRequest, 
 	return out, nil
 }
 
-func (c *assetServiceClient) GetTypesForDatasource(ctx context.Context, in *GetTypesForDatasourceRequest, opts ...grpc.CallOption) (*GetTypesForDatasourceResponse, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(GetTypesForDatasourceResponse)
-	err := c.cc.Invoke(ctx, AssetService_GetTypesForDatasource_FullMethodName, in, out, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
 func (c *assetServiceClient) DeleteType(ctx context.Context, in *DeleteTypeRequest, opts ...grpc.CallOption) (*DeleteTypeResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(DeleteTypeResponse)
@@ -298,6 +511,16 @@ func (c *assetServiceClient) UnarchiveType(ctx context.Context, in *UnarchiveTyp
 	return out, nil
 }
 
+func (c *assetServiceClient) TraverseLinks(ctx context.Context, in *TraverseLinksRequest, opts ...grpc.CallOption) (*TraverseLinksResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(TraverseLinksResponse)
+	err := c.cc.Invoke(ctx, AssetService_TraverseLinks_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // AssetServiceServer is the server API for AssetService service.
 // All implementations must embed UnimplementedAssetServiceServer
 // for forward compatibility.
@@ -306,48 +529,249 @@ func (c *assetServiceClient) UnarchiveType(ctx context.Context, in *UnarchiveTyp
 // of some metadata about the data, as well as a set of data scopes that define the data belonging to the asset. API
 // endpoints allow for CRUD operations on asset objects.
 type AssetServiceServer interface {
-	// Creates a new asset.
-	CreateAsset(context.Context, *CreateAssetRequest) (*CreateAssetResponse, error)
-	// Updates an existing asset's metadata.
-	UpdateAsset(context.Context, *UpdateAssetRequest) (*UpdateAssetResponse, error)
-	// Adds data scopes to an asset.
+	// Creates an asset in a workspace, with its title, description, properties, labels, links, attachments, asset
+	// types, and data (data scopes, or a pipeline or dataset). Returns the new asset.
 	//
-	// Throws if the asset already has data scopes with data scope names matching those in the request.
+	// The server assigns the RID, creator, and timestamps. The asset is created in the default workspace when
+	// workspace is omitted. Data scopes, attachments, asset types, and any pipeline or dataset must be in that
+	// workspace, and the caller must be able to read each data source. Blank or null property keys and labels are
+	// dropped. To create or reuse an asset by primary key, use CreateOrUpdateAssetByPrimaryKey. The caller needs
+	// permission to create assets in the workspace.
+	//
+	// Errors:
+	//   - INVALID_ARGUMENT: no workspace is given and the caller has no default; an input (data scope, attachment, asset
+	//     type, pipeline, or dataset) is in another workspace; more than 10 asset types; two data scopes share a name;
+	//     dataset_rid and data are both set, or either is set with data scopes; a pipeline is archived; a pipeline or
+	//     derived dataset is already read by another asset; a property fails an asset type's rules; an asset type is
+	//     archived; another active asset has the same primary key for an asset type; or the data does not meet an asset
+	//     type's data requirements.
+	//   - NOT_FOUND: an asset type, attachment, data source, or pipeline does not exist or the caller cannot read it.
+	//   - PERMISSION_DENIED: the caller cannot create assets in the workspace.
+	//   - DEADLINE_EXCEEDED: checking data requirements took too long. Nothing is written, so retry.
+	CreateAsset(context.Context, *CreateAssetRequest) (*CreateAssetResponse, error)
+	// Creates an asset identified by an asset type and its primary-key value, or finds the active asset that already
+	// has that key and returns or updates it, as if_exists says.
+	//
+	// Asset.types must include type_rid, and the asset must set the primary-key property of that type to a nonempty
+	// string. Archived assets are ignored, so a key held only by an archived asset creates a new asset. Concurrent
+	// calls with the same key resolve to one asset. A create follows CreateAsset. Every call needs permission to create
+	// assets in the workspace, and the caller must be able to view an existing asset.
+	//
+	// RETURN_EXISTING returns the existing asset unchanged. UPDATE_EXISTING also needs edit permission on that asset.
+	// It replaces the title, description, properties, labels, links, and asset types, and the data scopes unless the
+	// request sets dataset_rid or data. It leaves attachments, data, workspace, and primary key unchanged.
+	//
+	// Errors:
+	//   - INVALID_ARGUMENT: if_exists or asset is unset; type_rid is not in asset.types; the primary-key value is missing, blank,
+	//     or too long; an asset type is archived; or another condition that CreateAsset lists for
+	//     INVALID_ARGUMENT applies.
+	//   - NOT_FOUND: an asset type, attachment, data source, or pipeline does not exist or the caller cannot read it, or
+	//     an update lacks edit permission on the existing asset.
+	//   - PERMISSION_DENIED: the caller cannot create assets in the workspace, or cannot view the existing asset.
+	//   - DEADLINE_EXCEEDED: checking data requirements took too long. Retry.
+	CreateOrUpdateAssetByPrimaryKey(context.Context, *CreateOrUpdateAssetByPrimaryKeyRequest) (*CreateOrUpdateAssetByPrimaryKeyResponse, error)
+	// Updates an asset's title, description, properties, labels, links, data scopes, asset types, data, or staged
+	// state. Returns the updated asset.
+	//
+	// Only the fields sent change. A properties, labels, links, data_scopes, typed_properties, or types field replaces
+	// the stored value, and a present field with no entries clears it. When data_scopes is replaced, scopes whose data
+	// source the caller cannot read are kept. The caller needs edit permission on the asset.
+	//
+	// Errors:
+	//   - INVALID_ARGUMENT: more than 10 asset types; data and nonempty data_scopes are combined; two data scopes share a
+	//     name; data scopes are edited while the asset reads a pipeline or dataset it does not own, or its data was edited
+	//     through its pipeline graph or dataset composition; a relink leaves data scopes in place or the caller cannot
+	//     read all of them; data names an archived pipeline, a pipeline already read by another asset, or a pipeline or
+	//     dataset in another workspace; a property fails the rules of an asset type the asset will have; a newly attached
+	//     asset type is archived; another active asset has the same primary key; the data does not meet the data
+	//     requirements of a newly attached asset type, or of any asset type when data is replaced; or the inputs are in
+	//     different workspaces.
+	//   - NOT_FOUND: the asset does not exist or the caller cannot edit it, or an asset type, data source, or pipeline
+	//     does not exist or the caller cannot read it.
+	//   - DEADLINE_EXCEEDED: checking data requirements took too long. Retry.
+	UpdateAsset(context.Context, *UpdateAssetRequest) (*UpdateAssetResponse, error)
+	// Adds data scopes (filtered views of data sources, each with a ref name) to an asset and keeps its existing ones.
+	// Returns the updated asset.
+	//
+	// The caller needs edit permission on the asset and must be able to read each new data source. The data sources
+	// must be in the asset's workspace. The call fails when the asset reads a pipeline or dataset it does not own, or
+	// its data was edited through its pipeline graph or dataset composition.
+	//
+	// Errors:
+	//   - INVALID_ARGUMENT: a new ref name repeats in the request or matches an existing one; data scopes cannot be
+	//     edited as described above; or a data source is in another workspace.
+	//   - NOT_FOUND: the asset does not exist or the caller cannot edit it, or a data source does not exist or the caller
+	//     cannot read it.
 	AddDataScopesToAsset(context.Context, *AddDataScopesToAssetRequest) (*AddDataScopesToAssetResponse, error)
-	// Returns the assets for the given asset RIDs.
+	// Returns assets by RID, as a map keyed by RID, with is_live set on each asset.
+	//
+	// RIDs that do not exist or that the caller cannot view are left out, without an error. Archived assets are
+	// returned. Data scopes whose data source the caller cannot read are left out of each asset.
 	GetAssets(context.Context, *GetAssetsRequest) (*GetAssetsResponse, error)
-	// Returns all assets with the given data source as a data scope.
+	// Reports, for each asset, whether its current data meets the data requirements of its asset types.
+	//
+	// Requirements are only enforced when an asset type is attached, so an asset whose data changed since may no longer
+	// meet them. The result for an asset type is unknown when the caller cannot read the asset's data or looking up the
+	// series took too long. Takes 1 to 100 assets and needs view permission on each. Assets that are missing or not
+	// viewable are left out of the response.
+	//
+	// Errors:
+	// - INVALID_ARGUMENT: asset_rids is empty or has more than 100 assets.
+	GetAssetDataConformance(context.Context, *GetAssetDataConformanceRequest) (*GetAssetDataConformanceResponse, error)
+	// Returns the assets that read a data source (a dataset, video, or connection) that the caller can read, among the
+	// assets the caller can view.
+	//
+	// Returns no assets when none read the data source.
+	//
+	// Errors:
+	// - NOT_FOUND: the data source does not exist or the caller cannot read its metadata.
 	GetAssetsByDataSource(context.Context, *GetAssetsByDataSourceRequest) (*GetAssetsByDataSourceResponse, error)
-	// Archives the asset with the given RID.
+	// Archives an asset and all of its runs that are not already archived.
+	//
+	// With include_linked_workbooks, also archives the workbooks (notebooks in the API) linked to the asset or to those
+	// runs. Unarchive restores the runs and workbooks archived this way. SearchAssets leaves archived assets out by
+	// default. An archived asset no longer holds its primary keys, so another asset can use them. The caller needs
+	// edit permission on the asset.
+	//
+	// Errors:
+	// - NOT_FOUND: the asset does not exist or the caller cannot edit it.
 	Archive(context.Context, *ArchiveRequest) (*ArchiveResponse, error)
-	// Unarchives the asset with the given RID.
+	// Unarchives an asset and the runs that were archived along with it.
+	//
+	// Runs archived directly stay archived. With include_linked_workbooks, also restores the workbooks (notebooks in
+	// the API) that were archived along with the asset. The caller needs edit permission on the asset.
+	//
+	// Errors:
+	//   - INVALID_ARGUMENT: the asset no longer meets the property rules of its asset types, or another active asset now
+	//     has its primary key for an asset type.
+	//   - NOT_FOUND: the asset does not exist or the caller cannot edit it.
 	Unarchive(context.Context, *UnarchiveRequest) (*UnarchiveResponse, error)
-	// Searches for assets matching the given query.
+	// Searches assets in the workspaces the caller can view, by text, label, property, asset type, or liveness. Returns
+	// a page of assets in the requested sort order.
+	//
+	// The query must be set. Archived assets are excluded unless the query has an archived arm or archived_statuses
+	// includes them. Staged (auto created) assets are never returned.
+	//
+	// Errors:
+	//   - INVALID_ARGUMENT: the query or one of its arms is unset, search text contains a null character, no sort key or
+	//     field is given, page_size is over 10,000, or next_page_token is not a token from a previous response.
 	SearchAssets(context.Context, *SearchAssetsRequest) (*SearchAssetsResponse, error)
-	// Batch edits metadata across multiple assets. Supports rename/merge for labels and properties.
-	// If more than 1000 assets are targeted, this endpoint will throw a 400.
+	// Renames labels, renames property keys, or merges property values across all assets that match an optional query
+	// and carry the source label or property. Returns the assets changed and the assets skipped.
+	//
+	// The edit covers matching assets in the workspaces the caller can access, archived assets included. Assets skipped
+	// because of a rename conflict are listed in conflicting_asset_rids. The caller needs edit permission on every
+	// matching asset, and the call changes nothing if it fails. When no asset matches, the response is empty. Property
+	// changes are checked against the asset types of each changed asset.
+	//
+	// Errors:
+	//   - INVALID_ARGUMENT: more than 1000 assets match; an OverwriteOnConflict priority list is not exactly the source
+	//     keys plus the target key, without duplicates; a changed asset no longer meets the property rules of its asset
+	//     types; or two active assets would share a primary key.
+	//   - NOT_FOUND: the caller cannot edit one of the matching assets.
 	BatchEditAssetMetadata(context.Context, *BatchEditAssetMetadataRequest) (*BatchEditAssetMetadataResponse, error)
-	// Searches for asset types matching the given query.
+	// Searches asset types by text or property name in the workspaces the caller can view. Returns a page of asset
+	// types sorted by creation time.
+	//
+	// Archived asset types are excluded unless archived_statuses includes them.
+	//
+	// Errors:
+	// - INVALID_ARGUMENT: page_size is over 10,000, or next_page_token is not a token from a previous response.
 	SearchTypes(context.Context, *SearchTypesRequest) (*SearchTypesResponse, error)
-	// Update the attachments associated with an asset.
+	// Adds attachments to an asset and removes others in one call.
+	//
+	// Adding an attachment the asset already has, or removing one it does not have, changes nothing. The caller needs
+	// edit permission on the asset.
+	//
+	// Errors:
+	//   - NOT_FOUND: the asset does not exist or the caller cannot edit it, or an attachment does not exist or the caller
+	//     cannot read it.
+	//   - INVALID_ARGUMENT: an attachment is in a different workspace from the asset, or is in both lists.
 	UpdateAssetAttachments(context.Context, *UpdateAssetAttachmentsRequest) (*UpdateAssetAttachmentsResponse, error)
-	// Update the ref names for the data scopes on the asset. This update will also be applied on all associated
-	// workbooks.
+	// Renames data scopes on an asset, given a map from old ref name to new ref name.
+	//
+	// An old ref name that matches no data scope is ignored. Workbooks that use a renamed ref name are not changed. The
+	// caller needs edit permission on the asset.
+	//
+	// Errors:
+	//   - INVALID_ARGUMENT: two new ref names are the same, or the asset reads a pipeline or dataset it does not own, or
+	//     its data was edited through its pipeline graph or dataset composition.
+	//   - NOT_FOUND: the asset does not exist or the caller cannot edit it.
 	UpdateAssetRefNames(context.Context, *UpdateAssetRefNamesRequest) (*UpdateAssetRefNamesResponse, error)
-	// Creates a new type.
+	// Creates an asset type: a named set of required or suggested properties with a primary key, optional data
+	// requirements, and links to other asset types. Returns the new asset type.
+	//
+	// The server assigns the RID. The asset type is created in the default workspace when workspace is omitted. The
+	// primary key must not appear in property_configs. Each link's property must be a string property declared in
+	// property_configs and must not be the primary key. Each link's target type must exist, be unarchived, be in the
+	// same workspace, and be viewable by the caller, and one property cannot link to two target types. The caller needs
+	// permission to edit the workspace configuration.
+	//
+	// Errors:
+	//   - INVALID_ARGUMENT: no workspace is given and the caller has no default; the name, the primary key, or a property
+	//     name is blank; the primary key is in property_configs; or the data requirements or a link are invalid.
+	//   - ALREADY_EXISTS: another unarchived asset type in the workspace has this name.
+	//   - NOT_FOUND: the target type of a link does not exist or the caller cannot view it.
+	//   - PERMISSION_DENIED: the caller cannot edit the workspace configuration.
 	CreateType(context.Context, *CreateTypeRequest) (*CreateTypeResponse, error)
-	// Updates a type. Will throw unless all assets that reference the type pass the updated type check.
+	// Updates an asset type's name, description, icon, properties, primary key, data requirements, or links. Returns
+	// the updated asset type.
+	//
+	// Only the fields sent change. A change to properties or the primary key fails unless every active asset with the
+	// asset type still meets the new rules, and fails when the asset type has more than 10,000 active assets. The
+	// primary key cannot change once an asset has the asset type. Adding a link fails when an active asset of the asset
+	// type also has an asset type that links the same property to a different target type. The caller needs permission
+	// to edit the workspace configuration.
+	//
+	// Errors:
+	//   - INVALID_ARGUMENT: the name, the primary key, or a property name is blank; the primary key is in
+	//     property_configs or changes while an asset has the asset type; active assets would no longer conform, or too
+	//     many to check; or a link is invalid.
+	//   - ALREADY_EXISTS: another unarchived asset type in the workspace has this name.
+	//   - NOT_FOUND: the asset type does not exist or the caller cannot edit its workspace configuration, or the target
+	//     type of a new link does not exist or the caller cannot view it.
 	UpdateType(context.Context, *UpdateTypeRequest) (*UpdateTypeResponse, error)
-	// Returns the asset types for the given type RIDs.
+	// Returns asset types by RID, as a map keyed by RID.
+	//
+	// RIDs that do not exist or that the caller cannot view are left out.
 	GetTypes(context.Context, *GetTypesRequest) (*GetTypesResponse, error)
-	// Returns the asset types associated with the given data source.
-	GetTypesForDatasource(context.Context, *GetTypesForDatasourceRequest) (*GetTypesForDatasourceResponse, error)
-	// Deletes a type. The type must not be referenced by any assets.
+	// Deletes an asset type that no asset or checklist uses.
+	//
+	// Fails if any asset, archived or not, has the asset type or any checklist references it. To retire an asset type that is in use, use
+	// ArchiveType. The caller needs permission to edit the workspace configuration.
+	//
+	// Errors:
+	// - NOT_FOUND: the asset type does not exist or the caller cannot edit its workspace configuration.
+	// - PERMISSION_DENIED: an asset has the asset type.
+	// - FAILED_PRECONDITION: a checklist references the asset type.
 	DeleteType(context.Context, *DeleteTypeRequest) (*DeleteTypeResponse, error)
-	// Archives the asset type with the given RID.
+	// Archives an asset type, which hides it from type search by default.
+	//
+	// SearchTypes leaves archived asset types out by default, and a new link needs both of its asset types unarchived.
+	// Reverse it with UnarchiveType. The caller needs permission to edit the workspace configuration.
+	//
+	// Errors:
+	// - NOT_FOUND: the asset type does not exist or the caller cannot edit its workspace configuration.
 	ArchiveType(context.Context, *ArchiveTypeRequest) (*ArchiveTypeResponse, error)
-	// Unarchives the asset type with the given RID.
+	// Unarchives an asset type, so SearchTypes returns it by default again.
+	//
+	// The caller needs permission to edit the workspace configuration.
+	//
+	// Errors:
+	// - ALREADY_EXISTS: another unarchived asset type in the workspace has this name.
+	// - NOT_FOUND: the asset type does not exist or the caller cannot edit its workspace configuration.
 	UnarchiveType(context.Context, *UnarchiveTypeRequest) (*UnarchiveTypeResponse, error)
+	// Follows one asset type link, forward or inverse, from a batch of assets. Returns a page of edges, one for each
+	// active asset reached, ordered by requested asset.
+	//
+	// A forward edge holds the source property value when no asset the caller can view matches it. Inverse edges from
+	// assets the caller cannot view are left out.
+	//
+	// Errors:
+	//   - NOT_FOUND: the link does not exist or its source asset type is in a workspace the caller cannot view, or a
+	//     requested asset does not exist or the caller cannot view it.
+	//   - INVALID_ARGUMENT: page_token is not a token from a previous response.
+	TraverseLinks(context.Context, *TraverseLinksRequest) (*TraverseLinksResponse, error)
 	mustEmbedUnimplementedAssetServiceServer()
 }
 
@@ -361,6 +785,9 @@ type UnimplementedAssetServiceServer struct{}
 func (UnimplementedAssetServiceServer) CreateAsset(context.Context, *CreateAssetRequest) (*CreateAssetResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method CreateAsset not implemented")
 }
+func (UnimplementedAssetServiceServer) CreateOrUpdateAssetByPrimaryKey(context.Context, *CreateOrUpdateAssetByPrimaryKeyRequest) (*CreateOrUpdateAssetByPrimaryKeyResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method CreateOrUpdateAssetByPrimaryKey not implemented")
+}
 func (UnimplementedAssetServiceServer) UpdateAsset(context.Context, *UpdateAssetRequest) (*UpdateAssetResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method UpdateAsset not implemented")
 }
@@ -369,6 +796,9 @@ func (UnimplementedAssetServiceServer) AddDataScopesToAsset(context.Context, *Ad
 }
 func (UnimplementedAssetServiceServer) GetAssets(context.Context, *GetAssetsRequest) (*GetAssetsResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method GetAssets not implemented")
+}
+func (UnimplementedAssetServiceServer) GetAssetDataConformance(context.Context, *GetAssetDataConformanceRequest) (*GetAssetDataConformanceResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method GetAssetDataConformance not implemented")
 }
 func (UnimplementedAssetServiceServer) GetAssetsByDataSource(context.Context, *GetAssetsByDataSourceRequest) (*GetAssetsByDataSourceResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method GetAssetsByDataSource not implemented")
@@ -403,9 +833,6 @@ func (UnimplementedAssetServiceServer) UpdateType(context.Context, *UpdateTypeRe
 func (UnimplementedAssetServiceServer) GetTypes(context.Context, *GetTypesRequest) (*GetTypesResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method GetTypes not implemented")
 }
-func (UnimplementedAssetServiceServer) GetTypesForDatasource(context.Context, *GetTypesForDatasourceRequest) (*GetTypesForDatasourceResponse, error) {
-	return nil, status.Error(codes.Unimplemented, "method GetTypesForDatasource not implemented")
-}
 func (UnimplementedAssetServiceServer) DeleteType(context.Context, *DeleteTypeRequest) (*DeleteTypeResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method DeleteType not implemented")
 }
@@ -414,6 +841,9 @@ func (UnimplementedAssetServiceServer) ArchiveType(context.Context, *ArchiveType
 }
 func (UnimplementedAssetServiceServer) UnarchiveType(context.Context, *UnarchiveTypeRequest) (*UnarchiveTypeResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method UnarchiveType not implemented")
+}
+func (UnimplementedAssetServiceServer) TraverseLinks(context.Context, *TraverseLinksRequest) (*TraverseLinksResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method TraverseLinks not implemented")
 }
 func (UnimplementedAssetServiceServer) mustEmbedUnimplementedAssetServiceServer() {}
 func (UnimplementedAssetServiceServer) testEmbeddedByValue()                      {}
@@ -450,6 +880,24 @@ func _AssetService_CreateAsset_Handler(srv interface{}, ctx context.Context, dec
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(AssetServiceServer).CreateAsset(ctx, req.(*CreateAssetRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _AssetService_CreateOrUpdateAssetByPrimaryKey_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CreateOrUpdateAssetByPrimaryKeyRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AssetServiceServer).CreateOrUpdateAssetByPrimaryKey(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: AssetService_CreateOrUpdateAssetByPrimaryKey_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AssetServiceServer).CreateOrUpdateAssetByPrimaryKey(ctx, req.(*CreateOrUpdateAssetByPrimaryKeyRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -504,6 +952,24 @@ func _AssetService_GetAssets_Handler(srv interface{}, ctx context.Context, dec f
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(AssetServiceServer).GetAssets(ctx, req.(*GetAssetsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _AssetService_GetAssetDataConformance_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetAssetDataConformanceRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AssetServiceServer).GetAssetDataConformance(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: AssetService_GetAssetDataConformance_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AssetServiceServer).GetAssetDataConformance(ctx, req.(*GetAssetDataConformanceRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -706,24 +1172,6 @@ func _AssetService_GetTypes_Handler(srv interface{}, ctx context.Context, dec fu
 	return interceptor(ctx, in, info, handler)
 }
 
-func _AssetService_GetTypesForDatasource_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(GetTypesForDatasourceRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(AssetServiceServer).GetTypesForDatasource(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: AssetService_GetTypesForDatasource_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(AssetServiceServer).GetTypesForDatasource(ctx, req.(*GetTypesForDatasourceRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
 func _AssetService_DeleteType_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(DeleteTypeRequest)
 	if err := dec(in); err != nil {
@@ -778,6 +1226,24 @@ func _AssetService_UnarchiveType_Handler(srv interface{}, ctx context.Context, d
 	return interceptor(ctx, in, info, handler)
 }
 
+func _AssetService_TraverseLinks_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(TraverseLinksRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AssetServiceServer).TraverseLinks(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: AssetService_TraverseLinks_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AssetServiceServer).TraverseLinks(ctx, req.(*TraverseLinksRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // AssetService_ServiceDesc is the grpc.ServiceDesc for AssetService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -790,6 +1256,10 @@ var AssetService_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _AssetService_CreateAsset_Handler,
 		},
 		{
+			MethodName: "CreateOrUpdateAssetByPrimaryKey",
+			Handler:    _AssetService_CreateOrUpdateAssetByPrimaryKey_Handler,
+		},
+		{
 			MethodName: "UpdateAsset",
 			Handler:    _AssetService_UpdateAsset_Handler,
 		},
@@ -800,6 +1270,10 @@ var AssetService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetAssets",
 			Handler:    _AssetService_GetAssets_Handler,
+		},
+		{
+			MethodName: "GetAssetDataConformance",
+			Handler:    _AssetService_GetAssetDataConformance_Handler,
 		},
 		{
 			MethodName: "GetAssetsByDataSource",
@@ -846,10 +1320,6 @@ var AssetService_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _AssetService_GetTypes_Handler,
 		},
 		{
-			MethodName: "GetTypesForDatasource",
-			Handler:    _AssetService_GetTypesForDatasource_Handler,
-		},
-		{
 			MethodName: "DeleteType",
 			Handler:    _AssetService_DeleteType_Handler,
 		},
@@ -860,6 +1330,10 @@ var AssetService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "UnarchiveType",
 			Handler:    _AssetService_UnarchiveType_Handler,
+		},
+		{
+			MethodName: "TraverseLinks",
+			Handler:    _AssetService_TraverseLinks_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

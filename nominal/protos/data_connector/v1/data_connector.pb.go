@@ -8,6 +8,7 @@ package data_connectorv1
 
 import (
 	_ "buf.build/gen/go/bufbuild/protovalidate/protocolbuffers/go/buf/validate"
+	_ "github.com/nominal-io/nominal-api-protos-go/nominal/protos/authz/v1"
 	_ "github.com/nominal-io/nominal-api-protos-go/nominal/protos/gen/v1"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
@@ -234,14 +235,17 @@ func (ReplicaStatus) EnumDescriptor() ([]byte, []int) {
 
 // Request to create a new data connector
 type CreateDataConnectorRequest struct {
-	state             protoimpl.MessageState `protogen:"open.v1"`
-	Name              string                 `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
-	Description       *string                `protobuf:"bytes,2,opt,name=description,proto3,oneof" json:"description,omitempty"`
-	ConnectionDetails *DataConnectorDetails  `protobuf:"bytes,3,opt,name=connection_details,json=connectionDetails,proto3" json:"connection_details,omitempty"`
-	WorkspaceRid      string                 `protobuf:"bytes,4,opt,name=workspace_rid,json=workspaceRid,proto3" json:"workspace_rid,omitempty"`
-	TargetDatasetRid  string                 `protobuf:"bytes,5,opt,name=target_dataset_rid,json=targetDatasetRid,proto3" json:"target_dataset_rid,omitempty"`
-	unknownFields     protoimpl.UnknownFields
-	sizeCache         protoimpl.SizeCache
+	state       protoimpl.MessageState `protogen:"open.v1"`
+	Name        string                 `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
+	Description *string                `protobuf:"bytes,2,opt,name=description,proto3,oneof" json:"description,omitempty"`
+	// Connection settings for the external source. Only OPC-UA is supported.
+	ConnectionDetails *DataConnectorDetails `protobuf:"bytes,3,opt,name=connection_details,json=connectionDetails,proto3" json:"connection_details,omitempty"`
+	WorkspaceRid      string                `protobuf:"bytes,4,opt,name=workspace_rid,json=workspaceRid,proto3" json:"workspace_rid,omitempty"`
+	// The dataset the connector writes streamed data into. It must be in the same workspace, and the caller must be able
+	// to write data to it.
+	TargetDatasetRid string `protobuf:"bytes,5,opt,name=target_dataset_rid,json=targetDatasetRid,proto3" json:"target_dataset_rid,omitempty"`
+	unknownFields    protoimpl.UnknownFields
+	sizeCache        protoimpl.SizeCache
 }
 
 func (x *CreateDataConnectorRequest) Reset() {
@@ -648,6 +652,7 @@ type DataConnectorDetailsSecrets_OpcUa struct {
 
 func (*DataConnectorDetailsSecrets_OpcUa) isDataConnectorDetailsSecrets_DataConnectorDetails() {}
 
+// Fields left unset keep their current values.
 type UpdateDataConnectorRequest struct {
 	state             protoimpl.MessageState       `protogen:"open.v1"`
 	DataConnectorRid  string                       `protobuf:"bytes,1,opt,name=data_connector_rid,json=dataConnectorRid,proto3" json:"data_connector_rid,omitempty"`
@@ -944,6 +949,7 @@ func (x *BatchGetDataConnectorsResponse) GetDataConnectors() []*DataConnector {
 	return nil
 }
 
+// Matches data connectors whose name equals this value exactly.
 type NameFilter struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Name          string                 `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
@@ -988,6 +994,7 @@ func (x *NameFilter) GetName() string {
 	return ""
 }
 
+// Matches data connectors whose description equals this value exactly.
 type DescriptionFilter struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Description   string                 `protobuf:"bytes,1,opt,name=description,proto3" json:"description,omitempty"`
@@ -1032,6 +1039,7 @@ func (x *DescriptionFilter) GetDescription() string {
 	return ""
 }
 
+// Matches data connectors that write to this dataset.
 type TargetDatasetFilter struct {
 	state            protoimpl.MessageState `protogen:"open.v1"`
 	TargetDatasetRid string                 `protobuf:"bytes,1,opt,name=target_dataset_rid,json=targetDatasetRid,proto3" json:"target_dataset_rid,omitempty"`
@@ -1076,6 +1084,7 @@ func (x *TargetDatasetFilter) GetTargetDatasetRid() string {
 	return ""
 }
 
+// Matches data connectors that satisfy every clause. An empty list matches all data connectors.
 type AndFilter struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Clauses       []*SearchFilter        `protobuf:"bytes,1,rep,name=clauses,proto3" json:"clauses,omitempty"`
@@ -1122,9 +1131,9 @@ func (x *AndFilter) GetClauses() []*SearchFilter {
 
 type SortBy struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
-	// If unspecified, defaults to SORT_FIELD_UPDATE_AT
+	// If unspecified, defaults to SORT_FIELD_UPDATED_AT.
 	Field SortField `protobuf:"varint,1,opt,name=field,proto3,enum=nominal.data_connector.v1.SortField" json:"field,omitempty"`
-	// If unspecified, defaults to SORT_ORDER_DESC
+	// If unspecified, defaults to SORT_ORDER_DESC, newest first.
 	Order         SortOrder `protobuf:"varint,2,opt,name=order,proto3,enum=nominal.data_connector.v1.SortOrder" json:"order,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -1292,8 +1301,9 @@ type SearchRequest struct {
 	state        protoimpl.MessageState `protogen:"open.v1"`
 	WorkspaceRid string                 `protobuf:"bytes,1,opt,name=workspace_rid,json=workspaceRid,proto3" json:"workspace_rid,omitempty"`
 	Filter       *SearchFilter          `protobuf:"bytes,2,opt,name=filter,proto3" json:"filter,omitempty"`
-	// If unspecified, defaults to 100
-	PageSize      int32   `protobuf:"varint,3,opt,name=page_size,json=pageSize,proto3" json:"page_size,omitempty"`
+	// Must be greater than 0. Values above 100 are treated as 100.
+	PageSize int32 `protobuf:"varint,3,opt,name=page_size,json=pageSize,proto3" json:"page_size,omitempty"`
+	// The page_token from the previous response. Omit it to get the first page.
 	PageToken     *string `protobuf:"bytes,4,opt,name=page_token,json=pageToken,proto3,oneof" json:"page_token,omitempty"`
 	SortBy        *SortBy `protobuf:"bytes,5,opt,name=sort_by,json=sortBy,proto3" json:"sort_by,omitempty"`
 	unknownFields protoimpl.UnknownFields
@@ -1368,9 +1378,10 @@ func (x *SearchRequest) GetSortBy() *SortBy {
 type SearchResponse struct {
 	state          protoimpl.MessageState `protogen:"open.v1"`
 	DataConnectors []*DataConnector       `protobuf:"bytes,1,rep,name=data_connectors,json=dataConnectors,proto3" json:"data_connectors,omitempty"`
-	PageToken      *string                `protobuf:"bytes,2,opt,name=page_token,json=pageToken,proto3,oneof" json:"page_token,omitempty"`
-	unknownFields  protoimpl.UnknownFields
-	sizeCache      protoimpl.SizeCache
+	// Present when a full page was returned; pass it as page_token to get the next page.
+	PageToken     *string `protobuf:"bytes,2,opt,name=page_token,json=pageToken,proto3,oneof" json:"page_token,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
 }
 
 func (x *SearchResponse) Reset() {
@@ -1621,6 +1632,7 @@ func (x *GetSessionStatusRequest) GetDataConnectorRid() string {
 	return ""
 }
 
+// One entry per running replica of the stream, primary and backup.
 type ActiveSessionStatus struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	ReplicaStatus []ReplicaStatus        `protobuf:"varint,1,rep,packed,name=replica_status,json=replicaStatus,proto3,enum=nominal.data_connector.v1.ReplicaStatus" json:"replica_status,omitempty"`
@@ -1736,6 +1748,7 @@ type isGetSessionStatusResponse_Status interface {
 }
 
 type GetSessionStatusResponse_None struct {
+	// No stream is running for the data connector.
 	None *emptypb.Empty `protobuf:"bytes,1,opt,name=none,proto3,oneof"`
 }
 
@@ -1831,7 +1844,7 @@ var File_nominal_protos_data_connector_v1_data_connector_proto protoreflect.File
 
 const file_nominal_protos_data_connector_v1_data_connector_proto_rawDesc = "" +
 	"\n" +
-	"5nominal/protos/data_connector/v1/data_connector.proto\x12\x19nominal.data_connector.v1\x1a\x1bbuf/validate/validate.proto\x1a\x1cgoogle/api/annotations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a7nominal/protos/data_connector/v1/opc_ua_connector.proto\x1a!nominal/protos/gen/v1/alias.proto\x1a!nominal/protos/gen/v1/error.proto\"\x84\x03\n" +
+	"5nominal/protos/data_connector/v1/data_connector.proto\x12\x19nominal.data_connector.v1\x1a\x1bbuf/validate/validate.proto\x1a\x1cgoogle/api/annotations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a)nominal/protos/authz/v1/annotations.proto\x1a7nominal/protos/data_connector/v1/opc_ua_connector.proto\x1a!nominal/protos/gen/v1/alias.proto\x1a!nominal/protos/gen/v1/error.proto\"\x84\x03\n" +
 	"\x1aCreateDataConnectorRequest\x12\x1a\n" +
 	"\x04name\x18\x01 \x01(\tB\x06\xbaH\x03\xc8\x01\x01R\x04name\x12%\n" +
 	"\vdescription\x18\x02 \x01(\tH\x00R\vdescription\x88\x01\x01\x12f\n" +
@@ -1965,17 +1978,36 @@ const file_nominal_protos_data_connector_v1_data_connector_proto_rawDesc = "" +
 	"\x1aREPLICA_STATUS_SUBSCRIBING\x10\x02\x12\x1a\n" +
 	"\x16REPLICA_STATUS_RUNNING\x10\x03\x12\x1b\n" +
 	"\x17REPLICA_STATUS_STOPPING\x10\x04\x12\x1a\n" +
-	"\x16REPLICA_STATUS_STOPPED\x10\x052\xce\f\n" +
-	"\x14DataConnectorService\x12\xad\x01\n" +
-	"\x13CreateDataConnector\x125.nominal.data_connector.v1.CreateDataConnectorRequest\x1a6.nominal.data_connector.v1.CreateDataConnectorResponse\"'\x82\xd3\xe4\x93\x02!:\x01*\"\x1c/data-connector/v1/connector\x12\x83\x01\n" +
-	"\x06Search\x12(.nominal.data_connector.v1.SearchRequest\x1a).nominal.data_connector.v1.SearchResponse\"$\x82\xd3\xe4\x93\x02\x1eb\x01*\x12\x19/data-connector/v1/search\x12\xaf\x01\n" +
-	"\x10GetDataConnector\x122.nominal.data_connector.v1.GetDataConnectorRequest\x1a3.nominal.data_connector.v1.GetDataConnectorResponse\"2\x82\xd3\xe4\x93\x02,b\x01*\x12'/data-connector/v1/{data_connector_rid}\x12\xb6\x01\n" +
-	"\x16BatchGetDataConnectors\x128.nominal.data_connector.v1.BatchGetDataConnectorsRequest\x1a9.nominal.data_connector.v1.BatchGetDataConnectorsResponse\"'\x82\xd3\xe4\x93\x02!:\x01*\"\x1c/data-connector/v1/batch-get\x12\xbb\x01\n" +
-	"\x13UpdateDataConnector\x125.nominal.data_connector.v1.UpdateDataConnectorRequest\x1a6.nominal.data_connector.v1.UpdateDataConnectorResponse\"5\x82\xd3\xe4\x93\x02/:\x01*b\x01*\"'/data-connector/v1/{data_connector_rid}\x12\xb1\x01\n" +
-	"\fStartSession\x12..nominal.data_connector.v1.StartSessionRequest\x1a/.nominal.data_connector.v1.StartSessionResponse\"@\x82\xd3\xe4\x93\x02:b\x01*\"5/data-connector/v1/{data_connector_rid}/session/start\x12\xad\x01\n" +
-	"\vStopSession\x12-.nominal.data_connector.v1.StopSessionRequest\x1a..nominal.data_connector.v1.StopSessionResponse\"?\x82\xd3\xe4\x93\x029b\x01*\"4/data-connector/v1/{data_connector_rid}/session/stop\x12\xb7\x01\n" +
-	"\x10GetSessionStatus\x122.nominal.data_connector.v1.GetSessionStatusRequest\x1a3.nominal.data_connector.v1.GetSessionStatusResponse\":\x82\xd3\xe4\x93\x024b\x01*\x12//data-connector/v1/{data_connector_rid}/session\x12\xb8\x01\n" +
-	"\x13DeleteDataConnector\x125.nominal.data_connector.v1.DeleteDataConnectorRequest\x1a6.nominal.data_connector.v1.DeleteDataConnectorResponse\"2\x82\xd3\xe4\x93\x02,b\x01**'/data-connector/v1/{data_connector_rid}B\x94\x02\n" +
+	"\x16REPLICA_STATUS_STOPPED\x10\x052\x82\x0f\n" +
+	"\x14DataConnectorService\x12\x81\x02\n" +
+	"\x13CreateDataConnector\x125.nominal.data_connector.v1.CreateDataConnectorRequest\x1a6.nominal.data_connector.v1.CreateDataConnectorResponse\"{\xba\xb2\x1aP\n" +
+	"\x1f\n" +
+	"\x1bworkspace:edit_connectivity\"\x00\n" +
+	"-\n" +
+	"\x15datasource:write_data\x12\x14\n" +
+	"\x12target_dataset_rid\x82\xd3\xe4\x93\x02!:\x01*\"\x1c/data-connector/v1/connector\x12\x9b\x01\n" +
+	"\x06Search\x12(.nominal.data_connector.v1.SearchRequest\x1a).nominal.data_connector.v1.SearchResponse\"<\xba\xb2\x1a\x14\n" +
+	"\x12\n" +
+	"\x0eworkspace:view\"\x00\x82\xd3\xe4\x93\x02\x1eb\x01*\x12\x19/data-connector/v1/search\x12\xc7\x01\n" +
+	"\x10GetDataConnector\x122.nominal.data_connector.v1.GetDataConnectorRequest\x1a3.nominal.data_connector.v1.GetDataConnectorResponse\"J\xba\xb2\x1a\x14\n" +
+	"\x12\n" +
+	"\x0eworkspace:view\"\x00\x82\xd3\xe4\x93\x02,b\x01*\x12'/data-connector/v1/{data_connector_rid}\x12\xba\x01\n" +
+	"\x16BatchGetDataConnectors\x128.nominal.data_connector.v1.BatchGetDataConnectorsRequest\x1a9.nominal.data_connector.v1.BatchGetDataConnectorsResponse\"+\xba\xb2\x1a\x00\x82\xd3\xe4\x93\x02!:\x01*\"\x1c/data-connector/v1/batch-get\x12\xe0\x01\n" +
+	"\x13UpdateDataConnector\x125.nominal.data_connector.v1.UpdateDataConnectorRequest\x1a6.nominal.data_connector.v1.UpdateDataConnectorResponse\"Z\xba\xb2\x1a!\n" +
+	"\x1f\n" +
+	"\x1bworkspace:edit_connectivity\"\x00\x82\xd3\xe4\x93\x02/:\x01*b\x01*\"'/data-connector/v1/{data_connector_rid}\x12\xd6\x01\n" +
+	"\fStartSession\x12..nominal.data_connector.v1.StartSessionRequest\x1a/.nominal.data_connector.v1.StartSessionResponse\"e\xba\xb2\x1a!\n" +
+	"\x1f\n" +
+	"\x1bworkspace:edit_connectivity\"\x00\x82\xd3\xe4\x93\x02:b\x01*\"5/data-connector/v1/{data_connector_rid}/session/start\x12\xd2\x01\n" +
+	"\vStopSession\x12-.nominal.data_connector.v1.StopSessionRequest\x1a..nominal.data_connector.v1.StopSessionResponse\"d\xba\xb2\x1a!\n" +
+	"\x1f\n" +
+	"\x1bworkspace:edit_connectivity\"\x00\x82\xd3\xe4\x93\x029b\x01*\"4/data-connector/v1/{data_connector_rid}/session/stop\x12\xcf\x01\n" +
+	"\x10GetSessionStatus\x122.nominal.data_connector.v1.GetSessionStatusRequest\x1a3.nominal.data_connector.v1.GetSessionStatusResponse\"R\xba\xb2\x1a\x14\n" +
+	"\x12\n" +
+	"\x0eworkspace:view\"\x00\x82\xd3\xe4\x93\x024b\x01*\x12//data-connector/v1/{data_connector_rid}/session\x12\xdd\x01\n" +
+	"\x13DeleteDataConnector\x125.nominal.data_connector.v1.DeleteDataConnectorRequest\x1a6.nominal.data_connector.v1.DeleteDataConnectorResponse\"W\xba\xb2\x1a!\n" +
+	"\x1f\n" +
+	"\x1bworkspace:edit_connectivity\"\x00\x82\xd3\xe4\x93\x02,b\x01**'/data-connector/v1/{data_connector_rid}B\x94\x02\n" +
 	"\x1dcom.nominal.data_connector.v1B\x12DataConnectorProtoP\x01Z]github.com/nominal-io/nominal-api-protos-go/nominal/protos/data_connector/v1;data_connectorv1\xa2\x02\x03NDX\xaa\x02\x18Nominal.DataConnector.V1\xca\x02\x18Nominal\\DataConnector\\V1\xe2\x02$Nominal\\DataConnector\\V1\\GPBMetadata\xea\x02\x1aNominal::DataConnector::V1b\x06proto3"
 
 var (

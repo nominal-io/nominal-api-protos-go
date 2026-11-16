@@ -29,10 +29,11 @@ const (
 type CoachmarkDismissal struct {
 	state   protoimpl.MessageState `protogen:"open.v1"`
 	UserRid string                 `protobuf:"bytes,1,opt,name=user_rid,json=userRid,proto3" json:"user_rid,omitempty"`
-	// The coachmark identifier (typically the feature flag name)
+	// The coachmark identifier.
 	CoachmarkId string `protobuf:"bytes,2,opt,name=coachmark_id,json=coachmarkId,proto3" json:"coachmark_id,omitempty"`
-	// The apps-scout version (semver) when the coachmark was dismissed
-	AppVersion  string                 `protobuf:"bytes,3,opt,name=app_version,json=appVersion,proto3" json:"app_version,omitempty"`
+	// The app version (semver) when the coachmark was dismissed.
+	AppVersion string `protobuf:"bytes,3,opt,name=app_version,json=appVersion,proto3" json:"app_version,omitempty"`
+	// Set by the server when the dismissal is recorded.
 	DismissedAt *timestamppb.Timestamp `protobuf:"bytes,4,opt,name=dismissed_at,json=dismissedAt,proto3" json:"dismissed_at,omitempty"`
 	// The step index when dismissed (for multi-step coachmarks).
 	// If not present, the coachmark was dismissed via the X button.
@@ -109,9 +110,9 @@ func (x *CoachmarkDismissal) GetStepIndex() int32 {
 // Request to dismiss a coachmark for the current user.
 type DismissCoachmarkRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
-	// The coachmark identifier (typically the feature flag name)
+	// The coachmark identifier.
 	CoachmarkId string `protobuf:"bytes,1,opt,name=coachmark_id,json=coachmarkId,proto3" json:"coachmark_id,omitempty"`
-	// The apps-scout version (semver) when the coachmark was dismissed
+	// The app version (semver) when the coachmark was dismissed.
 	AppVersion string `protobuf:"bytes,2,opt,name=app_version,json=appVersion,proto3" json:"app_version,omitempty"`
 	// The step index when dismissed (for multi-step coachmarks).
 	// If not present, the coachmark was dismissed via the X button.

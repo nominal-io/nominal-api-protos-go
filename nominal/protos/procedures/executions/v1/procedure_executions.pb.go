@@ -8,6 +8,7 @@ package executionsv1
 
 import (
 	_ "buf.build/gen/go/bufbuild/protovalidate/protocolbuffers/go/buf/validate"
+	_ "github.com/nominal-io/nominal-api-protos-go/nominal/protos/authz/v1"
 	_ "github.com/nominal-io/nominal-api-protos-go/nominal/protos/gen/v1"
 	v1 "github.com/nominal-io/nominal-api-protos-go/nominal/protos/procedures/v1"
 	types "github.com/nominal-io/nominal-api-protos-go/nominal/protos/types"
@@ -195,7 +196,7 @@ type ChannelCaptureSkipReason int32
 
 const (
 	ChannelCaptureSkipReason_CHANNEL_CAPTURE_SKIP_REASON_UNSPECIFIED ChannelCaptureSkipReason = 0
-	// The capture targets a run-scoped channel locator, which is not yet supported. See PROC-332.
+	// The capture targets a run-scoped channel locator, which is not supported.
 	ChannelCaptureSkipReason_CHANNEL_CAPTURE_SKIP_REASON_RUN_SCOPED_UNSUPPORTED ChannelCaptureSkipReason = 1
 )
 
@@ -345,10 +346,14 @@ type ProcedureExecutionProgressStatus int32
 
 const (
 	ProcedureExecutionProgressStatus_PROCEDURE_EXECUTION_PROGRESS_STATUS_UNSPECIFIED ProcedureExecutionProgressStatus = 0
+	// No start time is set.
 	ProcedureExecutionProgressStatus_PROCEDURE_EXECUTION_PROGRESS_STATUS_NOT_STARTED ProcedureExecutionProgressStatus = 1
+	// A start time is set, and no finish or abort time is set.
 	ProcedureExecutionProgressStatus_PROCEDURE_EXECUTION_PROGRESS_STATUS_IN_PROGRESS ProcedureExecutionProgressStatus = 2
-	ProcedureExecutionProgressStatus_PROCEDURE_EXECUTION_PROGRESS_STATUS_FINISHED    ProcedureExecutionProgressStatus = 3
-	ProcedureExecutionProgressStatus_PROCEDURE_EXECUTION_PROGRESS_STATUS_ABORTED     ProcedureExecutionProgressStatus = 4
+	// A finish time is set.
+	ProcedureExecutionProgressStatus_PROCEDURE_EXECUTION_PROGRESS_STATUS_FINISHED ProcedureExecutionProgressStatus = 3
+	// An abort time is set.
+	ProcedureExecutionProgressStatus_PROCEDURE_EXECUTION_PROGRESS_STATUS_ABORTED ProcedureExecutionProgressStatus = 4
 )
 
 // Enum value maps for ProcedureExecutionProgressStatus.
@@ -2305,8 +2310,7 @@ func (x *ChannelValidationSuccessConditionStatus) GetFirstSatisfiedAt() *timesta
 
 // Status tracking for webhook success conditions.
 // Tracks delivery attempts, retry timing, and the last response from the external system.
-// Note: Secret management for retries is handled internally in Temporal workflow state,
-// not exposed in this public API message.
+// Secrets used for retries are not exposed in this message.
 type WebhookConditionStatus struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// The original webhook condition configuration being monitored
@@ -4766,15 +4770,17 @@ type ProcedureExecutionMetadata struct {
 	ProcedureRid string `protobuf:"bytes,2,opt,name=procedure_rid,json=procedureRid,proto3" json:"procedure_rid,omitempty"`
 	// The commit ID of the procedure template this execution is based on.
 	// This can be overridden at the node level for individual nodes.
-	ProcedureCommitId string                 `protobuf:"bytes,3,opt,name=procedure_commit_id,json=procedureCommitId,proto3" json:"procedure_commit_id,omitempty"`
-	Title             string                 `protobuf:"bytes,4,opt,name=title,proto3" json:"title,omitempty"`
-	Description       *string                `protobuf:"bytes,5,opt,name=description,proto3,oneof" json:"description,omitempty"`
-	Labels            []string               `protobuf:"bytes,6,rep,name=labels,proto3" json:"labels,omitempty"`
-	Properties        map[string]string      `protobuf:"bytes,7,rep,name=properties,proto3" json:"properties,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
-	CreatedBy         string                 `protobuf:"bytes,8,opt,name=created_by,json=createdBy,proto3" json:"created_by,omitempty"`
-	CreatedAt         *timestamppb.Timestamp `protobuf:"bytes,9,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
-	UpdatedBy         string                 `protobuf:"bytes,10,opt,name=updated_by,json=updatedBy,proto3" json:"updated_by,omitempty"`
-	UpdatedAt         *timestamppb.Timestamp `protobuf:"bytes,11,opt,name=updated_at,json=updatedAt,proto3" json:"updated_at,omitempty"`
+	ProcedureCommitId string  `protobuf:"bytes,3,opt,name=procedure_commit_id,json=procedureCommitId,proto3" json:"procedure_commit_id,omitempty"`
+	Title             string  `protobuf:"bytes,4,opt,name=title,proto3" json:"title,omitempty"`
+	Description       *string `protobuf:"bytes,5,opt,name=description,proto3,oneof" json:"description,omitempty"`
+	// Copied from the procedure when the execution is created.
+	Labels []string `protobuf:"bytes,6,rep,name=labels,proto3" json:"labels,omitempty"`
+	// Copied from the procedure when the execution is created.
+	Properties map[string]string      `protobuf:"bytes,7,rep,name=properties,proto3" json:"properties,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
+	CreatedBy  string                 `protobuf:"bytes,8,opt,name=created_by,json=createdBy,proto3" json:"created_by,omitempty"`
+	CreatedAt  *timestamppb.Timestamp `protobuf:"bytes,9,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
+	UpdatedBy  string                 `protobuf:"bytes,10,opt,name=updated_by,json=updatedBy,proto3" json:"updated_by,omitempty"`
+	UpdatedAt  *timestamppb.Timestamp `protobuf:"bytes,11,opt,name=updated_at,json=updatedAt,proto3" json:"updated_at,omitempty"`
 	// Will be unset until the execution transitions from NOT_STARTED to IN_PROGRESS.
 	StartedAt *timestamppb.Timestamp `protobuf:"bytes,12,opt,name=started_at,json=startedAt,proto3,oneof" json:"started_at,omitempty"`
 	StartedBy *string                `protobuf:"bytes,13,opt,name=started_by,json=startedBy,proto3,oneof" json:"started_by,omitempty"`
@@ -5100,7 +5106,6 @@ func (x *Strings) GetValues() []string {
 	return nil
 }
 
-// TODO(pchen): how to handle the value typing here
 // The outputs of a field in a step.
 // This is different from FormFieldValue in that this represents the resolved value after the step has
 // been completed. Eg, this would contain an AssetRid while the FormFieldValue could contain an AssetReference
@@ -5257,9 +5262,6 @@ type isFieldOutput_Output interface {
 }
 
 type FieldOutput_AssetRid struct {
-	// TODO(niwong): I think this could actually be buf validated to be required. If a global field is
-	// not yet defined, I think it's just not present in the global_fields map
-	// option (buf.validate.oneof) = {required: true};
 	AssetRid string `protobuf:"bytes,1,opt,name=asset_rid,json=assetRid,proto3,oneof"`
 }
 
@@ -5320,14 +5322,16 @@ func (*FieldOutput_FileUploadValue) isFieldOutput_Output() {}
 func (*FieldOutput_MultiFileUploadValue) isFieldOutput_Output() {}
 
 type CreateProcedureExecutionRequest struct {
-	state             protoimpl.MessageState `protogen:"open.v1"`
-	ProcedureRid      string                 `protobuf:"bytes,1,opt,name=procedure_rid,json=procedureRid,proto3" json:"procedure_rid,omitempty"`
-	ProcedureCommitId string                 `protobuf:"bytes,2,opt,name=procedure_commit_id,json=procedureCommitId,proto3" json:"procedure_commit_id,omitempty"`
-	Title             string                 `protobuf:"bytes,3,opt,name=title,proto3" json:"title,omitempty"`
-	Description       *string                `protobuf:"bytes,4,opt,name=description,proto3,oneof" json:"description,omitempty"`
-	StartImmediately  *bool                  `protobuf:"varint,5,opt,name=start_immediately,json=startImmediately,proto3,oneof" json:"start_immediately,omitempty"`
-	unknownFields     protoimpl.UnknownFields
-	sizeCache         protoimpl.SizeCache
+	state        protoimpl.MessageState `protogen:"open.v1"`
+	ProcedureRid string                 `protobuf:"bytes,1,opt,name=procedure_rid,json=procedureRid,proto3" json:"procedure_rid,omitempty"`
+	// Commit of the procedure to run. The execution keeps this commit until its metadata is updated.
+	ProcedureCommitId string  `protobuf:"bytes,2,opt,name=procedure_commit_id,json=procedureCommitId,proto3" json:"procedure_commit_id,omitempty"`
+	Title             string  `protobuf:"bytes,3,opt,name=title,proto3" json:"title,omitempty"`
+	Description       *string `protobuf:"bytes,4,opt,name=description,proto3,oneof" json:"description,omitempty"`
+	// If true, the execution is marked started by the caller at creation. Defaults to false.
+	StartImmediately *bool `protobuf:"varint,5,opt,name=start_immediately,json=startImmediately,proto3,oneof" json:"start_immediately,omitempty"`
+	unknownFields    protoimpl.UnknownFields
+	sizeCache        protoimpl.SizeCache
 }
 
 func (x *CreateProcedureExecutionRequest) Reset() {
@@ -5496,8 +5500,8 @@ func (x *GetProcedureExecutionRequest) GetIncludeDisplayGraph() bool {
 type GetProcedureExecutionResponse struct {
 	state              protoimpl.MessageState `protogen:"open.v1"`
 	ProcedureExecution *ProcedureExecution    `protobuf:"bytes,1,opt,name=procedure_execution,json=procedureExecution,proto3,oneof" json:"procedure_execution,omitempty"`
-	// Included if include_display_graph was set to true. Note that this is the
-	// procedure template's display graph, not the execution graph.
+	// Included if include_display_graph was set to true. Built from the execution's own nodes: top-level
+	// nodes and each section's children in display order.
 	DisplayGraph  *v1.ProcedureDisplayGraph `protobuf:"bytes,2,opt,name=display_graph,json=displayGraph,proto3,oneof" json:"display_graph,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -5548,15 +5552,18 @@ func (x *GetProcedureExecutionResponse) GetDisplayGraph() *v1.ProcedureDisplayGr
 }
 
 type UpdateProcedureExecutionMetadataRequest struct {
-	state                 protoimpl.MessageState       `protogen:"open.v1"`
-	ProcedureExecutionRid string                       `protobuf:"bytes,1,opt,name=procedure_execution_rid,json=procedureExecutionRid,proto3" json:"procedure_execution_rid,omitempty"`
-	Title                 *string                      `protobuf:"bytes,2,opt,name=title,proto3,oneof" json:"title,omitempty"`
-	Description           *string                      `protobuf:"bytes,3,opt,name=description,proto3,oneof" json:"description,omitempty"`
-	CommitId              *string                      `protobuf:"bytes,4,opt,name=commit_id,json=commitId,proto3,oneof" json:"commit_id,omitempty"`
-	Labels                *types.LabelUpdateWrapper    `protobuf:"bytes,5,opt,name=labels,proto3,oneof" json:"labels,omitempty"`
-	Properties            *types.PropertyUpdateWrapper `protobuf:"bytes,6,opt,name=properties,proto3,oneof" json:"properties,omitempty"`
-	unknownFields         protoimpl.UnknownFields
-	sizeCache             protoimpl.SizeCache
+	state                 protoimpl.MessageState `protogen:"open.v1"`
+	ProcedureExecutionRid string                 `protobuf:"bytes,1,opt,name=procedure_execution_rid,json=procedureExecutionRid,proto3" json:"procedure_execution_rid,omitempty"`
+	Title                 *string                `protobuf:"bytes,2,opt,name=title,proto3,oneof" json:"title,omitempty"`
+	Description           *string                `protobuf:"bytes,3,opt,name=description,proto3,oneof" json:"description,omitempty"`
+	// Procedure commit to point the execution at. Does not change the execution's step state.
+	CommitId *string `protobuf:"bytes,4,opt,name=commit_id,json=commitId,proto3,oneof" json:"commit_id,omitempty"`
+	// If set, replaces the execution's labels.
+	Labels *types.LabelUpdateWrapper `protobuf:"bytes,5,opt,name=labels,proto3,oneof" json:"labels,omitempty"`
+	// If set, replaces the execution's properties.
+	Properties    *types.PropertyUpdateWrapper `protobuf:"bytes,6,opt,name=properties,proto3,oneof" json:"properties,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
 }
 
 func (x *UpdateProcedureExecutionMetadataRequest) Reset() {
@@ -5675,26 +5682,28 @@ func (x *UpdateProcedureExecutionMetadataResponse) GetMetadata() *ProcedureExecu
 	return nil
 }
 
-// TODO(niwong to pchen): I made an "update metadata" endpoint separately above,
-// I think it'd be nice to turn this into a dedicated endpoint for changing the state of
-// the overall execution (start, succeed, abort, fail)
-// I also think in general we shouldn't be updating the entire ProcedureExecutionState
-// but rather leveraging updateStep.
-// TODO(WB-1879): allow to just update the global fields within the ProcExecState.
+// Fields that are set overwrite the execution. Fields that are omitted stay unchanged.
 type UpdateProcedureExecutionRequest struct {
-	state                 protoimpl.MessageState       `protogen:"open.v1"`
-	ProcedureExecutionRid string                       `protobuf:"bytes,1,opt,name=procedure_execution_rid,json=procedureExecutionRid,proto3" json:"procedure_execution_rid,omitempty"`
-	Title                 *string                      `protobuf:"bytes,2,opt,name=title,proto3,oneof" json:"title,omitempty"`
-	Description           *string                      `protobuf:"bytes,3,opt,name=description,proto3,oneof" json:"description,omitempty"`
-	CommitId              *string                      `protobuf:"bytes,4,opt,name=commit_id,json=commitId,proto3,oneof" json:"commit_id,omitempty"`
-	Labels                *types.LabelUpdateWrapper    `protobuf:"bytes,5,opt,name=labels,proto3,oneof" json:"labels,omitempty"`
-	Properties            *types.PropertyUpdateWrapper `protobuf:"bytes,6,opt,name=properties,proto3,oneof" json:"properties,omitempty"`
-	State                 *ProcedureExecutionState     `protobuf:"bytes,7,opt,name=state,proto3,oneof" json:"state,omitempty"`
-	IsAborted             *bool                        `protobuf:"varint,8,opt,name=is_aborted,json=isAborted,proto3,oneof" json:"is_aborted,omitempty"`
-	StartedAt             *timestamppb.Timestamp       `protobuf:"bytes,9,opt,name=started_at,json=startedAt,proto3,oneof" json:"started_at,omitempty"`
-	FinishedAt            *timestamppb.Timestamp       `protobuf:"bytes,10,opt,name=finished_at,json=finishedAt,proto3,oneof" json:"finished_at,omitempty"`
-	unknownFields         protoimpl.UnknownFields
-	sizeCache             protoimpl.SizeCache
+	state                 protoimpl.MessageState `protogen:"open.v1"`
+	ProcedureExecutionRid string                 `protobuf:"bytes,1,opt,name=procedure_execution_rid,json=procedureExecutionRid,proto3" json:"procedure_execution_rid,omitempty"`
+	Title                 *string                `protobuf:"bytes,2,opt,name=title,proto3,oneof" json:"title,omitempty"`
+	Description           *string                `protobuf:"bytes,3,opt,name=description,proto3,oneof" json:"description,omitempty"`
+	// Procedure commit to point the execution at. Does not change the execution's step state.
+	CommitId *string `protobuf:"bytes,4,opt,name=commit_id,json=commitId,proto3,oneof" json:"commit_id,omitempty"`
+	// If set, replaces the execution's labels.
+	Labels *types.LabelUpdateWrapper `protobuf:"bytes,5,opt,name=labels,proto3,oneof" json:"labels,omitempty"`
+	// If set, replaces the execution's properties.
+	Properties *types.PropertyUpdateWrapper `protobuf:"bytes,6,opt,name=properties,proto3,oneof" json:"properties,omitempty"`
+	// If set, replaces the whole execution state, including every step.
+	State *ProcedureExecutionState `protobuf:"bytes,7,opt,name=state,proto3,oneof" json:"state,omitempty"`
+	// If set to either value, records the caller as the aborter at the current time. The value is not read.
+	IsAborted *bool `protobuf:"varint,8,opt,name=is_aborted,json=isAborted,proto3,oneof" json:"is_aborted,omitempty"`
+	// If set, sets the start time and records the caller as the starter.
+	StartedAt *timestamppb.Timestamp `protobuf:"bytes,9,opt,name=started_at,json=startedAt,proto3,oneof" json:"started_at,omitempty"`
+	// If set, sets the finish time and records the caller as the finisher.
+	FinishedAt    *timestamppb.Timestamp `protobuf:"bytes,10,opt,name=finished_at,json=finishedAt,proto3,oneof" json:"finished_at,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
 }
 
 func (x *UpdateProcedureExecutionRequest) Reset() {
@@ -5972,10 +5981,8 @@ type UpdateStepSuccessConditionStatusRequest struct {
 	ProcedureExecutionRid string                 `protobuf:"bytes,1,opt,name=procedure_execution_rid,json=procedureExecutionRid,proto3" json:"procedure_execution_rid,omitempty"`
 	// The unique identifier of the execution step to update.
 	StepId string `protobuf:"bytes,2,opt,name=step_id,json=stepId,proto3" json:"step_id,omitempty"`
-	// Setting the success_condition_status is only allowed if the step is SUBMITTED
-	// and should only be done by the backend while monitoring the condition.
-	// If the step is SKIPPED, the success_condition_status will still be set but
-	// no completion actions will be run and the step's state will not be updated.
+	// The backend sets the success_condition_status while it monitors the condition.
+	// It is stored whatever the state of the step.
 	SuccessConditionStatus *SuccessConditionStatus `protobuf:"bytes,3,opt,name=success_condition_status,json=successConditionStatus,proto3" json:"success_condition_status,omitempty"`
 	unknownFields          protoimpl.UnknownFields
 	sizeCache              protoimpl.SizeCache
@@ -6618,10 +6625,12 @@ type ProcedureExecutionSearchQuery_Workspace struct {
 }
 
 type ProcedureExecutionSearchQuery_ProcedureRid struct {
+	// Matches executions of this procedure.
 	ProcedureRid string `protobuf:"bytes,7,opt,name=procedure_rid,json=procedureRid,proto3,oneof"`
 }
 
 type ProcedureExecutionSearchQuery_CommitId struct {
+	// Matches executions that use this procedure commit.
 	CommitId string `protobuf:"bytes,8,opt,name=commit_id,json=commitId,proto3,oneof"`
 }
 
@@ -6634,10 +6643,13 @@ type ProcedureExecutionSearchQuery_ProgressStatus struct {
 }
 
 type ProcedureExecutionSearchQuery_AssetsFilter_ struct {
+	// Matches executions whose asset_rids include the listed assets, per the filter's operator.
 	AssetsFilter *ProcedureExecutionSearchQuery_AssetsFilter `protobuf:"bytes,11,opt,name=assets_filter,json=assetsFilter,proto3,oneof"`
 }
 
 type ProcedureExecutionSearchQuery_IsArchived struct {
+	// Matches executions whose archived state equals this value. Without such a term, archived and
+	// unarchived executions are both returned.
 	IsArchived bool `protobuf:"varint,12,opt,name=is_archived,json=isArchived,proto3,oneof"`
 }
 
@@ -6667,7 +6679,7 @@ func (*ProcedureExecutionSearchQuery_IsArchived) isProcedureExecutionSearchQuery
 
 type ProcedureExecutionSortOptions struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
-	// Defaults to descending
+	// Defaults to descending.
 	IsDescending  *bool                              `protobuf:"varint,1,opt,name=is_descending,json=isDescending,proto3,oneof" json:"is_descending,omitempty"`
 	SortField     SearchProcedureExecutionsSortField `protobuf:"varint,2,opt,name=sort_field,json=sortField,proto3,enum=nominal.procedures.executions.v1.SearchProcedureExecutionsSortField" json:"sort_field,omitempty"`
 	unknownFields protoimpl.UnknownFields
@@ -6719,10 +6731,11 @@ func (x *ProcedureExecutionSortOptions) GetSortField() SearchProcedureExecutions
 }
 
 type SearchProcedureExecutionsRequest struct {
-	state       protoimpl.MessageState         `protogen:"open.v1"`
-	Query       *ProcedureExecutionSearchQuery `protobuf:"bytes,1,opt,name=query,proto3" json:"query,omitempty"`
+	state protoimpl.MessageState         `protogen:"open.v1"`
+	Query *ProcedureExecutionSearchQuery `protobuf:"bytes,1,opt,name=query,proto3" json:"query,omitempty"`
+	// Defaults to the last updated time, newest first.
 	SortOptions *ProcedureExecutionSortOptions `protobuf:"bytes,2,opt,name=sort_options,json=sortOptions,proto3,oneof" json:"sort_options,omitempty"`
-	// Page sizes greater than 1_000 will be rejected. Default pageSize is 100.
+	// Defaults to 100 when omitted.
 	PageSize      *int32  `protobuf:"varint,3,opt,name=page_size,json=pageSize,proto3,oneof" json:"page_size,omitempty"`
 	NextPageToken *string `protobuf:"bytes,4,opt,name=next_page_token,json=nextPageToken,proto3,oneof" json:"next_page_token,omitempty"`
 	unknownFields protoimpl.UnknownFields
@@ -7355,7 +7368,7 @@ var File_nominal_protos_procedures_executions_v1_procedure_executions_proto prot
 
 const file_nominal_protos_procedures_executions_v1_procedure_executions_proto_rawDesc = "" +
 	"\n" +
-	"Bnominal/protos/procedures/executions/v1/procedure_executions.proto\x12 nominal.procedures.executions.v1\x1a\x1bbuf/validate/validate.proto\x1a\x1cgoogle/api/annotations.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a!nominal/protos/gen/v1/alias.proto\x1a!nominal/protos/gen/v1/error.proto\x1a-nominal/protos/procedures/v1/procedures.proto\x1a nominal/protos/types/types.proto\"\xd8\x01\n" +
+	"Bnominal/protos/procedures/executions/v1/procedure_executions.proto\x12 nominal.procedures.executions.v1\x1a\x1bbuf/validate/validate.proto\x1a\x1cgoogle/api/annotations.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a)nominal/protos/authz/v1/annotations.proto\x1a!nominal/protos/gen/v1/alias.proto\x1a!nominal/protos/gen/v1/error.proto\x1a-nominal/protos/procedures/v1/procedures.proto\x1a nominal/protos/types/types.proto\"\xd8\x01\n" +
 	"\x16ProcedureExecutionNode\x12[\n" +
 	"\asection\x18\x01 \x01(\v2?.nominal.procedures.executions.v1.ProcedureExecutionSectionNodeH\x00R\asection\x12R\n" +
 	"\x04step\x18\x02 \x01(\v2<.nominal.procedures.executions.v1.ProcedureExecutionStepNodeH\x00R\x04stepB\r\n" +
@@ -8069,23 +8082,47 @@ const file_nominal_protos_procedures_executions_v1_procedure_executions_proto_ra
 	"7PROCEDURE_EXECUTIONS_SERVICE_ERROR_INVALID_SEARCH_TOKEN\x10\a\x1a,\xb2\xb2\x1a(\n" +
 	"\x10INVALID_ARGUMENT\x12\x14Invalid search token\x12g\n" +
 	"6PROCEDURE_EXECUTIONS_SERVICE_ERROR_INVALID_STEP_UPDATE\x10\b\x1a+\xb2\xb2\x1a'\n" +
-	"\x10INVALID_ARGUMENT\x12\x13Invalid step update2\xf4\x18\n" +
-	"\x1aProcedureExecutionsService\x12\xe2\x01\n" +
-	"\x18CreateProcedureExecution\x12A.nominal.procedures.executions.v1.CreateProcedureExecutionRequest\x1aB.nominal.procedures.executions.v1.CreateProcedureExecutionResponse\"?\x82\xd3\xe4\x93\x029:\x01*\"4/procedures/v1/executions/procedures/{procedure_rid}\x12\xce\x01\n" +
-	"\x19SearchProcedureExecutions\x12B.nominal.procedures.executions.v1.SearchProcedureExecutionsRequest\x1aC.nominal.procedures.executions.v1.SearchProcedureExecutionsResponse\"(\x82\xd3\xe4\x93\x02\"\x12 /procedures/v1/executions/search\x12\xd5\x01\n" +
-	"\x15GetProcedureExecution\x12>.nominal.procedures.executions.v1.GetProcedureExecutionRequest\x1a?.nominal.procedures.executions.v1.GetProcedureExecutionResponse\";\x82\xd3\xe4\x93\x025\x123/procedures/v1/executions/{procedure_execution_rid}\x12\xe4\x01\n" +
-	"\x1fBatchArchiveProcedureExecutions\x12H.nominal.procedures.executions.v1.BatchArchiveProcedureExecutionsRequest\x1aI.nominal.procedures.executions.v1.BatchArchiveProcedureExecutionsResponse\",\x82\xd3\xe4\x93\x02&:\x01*\"!/procedures/v1/executions/archive\x12\xec\x01\n" +
-	"!BatchUnarchiveProcedureExecutions\x12J.nominal.procedures.executions.v1.BatchUnarchiveProcedureExecutionsRequest\x1aK.nominal.procedures.executions.v1.BatchUnarchiveProcedureExecutionsResponse\".\x82\xd3\xe4\x93\x02(:\x01*\"#/procedures/v1/executions/unarchive\x12\x82\x02\n" +
-	" UpdateProcedureExecutionMetadata\x12I.nominal.procedures.executions.v1.UpdateProcedureExecutionMetadataRequest\x1aJ.nominal.procedures.executions.v1.UpdateProcedureExecutionMetadataResponse\"G\x82\xd3\xe4\x93\x02A:\x01*\x1a</procedures/v1/executions/{procedure_execution_rid}/metadata\x12\xe8\x01\n" +
-	"\x18UpdateProcedureExecution\x12A.nominal.procedures.executions.v1.UpdateProcedureExecutionRequest\x1aB.nominal.procedures.executions.v1.UpdateProcedureExecutionResponse\"E\x82\xd3\xe4\x93\x02?:\x01*\x1a:/procedures/v1/executions/{procedure_execution_rid}/update\x12\xce\x01\n" +
+	"\x10INVALID_ARGUMENT\x12\x13Invalid step update2\xa7\x1c\n" +
+	"\x1aProcedureExecutionsService\x12\x88\x02\n" +
+	"\x18CreateProcedureExecution\x12A.nominal.procedures.executions.v1.CreateProcedureExecutionRequest\x1aB.nominal.procedures.executions.v1.CreateProcedureExecutionResponse\"e\xba\xb2\x1a\"\n" +
+	" \n" +
+	"\x1cworkspace:execute_procedures\"\x00\x82\xd3\xe4\x93\x029:\x01*\"4/procedures/v1/executions/procedures/{procedure_rid}\x12\xd2\x01\n" +
+	"\x19SearchProcedureExecutions\x12B.nominal.procedures.executions.v1.SearchProcedureExecutionsRequest\x1aC.nominal.procedures.executions.v1.SearchProcedureExecutionsResponse\",\xba\xb2\x1a\x00\x82\xd3\xe4\x93\x02\"\x12 /procedures/v1/executions/search\x12\xed\x01\n" +
+	"\x15GetProcedureExecution\x12>.nominal.procedures.executions.v1.GetProcedureExecutionRequest\x1a?.nominal.procedures.executions.v1.GetProcedureExecutionResponse\"S\xba\xb2\x1a\x14\n" +
+	"\x12\n" +
+	"\x0eworkspace:view\"\x00\x82\xd3\xe4\x93\x025\x123/procedures/v1/executions/{procedure_execution_rid}\x12\x8a\x02\n" +
+	"\x1fBatchArchiveProcedureExecutions\x12H.nominal.procedures.executions.v1.BatchArchiveProcedureExecutionsRequest\x1aI.nominal.procedures.executions.v1.BatchArchiveProcedureExecutionsResponse\"R\xba\xb2\x1a\"\n" +
+	" \n" +
+	"\x1cworkspace:execute_procedures\"\x00\x82\xd3\xe4\x93\x02&:\x01*\"!/procedures/v1/executions/archive\x12\x92\x02\n" +
+	"!BatchUnarchiveProcedureExecutions\x12J.nominal.procedures.executions.v1.BatchUnarchiveProcedureExecutionsRequest\x1aK.nominal.procedures.executions.v1.BatchUnarchiveProcedureExecutionsResponse\"T\xba\xb2\x1a\"\n" +
+	" \n" +
+	"\x1cworkspace:execute_procedures\"\x00\x82\xd3\xe4\x93\x02(:\x01*\"#/procedures/v1/executions/unarchive\x12\xa8\x02\n" +
+	" UpdateProcedureExecutionMetadata\x12I.nominal.procedures.executions.v1.UpdateProcedureExecutionMetadataRequest\x1aJ.nominal.procedures.executions.v1.UpdateProcedureExecutionMetadataResponse\"m\xba\xb2\x1a\"\n" +
+	" \n" +
+	"\x1cworkspace:execute_procedures\"\x00\x82\xd3\xe4\x93\x02A:\x01*\x1a</procedures/v1/executions/{procedure_execution_rid}/metadata\x12\x8e\x02\n" +
+	"\x18UpdateProcedureExecution\x12A.nominal.procedures.executions.v1.UpdateProcedureExecutionRequest\x1aB.nominal.procedures.executions.v1.UpdateProcedureExecutionResponse\"k\xba\xb2\x1a\"\n" +
+	" \n" +
+	"\x1cworkspace:execute_procedures\"\x00\x82\xd3\xe4\x93\x02?:\x01*\x1a:/procedures/v1/executions/{procedure_execution_rid}/update\x12\xf4\x01\n" +
 	"\n" +
-	"UpdateStep\x123.nominal.procedures.executions.v1.UpdateStepRequest\x1a4.nominal.procedures.executions.v1.UpdateStepResponse\"U\x82\xd3\xe4\x93\x02O:\x01*\x1aJ/procedures/v1/executions/{procedure_execution_rid}/steps/{step_id}/update\x12\xa2\x02\n" +
-	" UpdateStepSuccessConditionStatus\x12I.nominal.procedures.executions.v1.UpdateStepSuccessConditionStatusRequest\x1aJ.nominal.procedures.executions.v1.UpdateStepSuccessConditionStatusResponse\"g\x82\xd3\xe4\x93\x02a:\x01*\x1a\\/procedures/v1/executions/{procedure_execution_rid}/steps/{step_id}/success-condition-status\x12\xa2\x02\n" +
-	" UpdateStepCompletionActionStatus\x12I.nominal.procedures.executions.v1.UpdateStepCompletionActionStatusRequest\x1aJ.nominal.procedures.executions.v1.UpdateStepCompletionActionStatusResponse\"g\x82\xd3\xe4\x93\x02a:\x01*\x1a\\/procedures/v1/executions/{procedure_execution_rid}/steps/{step_id}/completion-action-status\x12\x9a\x02\n" +
-	"\x1eUpdateStepChannelCaptureStatus\x12G.nominal.procedures.executions.v1.UpdateStepChannelCaptureStatusRequest\x1aH.nominal.procedures.executions.v1.UpdateStepChannelCaptureStatusResponse\"e\x82\xd3\xe4\x93\x02_:\x01*\x1aZ/procedures/v1/executions/{procedure_execution_rid}/steps/{step_id}/channel-capture-status\x12\xce\x01\n" +
+	"UpdateStep\x123.nominal.procedures.executions.v1.UpdateStepRequest\x1a4.nominal.procedures.executions.v1.UpdateStepResponse\"{\xba\xb2\x1a\"\n" +
+	" \n" +
+	"\x1cworkspace:execute_procedures\"\x00\x82\xd3\xe4\x93\x02O:\x01*\x1aJ/procedures/v1/executions/{procedure_execution_rid}/steps/{step_id}/update\x12\xc9\x02\n" +
+	" UpdateStepSuccessConditionStatus\x12I.nominal.procedures.executions.v1.UpdateStepSuccessConditionStatusRequest\x1aJ.nominal.procedures.executions.v1.UpdateStepSuccessConditionStatusResponse\"\x8d\x01\xba\xb2\x1a\"\n" +
+	" \n" +
+	"\x1cworkspace:execute_procedures\"\x00\x82\xd3\xe4\x93\x02a:\x01*\x1a\\/procedures/v1/executions/{procedure_execution_rid}/steps/{step_id}/success-condition-status\x12\xc9\x02\n" +
+	" UpdateStepCompletionActionStatus\x12I.nominal.procedures.executions.v1.UpdateStepCompletionActionStatusRequest\x1aJ.nominal.procedures.executions.v1.UpdateStepCompletionActionStatusResponse\"\x8d\x01\xba\xb2\x1a\"\n" +
+	" \n" +
+	"\x1cworkspace:execute_procedures\"\x00\x82\xd3\xe4\x93\x02a:\x01*\x1a\\/procedures/v1/executions/{procedure_execution_rid}/steps/{step_id}/completion-action-status\x12\xc1\x02\n" +
+	"\x1eUpdateStepChannelCaptureStatus\x12G.nominal.procedures.executions.v1.UpdateStepChannelCaptureStatusRequest\x1aH.nominal.procedures.executions.v1.UpdateStepChannelCaptureStatusResponse\"\x8b\x01\xba\xb2\x1a\"\n" +
+	" \n" +
+	"\x1cworkspace:execute_procedures\"\x00\x82\xd3\xe4\x93\x02_:\x01*\x1aZ/procedures/v1/executions/{procedure_execution_rid}/steps/{step_id}/channel-capture-status\x12\xf4\x01\n" +
 	"\n" +
-	"RepeatStep\x123.nominal.procedures.executions.v1.RepeatStepRequest\x1a4.nominal.procedures.executions.v1.RepeatStepResponse\"U\x82\xd3\xe4\x93\x02O:\x01*\x1aJ/procedures/v1/executions/{procedure_execution_rid}/steps/{step_id}/repeat\x12\xf8\x01\n" +
-	"\"BatchGetProcedureExecutionMetadata\x12K.nominal.procedures.executions.v1.BatchGetProcedureExecutionMetadataRequest\x1aL.nominal.procedures.executions.v1.BatchGetProcedureExecutionMetadataResponse\"7\x82\xd3\xe4\x93\x021:\x01*\",/procedures/v1/executions/batch-get-metadataB\xc5\x02\n" +
+	"RepeatStep\x123.nominal.procedures.executions.v1.RepeatStepRequest\x1a4.nominal.procedures.executions.v1.RepeatStepResponse\"{\xba\xb2\x1a\"\n" +
+	" \n" +
+	"\x1cworkspace:execute_procedures\"\x00\x82\xd3\xe4\x93\x02O:\x01*\x1aJ/procedures/v1/executions/{procedure_execution_rid}/steps/{step_id}/repeat\x12\x90\x02\n" +
+	"\"BatchGetProcedureExecutionMetadata\x12K.nominal.procedures.executions.v1.BatchGetProcedureExecutionMetadataRequest\x1aL.nominal.procedures.executions.v1.BatchGetProcedureExecutionMetadataResponse\"O\xba\xb2\x1a\x14\n" +
+	"\x12\n" +
+	"\x0eworkspace:view\"\x00\x82\xd3\xe4\x93\x021:\x01*\",/procedures/v1/executions/batch-get-metadataB\xc5\x02\n" +
 	"$com.nominal.procedures.executions.v1B\x18ProcedureExecutionsProtoP\x01Z`github.com/nominal-io/nominal-api-protos-go/nominal/protos/procedures/executions/v1;executionsv1\xa2\x02\x03NPE\xaa\x02 Nominal.Procedures.Executions.V1\xca\x02 Nominal\\Procedures\\Executions\\V1\xe2\x02,Nominal\\Procedures\\Executions\\V1\\GPBMetadata\xea\x02#Nominal::Procedures::Executions::V1b\x06proto3"
 
 var (

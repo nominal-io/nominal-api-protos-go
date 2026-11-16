@@ -32,6 +32,7 @@ const (
 	DrivesService_UpdateDriveDetails_FullMethodName         = "/nominal.file_store.v1.DrivesService/UpdateDriveDetails"
 	DrivesService_ArchiveDrive_FullMethodName               = "/nominal.file_store.v1.DrivesService/ArchiveDrive"
 	DrivesService_UnarchiveDrive_FullMethodName             = "/nominal.file_store.v1.DrivesService/UnarchiveDrive"
+	DrivesService_NotifyVirtualDriveFiles_FullMethodName    = "/nominal.file_store.v1.DrivesService/NotifyVirtualDriveFiles"
 )
 
 // DrivesServiceClient is the client API for DrivesService service.
@@ -40,7 +41,7 @@ const (
 //
 // Manages File Store drives.
 type DrivesServiceClient interface {
-	// Creates a managed drive.
+	// Creates a managed drive with a drive ID that must be unique.
 	//
 	// Errors: FileStoreCommonError (PERMISSION_DENIED), DriveAdminError (DRIVE_ID_ALREADY_EXISTS).
 	CreateDrive(ctx context.Context, in *CreateDriveRequest, opts ...grpc.CallOption) (*CreateDriveResponse, error)
@@ -51,37 +52,74 @@ type DrivesServiceClient interface {
 	// Errors: FileStoreCommonError (PERMISSION_DENIED), DriveAdminError (DRIVE_ID_ALREADY_EXISTS,
 	// INVALID_VIRTUAL_DRIVE_CONFIGURATION), VirtualDriveUpstreamError (from the probe).
 	CreateVirtualDrive(ctx context.Context, in *CreateVirtualDriveRequest, opts ...grpc.CallOption) (*CreateVirtualDriveResponse, error)
-	// Gets a drive by RID.
+	// Gets one drive (a workspace-scoped namespace for files) by RID, including an archived one. A drive the caller
+	// cannot read is reported as not found.
 	//
-	// Errors: FileStoreCommonError (DRIVE_NOT_FOUND, PERMISSION_DENIED).
+	// Errors:
+	// - NOT_FOUND: no drive has this RID, or the caller cannot read it.
 	GetDrive(ctx context.Context, in *GetDriveRequest, opts ...grpc.CallOption) (*GetDriveResponse, error)
-	// Currently admin-only: gets a virtual drive's connection details by RID.
+	// Gets the connection details of a virtual drive (a read-only drive backed by external storage such as S3) by
+	// RID. Secret credentials appear only as a secret RID.
 	//
-	// Errors: FileStoreCommonError (DRIVE_NOT_FOUND, PERMISSION_DENIED), DriveAdminError
-	// (VIRTUAL_DRIVE_NOT_FOUND).
+	// Currently admin-only: the caller must be an organization admin and be allowed to read the drive's connection
+	// details. A drive that is not virtual is reported as not found.
+	//
+	// Errors:
+	//   - NOT_FOUND: no drive has this RID, the caller cannot read it, or it is not a virtual drive.
+	//   - PERMISSION_DENIED: the caller is not allowed to read the drive's connection details, or is not an
+	//     organization admin.
 	GetVirtualDriveDetails(ctx context.Context, in *GetVirtualDriveDetailsRequest, opts ...grpc.CallOption) (*GetVirtualDriveDetailsResponse, error)
-	// Gets a virtual drive's connectivity status by RID.
+	// Checks whether a virtual drive's external storage can be reached with its credentials, and returns the state.
+	// The drive is found by RID.
 	//
-	// Errors: FileStoreCommonError (DRIVE_NOT_FOUND, PERMISSION_DENIED), DriveAdminError
-	// (VIRTUAL_DRIVE_NOT_FOUND).
+	// An ACTIVE result can be up to 5 minutes old; any other result is checked live. A stored configuration or
+	// credentials that cannot be used give the state INVALID_CONFIGURATION, not an error. A drive that is not virtual
+	// is reported as not found. Unlike GetVirtualDriveDetails, it does not need admin rights.
+	//
+	// Errors:
+	// - NOT_FOUND: no drive has this RID, the caller cannot read it, or it is not a virtual drive.
 	GetVirtualDriveStatus(ctx context.Context, in *GetVirtualDriveStatusRequest, opts ...grpc.CallOption) (*GetVirtualDriveStatusResponse, error)
-	// Gets a drive by id within a workspace.
+	// Gets one drive by its user-facing id within a workspace, including an archived one. Use GetDrive when you have
+	// the RID.
 	//
-	// Errors: FileStoreCommonError (DRIVE_NOT_FOUND, PERMISSION_DENIED).
+	// A drive the caller cannot read is reported as not found.
+	//
+	// Errors:
+	//   - NOT_FOUND: the workspace does not exist or the caller cannot view it, or no drive in it has this id or the
+	//     caller cannot read the drive.
 	GetDriveById(ctx context.Context, in *GetDriveByIdRequest, opts ...grpc.CallOption) (*GetDriveByIdResponse, error)
-	// Currently admin-only: gets a virtual drive's connection details by id within a workspace.
+	// Gets the connection details of a virtual drive (a read-only drive backed by external storage such as S3) by its
+	// id within a workspace. Secret credentials appear only as a secret RID.
 	//
-	// Errors: FileStoreCommonError (DRIVE_NOT_FOUND, PERMISSION_DENIED), DriveAdminError
-	// (VIRTUAL_DRIVE_NOT_FOUND).
+	// Currently admin-only: the caller must be an organization admin and be allowed to read the drive's connection
+	// details. A drive that is not virtual is reported as not found.
+	//
+	// Errors:
+	//   - NOT_FOUND: the workspace does not exist or the caller cannot view it, no drive in it has this id, it is not a
+	//     virtual drive, or the caller cannot read it.
+	//   - PERMISSION_DENIED: the caller is not allowed to read the drive's connection details, or is not an
+	//     organization admin.
 	GetVirtualDriveDetailsById(ctx context.Context, in *GetVirtualDriveDetailsByIdRequest, opts ...grpc.CallOption) (*GetVirtualDriveDetailsByIdResponse, error)
-	// Gets a virtual drive's connectivity status by id within a workspace.
+	// Checks whether a virtual drive, found by its id within a workspace, can reach its external storage with its
+	// credentials, and returns the state.
 	//
-	// Errors: FileStoreCommonError (DRIVE_NOT_FOUND, PERMISSION_DENIED), DriveAdminError
-	// (VIRTUAL_DRIVE_NOT_FOUND).
+	// An ACTIVE result can be up to 5 minutes old; any other result is checked live. A stored configuration or
+	// credentials that cannot be used give the state INVALID_CONFIGURATION, not an error. Unlike
+	// GetVirtualDriveDetailsById, it does not need admin rights.
+	//
+	// Errors:
+	//   - NOT_FOUND: the workspace does not exist or the caller cannot view it, no drive in it has this id, it is not a
+	//     virtual drive, or the caller cannot read it.
 	GetVirtualDriveStatusById(ctx context.Context, in *GetVirtualDriveStatusByIdRequest, opts ...grpc.CallOption) (*GetVirtualDriveStatusByIdResponse, error)
-	// Lists drives in a workspace.
+	// Lists drives in one workspace, newest first, with a page token.
 	//
-	// Errors: FileStoreCommonError (PERMISSION_DENIED).
+	// Omits archived drives unless include_archived is set, drives that belong to another resource, and drives the
+	// caller cannot read. Unreadable drives are removed after the page is cut, so a page can hold fewer drives than
+	// page_size even when next_page_token is set.
+	//
+	// Errors:
+	// - NOT_FOUND: the workspace does not exist or the caller cannot view it.
+	// - INVALID_ARGUMENT: page_token is not valid.
 	ListDrives(ctx context.Context, in *ListDrivesRequest, opts ...grpc.CallOption) (*ListDrivesResponse, error)
 	// Updates a virtual drive. Before persisting, the new configuration is probed for connectivity and
 	// valid credentials. If the endpoint is unreachable or the credentials are rejected, the request fails
@@ -91,19 +129,22 @@ type DrivesServiceClient interface {
 	// (VIRTUAL_DRIVE_NOT_FOUND, INVALID_VIRTUAL_DRIVE_CONFIGURATION), VirtualDriveUpstreamError
 	// (from the probe).
 	UpdateVirtualDrive(ctx context.Context, in *UpdateVirtualDriveRequest, opts ...grpc.CallOption) (*UpdateVirtualDriveResponse, error)
-	// Currently admin-only: updates a drive's mutable details (currently just its id).
+	// Currently admin-only: updates a drive's mutable details (its id and description).
 	//
 	// Errors: FileStoreCommonError (DRIVE_NOT_FOUND, PERMISSION_DENIED), DriveAdminError
 	// (DRIVE_ID_ALREADY_EXISTS).
 	UpdateDriveDetails(ctx context.Context, in *UpdateDriveDetailsRequest, opts ...grpc.CallOption) (*UpdateDriveDetailsResponse, error)
-	// Currently admin-only: archives a drive.
+	// Archives a file store drive. Only admins can call it.
 	//
 	// Errors: FileStoreCommonError (DRIVE_NOT_FOUND, PERMISSION_DENIED).
 	ArchiveDrive(ctx context.Context, in *ArchiveDriveRequest, opts ...grpc.CallOption) (*ArchiveDriveResponse, error)
-	// Currently admin-only: unarchives a drive.
+	// Unarchives a file store drive. Only admins can call it.
 	//
 	// Errors: FileStoreCommonError (DRIVE_NOT_FOUND, PERMISSION_DENIED).
 	UnarchiveDrive(ctx context.Context, in *UnarchiveDriveRequest, opts ...grpc.CallOption) (*UnarchiveDriveResponse, error)
+	// Tells an S3 virtual drive that objects were created in its bucket, so they are picked up before the next scrape.
+	// Skipped objects are counted, not errors; repeats are harmless. On UNAVAILABLE, retry the whole call.
+	NotifyVirtualDriveFiles(ctx context.Context, in *NotifyVirtualDriveFilesRequest, opts ...grpc.CallOption) (*NotifyVirtualDriveFilesResponse, error)
 }
 
 type drivesServiceClient struct {
@@ -244,13 +285,23 @@ func (c *drivesServiceClient) UnarchiveDrive(ctx context.Context, in *UnarchiveD
 	return out, nil
 }
 
+func (c *drivesServiceClient) NotifyVirtualDriveFiles(ctx context.Context, in *NotifyVirtualDriveFilesRequest, opts ...grpc.CallOption) (*NotifyVirtualDriveFilesResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(NotifyVirtualDriveFilesResponse)
+	err := c.cc.Invoke(ctx, DrivesService_NotifyVirtualDriveFiles_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // DrivesServiceServer is the server API for DrivesService service.
 // All implementations must embed UnimplementedDrivesServiceServer
 // for forward compatibility.
 //
 // Manages File Store drives.
 type DrivesServiceServer interface {
-	// Creates a managed drive.
+	// Creates a managed drive with a drive ID that must be unique.
 	//
 	// Errors: FileStoreCommonError (PERMISSION_DENIED), DriveAdminError (DRIVE_ID_ALREADY_EXISTS).
 	CreateDrive(context.Context, *CreateDriveRequest) (*CreateDriveResponse, error)
@@ -261,37 +312,74 @@ type DrivesServiceServer interface {
 	// Errors: FileStoreCommonError (PERMISSION_DENIED), DriveAdminError (DRIVE_ID_ALREADY_EXISTS,
 	// INVALID_VIRTUAL_DRIVE_CONFIGURATION), VirtualDriveUpstreamError (from the probe).
 	CreateVirtualDrive(context.Context, *CreateVirtualDriveRequest) (*CreateVirtualDriveResponse, error)
-	// Gets a drive by RID.
+	// Gets one drive (a workspace-scoped namespace for files) by RID, including an archived one. A drive the caller
+	// cannot read is reported as not found.
 	//
-	// Errors: FileStoreCommonError (DRIVE_NOT_FOUND, PERMISSION_DENIED).
+	// Errors:
+	// - NOT_FOUND: no drive has this RID, or the caller cannot read it.
 	GetDrive(context.Context, *GetDriveRequest) (*GetDriveResponse, error)
-	// Currently admin-only: gets a virtual drive's connection details by RID.
+	// Gets the connection details of a virtual drive (a read-only drive backed by external storage such as S3) by
+	// RID. Secret credentials appear only as a secret RID.
 	//
-	// Errors: FileStoreCommonError (DRIVE_NOT_FOUND, PERMISSION_DENIED), DriveAdminError
-	// (VIRTUAL_DRIVE_NOT_FOUND).
+	// Currently admin-only: the caller must be an organization admin and be allowed to read the drive's connection
+	// details. A drive that is not virtual is reported as not found.
+	//
+	// Errors:
+	//   - NOT_FOUND: no drive has this RID, the caller cannot read it, or it is not a virtual drive.
+	//   - PERMISSION_DENIED: the caller is not allowed to read the drive's connection details, or is not an
+	//     organization admin.
 	GetVirtualDriveDetails(context.Context, *GetVirtualDriveDetailsRequest) (*GetVirtualDriveDetailsResponse, error)
-	// Gets a virtual drive's connectivity status by RID.
+	// Checks whether a virtual drive's external storage can be reached with its credentials, and returns the state.
+	// The drive is found by RID.
 	//
-	// Errors: FileStoreCommonError (DRIVE_NOT_FOUND, PERMISSION_DENIED), DriveAdminError
-	// (VIRTUAL_DRIVE_NOT_FOUND).
+	// An ACTIVE result can be up to 5 minutes old; any other result is checked live. A stored configuration or
+	// credentials that cannot be used give the state INVALID_CONFIGURATION, not an error. A drive that is not virtual
+	// is reported as not found. Unlike GetVirtualDriveDetails, it does not need admin rights.
+	//
+	// Errors:
+	// - NOT_FOUND: no drive has this RID, the caller cannot read it, or it is not a virtual drive.
 	GetVirtualDriveStatus(context.Context, *GetVirtualDriveStatusRequest) (*GetVirtualDriveStatusResponse, error)
-	// Gets a drive by id within a workspace.
+	// Gets one drive by its user-facing id within a workspace, including an archived one. Use GetDrive when you have
+	// the RID.
 	//
-	// Errors: FileStoreCommonError (DRIVE_NOT_FOUND, PERMISSION_DENIED).
+	// A drive the caller cannot read is reported as not found.
+	//
+	// Errors:
+	//   - NOT_FOUND: the workspace does not exist or the caller cannot view it, or no drive in it has this id or the
+	//     caller cannot read the drive.
 	GetDriveById(context.Context, *GetDriveByIdRequest) (*GetDriveByIdResponse, error)
-	// Currently admin-only: gets a virtual drive's connection details by id within a workspace.
+	// Gets the connection details of a virtual drive (a read-only drive backed by external storage such as S3) by its
+	// id within a workspace. Secret credentials appear only as a secret RID.
 	//
-	// Errors: FileStoreCommonError (DRIVE_NOT_FOUND, PERMISSION_DENIED), DriveAdminError
-	// (VIRTUAL_DRIVE_NOT_FOUND).
+	// Currently admin-only: the caller must be an organization admin and be allowed to read the drive's connection
+	// details. A drive that is not virtual is reported as not found.
+	//
+	// Errors:
+	//   - NOT_FOUND: the workspace does not exist or the caller cannot view it, no drive in it has this id, it is not a
+	//     virtual drive, or the caller cannot read it.
+	//   - PERMISSION_DENIED: the caller is not allowed to read the drive's connection details, or is not an
+	//     organization admin.
 	GetVirtualDriveDetailsById(context.Context, *GetVirtualDriveDetailsByIdRequest) (*GetVirtualDriveDetailsByIdResponse, error)
-	// Gets a virtual drive's connectivity status by id within a workspace.
+	// Checks whether a virtual drive, found by its id within a workspace, can reach its external storage with its
+	// credentials, and returns the state.
 	//
-	// Errors: FileStoreCommonError (DRIVE_NOT_FOUND, PERMISSION_DENIED), DriveAdminError
-	// (VIRTUAL_DRIVE_NOT_FOUND).
+	// An ACTIVE result can be up to 5 minutes old; any other result is checked live. A stored configuration or
+	// credentials that cannot be used give the state INVALID_CONFIGURATION, not an error. Unlike
+	// GetVirtualDriveDetailsById, it does not need admin rights.
+	//
+	// Errors:
+	//   - NOT_FOUND: the workspace does not exist or the caller cannot view it, no drive in it has this id, it is not a
+	//     virtual drive, or the caller cannot read it.
 	GetVirtualDriveStatusById(context.Context, *GetVirtualDriveStatusByIdRequest) (*GetVirtualDriveStatusByIdResponse, error)
-	// Lists drives in a workspace.
+	// Lists drives in one workspace, newest first, with a page token.
 	//
-	// Errors: FileStoreCommonError (PERMISSION_DENIED).
+	// Omits archived drives unless include_archived is set, drives that belong to another resource, and drives the
+	// caller cannot read. Unreadable drives are removed after the page is cut, so a page can hold fewer drives than
+	// page_size even when next_page_token is set.
+	//
+	// Errors:
+	// - NOT_FOUND: the workspace does not exist or the caller cannot view it.
+	// - INVALID_ARGUMENT: page_token is not valid.
 	ListDrives(context.Context, *ListDrivesRequest) (*ListDrivesResponse, error)
 	// Updates a virtual drive. Before persisting, the new configuration is probed for connectivity and
 	// valid credentials. If the endpoint is unreachable or the credentials are rejected, the request fails
@@ -301,19 +389,22 @@ type DrivesServiceServer interface {
 	// (VIRTUAL_DRIVE_NOT_FOUND, INVALID_VIRTUAL_DRIVE_CONFIGURATION), VirtualDriveUpstreamError
 	// (from the probe).
 	UpdateVirtualDrive(context.Context, *UpdateVirtualDriveRequest) (*UpdateVirtualDriveResponse, error)
-	// Currently admin-only: updates a drive's mutable details (currently just its id).
+	// Currently admin-only: updates a drive's mutable details (its id and description).
 	//
 	// Errors: FileStoreCommonError (DRIVE_NOT_FOUND, PERMISSION_DENIED), DriveAdminError
 	// (DRIVE_ID_ALREADY_EXISTS).
 	UpdateDriveDetails(context.Context, *UpdateDriveDetailsRequest) (*UpdateDriveDetailsResponse, error)
-	// Currently admin-only: archives a drive.
+	// Archives a file store drive. Only admins can call it.
 	//
 	// Errors: FileStoreCommonError (DRIVE_NOT_FOUND, PERMISSION_DENIED).
 	ArchiveDrive(context.Context, *ArchiveDriveRequest) (*ArchiveDriveResponse, error)
-	// Currently admin-only: unarchives a drive.
+	// Unarchives a file store drive. Only admins can call it.
 	//
 	// Errors: FileStoreCommonError (DRIVE_NOT_FOUND, PERMISSION_DENIED).
 	UnarchiveDrive(context.Context, *UnarchiveDriveRequest) (*UnarchiveDriveResponse, error)
+	// Tells an S3 virtual drive that objects were created in its bucket, so they are picked up before the next scrape.
+	// Skipped objects are counted, not errors; repeats are harmless. On UNAVAILABLE, retry the whole call.
+	NotifyVirtualDriveFiles(context.Context, *NotifyVirtualDriveFilesRequest) (*NotifyVirtualDriveFilesResponse, error)
 	mustEmbedUnimplementedDrivesServiceServer()
 }
 
@@ -362,6 +453,9 @@ func (UnimplementedDrivesServiceServer) ArchiveDrive(context.Context, *ArchiveDr
 }
 func (UnimplementedDrivesServiceServer) UnarchiveDrive(context.Context, *UnarchiveDriveRequest) (*UnarchiveDriveResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method UnarchiveDrive not implemented")
+}
+func (UnimplementedDrivesServiceServer) NotifyVirtualDriveFiles(context.Context, *NotifyVirtualDriveFilesRequest) (*NotifyVirtualDriveFilesResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method NotifyVirtualDriveFiles not implemented")
 }
 func (UnimplementedDrivesServiceServer) mustEmbedUnimplementedDrivesServiceServer() {}
 func (UnimplementedDrivesServiceServer) testEmbeddedByValue()                       {}
@@ -618,6 +712,24 @@ func _DrivesService_UnarchiveDrive_Handler(srv interface{}, ctx context.Context,
 	return interceptor(ctx, in, info, handler)
 }
 
+func _DrivesService_NotifyVirtualDriveFiles_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(NotifyVirtualDriveFilesRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(DrivesServiceServer).NotifyVirtualDriveFiles(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: DrivesService_NotifyVirtualDriveFiles_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(DrivesServiceServer).NotifyVirtualDriveFiles(ctx, req.(*NotifyVirtualDriveFilesRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // DrivesService_ServiceDesc is the grpc.ServiceDesc for DrivesService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -676,6 +788,10 @@ var DrivesService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "UnarchiveDrive",
 			Handler:    _DrivesService_UnarchiveDrive_Handler,
+		},
+		{
+			MethodName: "NotifyVirtualDriveFiles",
+			Handler:    _DrivesService_NotifyVirtualDriveFiles_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

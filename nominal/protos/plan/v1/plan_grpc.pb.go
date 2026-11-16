@@ -21,13 +21,15 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	PlanService_CreatePlan_FullMethodName         = "/nominal.plan.v1.PlanService/CreatePlan"
-	PlanService_GetPlan_FullMethodName            = "/nominal.plan.v1.PlanService/GetPlan"
-	PlanService_BatchGetPlans_FullMethodName      = "/nominal.plan.v1.PlanService/BatchGetPlans"
-	PlanService_CreatePlanCommit_FullMethodName   = "/nominal.plan.v1.PlanService/CreatePlanCommit"
-	PlanService_UpdatePlanMetadata_FullMethodName = "/nominal.plan.v1.PlanService/UpdatePlanMetadata"
-	PlanService_SearchPlans_FullMethodName        = "/nominal.plan.v1.PlanService/SearchPlans"
-	PlanService_ValidatePlan_FullMethodName       = "/nominal.plan.v1.PlanService/ValidatePlan"
+	PlanService_CreatePlan_FullMethodName                  = "/nominal.plan.v1.PlanService/CreatePlan"
+	PlanService_GetPlan_FullMethodName                     = "/nominal.plan.v1.PlanService/GetPlan"
+	PlanService_BatchGetPlans_FullMethodName               = "/nominal.plan.v1.PlanService/BatchGetPlans"
+	PlanService_BatchGetPlanSummaries_FullMethodName       = "/nominal.plan.v1.PlanService/BatchGetPlanSummaries"
+	PlanService_CreatePlanCommit_FullMethodName            = "/nominal.plan.v1.PlanService/CreatePlanCommit"
+	PlanService_UpdatePlanMetadata_FullMethodName          = "/nominal.plan.v1.PlanService/UpdatePlanMetadata"
+	PlanService_SearchPlans_FullMethodName                 = "/nominal.plan.v1.PlanService/SearchPlans"
+	PlanService_ValidatePlan_FullMethodName                = "/nominal.plan.v1.PlanService/ValidatePlan"
+	PlanService_ListPlanAssetGroupSummaries_FullMethodName = "/nominal.plan.v1.PlanService/ListPlanAssetGroupSummaries"
 )
 
 // PlanServiceClient is the client API for PlanService service.
@@ -36,27 +38,129 @@ const (
 //
 // PlanService manages plans, which are collections of objectives and activities for future execution.
 type PlanServiceClient interface {
-	// Create a new plan along with its initial commit.
-	CreatePlan(ctx context.Context, in *CreatePlanRequest, opts ...grpc.CallOption) (*CreatePlanResponse, error)
-	// Read a plan at a branch or commit. Defaults to the latest commit on "main".
-	GetPlan(ctx context.Context, in *GetPlanRequest, opts ...grpc.CallOption) (*GetPlanResponse, error)
-	// Read several plans at the latest commit on their "main" branch.
-	BatchGetPlans(ctx context.Context, in *BatchGetPlansRequest, opts ...grpc.CallOption) (*BatchGetPlansResponse, error)
-	// Write plan content by creating a commit on a branch.
-	CreatePlanCommit(ctx context.Context, in *CreatePlanCommitRequest, opts ...grpc.CallOption) (*CreatePlanCommitResponse, error)
-	// Update a plan's metadata. Only fields present in the request are changed.
-	UpdatePlanMetadata(ctx context.Context, in *UpdatePlanMetadataRequest, opts ...grpc.CallOption) (*UpdatePlanMetadataResponse, error)
-	// Search plans the caller is permitted to see.
-	SearchPlans(ctx context.Context, in *SearchPlansRequest, opts ...grpc.CallOption) (*SearchPlansResponse, error)
-	// Report structured violations for a plan without writing anything. Findings come back in-band,
-	// so this call succeeds even when the content is invalid; an ERROR finding is one CreatePlanCommit
-	// would reject, a WARNING one it would accept.
+	// Creates a plan, which holds objectives, activities, segments, and asset groups for future execution, in a
+	// workspace with its first commit. Returns the plan and any WARNING findings on its content.
 	//
-	// Reads either a committed revision or content supplied inline. Membership of an activity's finalized
-	// assets in its objectives' candidate pools is only checked when every pool lists its assets
-	// explicitly — a pool defined by an asset search is not enumerated. The same holds for the base asset
-	// pool: one that searches bounds nothing here.
+	// The server assigns the RID. plan.metadata.workspace_rid and plan.content are required, and the workspace cannot
+	// change later. The published flag defaults to true and the status to open when unset. The caller needs permission
+	// to edit plans in the workspace. Content with an ERROR finding is rejected, and the error names each finding;
+	// WARNING findings are returned and do not block the create. Set import_asset_limits to copy the scheduling limits
+	// of the assets the plan uses into the plan's constraints. To change content later, use CreatePlanCommit.
+	//
+	// Errors:
+	//   - INVALID_ARGUMENT: plan, plan.metadata, plan.content, or plan.metadata.workspace_rid is missing or malformed,
+	//     the content has an ERROR finding, or import_asset_limits cannot be applied.
+	//   - NOT_FOUND (Security:WorkspaceNotFound): the workspace does not exist or the caller cannot edit plans in it.
+	//   - PERMISSION_DENIED: the workspace's edition does not include plans.
+	CreatePlan(ctx context.Context, in *CreatePlanRequest, opts ...grpc.CallOption) (*CreatePlanResponse, error)
+	// Reads one plan, its metadata and content, at a branch or commit. Defaults to the latest commit on "main".
+	//
+	// Archived plans can be read.
+	//
+	// Errors:
+	// - INVALID_ARGUMENT: plan_rid is missing or is not a plan RID.
+	// - NOT_FOUND (PlanNotFound): the plan does not exist, or the caller cannot view its workspace.
+	// - NOT_FOUND (PlanBranchOrCommitNotFound): the branch or commit does not exist.
+	// - PERMISSION_DENIED: the workspace's edition does not include plans.
+	GetPlan(ctx context.Context, in *GetPlanRequest, opts ...grpc.CallOption) (*GetPlanResponse, error)
+	// Reads several plans, metadata and content, at the latest commit on their "main" branch. For metadata only, use
+	// BatchGetPlanSummaries.
+	//
+	// Plans that do not exist, or whose workspace the caller cannot view or whose edition does not include plans, are
+	// omitted and not reported as errors. Archived plans are included. A repeated RID returns one plan, and order is
+	// not guaranteed.
+	//
+	// Errors:
+	// - INVALID_ARGUMENT: a plan RID is malformed or is not a plan RID.
+	BatchGetPlans(ctx context.Context, in *BatchGetPlansRequest, opts ...grpc.CallOption) (*BatchGetPlansResponse, error)
+	// Reads several plans' summaries: metadata and cached start and end dates, without content.
+	//
+	// Archived plans are included. Plans that do not exist, or whose workspace the caller cannot view or whose edition
+	// does not include plans, are omitted and not reported as errors. A repeated RID returns one summary, and order is
+	// not guaranteed.
+	//
+	// Errors:
+	// - INVALID_ARGUMENT: a plan RID is malformed or is not a plan RID.
+	BatchGetPlanSummaries(ctx context.Context, in *BatchGetPlanSummariesRequest, opts ...grpc.CallOption) (*BatchGetPlanSummariesResponse, error)
+	// Writes a plan's content by creating a commit on one of its branches. Returns the plan and any WARNING findings
+	// on the content.
+	//
+	// The branch defaults to "main". The caller needs permission to edit plans in the plan's workspace. Content with
+	// an ERROR finding is rejected, and the error names each finding. A working-state commit ignores the message and
+	// returns no findings. A commit to "main", permanent or working-state, advances the plan's edited time and
+	// refreshes the dates in its summary; a commit to another branch does neither. If the commit omits
+	// inherit_asset_limits and expected_latest_commit is set, the plan keeps the setting of that commit.
+	// import_asset_limits needs a permanent commit and expected_latest_commit.
+	//
+	// Errors:
+	//   - INVALID_ARGUMENT: plan_rid is malformed or is not a plan RID, content is missing or has an ERROR finding, a
+	//     permanent commit has no message, or import_asset_limits is set without a permanent commit and
+	//     expected_latest_commit or cannot be applied.
+	//   - NOT_FOUND (PlanNotFound): the plan does not exist, or the caller cannot edit plans in its workspace.
+	//   - NOT_FOUND (PlanBranchOrCommitNotFound): the branch does not exist.
+	//   - FAILED_PRECONDITION (PlanArchived): the plan is archived.
+	//   - FAILED_PRECONDITION (PlanCommitConflict): expected_latest_commit is not the latest commit on the branch.
+	//   - PERMISSION_DENIED: the workspace's edition does not include plans.
+	CreatePlanCommit(ctx context.Context, in *CreatePlanCommitRequest, opts ...grpc.CallOption) (*CreatePlanCommitResponse, error)
+	// Updates a plan's title, description, labels, properties, published flag, archived flag, or lifecycle status.
+	// Returns the updated metadata.
+	//
+	// Only fields that are present change. Labels and properties are replaced as a whole, and a present empty value
+	// clears them. Content and workspace do not change. The call works on an archived plan, so it can unarchive one.
+	// The server records the caller as the last updater. A request with no field present changes nothing. The caller
+	// needs permission to edit plans in the plan's workspace.
+	//
+	// Errors:
+	// - INVALID_ARGUMENT: plan_rid is malformed or is not a plan RID.
+	// - NOT_FOUND (PlanNotFound): the plan does not exist, or the caller cannot edit plans in its workspace.
+	// - PERMISSION_DENIED: the workspace's edition does not include plans.
+	UpdatePlanMetadata(ctx context.Context, in *UpdatePlanMetadataRequest, opts ...grpc.CallOption) (*UpdatePlanMetadataResponse, error)
+	// Searches plans in the workspaces the caller can view by title text, labels, properties, author, workspace, date
+	// range, lifecycle status, or archived flag, combined with and, or, and not. Returns a page of plan summaries.
+	//
+	// Results are most recently edited first by default. Archived plans are excluded unless the query has an
+	// is_archived clause. A page can hold fewer results than page_size while next_page_token is set, so continue until
+	// it is empty. The page size defaults to 100.
+	//
+	// Errors:
+	//   - INVALID_ARGUMENT: the query nests deeper than 10 levels or has a clause with nothing set, a
+	//     date_range_overlaps window has no bound or a start after its end, or the page token is invalid.
+	SearchPlans(ctx context.Context, in *SearchPlansRequest, opts ...grpc.CallOption) (*SearchPlansResponse, error)
+	// Checks a plan's content for rule violations without writing. Reads a stored plan revision or inline content,
+	// and returns findings with ERROR or WARNING severity.
+	//
+	// The call succeeds on invalid content: an ERROR finding is one CreatePlanCommit would reject, a WARNING one it
+	// would accept. An assigned asset is checked against the pool of each resource it names, or every pool of its
+	// activity's objectives when it names none, and only when that pool lists its assets explicitly; so is the base
+	// asset pool. Asset capacity and turnaround come from a constraint on the asset,
+	// then its properties (read only while inherit_asset_limits is unset or true), then the defaults. A capacity on a
+	// group, a resource, or the plan is pooled across its assets. A stored plan, or content sent with workspace_rid,
+	// has its scheduled assets read in that workspace, and a searching pool only as far as it holds them; when that
+	// read is cut short, is_truncated is set. Daily usage ceilings from asset properties are not checked; explicit
+	// usage_ceiling constraints are.
+	//
+	// The caller needs to view the stored plan's workspace, or workspace_rid when set. Inline content without
+	// workspace_rid needs no permission.
+	//
+	// Errors:
+	// - INVALID_ARGUMENT: workspace_rid is sent with a stored plan, or an RID is malformed.
+	// - NOT_FOUND (PlanNotFound): the stored plan does not exist, or the caller cannot view its workspace.
+	// - NOT_FOUND (PlanBranchOrCommitNotFound): the revision does not exist.
+	// - NOT_FOUND (Security:WorkspaceNotFound): the caller cannot view workspace_rid.
+	// - PERMISSION_DENIED: the workspace's edition does not include plans.
 	ValidatePlan(ctx context.Context, in *ValidatePlanRequest, opts ...grpc.CallOption) (*ValidatePlanResponse, error)
+	// Counts the assets in each of a plan revision's asset groups by running each group's asset search, optionally
+	// only the groups that contain one asset. Defaults to the latest commit on "main". Read-only; not paginated.
+	//
+	// A group's count covers the assets in the plan's workspace that match its sources, limited to the base asset
+	// pool unless the group is exempt from it.
+	//
+	// Errors:
+	// - INVALID_ARGUMENT: plan_rid is malformed or is not a plan RID, or containing_asset_rid is not an asset RID.
+	// - NOT_FOUND (PlanNotFound): the plan does not exist, or the caller cannot view its workspace.
+	// - NOT_FOUND (PlanBranchOrCommitNotFound): the branch or commit does not exist.
+	// - PERMISSION_DENIED: the workspace's edition does not include plans.
+	ListPlanAssetGroupSummaries(ctx context.Context, in *ListPlanAssetGroupSummariesRequest, opts ...grpc.CallOption) (*ListPlanAssetGroupSummariesResponse, error)
 }
 
 type planServiceClient struct {
@@ -91,6 +195,16 @@ func (c *planServiceClient) BatchGetPlans(ctx context.Context, in *BatchGetPlans
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(BatchGetPlansResponse)
 	err := c.cc.Invoke(ctx, PlanService_BatchGetPlans_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *planServiceClient) BatchGetPlanSummaries(ctx context.Context, in *BatchGetPlanSummariesRequest, opts ...grpc.CallOption) (*BatchGetPlanSummariesResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(BatchGetPlanSummariesResponse)
+	err := c.cc.Invoke(ctx, PlanService_BatchGetPlanSummaries_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -137,33 +251,145 @@ func (c *planServiceClient) ValidatePlan(ctx context.Context, in *ValidatePlanRe
 	return out, nil
 }
 
+func (c *planServiceClient) ListPlanAssetGroupSummaries(ctx context.Context, in *ListPlanAssetGroupSummariesRequest, opts ...grpc.CallOption) (*ListPlanAssetGroupSummariesResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(ListPlanAssetGroupSummariesResponse)
+	err := c.cc.Invoke(ctx, PlanService_ListPlanAssetGroupSummaries_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // PlanServiceServer is the server API for PlanService service.
 // All implementations must embed UnimplementedPlanServiceServer
 // for forward compatibility.
 //
 // PlanService manages plans, which are collections of objectives and activities for future execution.
 type PlanServiceServer interface {
-	// Create a new plan along with its initial commit.
-	CreatePlan(context.Context, *CreatePlanRequest) (*CreatePlanResponse, error)
-	// Read a plan at a branch or commit. Defaults to the latest commit on "main".
-	GetPlan(context.Context, *GetPlanRequest) (*GetPlanResponse, error)
-	// Read several plans at the latest commit on their "main" branch.
-	BatchGetPlans(context.Context, *BatchGetPlansRequest) (*BatchGetPlansResponse, error)
-	// Write plan content by creating a commit on a branch.
-	CreatePlanCommit(context.Context, *CreatePlanCommitRequest) (*CreatePlanCommitResponse, error)
-	// Update a plan's metadata. Only fields present in the request are changed.
-	UpdatePlanMetadata(context.Context, *UpdatePlanMetadataRequest) (*UpdatePlanMetadataResponse, error)
-	// Search plans the caller is permitted to see.
-	SearchPlans(context.Context, *SearchPlansRequest) (*SearchPlansResponse, error)
-	// Report structured violations for a plan without writing anything. Findings come back in-band,
-	// so this call succeeds even when the content is invalid; an ERROR finding is one CreatePlanCommit
-	// would reject, a WARNING one it would accept.
+	// Creates a plan, which holds objectives, activities, segments, and asset groups for future execution, in a
+	// workspace with its first commit. Returns the plan and any WARNING findings on its content.
 	//
-	// Reads either a committed revision or content supplied inline. Membership of an activity's finalized
-	// assets in its objectives' candidate pools is only checked when every pool lists its assets
-	// explicitly — a pool defined by an asset search is not enumerated. The same holds for the base asset
-	// pool: one that searches bounds nothing here.
+	// The server assigns the RID. plan.metadata.workspace_rid and plan.content are required, and the workspace cannot
+	// change later. The published flag defaults to true and the status to open when unset. The caller needs permission
+	// to edit plans in the workspace. Content with an ERROR finding is rejected, and the error names each finding;
+	// WARNING findings are returned and do not block the create. Set import_asset_limits to copy the scheduling limits
+	// of the assets the plan uses into the plan's constraints. To change content later, use CreatePlanCommit.
+	//
+	// Errors:
+	//   - INVALID_ARGUMENT: plan, plan.metadata, plan.content, or plan.metadata.workspace_rid is missing or malformed,
+	//     the content has an ERROR finding, or import_asset_limits cannot be applied.
+	//   - NOT_FOUND (Security:WorkspaceNotFound): the workspace does not exist or the caller cannot edit plans in it.
+	//   - PERMISSION_DENIED: the workspace's edition does not include plans.
+	CreatePlan(context.Context, *CreatePlanRequest) (*CreatePlanResponse, error)
+	// Reads one plan, its metadata and content, at a branch or commit. Defaults to the latest commit on "main".
+	//
+	// Archived plans can be read.
+	//
+	// Errors:
+	// - INVALID_ARGUMENT: plan_rid is missing or is not a plan RID.
+	// - NOT_FOUND (PlanNotFound): the plan does not exist, or the caller cannot view its workspace.
+	// - NOT_FOUND (PlanBranchOrCommitNotFound): the branch or commit does not exist.
+	// - PERMISSION_DENIED: the workspace's edition does not include plans.
+	GetPlan(context.Context, *GetPlanRequest) (*GetPlanResponse, error)
+	// Reads several plans, metadata and content, at the latest commit on their "main" branch. For metadata only, use
+	// BatchGetPlanSummaries.
+	//
+	// Plans that do not exist, or whose workspace the caller cannot view or whose edition does not include plans, are
+	// omitted and not reported as errors. Archived plans are included. A repeated RID returns one plan, and order is
+	// not guaranteed.
+	//
+	// Errors:
+	// - INVALID_ARGUMENT: a plan RID is malformed or is not a plan RID.
+	BatchGetPlans(context.Context, *BatchGetPlansRequest) (*BatchGetPlansResponse, error)
+	// Reads several plans' summaries: metadata and cached start and end dates, without content.
+	//
+	// Archived plans are included. Plans that do not exist, or whose workspace the caller cannot view or whose edition
+	// does not include plans, are omitted and not reported as errors. A repeated RID returns one summary, and order is
+	// not guaranteed.
+	//
+	// Errors:
+	// - INVALID_ARGUMENT: a plan RID is malformed or is not a plan RID.
+	BatchGetPlanSummaries(context.Context, *BatchGetPlanSummariesRequest) (*BatchGetPlanSummariesResponse, error)
+	// Writes a plan's content by creating a commit on one of its branches. Returns the plan and any WARNING findings
+	// on the content.
+	//
+	// The branch defaults to "main". The caller needs permission to edit plans in the plan's workspace. Content with
+	// an ERROR finding is rejected, and the error names each finding. A working-state commit ignores the message and
+	// returns no findings. A commit to "main", permanent or working-state, advances the plan's edited time and
+	// refreshes the dates in its summary; a commit to another branch does neither. If the commit omits
+	// inherit_asset_limits and expected_latest_commit is set, the plan keeps the setting of that commit.
+	// import_asset_limits needs a permanent commit and expected_latest_commit.
+	//
+	// Errors:
+	//   - INVALID_ARGUMENT: plan_rid is malformed or is not a plan RID, content is missing or has an ERROR finding, a
+	//     permanent commit has no message, or import_asset_limits is set without a permanent commit and
+	//     expected_latest_commit or cannot be applied.
+	//   - NOT_FOUND (PlanNotFound): the plan does not exist, or the caller cannot edit plans in its workspace.
+	//   - NOT_FOUND (PlanBranchOrCommitNotFound): the branch does not exist.
+	//   - FAILED_PRECONDITION (PlanArchived): the plan is archived.
+	//   - FAILED_PRECONDITION (PlanCommitConflict): expected_latest_commit is not the latest commit on the branch.
+	//   - PERMISSION_DENIED: the workspace's edition does not include plans.
+	CreatePlanCommit(context.Context, *CreatePlanCommitRequest) (*CreatePlanCommitResponse, error)
+	// Updates a plan's title, description, labels, properties, published flag, archived flag, or lifecycle status.
+	// Returns the updated metadata.
+	//
+	// Only fields that are present change. Labels and properties are replaced as a whole, and a present empty value
+	// clears them. Content and workspace do not change. The call works on an archived plan, so it can unarchive one.
+	// The server records the caller as the last updater. A request with no field present changes nothing. The caller
+	// needs permission to edit plans in the plan's workspace.
+	//
+	// Errors:
+	// - INVALID_ARGUMENT: plan_rid is malformed or is not a plan RID.
+	// - NOT_FOUND (PlanNotFound): the plan does not exist, or the caller cannot edit plans in its workspace.
+	// - PERMISSION_DENIED: the workspace's edition does not include plans.
+	UpdatePlanMetadata(context.Context, *UpdatePlanMetadataRequest) (*UpdatePlanMetadataResponse, error)
+	// Searches plans in the workspaces the caller can view by title text, labels, properties, author, workspace, date
+	// range, lifecycle status, or archived flag, combined with and, or, and not. Returns a page of plan summaries.
+	//
+	// Results are most recently edited first by default. Archived plans are excluded unless the query has an
+	// is_archived clause. A page can hold fewer results than page_size while next_page_token is set, so continue until
+	// it is empty. The page size defaults to 100.
+	//
+	// Errors:
+	//   - INVALID_ARGUMENT: the query nests deeper than 10 levels or has a clause with nothing set, a
+	//     date_range_overlaps window has no bound or a start after its end, or the page token is invalid.
+	SearchPlans(context.Context, *SearchPlansRequest) (*SearchPlansResponse, error)
+	// Checks a plan's content for rule violations without writing. Reads a stored plan revision or inline content,
+	// and returns findings with ERROR or WARNING severity.
+	//
+	// The call succeeds on invalid content: an ERROR finding is one CreatePlanCommit would reject, a WARNING one it
+	// would accept. An assigned asset is checked against the pool of each resource it names, or every pool of its
+	// activity's objectives when it names none, and only when that pool lists its assets explicitly; so is the base
+	// asset pool. Asset capacity and turnaround come from a constraint on the asset,
+	// then its properties (read only while inherit_asset_limits is unset or true), then the defaults. A capacity on a
+	// group, a resource, or the plan is pooled across its assets. A stored plan, or content sent with workspace_rid,
+	// has its scheduled assets read in that workspace, and a searching pool only as far as it holds them; when that
+	// read is cut short, is_truncated is set. Daily usage ceilings from asset properties are not checked; explicit
+	// usage_ceiling constraints are.
+	//
+	// The caller needs to view the stored plan's workspace, or workspace_rid when set. Inline content without
+	// workspace_rid needs no permission.
+	//
+	// Errors:
+	// - INVALID_ARGUMENT: workspace_rid is sent with a stored plan, or an RID is malformed.
+	// - NOT_FOUND (PlanNotFound): the stored plan does not exist, or the caller cannot view its workspace.
+	// - NOT_FOUND (PlanBranchOrCommitNotFound): the revision does not exist.
+	// - NOT_FOUND (Security:WorkspaceNotFound): the caller cannot view workspace_rid.
+	// - PERMISSION_DENIED: the workspace's edition does not include plans.
 	ValidatePlan(context.Context, *ValidatePlanRequest) (*ValidatePlanResponse, error)
+	// Counts the assets in each of a plan revision's asset groups by running each group's asset search, optionally
+	// only the groups that contain one asset. Defaults to the latest commit on "main". Read-only; not paginated.
+	//
+	// A group's count covers the assets in the plan's workspace that match its sources, limited to the base asset
+	// pool unless the group is exempt from it.
+	//
+	// Errors:
+	// - INVALID_ARGUMENT: plan_rid is malformed or is not a plan RID, or containing_asset_rid is not an asset RID.
+	// - NOT_FOUND (PlanNotFound): the plan does not exist, or the caller cannot view its workspace.
+	// - NOT_FOUND (PlanBranchOrCommitNotFound): the branch or commit does not exist.
+	// - PERMISSION_DENIED: the workspace's edition does not include plans.
+	ListPlanAssetGroupSummaries(context.Context, *ListPlanAssetGroupSummariesRequest) (*ListPlanAssetGroupSummariesResponse, error)
 	mustEmbedUnimplementedPlanServiceServer()
 }
 
@@ -183,6 +409,9 @@ func (UnimplementedPlanServiceServer) GetPlan(context.Context, *GetPlanRequest) 
 func (UnimplementedPlanServiceServer) BatchGetPlans(context.Context, *BatchGetPlansRequest) (*BatchGetPlansResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method BatchGetPlans not implemented")
 }
+func (UnimplementedPlanServiceServer) BatchGetPlanSummaries(context.Context, *BatchGetPlanSummariesRequest) (*BatchGetPlanSummariesResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method BatchGetPlanSummaries not implemented")
+}
 func (UnimplementedPlanServiceServer) CreatePlanCommit(context.Context, *CreatePlanCommitRequest) (*CreatePlanCommitResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method CreatePlanCommit not implemented")
 }
@@ -194,6 +423,9 @@ func (UnimplementedPlanServiceServer) SearchPlans(context.Context, *SearchPlansR
 }
 func (UnimplementedPlanServiceServer) ValidatePlan(context.Context, *ValidatePlanRequest) (*ValidatePlanResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method ValidatePlan not implemented")
+}
+func (UnimplementedPlanServiceServer) ListPlanAssetGroupSummaries(context.Context, *ListPlanAssetGroupSummariesRequest) (*ListPlanAssetGroupSummariesResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method ListPlanAssetGroupSummaries not implemented")
 }
 func (UnimplementedPlanServiceServer) mustEmbedUnimplementedPlanServiceServer() {}
 func (UnimplementedPlanServiceServer) testEmbeddedByValue()                     {}
@@ -270,6 +502,24 @@ func _PlanService_BatchGetPlans_Handler(srv interface{}, ctx context.Context, de
 	return interceptor(ctx, in, info, handler)
 }
 
+func _PlanService_BatchGetPlanSummaries_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(BatchGetPlanSummariesRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(PlanServiceServer).BatchGetPlanSummaries(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: PlanService_BatchGetPlanSummaries_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(PlanServiceServer).BatchGetPlanSummaries(ctx, req.(*BatchGetPlanSummariesRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _PlanService_CreatePlanCommit_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(CreatePlanCommitRequest)
 	if err := dec(in); err != nil {
@@ -342,6 +592,24 @@ func _PlanService_ValidatePlan_Handler(srv interface{}, ctx context.Context, dec
 	return interceptor(ctx, in, info, handler)
 }
 
+func _PlanService_ListPlanAssetGroupSummaries_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ListPlanAssetGroupSummariesRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(PlanServiceServer).ListPlanAssetGroupSummaries(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: PlanService_ListPlanAssetGroupSummaries_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(PlanServiceServer).ListPlanAssetGroupSummaries(ctx, req.(*ListPlanAssetGroupSummariesRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // PlanService_ServiceDesc is the grpc.ServiceDesc for PlanService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -362,6 +630,10 @@ var PlanService_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _PlanService_BatchGetPlans_Handler,
 		},
 		{
+			MethodName: "BatchGetPlanSummaries",
+			Handler:    _PlanService_BatchGetPlanSummaries_Handler,
+		},
+		{
 			MethodName: "CreatePlanCommit",
 			Handler:    _PlanService_CreatePlanCommit_Handler,
 		},
@@ -376,6 +648,10 @@ var PlanService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "ValidatePlan",
 			Handler:    _PlanService_ValidatePlan_Handler,
+		},
+		{
+			MethodName: "ListPlanAssetGroupSummaries",
+			Handler:    _PlanService_ListPlanAssetGroupSummaries_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

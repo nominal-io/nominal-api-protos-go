@@ -27,16 +27,14 @@ const (
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 //
 // Service for accessing the platform-managed datasets belonging to a workspace.
-//
-// Deliberately its own package rather than nominal.workspaces.v1, where this API started:
-// workspaces/v1 is gatekeeper-owned (see GATEKEEPER_PROTO_PACKAGES in
-// gatekeeper-api/gatekeeper_api.bzl), this service is served by combined-service, and ingress
-// routes by proto package and HTTP path prefix — so sharing the package put the two services'
-// routes in one chart's path space and left this one unroutable. The datasets themselves are
-// combined-service's (rows in catalog.datasets) even though the workspace is gatekeeper's.
 type SystemDatasetsServiceClient interface {
-	// Gets the workspace's system datasets — its log, ingest error log and usage tracking datasets,
-	// omitting any that are not configured.
+	// Gets the platform-managed datasets of a workspace: its usage tracking, log, ingest error log, and storage
+	// observability datasets. A dataset that has not been created yet is left unset.
+	//
+	// The caller needs permission to view the workspace.
+	//
+	// Errors:
+	// - NOT_FOUND: the workspace does not exist, the caller cannot view it, or it has no stored metadata.
 	GetSystemDatasets(ctx context.Context, in *GetSystemDatasetsRequest, opts ...grpc.CallOption) (*GetSystemDatasetsResponse, error)
 }
 
@@ -63,16 +61,14 @@ func (c *systemDatasetsServiceClient) GetSystemDatasets(ctx context.Context, in 
 // for forward compatibility.
 //
 // Service for accessing the platform-managed datasets belonging to a workspace.
-//
-// Deliberately its own package rather than nominal.workspaces.v1, where this API started:
-// workspaces/v1 is gatekeeper-owned (see GATEKEEPER_PROTO_PACKAGES in
-// gatekeeper-api/gatekeeper_api.bzl), this service is served by combined-service, and ingress
-// routes by proto package and HTTP path prefix — so sharing the package put the two services'
-// routes in one chart's path space and left this one unroutable. The datasets themselves are
-// combined-service's (rows in catalog.datasets) even though the workspace is gatekeeper's.
 type SystemDatasetsServiceServer interface {
-	// Gets the workspace's system datasets — its log, ingest error log and usage tracking datasets,
-	// omitting any that are not configured.
+	// Gets the platform-managed datasets of a workspace: its usage tracking, log, ingest error log, and storage
+	// observability datasets. A dataset that has not been created yet is left unset.
+	//
+	// The caller needs permission to view the workspace.
+	//
+	// Errors:
+	// - NOT_FOUND: the workspace does not exist, the caller cannot view it, or it has no stored metadata.
 	GetSystemDatasets(context.Context, *GetSystemDatasetsRequest) (*GetSystemDatasetsResponse, error)
 	mustEmbedUnimplementedSystemDatasetsServiceServer()
 }
