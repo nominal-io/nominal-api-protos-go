@@ -40,32 +40,135 @@ const (
 // Service for creating and managing procedure templates, which are versioned collections
 // of steps to be performed, typically in a specific order.
 type ProceduresServiceClient interface {
-	// Create a new procedure
+	// Creates a procedure in a workspace, with an initial commit on main that holds the given steps.
+	//
+	// The server assigns the procedure RID and the initial commit ID, and records the caller as the creator. The
+	// initial commit has no steps when none are given. The procedure is published unless is_published is false. When
+	// an initial branch name is given, a branch with that name is created at the initial commit and its name is
+	// returned. The caller needs permission to edit procedures in the workspace. Each webhook success condition in the
+	// steps must use an active secure webhook integration that the caller can read.
+	//
+	// Errors:
+	// - NOT_FOUND: the workspace does not exist or the caller cannot edit procedures in it.
+	// - PERMISSION_DENIED: the workspace edition does not include procedures.
+	// - INVALID_ARGUMENT: a webhook success condition in the steps is not valid.
+	// - ALREADY_EXISTS: the initial branch name is main, which the new procedure already has.
 	CreateProcedure(ctx context.Context, in *CreateProcedureRequest, opts ...grpc.CallOption) (*CreateProcedureResponse, error)
-	// Get a procedure by its RID
+	// Returns a procedure, with its metadata and steps, at a branch or commit (main by default), and can also return
+	// the display graph. Use BatchGetProcedureMetadata for metadata only.
+	//
+	// Archived procedures can be read.
+	//
+	// Errors:
+	// - NOT_FOUND: the procedure does not exist or the caller cannot view it, or the branch or commit does not exist.
+	// - PERMISSION_DENIED: the workspace edition does not include procedures.
+	// - INVALID_ARGUMENT: the display graph is requested and the step dependencies contain a cycle.
 	GetProcedure(ctx context.Context, in *GetProcedureRequest, opts ...grpc.CallOption) (*GetProcedureResponse, error)
-	// Get metadata for multiple procedure by RIDs.
-	// Unauthorized RIDs will be omitted from the response.
-	// Order is not guaranteed to match the request.
+	// Returns the metadata of procedures by RID, without their steps. Use GetProcedure for the steps.
+	//
+	// Archived procedures are included. RIDs that do not exist or that the caller cannot view are omitted, as are
+	// procedures in workspaces whose edition does not include procedures. The order of the response may differ from
+	// the order of the request.
 	BatchGetProcedureMetadata(ctx context.Context, in *BatchGetProcedureMetadataRequest, opts ...grpc.CallOption) (*BatchGetProcedureMetadataResponse, error)
-	// Update the metadata of a procedure
+	// Updates the title, description, labels, properties, archived flag, or published flag of a procedure, and returns
+	// the updated metadata.
+	//
+	// Fields that are not set keep their current value. A labels or properties value that is set replaces the existing
+	// one as a whole. When at least one field is set, the call records the caller as the last updater. It does not
+	// change the steps: use Commit or SaveWorkingState for that. The caller needs permission to edit procedures in the
+	// workspace.
+	//
+	// Errors:
+	// - NOT_FOUND: the procedure does not exist or the caller cannot edit it.
+	// - PERMISSION_DENIED: the workspace edition does not include procedures.
 	UpdateProcedureMetadata(ctx context.Context, in *UpdateProcedureMetadataRequest, opts ...grpc.CallOption) (*UpdateProcedureMetadataResponse, error)
-	// Parse a procedure from a nested procedure structure
+	// Converts a nested procedure (a linear list of steps and sections) into a procedure with a step graph, and can
+	// also return its display graph. Use GetProcedureAsNested for the reverse.
+	//
+	// Nothing is stored, and the call does not need authentication. Each step depends on the step before it, and
+	// sections group their children. A node ID that is missing or is not a valid identifier is replaced with a
+	// generated ID. The returned procedure has only the title and description of the nested procedure as metadata,
+	// with no RID or commit.
+	//
+	// Errors:
+	// - INVALID_ARGUMENT: two nodes share an ID (reported as INVALID_GRAPH), or a step has no content.
 	ParseNestedProcedure(ctx context.Context, in *ParseNestedProcedureRequest, opts ...grpc.CallOption) (*ParseNestedProcedureResponse, error)
-	// Get procedure as nested procedure
-	// TODO(pchen): in the future, not all graphs will be representable as nested procedures
+	// Returns a procedure at a branch or commit (main by default) as a nested procedure: a linear list of steps and
+	// sections. Use ParseNestedProcedure for the reverse.
+	//
+	// Errors:
+	// - NOT_FOUND: the procedure does not exist or the caller cannot view it, or the branch or commit does not exist.
+	// - PERMISSION_DENIED: the workspace edition does not include procedures.
+	// - INVALID_ARGUMENT: the step dependencies contain a cycle (reported as INVALID_GRAPH).
 	GetProcedureAsNested(ctx context.Context, in *GetProcedureAsNestedRequest, opts ...grpc.CallOption) (*GetProcedureAsNestedResponse, error)
-	// Merge a branch of a procedure to main
+	// Merges a branch of a procedure into main by committing the branch's latest steps to main, then deletes the
+	// branch. Returns the procedure at the new commit.
+	//
+	// The new commit on main uses the given message, and the branch's latest commit becomes permanent. When
+	// latest_commit_on_main is set, it must match the latest commit on main. The caller needs permission to edit
+	// procedures in the workspace. Each webhook success condition in the branch's steps must use an active secure
+	// webhook integration that the caller can read.
+	//
+	// Errors:
+	// - NOT_FOUND: the procedure does not exist or the caller cannot edit it, or the branch does not exist.
+	// - PERMISSION_DENIED: the workspace edition does not include procedures.
+	// - INVALID_ARGUMENT: the branch is main, the procedure is archived, or a webhook success condition is not valid.
+	// - ALREADY_EXISTS: latest_commit_on_main no longer matches the latest commit on main.
 	MergeToMain(ctx context.Context, in *MergeToMainRequest, opts ...grpc.CallOption) (*MergeToMainResponse, error)
-	// Save the working state of a procedure
+	// Saves the steps of a procedure as a working-state commit on a branch (main by default). Returns the procedure at
+	// the new commit. Use Commit for a permanent revision.
+	//
+	// Working-state commits are not permanent and may be compacted away. When latest_commit_on_branch is set, it must
+	// match the latest commit on the branch. A message that is empty or blank is replaced with "auto-save". The caller
+	// needs permission to edit procedures in the workspace. Each webhook success condition in the steps must use an
+	// active secure webhook integration that the caller can read.
+	//
+	// Errors:
+	//   - NOT_FOUND: the procedure does not exist or the caller cannot edit it, or the branch does not exist.
+	//   - PERMISSION_DENIED: the workspace edition does not include procedures.
+	//   - INVALID_ARGUMENT: the procedure is archived, the message is longer than 4096 characters, or a webhook success
+	//     condition is not valid.
+	//   - ALREADY_EXISTS: latest_commit_on_branch no longer matches the latest commit on the branch.
 	SaveWorkingState(ctx context.Context, in *SaveWorkingStateRequest, opts ...grpc.CallOption) (*SaveWorkingStateResponse, error)
-	// Commit a procedure to a branch
+	// Commits new steps of a procedure to a branch (main by default) as a permanent revision with a message. Returns
+	// the procedure at the new commit. Use SaveWorkingState for non-permanent saves.
+	//
+	// When latest_commit_on_branch is set, it must match the latest commit on the branch. The caller needs permission
+	// to edit procedures in the workspace. Each webhook success condition in the steps must use an active secure
+	// webhook integration that the caller can read.
+	//
+	// Errors:
+	// - NOT_FOUND: the procedure does not exist or the caller cannot edit it, or the branch does not exist.
+	// - PERMISSION_DENIED: the workspace edition does not include procedures.
+	// - INVALID_ARGUMENT: the procedure is archived, or a webhook success condition is not valid.
+	// - ALREADY_EXISTS: latest_commit_on_branch no longer matches the latest commit on the branch.
 	Commit(ctx context.Context, in *CommitRequest, opts ...grpc.CallOption) (*CommitResponse, error)
-	// Searches all procedures, returning paged results
+	// Searches procedures by text, label, property, workspace, creator, or archived state. Returns a page of procedure
+	// metadata with execution counts, newest created first by default.
+	//
+	// Archived procedures are included unless the query filters on is_archived. The search covers workspaces that the
+	// caller can view and whose edition includes procedures.
+	//
+	// Errors:
+	// - INVALID_ARGUMENT: the query, or a query nested in it, sets no filter, or the page token is not valid.
 	SearchProcedures(ctx context.Context, in *SearchProceduresRequest, opts ...grpc.CallOption) (*SearchProceduresResponse, error)
-	// Archive procedures
+	// Archives procedures by RID and returns the archived RIDs. Archived procedures cannot receive commits.
+	//
+	// If any RID does not exist or the caller cannot edit it, nothing is archived. The caller needs permission to edit
+	// procedures in the workspace of each procedure.
+	//
+	// Errors:
+	//   - NOT_FOUND: a procedure does not exist, the caller cannot edit it, or its workspace edition does not include
+	//     procedures.
 	ArchiveProcedures(ctx context.Context, in *ArchiveProceduresRequest, opts ...grpc.CallOption) (*ArchiveProceduresResponse, error)
-	// Unarchive procedures
+	// Unarchives procedures by RID so that they accept commits again, and returns the unarchived RIDs.
+	//
+	// If any RID does not exist or the caller cannot edit it, nothing changes. The caller needs permission to edit
+	// procedures in the workspace of each procedure.
+	//
+	// Errors:
+	//   - NOT_FOUND: a procedure does not exist, the caller cannot edit it, or its workspace edition does not include
+	//     procedures.
 	UnarchiveProcedures(ctx context.Context, in *UnarchiveProceduresRequest, opts ...grpc.CallOption) (*UnarchiveProceduresResponse, error)
 }
 
@@ -204,32 +307,135 @@ func (c *proceduresServiceClient) UnarchiveProcedures(ctx context.Context, in *U
 // Service for creating and managing procedure templates, which are versioned collections
 // of steps to be performed, typically in a specific order.
 type ProceduresServiceServer interface {
-	// Create a new procedure
+	// Creates a procedure in a workspace, with an initial commit on main that holds the given steps.
+	//
+	// The server assigns the procedure RID and the initial commit ID, and records the caller as the creator. The
+	// initial commit has no steps when none are given. The procedure is published unless is_published is false. When
+	// an initial branch name is given, a branch with that name is created at the initial commit and its name is
+	// returned. The caller needs permission to edit procedures in the workspace. Each webhook success condition in the
+	// steps must use an active secure webhook integration that the caller can read.
+	//
+	// Errors:
+	// - NOT_FOUND: the workspace does not exist or the caller cannot edit procedures in it.
+	// - PERMISSION_DENIED: the workspace edition does not include procedures.
+	// - INVALID_ARGUMENT: a webhook success condition in the steps is not valid.
+	// - ALREADY_EXISTS: the initial branch name is main, which the new procedure already has.
 	CreateProcedure(context.Context, *CreateProcedureRequest) (*CreateProcedureResponse, error)
-	// Get a procedure by its RID
+	// Returns a procedure, with its metadata and steps, at a branch or commit (main by default), and can also return
+	// the display graph. Use BatchGetProcedureMetadata for metadata only.
+	//
+	// Archived procedures can be read.
+	//
+	// Errors:
+	// - NOT_FOUND: the procedure does not exist or the caller cannot view it, or the branch or commit does not exist.
+	// - PERMISSION_DENIED: the workspace edition does not include procedures.
+	// - INVALID_ARGUMENT: the display graph is requested and the step dependencies contain a cycle.
 	GetProcedure(context.Context, *GetProcedureRequest) (*GetProcedureResponse, error)
-	// Get metadata for multiple procedure by RIDs.
-	// Unauthorized RIDs will be omitted from the response.
-	// Order is not guaranteed to match the request.
+	// Returns the metadata of procedures by RID, without their steps. Use GetProcedure for the steps.
+	//
+	// Archived procedures are included. RIDs that do not exist or that the caller cannot view are omitted, as are
+	// procedures in workspaces whose edition does not include procedures. The order of the response may differ from
+	// the order of the request.
 	BatchGetProcedureMetadata(context.Context, *BatchGetProcedureMetadataRequest) (*BatchGetProcedureMetadataResponse, error)
-	// Update the metadata of a procedure
+	// Updates the title, description, labels, properties, archived flag, or published flag of a procedure, and returns
+	// the updated metadata.
+	//
+	// Fields that are not set keep their current value. A labels or properties value that is set replaces the existing
+	// one as a whole. When at least one field is set, the call records the caller as the last updater. It does not
+	// change the steps: use Commit or SaveWorkingState for that. The caller needs permission to edit procedures in the
+	// workspace.
+	//
+	// Errors:
+	// - NOT_FOUND: the procedure does not exist or the caller cannot edit it.
+	// - PERMISSION_DENIED: the workspace edition does not include procedures.
 	UpdateProcedureMetadata(context.Context, *UpdateProcedureMetadataRequest) (*UpdateProcedureMetadataResponse, error)
-	// Parse a procedure from a nested procedure structure
+	// Converts a nested procedure (a linear list of steps and sections) into a procedure with a step graph, and can
+	// also return its display graph. Use GetProcedureAsNested for the reverse.
+	//
+	// Nothing is stored, and the call does not need authentication. Each step depends on the step before it, and
+	// sections group their children. A node ID that is missing or is not a valid identifier is replaced with a
+	// generated ID. The returned procedure has only the title and description of the nested procedure as metadata,
+	// with no RID or commit.
+	//
+	// Errors:
+	// - INVALID_ARGUMENT: two nodes share an ID (reported as INVALID_GRAPH), or a step has no content.
 	ParseNestedProcedure(context.Context, *ParseNestedProcedureRequest) (*ParseNestedProcedureResponse, error)
-	// Get procedure as nested procedure
-	// TODO(pchen): in the future, not all graphs will be representable as nested procedures
+	// Returns a procedure at a branch or commit (main by default) as a nested procedure: a linear list of steps and
+	// sections. Use ParseNestedProcedure for the reverse.
+	//
+	// Errors:
+	// - NOT_FOUND: the procedure does not exist or the caller cannot view it, or the branch or commit does not exist.
+	// - PERMISSION_DENIED: the workspace edition does not include procedures.
+	// - INVALID_ARGUMENT: the step dependencies contain a cycle (reported as INVALID_GRAPH).
 	GetProcedureAsNested(context.Context, *GetProcedureAsNestedRequest) (*GetProcedureAsNestedResponse, error)
-	// Merge a branch of a procedure to main
+	// Merges a branch of a procedure into main by committing the branch's latest steps to main, then deletes the
+	// branch. Returns the procedure at the new commit.
+	//
+	// The new commit on main uses the given message, and the branch's latest commit becomes permanent. When
+	// latest_commit_on_main is set, it must match the latest commit on main. The caller needs permission to edit
+	// procedures in the workspace. Each webhook success condition in the branch's steps must use an active secure
+	// webhook integration that the caller can read.
+	//
+	// Errors:
+	// - NOT_FOUND: the procedure does not exist or the caller cannot edit it, or the branch does not exist.
+	// - PERMISSION_DENIED: the workspace edition does not include procedures.
+	// - INVALID_ARGUMENT: the branch is main, the procedure is archived, or a webhook success condition is not valid.
+	// - ALREADY_EXISTS: latest_commit_on_main no longer matches the latest commit on main.
 	MergeToMain(context.Context, *MergeToMainRequest) (*MergeToMainResponse, error)
-	// Save the working state of a procedure
+	// Saves the steps of a procedure as a working-state commit on a branch (main by default). Returns the procedure at
+	// the new commit. Use Commit for a permanent revision.
+	//
+	// Working-state commits are not permanent and may be compacted away. When latest_commit_on_branch is set, it must
+	// match the latest commit on the branch. A message that is empty or blank is replaced with "auto-save". The caller
+	// needs permission to edit procedures in the workspace. Each webhook success condition in the steps must use an
+	// active secure webhook integration that the caller can read.
+	//
+	// Errors:
+	//   - NOT_FOUND: the procedure does not exist or the caller cannot edit it, or the branch does not exist.
+	//   - PERMISSION_DENIED: the workspace edition does not include procedures.
+	//   - INVALID_ARGUMENT: the procedure is archived, the message is longer than 4096 characters, or a webhook success
+	//     condition is not valid.
+	//   - ALREADY_EXISTS: latest_commit_on_branch no longer matches the latest commit on the branch.
 	SaveWorkingState(context.Context, *SaveWorkingStateRequest) (*SaveWorkingStateResponse, error)
-	// Commit a procedure to a branch
+	// Commits new steps of a procedure to a branch (main by default) as a permanent revision with a message. Returns
+	// the procedure at the new commit. Use SaveWorkingState for non-permanent saves.
+	//
+	// When latest_commit_on_branch is set, it must match the latest commit on the branch. The caller needs permission
+	// to edit procedures in the workspace. Each webhook success condition in the steps must use an active secure
+	// webhook integration that the caller can read.
+	//
+	// Errors:
+	// - NOT_FOUND: the procedure does not exist or the caller cannot edit it, or the branch does not exist.
+	// - PERMISSION_DENIED: the workspace edition does not include procedures.
+	// - INVALID_ARGUMENT: the procedure is archived, or a webhook success condition is not valid.
+	// - ALREADY_EXISTS: latest_commit_on_branch no longer matches the latest commit on the branch.
 	Commit(context.Context, *CommitRequest) (*CommitResponse, error)
-	// Searches all procedures, returning paged results
+	// Searches procedures by text, label, property, workspace, creator, or archived state. Returns a page of procedure
+	// metadata with execution counts, newest created first by default.
+	//
+	// Archived procedures are included unless the query filters on is_archived. The search covers workspaces that the
+	// caller can view and whose edition includes procedures.
+	//
+	// Errors:
+	// - INVALID_ARGUMENT: the query, or a query nested in it, sets no filter, or the page token is not valid.
 	SearchProcedures(context.Context, *SearchProceduresRequest) (*SearchProceduresResponse, error)
-	// Archive procedures
+	// Archives procedures by RID and returns the archived RIDs. Archived procedures cannot receive commits.
+	//
+	// If any RID does not exist or the caller cannot edit it, nothing is archived. The caller needs permission to edit
+	// procedures in the workspace of each procedure.
+	//
+	// Errors:
+	//   - NOT_FOUND: a procedure does not exist, the caller cannot edit it, or its workspace edition does not include
+	//     procedures.
 	ArchiveProcedures(context.Context, *ArchiveProceduresRequest) (*ArchiveProceduresResponse, error)
-	// Unarchive procedures
+	// Unarchives procedures by RID so that they accept commits again, and returns the unarchived RIDs.
+	//
+	// If any RID does not exist or the caller cannot edit it, nothing changes. The caller needs permission to edit
+	// procedures in the workspace of each procedure.
+	//
+	// Errors:
+	//   - NOT_FOUND: a procedure does not exist, the caller cannot edit it, or its workspace edition does not include
+	//     procedures.
 	UnarchiveProcedures(context.Context, *UnarchiveProceduresRequest) (*UnarchiveProceduresResponse, error)
 	mustEmbedUnimplementedProceduresServiceServer()
 }

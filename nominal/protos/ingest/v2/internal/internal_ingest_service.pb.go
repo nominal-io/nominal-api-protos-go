@@ -7,6 +7,7 @@
 package internal
 
 import (
+	_ "buf.build/gen/go/bufbuild/protovalidate/protocolbuffers/go/buf/validate"
 	_ "github.com/nominal-io/nominal-api-protos-go/nominal/protos/gen/v1"
 	v2 "github.com/nominal-io/nominal-api-protos-go/nominal/protos/ingest/v2"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
@@ -31,9 +32,14 @@ type IngestInternalRequest struct {
 	// kind (v1 requests always map to a single item).
 	Overrides *InternalIngestOverrides `protobuf:"bytes,2,opt,name=overrides,proto3" json:"overrides,omitempty"`
 	// What triggered this job, if tracked.
-	Triggerer     *IngestTriggerer `protobuf:"bytes,4,opt,name=triggerer,proto3,oneof" json:"triggerer,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	Triggerer *IngestTriggerer `protobuf:"bytes,4,opt,name=triggerer,proto3,oneof" json:"triggerer,omitempty"`
+	// Collapses a repeated submission onto the job the first one created, scoped to the request's workspace.
+	// A caller that cannot tell whether its previous submit landed — a retried File Store ingest-rule dispatch,
+	// for instance — sets a key derived from the work it is submitting. Capped at 512 characters; the storage
+	// layer owns the minimum, which it applies after trimming surrounding whitespace.
+	IdempotencyKey *string `protobuf:"bytes,5,opt,name=idempotency_key,json=idempotencyKey,proto3,oneof" json:"idempotency_key,omitempty"`
+	unknownFields  protoimpl.UnknownFields
+	sizeCache      protoimpl.SizeCache
 }
 
 func (x *IngestInternalRequest) Reset() {
@@ -85,6 +91,13 @@ func (x *IngestInternalRequest) GetTriggerer() *IngestTriggerer {
 		return x.Triggerer
 	}
 	return nil
+}
+
+func (x *IngestInternalRequest) GetIdempotencyKey() string {
+	if x != nil && x.IdempotencyKey != nil {
+		return *x.IdempotencyKey
+	}
+	return ""
 }
 
 // What caused an ingest job to be created.
@@ -203,10 +216,10 @@ type InternalIngestOverrides struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Image-tag override for a containerized item's extractor image; the extractor's default tag when unset.
 	ContainerizedImageTag *string `protobuf:"bytes,1,opt,name=containerized_image_tag,json=containerizedImageTag,proto3,oneof" json:"containerized_image_tag,omitempty"`
-	// Channel ids from a v1 mcap channel selection. v1 modeled selection by topic or by numeric channel id;
-	// v2 is topic-only, and id selection was never implemented downstream. Ids are carried so the transform
-	// fails the dataset file, matching v1 (which errored asynchronously on id locators). Topic selections ride
-	// the public McapChannelSelection field. Field 2 is left unassigned for a deferred video-manifest override.
+	// Channel ids from a v1 mcap channel selection. v2 is topic-only, so ingest ignores them; topic selections
+	// ride the public McapChannelSelection field. Field 2 is left unassigned for a deferred video-manifest override.
+	//
+	// Deprecated: Marked as deprecated in nominal/protos/ingest/v2/internal/internal_ingest_service.proto.
 	McapChannelIds []int32 `protobuf:"varint,3,rep,packed,name=mcap_channel_ids,json=mcapChannelIds,proto3" json:"mcap_channel_ids,omitempty"`
 	unknownFields  protoimpl.UnknownFields
 	sizeCache      protoimpl.SizeCache
@@ -249,6 +262,7 @@ func (x *InternalIngestOverrides) GetContainerizedImageTag() string {
 	return ""
 }
 
+// Deprecated: Marked as deprecated in nominal/protos/ingest/v2/internal/internal_ingest_service.proto.
 func (x *InternalIngestOverrides) GetMcapChannelIds() []int32 {
 	if x != nil {
 		return x.McapChannelIds
@@ -314,23 +328,25 @@ var File_nominal_protos_ingest_v2_internal_internal_ingest_service_proto protore
 
 const file_nominal_protos_ingest_v2_internal_internal_ingest_service_proto_rawDesc = "" +
 	"\n" +
-	"?nominal/protos/ingest/v2/internal/internal_ingest_service.proto\x12\x1anominal.ingest.v2.internal\x1a!nominal/protos/gen/v1/alias.proto\x1a-nominal/protos/ingest/v2/ingest_service.proto\"\xb3\x02\n" +
+	"?nominal/protos/ingest/v2/internal/internal_ingest_service.proto\x12\x1anominal.ingest.v2.internal\x1a\x1bbuf/validate/validate.proto\x1a!nominal/protos/gen/v1/alias.proto\x1a-nominal/protos/ingest/v2/ingest_service.proto\"\xff\x02\n" +
 	"\x15IngestInternalRequest\x12G\n" +
 	"\x0eingest_request\x18\x01 \x01(\v2 .nominal.ingest.v2.IngestRequestR\ringestRequest\x12Q\n" +
 	"\toverrides\x18\x02 \x01(\v23.nominal.ingest.v2.internal.InternalIngestOverridesR\toverrides\x12N\n" +
-	"\ttriggerer\x18\x04 \x01(\v2+.nominal.ingest.v2.internal.IngestTriggererH\x00R\ttriggerer\x88\x01\x01B\f\n" +
+	"\ttriggerer\x18\x04 \x01(\v2+.nominal.ingest.v2.internal.IngestTriggererH\x00R\ttriggerer\x88\x01\x01\x126\n" +
+	"\x0fidempotency_key\x18\x05 \x01(\tB\b\xbaH\x05r\x03\x18\x80\x04H\x01R\x0eidempotencyKey\x88\x01\x01B\f\n" +
 	"\n" +
-	"_triggererJ\x04\b\x03\x10\x04R\x1atriggering_ingest_rule_rid\"r\n" +
+	"_triggererB\x12\n" +
+	"\x10_idempotency_keyJ\x04\b\x03\x10\x04R\x1atriggering_ingest_rule_rid\"r\n" +
 	"\x0fIngestTriggerer\x12R\n" +
 	"\vingest_rule\x18\x01 \x01(\v2/.nominal.ingest.v2.internal.IngestRuleTriggererH\x00R\n" +
 	"ingestRuleB\v\n" +
 	"\ttriggerer\"k\n" +
 	"\x13IngestRuleTriggerer\x12T\n" +
 	"\x0fingest_rule_rid\x18\x01 \x01(\tB,\x9a\xb2\x1a(\n" +
-	"&io.nominal.api.rids.DriveIngestRuleRidR\ringestRuleRid\"\x9c\x01\n" +
+	"&io.nominal.api.rids.DriveIngestRuleRidR\ringestRuleRid\"\xa0\x01\n" +
 	"\x17InternalIngestOverrides\x12;\n" +
-	"\x17containerized_image_tag\x18\x01 \x01(\tH\x00R\x15containerizedImageTag\x88\x01\x01\x12(\n" +
-	"\x10mcap_channel_ids\x18\x03 \x03(\x05R\x0emcapChannelIdsB\x1a\n" +
+	"\x17containerized_image_tag\x18\x01 \x01(\tH\x00R\x15containerizedImageTag\x88\x01\x01\x12,\n" +
+	"\x10mcap_channel_ids\x18\x03 \x03(\x05B\x02\x18\x01R\x0emcapChannelIdsB\x1a\n" +
 	"\x18_containerized_image_tag\"\xd0\x01\n" +
 	"\x16IngestInternalResponse\x12J\n" +
 	"\x0fingest_response\x18\x01 \x01(\v2!.nominal.ingest.v2.IngestResponseR\x0eingestResponse\x12V\n" +

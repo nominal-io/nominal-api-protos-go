@@ -125,9 +125,10 @@ func (x *GetAllUnitsResponse) GetUnitsByProperty() map[string]*GetAllUnitsRespon
 }
 
 type Unit struct {
-	state  protoimpl.MessageState `protogen:"open.v1"`
-	Name   *string                `protobuf:"bytes,1,opt,name=name,proto3,oneof" json:"name,omitempty"`
-	Symbol string                 `protobuf:"bytes,2,opt,name=symbol,proto3" json:"symbol,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Human-readable name of the unit. Absent when no name is known.
+	Name   *string `protobuf:"bytes,1,opt,name=name,proto3,oneof" json:"name,omitempty"`
+	Symbol string  `protobuf:"bytes,2,opt,name=symbol,proto3" json:"symbol,omitempty"`
 	// Empty if no property is available. If two units measure different properties, it is not possible to
 	// convert between them.
 	Property *string `protobuf:"bytes,3,opt,name=property,proto3,oneof" json:"property,omitempty"`

@@ -38,17 +38,18 @@ const (
 // The Units Service serves as a comprehensive catalog of the units of measurement supported by scout. Units, by
 // default, follow the UCUM convention for representation.
 type UnitsServiceClient interface {
-	// Returns all known units, grouped by the physical property they measure.
+	// Returns all known units of measurement, grouped by the physical property they measure. Units with no known
+	// property are left out.
 	GetAllUnits(ctx context.Context, in *GetAllUnitsRequest, opts ...grpc.CallOption) (*GetAllUnitsResponse, error)
-	// Returns information for a unit symbol if available. Returns as empty if the provided symbol cannot be parsed.
+	// Returns the unit of measurement for a unit symbol. The response has no unit if the symbol cannot be parsed.
 	GetUnit(ctx context.Context, in *GetUnitRequest, opts ...grpc.CallOption) (*GetUnitResponse, error)
 	// buf:lint:ignore RPC_REQUEST_STANDARD_NAME
 	// buf:lint:ignore RPC_RESPONSE_STANDARD_NAME
-	// Returns information for the unit symbols if available. If the provided symbol cannot be parsed, it will be
+	// Returns the units of measurement for the given unit symbols, keyed by symbol. A symbol that cannot be parsed is
 	// omitted from the map.
 	GetBatchUnits(ctx context.Context, in *GetBatchUnitsRequest, opts ...grpc.CallOption) (*GetBatchUnitsResponse, error)
-	// Returns the set of cataloged units that can be converted to and from the given unit.
-	// No commensurable units does not imply the unit is invalid. Use /get-unit to check for validity.
+	// Returns the cataloged units of measurement that can be converted to and from the given unit, leaving out the
+	// given symbol itself. An empty result does not mean the symbol is invalid. Use GetUnit to check a symbol.
 	GetCommensurableUnits(ctx context.Context, in *GetCommensurableUnitsRequest, opts ...grpc.CallOption) (*GetCommensurableUnitsResponse, error)
 }
 
@@ -107,17 +108,18 @@ func (c *unitsServiceClient) GetCommensurableUnits(ctx context.Context, in *GetC
 // The Units Service serves as a comprehensive catalog of the units of measurement supported by scout. Units, by
 // default, follow the UCUM convention for representation.
 type UnitsServiceServer interface {
-	// Returns all known units, grouped by the physical property they measure.
+	// Returns all known units of measurement, grouped by the physical property they measure. Units with no known
+	// property are left out.
 	GetAllUnits(context.Context, *GetAllUnitsRequest) (*GetAllUnitsResponse, error)
-	// Returns information for a unit symbol if available. Returns as empty if the provided symbol cannot be parsed.
+	// Returns the unit of measurement for a unit symbol. The response has no unit if the symbol cannot be parsed.
 	GetUnit(context.Context, *GetUnitRequest) (*GetUnitResponse, error)
 	// buf:lint:ignore RPC_REQUEST_STANDARD_NAME
 	// buf:lint:ignore RPC_RESPONSE_STANDARD_NAME
-	// Returns information for the unit symbols if available. If the provided symbol cannot be parsed, it will be
+	// Returns the units of measurement for the given unit symbols, keyed by symbol. A symbol that cannot be parsed is
 	// omitted from the map.
 	GetBatchUnits(context.Context, *GetBatchUnitsRequest) (*GetBatchUnitsResponse, error)
-	// Returns the set of cataloged units that can be converted to and from the given unit.
-	// No commensurable units does not imply the unit is invalid. Use /get-unit to check for validity.
+	// Returns the cataloged units of measurement that can be converted to and from the given unit, leaving out the
+	// given symbol itself. An empty result does not mean the symbol is invalid. Use GetUnit to check a symbol.
 	GetCommensurableUnits(context.Context, *GetCommensurableUnitsRequest) (*GetCommensurableUnitsResponse, error)
 	mustEmbedUnimplementedUnitsServiceServer()
 }

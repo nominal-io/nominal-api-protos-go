@@ -30,9 +30,28 @@ const (
 // Creating favorites allows users to pin specific resources (i.e. assets, workbooks, etc.) as favorites for
 // quick access within search pages throughout the application for themselves.
 type FavoritesServiceClient interface {
-	// Retrieves the favorites list for the current user in the specified workspace.
+	// Gets the caller's favorites (personal stars on assets, runs, workbooks, workbook templates, checklists,
+	// saved views, procedures, or plans) in one workspace, in the saved order.
+	//
+	// Other users' favorites are never returned. Without resource_types, favorites of every type are returned.
+	// The caller needs view permission on the workspace.
+	//
+	// Errors:
+	// - INVALID_ARGUMENT: resource_types holds an unspecified value.
+	// - NOT_FOUND: the workspace does not exist or the caller cannot view it.
 	GetFavoritesList(ctx context.Context, in *GetFavoritesListRequest, opts ...grpc.CallOption) (*GetFavoritesListResponse, error)
-	// Overwrites the favorites list for the current user in the specified workspace.
+	// Replaces the caller's favorites in one workspace with the given resources, in order, across all resource
+	// types. Returns the saved list.
+	//
+	// An empty list clears the caller's favorites in the workspace. Every resource must be in that workspace.
+	// The caller needs view permission on the workspace.
+	//
+	// Errors:
+	// - INVALID_ARGUMENT: a resource has no type set.
+	// - NOT_FOUND: the workspace does not exist or the caller cannot view it.
+	// - INVALID_ARGUMENT: a resource appears more than once.
+	// - NOT_FOUND: a listed resource does not exist or the caller cannot access it.
+	// - INVALID_ARGUMENT: a listed resource is in another workspace.
 	SetFavoritesList(ctx context.Context, in *SetFavoritesListRequest, opts ...grpc.CallOption) (*SetFavoritesListResponse, error)
 }
 
@@ -71,9 +90,28 @@ func (c *favoritesServiceClient) SetFavoritesList(ctx context.Context, in *SetFa
 // Creating favorites allows users to pin specific resources (i.e. assets, workbooks, etc.) as favorites for
 // quick access within search pages throughout the application for themselves.
 type FavoritesServiceServer interface {
-	// Retrieves the favorites list for the current user in the specified workspace.
+	// Gets the caller's favorites (personal stars on assets, runs, workbooks, workbook templates, checklists,
+	// saved views, procedures, or plans) in one workspace, in the saved order.
+	//
+	// Other users' favorites are never returned. Without resource_types, favorites of every type are returned.
+	// The caller needs view permission on the workspace.
+	//
+	// Errors:
+	// - INVALID_ARGUMENT: resource_types holds an unspecified value.
+	// - NOT_FOUND: the workspace does not exist or the caller cannot view it.
 	GetFavoritesList(context.Context, *GetFavoritesListRequest) (*GetFavoritesListResponse, error)
-	// Overwrites the favorites list for the current user in the specified workspace.
+	// Replaces the caller's favorites in one workspace with the given resources, in order, across all resource
+	// types. Returns the saved list.
+	//
+	// An empty list clears the caller's favorites in the workspace. Every resource must be in that workspace.
+	// The caller needs view permission on the workspace.
+	//
+	// Errors:
+	// - INVALID_ARGUMENT: a resource has no type set.
+	// - NOT_FOUND: the workspace does not exist or the caller cannot view it.
+	// - INVALID_ARGUMENT: a resource appears more than once.
+	// - NOT_FOUND: a listed resource does not exist or the caller cannot access it.
+	// - INVALID_ARGUMENT: a listed resource is in another workspace.
 	SetFavoritesList(context.Context, *SetFavoritesListRequest) (*SetFavoritesListResponse, error)
 	mustEmbedUnimplementedFavoritesServiceServer()
 }

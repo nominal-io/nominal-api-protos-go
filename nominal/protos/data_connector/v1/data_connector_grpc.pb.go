@@ -35,32 +35,97 @@ const (
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 //
 // Service for managing data connectors to external data sources.
-// Supports OPC-UA with plans for MQTT, Kafka, and other protocols.
+// Supports OPC-UA.
 type DataConnectorServiceClient interface {
-	// Creates a new data connector configuration
+	// Creates a data connector (OPC-UA) in a workspace that streams data from an external source into a target dataset.
+	// Returns the new data connector.
+	//
+	// The server assigns the RID. The target dataset must be in the same workspace as the connector. Each password,
+	// token, and private key in the connection details is stored as a secret in the workspace, and responses return a
+	// reference to the secret instead of its value. Creating a data connector does not start the stream: call
+	// StartSession. The caller needs permission to edit connectivity in the workspace and to write data to the target
+	// dataset.
+	//
+	// Errors:
+	//   - NOT_FOUND: the workspace does not exist or the caller cannot edit connectivity in it, or the target dataset
+	//     record no longer exists.
+	//   - INVALID_ARGUMENT: a certificate or private key cannot be read, a private key does not match its certificate, a
+	//     secure channel is set without an application certificate, the connection details or authentication config are
+	//     not set, or the target dataset is in a different workspace.
+	//   - PERMISSION_DENIED: the caller cannot write data to the target dataset.
 	CreateDataConnector(ctx context.Context, in *CreateDataConnectorRequest, opts ...grpc.CallOption) (*CreateDataConnectorResponse, error)
-	// List the data connectors matching the search criteria.
-	// The JSON transcoder ranks literal path segments above `/{...}` template captures, so the
-	// literal `/search` route wins over the `/{data_connector_rid}` template regardless of
-	// declaration order.
+	// Searches the data connectors in one workspace by exact name, exact description, or target dataset, and combines
+	// clauses with AND. Returns a page of data connectors, most recently updated first unless sorted otherwise.
+	//
+	// Errors:
+	// - NOT_FOUND: the workspace does not exist or the caller cannot view it.
+	// - INVALID_ARGUMENT: the page size is not greater than 0.
 	Search(ctx context.Context, in *SearchRequest, opts ...grpc.CallOption) (*SearchResponse, error)
-	// Gets the settings for a data connector
+	// Gets one data connector: its name, description, connection settings, workspace, and target dataset. Passwords,
+	// tokens, and private keys are returned as references to secrets, not as values.
+	//
+	// Errors:
+	// - PERMISSION_DENIED: the data connector does not exist or the caller cannot view its workspace.
 	GetDataConnector(ctx context.Context, in *GetDataConnectorRequest, opts ...grpc.CallOption) (*GetDataConnectorResponse, error)
-	// Gets the settings for a batch of data connectors
+	// Gets several data connectors by RID. Data connectors that do not exist, or whose workspace the caller cannot view,
+	// are omitted from the response instead of failing the call.
+	//
+	// Errors:
+	// - INVALID_ARGUMENT: a RID in data_connector_rids is not valid.
 	BatchGetDataConnectors(ctx context.Context, in *BatchGetDataConnectorsRequest, opts ...grpc.CallOption) (*BatchGetDataConnectorsResponse, error)
-	// Updates the settings for a data connector.
-	// `body: "*"` is required here. google.api.http routes fields outside the path and body to the query
-	// string, which has no spelling for a message field, so the body is the only place
-	// `connection_details` can travel — and it keeps connector credentials out of URLs, which proxy and
-	// CDN access logs retain.
+	// Updates a data connector's name, description, connection settings, or target dataset. Returns the updated data
+	// connector.
+	//
+	// Fields that are not set keep their current values, including individual connection and scraping settings inside
+	// connection_details. The update must match the data connector's type. A new password, token, or private key is
+	// stored as a new secret. The workspace cannot change, so a new target dataset must be in the data connector's
+	// workspace. The caller needs permission to edit connectivity in the workspace and to write data to a new target
+	// dataset.
+	//
+	// Errors:
+	//   - PERMISSION_DENIED: the data connector does not exist, the caller cannot edit connectivity in its workspace, or
+	//     the caller cannot write data to the new target dataset.
+	//   - INVALID_ARGUMENT: a certificate or private key cannot be read, a private key does not match its certificate,
+	//     the resulting secure channel has no application certificate, the update does not match the data connector's
+	//     type, or the new target dataset is in a different workspace.
+	//   - NOT_FOUND: the new target dataset record no longer exists, or the data connector is deleted while the update
+	//     runs.
 	UpdateDataConnector(ctx context.Context, in *UpdateDataConnectorRequest, opts ...grpc.CallOption) (*UpdateDataConnectorResponse, error)
-	// Starts a session for a connection
+	// Starts streaming from a data connector into its target dataset. Check progress with GetSessionStatus.
+	//
+	// Returns after the stream is running, and terminates the stream when it is not running after 60 seconds. Starting
+	// a data connector that is already streaming has no effect. The caller needs permission to edit connectivity in the
+	// workspace and to write data to the target dataset.
+	//
+	// Errors:
+	//   - PERMISSION_DENIED: the data connector does not exist, the caller cannot edit connectivity in its workspace, or
+	//     the caller cannot write data to the target dataset.
+	//   - INTERNAL: the stream is not running after 60 seconds.
 	StartSession(ctx context.Context, in *StartSessionRequest, opts ...grpc.CallOption) (*StartSessionResponse, error)
-	// Stops a session for a connection
+	// Signals the stream that StartSession began for a data connector to shut down.
+	//
+	// Returns after the stream has stopped, or after the stream is terminated when it does not stop in time. Stopping a
+	// data connector that is not streaming has no effect. The caller needs permission to edit connectivity in the
+	// workspace.
+	//
+	// Errors:
+	// - PERMISSION_DENIED: the data connector does not exist or the caller cannot edit connectivity in its workspace.
 	StopSession(ctx context.Context, in *StopSessionRequest, opts ...grpc.CallOption) (*StopSessionResponse, error)
-	// Gets the session status for a connection
+	// Gets whether a data connector is streaming: none, or active with one status per running replica. The session is
+	// active until all its replicas have terminated.
+	//
+	// Errors:
+	// - PERMISSION_DENIED: the data connector does not exist or the caller cannot view its workspace.
 	GetSessionStatus(ctx context.Context, in *GetSessionStatusRequest, opts ...grpc.CallOption) (*GetSessionStatusResponse, error)
-	// Deletes a data connector. This operation is idempotent.
+	// Deletes a data connector after signalling any running streaming for it to shut down. Does not delete the target
+	// dataset.
+	//
+	// The call waits for the stream to stop, and terminates it when it does not stop in time. The caller needs
+	// permission to edit connectivity in the workspace.
+	//
+	// Errors:
+	//   - PERMISSION_DENIED: the data connector does not exist, including when it was already deleted, or the caller
+	//     cannot edit connectivity in its workspace.
 	DeleteDataConnector(ctx context.Context, in *DeleteDataConnectorRequest, opts ...grpc.CallOption) (*DeleteDataConnectorResponse, error)
 }
 
@@ -167,32 +232,97 @@ func (c *dataConnectorServiceClient) DeleteDataConnector(ctx context.Context, in
 // for forward compatibility.
 //
 // Service for managing data connectors to external data sources.
-// Supports OPC-UA with plans for MQTT, Kafka, and other protocols.
+// Supports OPC-UA.
 type DataConnectorServiceServer interface {
-	// Creates a new data connector configuration
+	// Creates a data connector (OPC-UA) in a workspace that streams data from an external source into a target dataset.
+	// Returns the new data connector.
+	//
+	// The server assigns the RID. The target dataset must be in the same workspace as the connector. Each password,
+	// token, and private key in the connection details is stored as a secret in the workspace, and responses return a
+	// reference to the secret instead of its value. Creating a data connector does not start the stream: call
+	// StartSession. The caller needs permission to edit connectivity in the workspace and to write data to the target
+	// dataset.
+	//
+	// Errors:
+	//   - NOT_FOUND: the workspace does not exist or the caller cannot edit connectivity in it, or the target dataset
+	//     record no longer exists.
+	//   - INVALID_ARGUMENT: a certificate or private key cannot be read, a private key does not match its certificate, a
+	//     secure channel is set without an application certificate, the connection details or authentication config are
+	//     not set, or the target dataset is in a different workspace.
+	//   - PERMISSION_DENIED: the caller cannot write data to the target dataset.
 	CreateDataConnector(context.Context, *CreateDataConnectorRequest) (*CreateDataConnectorResponse, error)
-	// List the data connectors matching the search criteria.
-	// The JSON transcoder ranks literal path segments above `/{...}` template captures, so the
-	// literal `/search` route wins over the `/{data_connector_rid}` template regardless of
-	// declaration order.
+	// Searches the data connectors in one workspace by exact name, exact description, or target dataset, and combines
+	// clauses with AND. Returns a page of data connectors, most recently updated first unless sorted otherwise.
+	//
+	// Errors:
+	// - NOT_FOUND: the workspace does not exist or the caller cannot view it.
+	// - INVALID_ARGUMENT: the page size is not greater than 0.
 	Search(context.Context, *SearchRequest) (*SearchResponse, error)
-	// Gets the settings for a data connector
+	// Gets one data connector: its name, description, connection settings, workspace, and target dataset. Passwords,
+	// tokens, and private keys are returned as references to secrets, not as values.
+	//
+	// Errors:
+	// - PERMISSION_DENIED: the data connector does not exist or the caller cannot view its workspace.
 	GetDataConnector(context.Context, *GetDataConnectorRequest) (*GetDataConnectorResponse, error)
-	// Gets the settings for a batch of data connectors
+	// Gets several data connectors by RID. Data connectors that do not exist, or whose workspace the caller cannot view,
+	// are omitted from the response instead of failing the call.
+	//
+	// Errors:
+	// - INVALID_ARGUMENT: a RID in data_connector_rids is not valid.
 	BatchGetDataConnectors(context.Context, *BatchGetDataConnectorsRequest) (*BatchGetDataConnectorsResponse, error)
-	// Updates the settings for a data connector.
-	// `body: "*"` is required here. google.api.http routes fields outside the path and body to the query
-	// string, which has no spelling for a message field, so the body is the only place
-	// `connection_details` can travel — and it keeps connector credentials out of URLs, which proxy and
-	// CDN access logs retain.
+	// Updates a data connector's name, description, connection settings, or target dataset. Returns the updated data
+	// connector.
+	//
+	// Fields that are not set keep their current values, including individual connection and scraping settings inside
+	// connection_details. The update must match the data connector's type. A new password, token, or private key is
+	// stored as a new secret. The workspace cannot change, so a new target dataset must be in the data connector's
+	// workspace. The caller needs permission to edit connectivity in the workspace and to write data to a new target
+	// dataset.
+	//
+	// Errors:
+	//   - PERMISSION_DENIED: the data connector does not exist, the caller cannot edit connectivity in its workspace, or
+	//     the caller cannot write data to the new target dataset.
+	//   - INVALID_ARGUMENT: a certificate or private key cannot be read, a private key does not match its certificate,
+	//     the resulting secure channel has no application certificate, the update does not match the data connector's
+	//     type, or the new target dataset is in a different workspace.
+	//   - NOT_FOUND: the new target dataset record no longer exists, or the data connector is deleted while the update
+	//     runs.
 	UpdateDataConnector(context.Context, *UpdateDataConnectorRequest) (*UpdateDataConnectorResponse, error)
-	// Starts a session for a connection
+	// Starts streaming from a data connector into its target dataset. Check progress with GetSessionStatus.
+	//
+	// Returns after the stream is running, and terminates the stream when it is not running after 60 seconds. Starting
+	// a data connector that is already streaming has no effect. The caller needs permission to edit connectivity in the
+	// workspace and to write data to the target dataset.
+	//
+	// Errors:
+	//   - PERMISSION_DENIED: the data connector does not exist, the caller cannot edit connectivity in its workspace, or
+	//     the caller cannot write data to the target dataset.
+	//   - INTERNAL: the stream is not running after 60 seconds.
 	StartSession(context.Context, *StartSessionRequest) (*StartSessionResponse, error)
-	// Stops a session for a connection
+	// Signals the stream that StartSession began for a data connector to shut down.
+	//
+	// Returns after the stream has stopped, or after the stream is terminated when it does not stop in time. Stopping a
+	// data connector that is not streaming has no effect. The caller needs permission to edit connectivity in the
+	// workspace.
+	//
+	// Errors:
+	// - PERMISSION_DENIED: the data connector does not exist or the caller cannot edit connectivity in its workspace.
 	StopSession(context.Context, *StopSessionRequest) (*StopSessionResponse, error)
-	// Gets the session status for a connection
+	// Gets whether a data connector is streaming: none, or active with one status per running replica. The session is
+	// active until all its replicas have terminated.
+	//
+	// Errors:
+	// - PERMISSION_DENIED: the data connector does not exist or the caller cannot view its workspace.
 	GetSessionStatus(context.Context, *GetSessionStatusRequest) (*GetSessionStatusResponse, error)
-	// Deletes a data connector. This operation is idempotent.
+	// Deletes a data connector after signalling any running streaming for it to shut down. Does not delete the target
+	// dataset.
+	//
+	// The call waits for the stream to stop, and terminates it when it does not stop in time. The caller needs
+	// permission to edit connectivity in the workspace.
+	//
+	// Errors:
+	//   - PERMISSION_DENIED: the data connector does not exist, including when it was already deleted, or the caller
+	//     cannot edit connectivity in its workspace.
 	DeleteDataConnector(context.Context, *DeleteDataConnectorRequest) (*DeleteDataConnectorResponse, error)
 	mustEmbedUnimplementedDataConnectorServiceServer()
 }

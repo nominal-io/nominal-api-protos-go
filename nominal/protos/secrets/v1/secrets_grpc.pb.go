@@ -43,24 +43,52 @@ type SecretServiceClient interface {
 	// buf:lint:ignore RPC_REQUEST_STANDARD_NAME
 	// Create a new secret.
 	Create(ctx context.Context, in *CreateSecretRequest, opts ...grpc.CallOption) (*CreateResponse, error)
-	// Get secret by rid.
+	// Returns a secret's metadata: name, description, properties, labels, creator, creation time, and whether it
+	// is archived. The secret value is never returned.
+	//
+	// Archived secrets are returned.
+	//
+	// Errors:
+	// - NOT_FOUND: the secret does not exist, or the caller cannot view its workspace.
 	Get(ctx context.Context, in *GetRequest, opts ...grpc.CallOption) (*GetResponse, error)
 	// buf:lint:ignore RPC_REQUEST_STANDARD_NAME
 	// buf:lint:ignore RPC_RESPONSE_STANDARD_NAME
-	// Get secrets by a set of rids.
+	// Get secrets by a set of rids. Secrets in workspaces the caller lacks workspace:view on are omitted
+	// rather than failing the call.
 	GetBatch(ctx context.Context, in *GetSecretsRequest, opts ...grpc.CallOption) (*GetSecretsResponse, error)
-	// Update a secret by rid.
+	// Updates the name, description, properties, labels, or value of a secret, and returns the updated
+	// secret's metadata.
+	//
+	// Only the fields that are set change. Properties and labels are replaced as a whole when set: an empty
+	// properties or labels wrapper clears them. A new value replaces the stored value. The secret's workspace
+	// cannot change. The caller needs permission to edit secrets in the secret's workspace.
+	//
+	// Errors:
+	// - NOT_FOUND: the secret does not exist, or the caller cannot edit secrets in its workspace.
 	Update(ctx context.Context, in *UpdateRequest, opts ...grpc.CallOption) (*UpdateResponse, error)
 	// Delete a secret by rid. This is a permanent deletion. To perform a soft delete,
 	// use the archive endpoint.
 	Delete(ctx context.Context, in *DeleteRequest, opts ...grpc.CallOption) (*DeleteResponse, error)
-	// Archive a secret by rid.
+	// Archives a secret. Archived secrets are left out of Search unless the request asks for them, and Unarchive
+	// restores them. Archiving a secret that is already archived has no effect.
+	//
+	// The caller needs permission to edit secrets in the secret's workspace.
+	//
+	// Errors:
+	// - NOT_FOUND: the secret does not exist, or the caller cannot edit secrets in its workspace.
 	Archive(ctx context.Context, in *ArchiveRequest, opts ...grpc.CallOption) (*ArchiveResponse, error)
-	// Unarchive a secret by rid.
+	// Restores an archived secret so that Search returns it again by default. Unarchiving a secret that is not
+	// archived has no effect.
+	//
+	// The caller needs permission to edit secrets in the secret's workspace.
+	//
+	// Errors:
+	// - NOT_FOUND: the secret does not exist, or the caller cannot edit secrets in its workspace.
 	Unarchive(ctx context.Context, in *UnarchiveRequest, opts ...grpc.CallOption) (*UnarchiveResponse, error)
 	// buf:lint:ignore RPC_REQUEST_STANDARD_NAME
 	// buf:lint:ignore RPC_RESPONSE_STANDARD_NAME
-	// Returns metadata about secrets that match a given query.
+	// Returns metadata about secrets that match a given query. Workspaces the caller lacks
+	// workspace:view on are filtered out rather than failing the call.
 	Search(ctx context.Context, in *SearchSecretsRequest, opts ...grpc.CallOption) (*SearchSecretsResponse, error)
 }
 
@@ -161,24 +189,52 @@ type SecretServiceServer interface {
 	// buf:lint:ignore RPC_REQUEST_STANDARD_NAME
 	// Create a new secret.
 	Create(context.Context, *CreateSecretRequest) (*CreateResponse, error)
-	// Get secret by rid.
+	// Returns a secret's metadata: name, description, properties, labels, creator, creation time, and whether it
+	// is archived. The secret value is never returned.
+	//
+	// Archived secrets are returned.
+	//
+	// Errors:
+	// - NOT_FOUND: the secret does not exist, or the caller cannot view its workspace.
 	Get(context.Context, *GetRequest) (*GetResponse, error)
 	// buf:lint:ignore RPC_REQUEST_STANDARD_NAME
 	// buf:lint:ignore RPC_RESPONSE_STANDARD_NAME
-	// Get secrets by a set of rids.
+	// Get secrets by a set of rids. Secrets in workspaces the caller lacks workspace:view on are omitted
+	// rather than failing the call.
 	GetBatch(context.Context, *GetSecretsRequest) (*GetSecretsResponse, error)
-	// Update a secret by rid.
+	// Updates the name, description, properties, labels, or value of a secret, and returns the updated
+	// secret's metadata.
+	//
+	// Only the fields that are set change. Properties and labels are replaced as a whole when set: an empty
+	// properties or labels wrapper clears them. A new value replaces the stored value. The secret's workspace
+	// cannot change. The caller needs permission to edit secrets in the secret's workspace.
+	//
+	// Errors:
+	// - NOT_FOUND: the secret does not exist, or the caller cannot edit secrets in its workspace.
 	Update(context.Context, *UpdateRequest) (*UpdateResponse, error)
 	// Delete a secret by rid. This is a permanent deletion. To perform a soft delete,
 	// use the archive endpoint.
 	Delete(context.Context, *DeleteRequest) (*DeleteResponse, error)
-	// Archive a secret by rid.
+	// Archives a secret. Archived secrets are left out of Search unless the request asks for them, and Unarchive
+	// restores them. Archiving a secret that is already archived has no effect.
+	//
+	// The caller needs permission to edit secrets in the secret's workspace.
+	//
+	// Errors:
+	// - NOT_FOUND: the secret does not exist, or the caller cannot edit secrets in its workspace.
 	Archive(context.Context, *ArchiveRequest) (*ArchiveResponse, error)
-	// Unarchive a secret by rid.
+	// Restores an archived secret so that Search returns it again by default. Unarchiving a secret that is not
+	// archived has no effect.
+	//
+	// The caller needs permission to edit secrets in the secret's workspace.
+	//
+	// Errors:
+	// - NOT_FOUND: the secret does not exist, or the caller cannot edit secrets in its workspace.
 	Unarchive(context.Context, *UnarchiveRequest) (*UnarchiveResponse, error)
 	// buf:lint:ignore RPC_REQUEST_STANDARD_NAME
 	// buf:lint:ignore RPC_RESPONSE_STANDARD_NAME
-	// Returns metadata about secrets that match a given query.
+	// Returns metadata about secrets that match a given query. Workspaces the caller lacks
+	// workspace:view on are filtered out rather than failing the call.
 	Search(context.Context, *SearchSecretsRequest) (*SearchSecretsResponse, error)
 	mustEmbedUnimplementedSecretServiceServer()
 }

@@ -33,19 +33,60 @@ const (
 //
 // Manages retention policies and exemptions for datasets.
 type DatasetRetentionServiceClient interface {
-	// Update or remove the retention policy for a dataset. When a policy is set,
-	// data older than the policy's expiry will be deleted.
+	// Sets or removes the retention policy of a dataset. A policy keeps data forever or deletes data older
+	// than an expiry in days.
+	//
+	// While a policy with an expiry is set, a background job deletes expired data except time ranges under a
+	// retention exemption. Setting a policy keeps the dataset's retention watermark. Omitting
+	// retention_policy removes the policy, which keeps data forever, and clears the watermark. The caller
+	// needs permission to delete data from the dataset.
+	//
+	// Errors:
+	// - PERMISSION_DENIED: the caller cannot delete data from the dataset.
+	// - FAILED_PRECONDITION: a policy is set and retention is not enabled for the dataset's organization.
+	// - INVALID_ARGUMENT: a policy is set on a derived dataset (composition).
 	UpdateRetentionPolicy(ctx context.Context, in *UpdateRetentionPolicyRequest, opts ...grpc.CallOption) (*UpdateRetentionPolicyResponse, error)
-	// Create or update a retention exemption for a dataset. The exemption is keyed by
-	// (dataset_rid, source_id) — upserting with the same key updates the time range.
+	// Creates or updates a retention exemption on a dataset: a time range that retention does not delete.
+	// Returns the exemption.
+	//
+	// An exemption is keyed by dataset and source_id. Upserting the same source_id replaces its range and
+	// description, so an omitted description is cleared. The range includes both of its ends. The caller needs
+	// permission to delete data from the dataset.
+	//
+	// Errors:
+	// - PERMISSION_DENIED: the caller cannot delete data from the dataset.
+	// - FAILED_PRECONDITION: retention is not enabled for the dataset's organization.
 	UpsertDatasetRetentionExemption(ctx context.Context, in *UpsertDatasetRetentionExemptionRequest, opts ...grpc.CallOption) (*UpsertDatasetRetentionExemptionResponse, error)
-	// Delete a retention exemption for a dataset.
+	// Deletes the retention exemption identified by dataset and source_id, so retention can delete the time
+	// range it protected.
+	//
+	// Deleting an exemption that does not exist succeeds. The caller needs permission to delete data from the
+	// dataset.
+	//
+	// Errors:
+	// - PERMISSION_DENIED: the caller cannot delete data from the dataset.
 	DeleteDatasetRetentionExemption(ctx context.Context, in *DeleteDatasetRetentionExemptionRequest, opts ...grpc.CallOption) (*DeleteDatasetRetentionExemptionResponse, error)
-	// List retention exemptions for a dataset, filtered to those overlapping the given time range.
+	// Lists a dataset's retention exemptions (time ranges retention does not delete) that overlap a given
+	// time range. Returns a page of exemptions, ordered by source_id.
+	//
+	// An exemption that touches the given range at either end overlaps it. The caller needs permission to
+	// read the dataset's metadata.
 	ListDatasetRetentionExemptions(ctx context.Context, in *ListDatasetRetentionExemptionsRequest, opts ...grpc.CallOption) (*ListDatasetRetentionExemptionsResponse, error)
-	// Get the retention watermark for a dataset.
+	// Gets a dataset's retention watermark: the time up to which retention has finished deleting expired
+	// data. Unset when the dataset has no retention policy or no retention pass has finished.
+	//
+	// The caller needs permission to read the dataset's metadata.
 	GetDatasetRetentionWatermark(ctx context.Context, in *GetDatasetRetentionWatermarkRequest, opts ...grpc.CallOption) (*GetDatasetRetentionWatermarkResponse, error)
-	// Update the retention watermark for a dataset.
+	// Moves the retention watermark of a dataset forward to the given time and returns the time that was sent.
+	//
+	// The watermark is the time up to which retention has deleted expired data. A time that is not later than
+	// the stored watermark changes nothing, but the response still holds the time that was sent. The dataset
+	// must have a retention policy. The caller needs permission to delete data from the dataset.
+	//
+	// Errors:
+	// - PERMISSION_DENIED: the caller cannot delete data from the dataset.
+	// - FAILED_PRECONDITION: retention is not enabled for the dataset's organization.
+	// - NOT_FOUND: the dataset has no retention policy.
 	UpdateDatasetRetentionWatermark(ctx context.Context, in *UpdateDatasetRetentionWatermarkRequest, opts ...grpc.CallOption) (*UpdateDatasetRetentionWatermarkResponse, error)
 }
 
@@ -123,19 +164,60 @@ func (c *datasetRetentionServiceClient) UpdateDatasetRetentionWatermark(ctx cont
 //
 // Manages retention policies and exemptions for datasets.
 type DatasetRetentionServiceServer interface {
-	// Update or remove the retention policy for a dataset. When a policy is set,
-	// data older than the policy's expiry will be deleted.
+	// Sets or removes the retention policy of a dataset. A policy keeps data forever or deletes data older
+	// than an expiry in days.
+	//
+	// While a policy with an expiry is set, a background job deletes expired data except time ranges under a
+	// retention exemption. Setting a policy keeps the dataset's retention watermark. Omitting
+	// retention_policy removes the policy, which keeps data forever, and clears the watermark. The caller
+	// needs permission to delete data from the dataset.
+	//
+	// Errors:
+	// - PERMISSION_DENIED: the caller cannot delete data from the dataset.
+	// - FAILED_PRECONDITION: a policy is set and retention is not enabled for the dataset's organization.
+	// - INVALID_ARGUMENT: a policy is set on a derived dataset (composition).
 	UpdateRetentionPolicy(context.Context, *UpdateRetentionPolicyRequest) (*UpdateRetentionPolicyResponse, error)
-	// Create or update a retention exemption for a dataset. The exemption is keyed by
-	// (dataset_rid, source_id) — upserting with the same key updates the time range.
+	// Creates or updates a retention exemption on a dataset: a time range that retention does not delete.
+	// Returns the exemption.
+	//
+	// An exemption is keyed by dataset and source_id. Upserting the same source_id replaces its range and
+	// description, so an omitted description is cleared. The range includes both of its ends. The caller needs
+	// permission to delete data from the dataset.
+	//
+	// Errors:
+	// - PERMISSION_DENIED: the caller cannot delete data from the dataset.
+	// - FAILED_PRECONDITION: retention is not enabled for the dataset's organization.
 	UpsertDatasetRetentionExemption(context.Context, *UpsertDatasetRetentionExemptionRequest) (*UpsertDatasetRetentionExemptionResponse, error)
-	// Delete a retention exemption for a dataset.
+	// Deletes the retention exemption identified by dataset and source_id, so retention can delete the time
+	// range it protected.
+	//
+	// Deleting an exemption that does not exist succeeds. The caller needs permission to delete data from the
+	// dataset.
+	//
+	// Errors:
+	// - PERMISSION_DENIED: the caller cannot delete data from the dataset.
 	DeleteDatasetRetentionExemption(context.Context, *DeleteDatasetRetentionExemptionRequest) (*DeleteDatasetRetentionExemptionResponse, error)
-	// List retention exemptions for a dataset, filtered to those overlapping the given time range.
+	// Lists a dataset's retention exemptions (time ranges retention does not delete) that overlap a given
+	// time range. Returns a page of exemptions, ordered by source_id.
+	//
+	// An exemption that touches the given range at either end overlaps it. The caller needs permission to
+	// read the dataset's metadata.
 	ListDatasetRetentionExemptions(context.Context, *ListDatasetRetentionExemptionsRequest) (*ListDatasetRetentionExemptionsResponse, error)
-	// Get the retention watermark for a dataset.
+	// Gets a dataset's retention watermark: the time up to which retention has finished deleting expired
+	// data. Unset when the dataset has no retention policy or no retention pass has finished.
+	//
+	// The caller needs permission to read the dataset's metadata.
 	GetDatasetRetentionWatermark(context.Context, *GetDatasetRetentionWatermarkRequest) (*GetDatasetRetentionWatermarkResponse, error)
-	// Update the retention watermark for a dataset.
+	// Moves the retention watermark of a dataset forward to the given time and returns the time that was sent.
+	//
+	// The watermark is the time up to which retention has deleted expired data. A time that is not later than
+	// the stored watermark changes nothing, but the response still holds the time that was sent. The dataset
+	// must have a retention policy. The caller needs permission to delete data from the dataset.
+	//
+	// Errors:
+	// - PERMISSION_DENIED: the caller cannot delete data from the dataset.
+	// - FAILED_PRECONDITION: retention is not enabled for the dataset's organization.
+	// - NOT_FOUND: the dataset has no retention policy.
 	UpdateDatasetRetentionWatermark(context.Context, *UpdateDatasetRetentionWatermarkRequest) (*UpdateDatasetRetentionWatermarkResponse, error)
 	mustEmbedUnimplementedDatasetRetentionServiceServer()
 }

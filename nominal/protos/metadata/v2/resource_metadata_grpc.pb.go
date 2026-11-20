@@ -35,34 +35,83 @@ const (
 //
 // The Resource Metadata Service provides common metadata about resources.
 type ResourceMetadataServiceClient interface {
-	// Returns all existing properties (key value pairs) and labels, which can be used to organize resources
-	// such as runs and videos.
-	// This legacy bulk-list surface returns string property values only. Use SearchPropertyKeys for numeric keys.
+	// Lists the labels, and the property keys with their string values, in use on non-archived resources such as
+	// runs, assets, datasets, and videos. Returns at most the 500 most-used labels and, for each key, its 500 most-
+	// used values.
+	//
+	// Covers the workspaces the caller can view, or the given workspaces among those. Numeric property values are not
+	// included. Use SearchLabels and SearchPropertyKeys to page through every label and key, and for numeric
+	// properties.
+	//
+	// Errors:
+	// - INVALID_ARGUMENT: resource_types contains an unspecified resource type.
 	ListPropertiesAndLabels(ctx context.Context, in *ListPropertiesAndLabelsRequest, opts ...grpc.CallOption) (*ListPropertiesAndLabelsResponse, error)
-	// Returns the count of resources that use a given label or property. The query can
-	// match by label, property name (key only), or a full property key+value pair.
-	// Counts are scoped to the caller's accessible workspaces unless specific workspaces
-	// are provided.
+	// Counts the non-archived resources that use a label, a property key, or a property key and value pair, in the
+	// caller's workspaces or the given ones, optionally for given resource types.
+	//
+	// A property key alone counts the resources that hold any value under it, string or numeric.
+	//
+	// Errors:
+	// - INVALID_ARGUMENT: the query is unset, or resource_types contains an unspecified resource type.
 	GetMetadataUsageCount(ctx context.Context, in *GetMetadataUsageCountRequest, opts ...grpc.CallOption) (*GetMetadataUsageCountResponse, error)
-	// Given a set of labels, finds similar labels across the specified workspaces and resource types.
-	// Includes document count. Useful for detecting unintentional duplicate labels.
+	// Finds labels that differ from the given labels only in case, spaces, or punctuation, with the number of non-
+	// archived resources using each variant. Use it to detect duplicate labels.
+	//
+	// Only given labels that have variants appear in the response, and a label is not listed as its own variant.
+	//
+	// Errors:
+	// - INVALID_ARGUMENT: resource_types contains an unspecified resource type.
 	FindSimilarLabelMatches(ctx context.Context, in *FindSimilarLabelMatchesRequest, opts ...grpc.CallOption) (*FindSimilarLabelMatchesResponse, error)
-	// Given a set of property keys, finds similar property keys across the specified workspaces and resource types.
-	// Includes document count. Useful for detecting unintentional duplicate property keys.
+	// Finds property keys that differ from the given keys only in case, spaces, or punctuation, with the number of
+	// non-archived resources using each variant. Use it to detect duplicate property keys.
+	//
+	// Only given keys that have variants appear in the response, and a key is not listed as its own variant.
+	// Resources with string or numeric values under a variant are both counted.
+	//
+	// Errors:
+	// - INVALID_ARGUMENT: resource_types contains an unspecified resource type.
 	FindSimilarPropertyKeyMatches(ctx context.Context, in *FindSimilarPropertyKeyMatchesRequest, opts ...grpc.CallOption) (*FindSimilarPropertyKeyMatchesResponse, error)
-	// Returns a paginated list of labels with document usage counts, filterable by
-	// resource type, workspace, and search text.
+	// Searches the labels in use on non-archived resources by text, resource type, or workspace. Returns a page of
+	// labels, each with the number of resources that use it, in the requested sort order.
+	//
+	// With USAGE_COUNT, labels with equal counts are ordered by name.
+	//
+	// Errors:
+	//   - INVALID_ARGUMENT: sort_by is unspecified or PROPERTY_VALUE_COUNT, page_size is outside 1 to 10000, page_token
+	//     is not valid, or resource_types contains an unspecified resource type.
 	SearchLabels(ctx context.Context, in *SearchLabelsRequest, opts ...grpc.CallOption) (*SearchLabelsResponse, error)
-	// Returns a paginated list of string and numeric property keys with typed statistics,
-	// filterable by resource type, workspace, and search text.
+	// Searches the property keys in use on non-archived resources by text, resource type, or workspace. Returns a
+	// page of keys, each with its resource count and a summary of its string and numeric values, in the requested
+	// sort order.
+	//
+	// With USAGE_COUNT or PROPERTY_VALUE_COUNT, keys with equal counts are ordered by name. ALPHABETICAL pages
+	// efficiently at any workspace size. The count sorts rank every key in the workspace, so on large workspaces pass
+	// search_text with them.
+	//
+	// Errors:
+	//   - INVALID_ARGUMENT: sort_by is unspecified, page_size is outside 1 to 10000, page_token is not valid, or
+	//     resource_types contains an unspecified resource type.
+	//   - INVALID_ARGUMENT: a count sort without search_text timed out (METADATA_ERROR_QUERY_TOO_BROAD); add
+	//     search_text or sort ALPHABETICAL.
 	SearchPropertyKeys(ctx context.Context, in *SearchPropertyKeysRequest, opts ...grpc.CallOption) (*SearchPropertyKeysResponse, error)
-	// Returns a paginated list of string property values for a given property key with
-	// document usage counts, filterable by resource type, workspace, and search text.
-	// Numeric values are intentionally excluded; their summary is returned by SearchPropertyKeys.
+	// Searches the string values of one property key on non-archived resources by text, resource type, or workspace.
+	// Returns a page of values, each with the number of resources that hold it, in the requested sort order.
+	//
+	// Numeric values are excluded; their summary is on SearchPropertyKeys. With USAGE_COUNT, values with equal counts
+	// are ordered by value.
+	//
+	// Errors:
+	//   - INVALID_ARGUMENT: sort_by is unspecified or PROPERTY_VALUE_COUNT, page_size is outside 1 to 10000, page_token
+	//     is not valid, or resource_types contains an unspecified resource type.
 	SearchPropertyValues(ctx context.Context, in *SearchPropertyValuesRequest, opts ...grpc.CallOption) (*SearchPropertyValuesResponse, error)
-	// Returns the range of numeric values stored under a single property key, scoped to the requested
-	// resource types and workspaces (the caller's accessible workspaces when omitted). Archived documents
-	// are excluded, matching the document counts returned by SearchPropertyKeys.
+	// Gets the minimum and maximum of the numeric values stored under one property key on non-archived resources,
+	// optionally for given resource types and workspaces.
+	//
+	// The caller's workspaces are used when none are given. The response holds no statistics when no resource has a
+	// numeric value under the key.
+	//
+	// Errors:
+	// - INVALID_ARGUMENT: property_key is blank, or resource_types contains an unspecified resource type.
 	GetNumericPropertyStatistics(ctx context.Context, in *GetNumericPropertyStatisticsRequest, opts ...grpc.CallOption) (*GetNumericPropertyStatisticsResponse, error)
 }
 
@@ -160,34 +209,83 @@ func (c *resourceMetadataServiceClient) GetNumericPropertyStatistics(ctx context
 //
 // The Resource Metadata Service provides common metadata about resources.
 type ResourceMetadataServiceServer interface {
-	// Returns all existing properties (key value pairs) and labels, which can be used to organize resources
-	// such as runs and videos.
-	// This legacy bulk-list surface returns string property values only. Use SearchPropertyKeys for numeric keys.
+	// Lists the labels, and the property keys with their string values, in use on non-archived resources such as
+	// runs, assets, datasets, and videos. Returns at most the 500 most-used labels and, for each key, its 500 most-
+	// used values.
+	//
+	// Covers the workspaces the caller can view, or the given workspaces among those. Numeric property values are not
+	// included. Use SearchLabels and SearchPropertyKeys to page through every label and key, and for numeric
+	// properties.
+	//
+	// Errors:
+	// - INVALID_ARGUMENT: resource_types contains an unspecified resource type.
 	ListPropertiesAndLabels(context.Context, *ListPropertiesAndLabelsRequest) (*ListPropertiesAndLabelsResponse, error)
-	// Returns the count of resources that use a given label or property. The query can
-	// match by label, property name (key only), or a full property key+value pair.
-	// Counts are scoped to the caller's accessible workspaces unless specific workspaces
-	// are provided.
+	// Counts the non-archived resources that use a label, a property key, or a property key and value pair, in the
+	// caller's workspaces or the given ones, optionally for given resource types.
+	//
+	// A property key alone counts the resources that hold any value under it, string or numeric.
+	//
+	// Errors:
+	// - INVALID_ARGUMENT: the query is unset, or resource_types contains an unspecified resource type.
 	GetMetadataUsageCount(context.Context, *GetMetadataUsageCountRequest) (*GetMetadataUsageCountResponse, error)
-	// Given a set of labels, finds similar labels across the specified workspaces and resource types.
-	// Includes document count. Useful for detecting unintentional duplicate labels.
+	// Finds labels that differ from the given labels only in case, spaces, or punctuation, with the number of non-
+	// archived resources using each variant. Use it to detect duplicate labels.
+	//
+	// Only given labels that have variants appear in the response, and a label is not listed as its own variant.
+	//
+	// Errors:
+	// - INVALID_ARGUMENT: resource_types contains an unspecified resource type.
 	FindSimilarLabelMatches(context.Context, *FindSimilarLabelMatchesRequest) (*FindSimilarLabelMatchesResponse, error)
-	// Given a set of property keys, finds similar property keys across the specified workspaces and resource types.
-	// Includes document count. Useful for detecting unintentional duplicate property keys.
+	// Finds property keys that differ from the given keys only in case, spaces, or punctuation, with the number of
+	// non-archived resources using each variant. Use it to detect duplicate property keys.
+	//
+	// Only given keys that have variants appear in the response, and a key is not listed as its own variant.
+	// Resources with string or numeric values under a variant are both counted.
+	//
+	// Errors:
+	// - INVALID_ARGUMENT: resource_types contains an unspecified resource type.
 	FindSimilarPropertyKeyMatches(context.Context, *FindSimilarPropertyKeyMatchesRequest) (*FindSimilarPropertyKeyMatchesResponse, error)
-	// Returns a paginated list of labels with document usage counts, filterable by
-	// resource type, workspace, and search text.
+	// Searches the labels in use on non-archived resources by text, resource type, or workspace. Returns a page of
+	// labels, each with the number of resources that use it, in the requested sort order.
+	//
+	// With USAGE_COUNT, labels with equal counts are ordered by name.
+	//
+	// Errors:
+	//   - INVALID_ARGUMENT: sort_by is unspecified or PROPERTY_VALUE_COUNT, page_size is outside 1 to 10000, page_token
+	//     is not valid, or resource_types contains an unspecified resource type.
 	SearchLabels(context.Context, *SearchLabelsRequest) (*SearchLabelsResponse, error)
-	// Returns a paginated list of string and numeric property keys with typed statistics,
-	// filterable by resource type, workspace, and search text.
+	// Searches the property keys in use on non-archived resources by text, resource type, or workspace. Returns a
+	// page of keys, each with its resource count and a summary of its string and numeric values, in the requested
+	// sort order.
+	//
+	// With USAGE_COUNT or PROPERTY_VALUE_COUNT, keys with equal counts are ordered by name. ALPHABETICAL pages
+	// efficiently at any workspace size. The count sorts rank every key in the workspace, so on large workspaces pass
+	// search_text with them.
+	//
+	// Errors:
+	//   - INVALID_ARGUMENT: sort_by is unspecified, page_size is outside 1 to 10000, page_token is not valid, or
+	//     resource_types contains an unspecified resource type.
+	//   - INVALID_ARGUMENT: a count sort without search_text timed out (METADATA_ERROR_QUERY_TOO_BROAD); add
+	//     search_text or sort ALPHABETICAL.
 	SearchPropertyKeys(context.Context, *SearchPropertyKeysRequest) (*SearchPropertyKeysResponse, error)
-	// Returns a paginated list of string property values for a given property key with
-	// document usage counts, filterable by resource type, workspace, and search text.
-	// Numeric values are intentionally excluded; their summary is returned by SearchPropertyKeys.
+	// Searches the string values of one property key on non-archived resources by text, resource type, or workspace.
+	// Returns a page of values, each with the number of resources that hold it, in the requested sort order.
+	//
+	// Numeric values are excluded; their summary is on SearchPropertyKeys. With USAGE_COUNT, values with equal counts
+	// are ordered by value.
+	//
+	// Errors:
+	//   - INVALID_ARGUMENT: sort_by is unspecified or PROPERTY_VALUE_COUNT, page_size is outside 1 to 10000, page_token
+	//     is not valid, or resource_types contains an unspecified resource type.
 	SearchPropertyValues(context.Context, *SearchPropertyValuesRequest) (*SearchPropertyValuesResponse, error)
-	// Returns the range of numeric values stored under a single property key, scoped to the requested
-	// resource types and workspaces (the caller's accessible workspaces when omitted). Archived documents
-	// are excluded, matching the document counts returned by SearchPropertyKeys.
+	// Gets the minimum and maximum of the numeric values stored under one property key on non-archived resources,
+	// optionally for given resource types and workspaces.
+	//
+	// The caller's workspaces are used when none are given. The response holds no statistics when no resource has a
+	// numeric value under the key.
+	//
+	// Errors:
+	// - INVALID_ARGUMENT: property_key is blank, or resource_types contains an unspecified resource type.
 	GetNumericPropertyStatistics(context.Context, *GetNumericPropertyStatisticsRequest) (*GetNumericPropertyStatisticsResponse, error)
 	mustEmbedUnimplementedResourceMetadataServiceServer()
 }

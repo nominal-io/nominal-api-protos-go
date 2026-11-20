@@ -25,6 +25,55 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
+type BatchType int32
+
+const (
+	BatchType_BATCH_TYPE_UNSPECIFIED         BatchType = 0
+	BatchType_BATCH_TYPE_WRITE_BATCHES_PROTO BatchType = 1
+	BatchType_BATCH_TYPE_ICEBERG_PARQUET     BatchType = 2
+)
+
+// Enum value maps for BatchType.
+var (
+	BatchType_name = map[int32]string{
+		0: "BATCH_TYPE_UNSPECIFIED",
+		1: "BATCH_TYPE_WRITE_BATCHES_PROTO",
+		2: "BATCH_TYPE_ICEBERG_PARQUET",
+	}
+	BatchType_value = map[string]int32{
+		"BATCH_TYPE_UNSPECIFIED":         0,
+		"BATCH_TYPE_WRITE_BATCHES_PROTO": 1,
+		"BATCH_TYPE_ICEBERG_PARQUET":     2,
+	}
+)
+
+func (x BatchType) Enum() *BatchType {
+	p := new(BatchType)
+	*p = x
+	return p
+}
+
+func (x BatchType) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (BatchType) Descriptor() protoreflect.EnumDescriptor {
+	return file_nominal_protos_ingest_v1_internal_internal_ingest_batches_proto_enumTypes[0].Descriptor()
+}
+
+func (BatchType) Type() protoreflect.EnumType {
+	return &file_nominal_protos_ingest_v1_internal_internal_ingest_batches_proto_enumTypes[0]
+}
+
+func (x BatchType) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use BatchType.Descriptor instead.
+func (BatchType) EnumDescriptor() ([]byte, []int) {
+	return file_nominal_protos_ingest_v1_internal_internal_ingest_batches_proto_rawDescGZIP(), []int{0}
+}
+
 type MarkBatchesCompletedRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	IngestJobRid  string                 `protobuf:"bytes,1,opt,name=ingest_job_rid,json=ingestJobRid,proto3" json:"ingest_job_rid,omitempty"`
@@ -186,9 +235,10 @@ type CreatePendingBatchesRequest struct {
 	// than a per-batch list: a large file can stage tens of thousands of batches, more than a
 	// single request should carry. Each batch's staged location is recorded later, on the
 	// poll-bounded MarkBatchesCompleted call.
-	NumBatches    int32 `protobuf:"varint,3,opt,name=num_batches,json=numBatches,proto3" json:"num_batches,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	NumBatches     int32             `protobuf:"varint,3,opt,name=num_batches,json=numBatches,proto3" json:"num_batches,omitempty"`
+	PendingBatches []*PendingBatches `protobuf:"bytes,4,rep,name=pending_batches,json=pendingBatches,proto3" json:"pending_batches,omitempty"`
+	unknownFields  protoimpl.UnknownFields
+	sizeCache      protoimpl.SizeCache
 }
 
 func (x *CreatePendingBatchesRequest) Reset() {
@@ -242,6 +292,65 @@ func (x *CreatePendingBatchesRequest) GetNumBatches() int32 {
 	return 0
 }
 
+func (x *CreatePendingBatchesRequest) GetPendingBatches() []*PendingBatches {
+	if x != nil {
+		return x.PendingBatches
+	}
+	return nil
+}
+
+type PendingBatches struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Type          BatchType              `protobuf:"varint,1,opt,name=type,proto3,enum=nominal.ingest.v1.internal.BatchType" json:"type,omitempty"`
+	Count         int32                  `protobuf:"varint,2,opt,name=count,proto3" json:"count,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *PendingBatches) Reset() {
+	*x = PendingBatches{}
+	mi := &file_nominal_protos_ingest_v1_internal_internal_ingest_batches_proto_msgTypes[4]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *PendingBatches) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*PendingBatches) ProtoMessage() {}
+
+func (x *PendingBatches) ProtoReflect() protoreflect.Message {
+	mi := &file_nominal_protos_ingest_v1_internal_internal_ingest_batches_proto_msgTypes[4]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use PendingBatches.ProtoReflect.Descriptor instead.
+func (*PendingBatches) Descriptor() ([]byte, []int) {
+	return file_nominal_protos_ingest_v1_internal_internal_ingest_batches_proto_rawDescGZIP(), []int{4}
+}
+
+func (x *PendingBatches) GetType() BatchType {
+	if x != nil {
+		return x.Type
+	}
+	return BatchType_BATCH_TYPE_UNSPECIFIED
+}
+
+func (x *PendingBatches) GetCount() int32 {
+	if x != nil {
+		return x.Count
+	}
+	return 0
+}
+
 type CreatePendingBatchesResponse struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	unknownFields protoimpl.UnknownFields
@@ -250,7 +359,7 @@ type CreatePendingBatchesResponse struct {
 
 func (x *CreatePendingBatchesResponse) Reset() {
 	*x = CreatePendingBatchesResponse{}
-	mi := &file_nominal_protos_ingest_v1_internal_internal_ingest_batches_proto_msgTypes[4]
+	mi := &file_nominal_protos_ingest_v1_internal_internal_ingest_batches_proto_msgTypes[5]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -262,7 +371,7 @@ func (x *CreatePendingBatchesResponse) String() string {
 func (*CreatePendingBatchesResponse) ProtoMessage() {}
 
 func (x *CreatePendingBatchesResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_ingest_v1_internal_internal_ingest_batches_proto_msgTypes[4]
+	mi := &file_nominal_protos_ingest_v1_internal_internal_ingest_batches_proto_msgTypes[5]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -275,7 +384,7 @@ func (x *CreatePendingBatchesResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CreatePendingBatchesResponse.ProtoReflect.Descriptor instead.
 func (*CreatePendingBatchesResponse) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_ingest_v1_internal_internal_ingest_batches_proto_rawDescGZIP(), []int{4}
+	return file_nominal_protos_ingest_v1_internal_internal_ingest_batches_proto_rawDescGZIP(), []int{5}
 }
 
 type SetDatasetFileIngestStatusRequest struct {
@@ -299,7 +408,7 @@ type SetDatasetFileIngestStatusRequest struct {
 
 func (x *SetDatasetFileIngestStatusRequest) Reset() {
 	*x = SetDatasetFileIngestStatusRequest{}
-	mi := &file_nominal_protos_ingest_v1_internal_internal_ingest_batches_proto_msgTypes[5]
+	mi := &file_nominal_protos_ingest_v1_internal_internal_ingest_batches_proto_msgTypes[6]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -311,7 +420,7 @@ func (x *SetDatasetFileIngestStatusRequest) String() string {
 func (*SetDatasetFileIngestStatusRequest) ProtoMessage() {}
 
 func (x *SetDatasetFileIngestStatusRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_ingest_v1_internal_internal_ingest_batches_proto_msgTypes[5]
+	mi := &file_nominal_protos_ingest_v1_internal_internal_ingest_batches_proto_msgTypes[6]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -324,7 +433,7 @@ func (x *SetDatasetFileIngestStatusRequest) ProtoReflect() protoreflect.Message 
 
 // Deprecated: Use SetDatasetFileIngestStatusRequest.ProtoReflect.Descriptor instead.
 func (*SetDatasetFileIngestStatusRequest) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_ingest_v1_internal_internal_ingest_batches_proto_rawDescGZIP(), []int{5}
+	return file_nominal_protos_ingest_v1_internal_internal_ingest_batches_proto_rawDescGZIP(), []int{6}
 }
 
 func (x *SetDatasetFileIngestStatusRequest) GetIngestJobRid() string {
@@ -420,7 +529,7 @@ type SetDatasetFileIngestStatusResponse struct {
 
 func (x *SetDatasetFileIngestStatusResponse) Reset() {
 	*x = SetDatasetFileIngestStatusResponse{}
-	mi := &file_nominal_protos_ingest_v1_internal_internal_ingest_batches_proto_msgTypes[6]
+	mi := &file_nominal_protos_ingest_v1_internal_internal_ingest_batches_proto_msgTypes[7]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -432,7 +541,7 @@ func (x *SetDatasetFileIngestStatusResponse) String() string {
 func (*SetDatasetFileIngestStatusResponse) ProtoMessage() {}
 
 func (x *SetDatasetFileIngestStatusResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_ingest_v1_internal_internal_ingest_batches_proto_msgTypes[6]
+	mi := &file_nominal_protos_ingest_v1_internal_internal_ingest_batches_proto_msgTypes[7]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -445,7 +554,7 @@ func (x *SetDatasetFileIngestStatusResponse) ProtoReflect() protoreflect.Message
 
 // Deprecated: Use SetDatasetFileIngestStatusResponse.ProtoReflect.Descriptor instead.
 func (*SetDatasetFileIngestStatusResponse) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_ingest_v1_internal_internal_ingest_batches_proto_rawDescGZIP(), []int{6}
+	return file_nominal_protos_ingest_v1_internal_internal_ingest_batches_proto_rawDescGZIP(), []int{7}
 }
 
 type Parsing struct {
@@ -457,7 +566,7 @@ type Parsing struct {
 
 func (x *Parsing) Reset() {
 	*x = Parsing{}
-	mi := &file_nominal_protos_ingest_v1_internal_internal_ingest_batches_proto_msgTypes[7]
+	mi := &file_nominal_protos_ingest_v1_internal_internal_ingest_batches_proto_msgTypes[8]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -469,7 +578,7 @@ func (x *Parsing) String() string {
 func (*Parsing) ProtoMessage() {}
 
 func (x *Parsing) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_ingest_v1_internal_internal_ingest_batches_proto_msgTypes[7]
+	mi := &file_nominal_protos_ingest_v1_internal_internal_ingest_batches_proto_msgTypes[8]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -482,7 +591,7 @@ func (x *Parsing) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Parsing.ProtoReflect.Descriptor instead.
 func (*Parsing) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_ingest_v1_internal_internal_ingest_batches_proto_rawDescGZIP(), []int{7}
+	return file_nominal_protos_ingest_v1_internal_internal_ingest_batches_proto_rawDescGZIP(), []int{8}
 }
 
 func (x *Parsing) GetBounds() *time.Range {
@@ -495,14 +604,16 @@ func (x *Parsing) GetBounds() *time.Range {
 type Ingesting struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Timestamp bounds observed while parsing the file, applied to the dataset file row.
-	Bounds        *time.Range `protobuf:"bytes,1,opt,name=bounds,proto3" json:"bounds,omitempty"`
+	Bounds *time.Range `protobuf:"bytes,1,opt,name=bounds,proto3" json:"bounds,omitempty"`
+	// Optional fraction between 0 and 1 indicating ingestion progress.
+	Progress      *float64 `protobuf:"fixed64,2,opt,name=progress,proto3,oneof" json:"progress,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
 func (x *Ingesting) Reset() {
 	*x = Ingesting{}
-	mi := &file_nominal_protos_ingest_v1_internal_internal_ingest_batches_proto_msgTypes[8]
+	mi := &file_nominal_protos_ingest_v1_internal_internal_ingest_batches_proto_msgTypes[9]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -514,7 +625,7 @@ func (x *Ingesting) String() string {
 func (*Ingesting) ProtoMessage() {}
 
 func (x *Ingesting) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_ingest_v1_internal_internal_ingest_batches_proto_msgTypes[8]
+	mi := &file_nominal_protos_ingest_v1_internal_internal_ingest_batches_proto_msgTypes[9]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -527,7 +638,7 @@ func (x *Ingesting) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Ingesting.ProtoReflect.Descriptor instead.
 func (*Ingesting) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_ingest_v1_internal_internal_ingest_batches_proto_rawDescGZIP(), []int{8}
+	return file_nominal_protos_ingest_v1_internal_internal_ingest_batches_proto_rawDescGZIP(), []int{9}
 }
 
 func (x *Ingesting) GetBounds() *time.Range {
@@ -535,6 +646,13 @@ func (x *Ingesting) GetBounds() *time.Range {
 		return x.Bounds
 	}
 	return nil
+}
+
+func (x *Ingesting) GetProgress() float64 {
+	if x != nil && x.Progress != nil {
+		return *x.Progress
+	}
+	return 0
 }
 
 type Error struct {
@@ -550,7 +668,7 @@ type Error struct {
 
 func (x *Error) Reset() {
 	*x = Error{}
-	mi := &file_nominal_protos_ingest_v1_internal_internal_ingest_batches_proto_msgTypes[9]
+	mi := &file_nominal_protos_ingest_v1_internal_internal_ingest_batches_proto_msgTypes[10]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -562,7 +680,7 @@ func (x *Error) String() string {
 func (*Error) ProtoMessage() {}
 
 func (x *Error) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_ingest_v1_internal_internal_ingest_batches_proto_msgTypes[9]
+	mi := &file_nominal_protos_ingest_v1_internal_internal_ingest_batches_proto_msgTypes[10]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -575,7 +693,7 @@ func (x *Error) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Error.ProtoReflect.Descriptor instead.
 func (*Error) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_ingest_v1_internal_internal_ingest_batches_proto_rawDescGZIP(), []int{9}
+	return file_nominal_protos_ingest_v1_internal_internal_ingest_batches_proto_rawDescGZIP(), []int{10}
 }
 
 func (x *Error) GetErrorType() string {
@@ -612,7 +730,7 @@ type Succeeded struct {
 
 func (x *Succeeded) Reset() {
 	*x = Succeeded{}
-	mi := &file_nominal_protos_ingest_v1_internal_internal_ingest_batches_proto_msgTypes[10]
+	mi := &file_nominal_protos_ingest_v1_internal_internal_ingest_batches_proto_msgTypes[11]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -624,7 +742,7 @@ func (x *Succeeded) String() string {
 func (*Succeeded) ProtoMessage() {}
 
 func (x *Succeeded) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_ingest_v1_internal_internal_ingest_batches_proto_msgTypes[10]
+	mi := &file_nominal_protos_ingest_v1_internal_internal_ingest_batches_proto_msgTypes[11]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -637,7 +755,7 @@ func (x *Succeeded) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Succeeded.ProtoReflect.Descriptor instead.
 func (*Succeeded) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_ingest_v1_internal_internal_ingest_batches_proto_rawDescGZIP(), []int{10}
+	return file_nominal_protos_ingest_v1_internal_internal_ingest_batches_proto_rawDescGZIP(), []int{11}
 }
 
 func (x *Succeeded) GetBounds() *time.Range {
@@ -668,14 +786,19 @@ const file_nominal_protos_ingest_v1_internal_internal_ingest_batches_proto_rawDe
 	"\x0eCompletedBatch\x12\x19\n" +
 	"\bbatch_id\x18\x01 \x01(\x05R\abatchId\x12D\n" +
 	"\x06handle\x18\x02 \x01(\v2$.nominal.types.object_storage.HandleB\x06\xbaH\x03\xc8\x01\x01R\x06handle\"\x1e\n" +
-	"\x1cMarkBatchesCompletedResponse\"\xf6\x01\n" +
+	"\x1cMarkBatchesCompletedResponse\"\xc2\x02\n" +
 	"\x1bCreatePendingBatchesRequest\x12T\n" +
 	"\x0eingest_job_rid\x18\x01 \x01(\tB.\xbaH\x03\xc8\x01\x01\x9a\xb2\x1a$\n" +
 	"\"io.nominal.ingest.api.IngestJobRidR\fingestJobRid\x12W\n" +
 	"\x0fdataset_file_id\x18\x02 \x01(\tB/\xbaH\x03\xc8\x01\x01\x9a\xb2\x1a%\n" +
-	"#io.nominal.datasource.DatasetFileIdR\rdatasetFileId\x12(\n" +
-	"\vnum_batches\x18\x03 \x01(\x05B\a\xbaH\x04\x1a\x02 \x00R\n" +
-	"numBatches\"\x1e\n" +
+	"#io.nominal.datasource.DatasetFileIdR\rdatasetFileId\x12\x1f\n" +
+	"\vnum_batches\x18\x03 \x01(\x05R\n" +
+	"numBatches\x12S\n" +
+	"\x0fpending_batches\x18\x04 \x03(\v2*.nominal.ingest.v1.internal.PendingBatchesR\x0ependingBatches\"v\n" +
+	"\x0ePendingBatches\x12E\n" +
+	"\x04type\x18\x01 \x01(\x0e2%.nominal.ingest.v1.internal.BatchTypeB\n" +
+	"\xbaH\a\x82\x01\x04\x10\x01 \x00R\x04type\x12\x1d\n" +
+	"\x05count\x18\x02 \x01(\x05B\a\xbaH\x04\x1a\x02 \x00R\x05count\"\x1e\n" +
 	"\x1cCreatePendingBatchesResponse\"\xe6\x03\n" +
 	"!SetDatasetFileIngestStatusRequest\x12T\n" +
 	"\x0eingest_job_rid\x18\x01 \x01(\tB.\xbaH\x03\xc8\x01\x01\x9a\xb2\x1a$\n" +
@@ -689,9 +812,11 @@ const file_nominal_protos_ingest_v1_internal_internal_ingest_batches_proto_rawDe
 	"\x06status\"$\n" +
 	"\"SetDatasetFileIngestStatusResponse\"<\n" +
 	"\aParsing\x121\n" +
-	"\x06bounds\x18\x01 \x01(\v2\x19.nominal.types.time.RangeR\x06bounds\">\n" +
+	"\x06bounds\x18\x01 \x01(\v2\x19.nominal.types.time.RangeR\x06bounds\"\x85\x01\n" +
 	"\tIngesting\x121\n" +
-	"\x06bounds\x18\x01 \x01(\v2\x19.nominal.types.time.RangeR\x06bounds\"\x87\x01\n" +
+	"\x06bounds\x18\x01 \x01(\v2\x19.nominal.types.time.RangeR\x06bounds\x128\n" +
+	"\bprogress\x18\x02 \x01(\x01B\x17\xbaH\x14\x12\x12\x19\x00\x00\x00\x00\x00\x00\xf0?)\x00\x00\x00\x00\x00\x00\x00\x00H\x00R\bprogress\x88\x01\x01B\v\n" +
+	"\t_progress\"\x87\x01\n" +
 	"\x05Error\x12\x1d\n" +
 	"\n" +
 	"error_type\x18\x01 \x01(\tR\terrorType\x12\x18\n" +
@@ -701,7 +826,11 @@ const file_nominal_protos_ingest_v1_internal_internal_ingest_batches_proto_rawDe
 	"\tSucceeded\x129\n" +
 	"\x06bounds\x18\x01 \x01(\v2\x19.nominal.types.time.RangeB\x06\xbaH\x03\xc8\x01\x01R\x06bounds\x12F\n" +
 	"\vingested_at\x18\x02 \x01(\v2\x1d.nominal.types.time.TimestampB\x06\xbaH\x03\xc8\x01\x01R\n" +
-	"ingestedAt2\xd2\x03\n" +
+	"ingestedAt*k\n" +
+	"\tBatchType\x12\x1a\n" +
+	"\x16BATCH_TYPE_UNSPECIFIED\x10\x00\x12\"\n" +
+	"\x1eBATCH_TYPE_WRITE_BATCHES_PROTO\x10\x01\x12\x1e\n" +
+	"\x1aBATCH_TYPE_ICEBERG_PARQUET\x10\x022\xd2\x03\n" +
 	"\x1aInternalIngestBatchService\x12\x89\x01\n" +
 	"\x14MarkBatchesCompleted\x127.nominal.ingest.v1.internal.MarkBatchesCompletedRequest\x1a8.nominal.ingest.v1.internal.MarkBatchesCompletedResponse\x12\x9b\x01\n" +
 	"\x1aSetDatasetFileIngestStatus\x12=.nominal.ingest.v1.internal.SetDatasetFileIngestStatusRequest\x1a>.nominal.ingest.v1.internal.SetDatasetFileIngestStatusResponse\x12\x89\x01\n" +
@@ -720,45 +849,50 @@ func file_nominal_protos_ingest_v1_internal_internal_ingest_batches_proto_rawDes
 	return file_nominal_protos_ingest_v1_internal_internal_ingest_batches_proto_rawDescData
 }
 
-var file_nominal_protos_ingest_v1_internal_internal_ingest_batches_proto_msgTypes = make([]protoimpl.MessageInfo, 11)
+var file_nominal_protos_ingest_v1_internal_internal_ingest_batches_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
+var file_nominal_protos_ingest_v1_internal_internal_ingest_batches_proto_msgTypes = make([]protoimpl.MessageInfo, 12)
 var file_nominal_protos_ingest_v1_internal_internal_ingest_batches_proto_goTypes = []any{
-	(*MarkBatchesCompletedRequest)(nil),        // 0: nominal.ingest.v1.internal.MarkBatchesCompletedRequest
-	(*CompletedBatch)(nil),                     // 1: nominal.ingest.v1.internal.CompletedBatch
-	(*MarkBatchesCompletedResponse)(nil),       // 2: nominal.ingest.v1.internal.MarkBatchesCompletedResponse
-	(*CreatePendingBatchesRequest)(nil),        // 3: nominal.ingest.v1.internal.CreatePendingBatchesRequest
-	(*CreatePendingBatchesResponse)(nil),       // 4: nominal.ingest.v1.internal.CreatePendingBatchesResponse
-	(*SetDatasetFileIngestStatusRequest)(nil),  // 5: nominal.ingest.v1.internal.SetDatasetFileIngestStatusRequest
-	(*SetDatasetFileIngestStatusResponse)(nil), // 6: nominal.ingest.v1.internal.SetDatasetFileIngestStatusResponse
-	(*Parsing)(nil),                            // 7: nominal.ingest.v1.internal.Parsing
-	(*Ingesting)(nil),                          // 8: nominal.ingest.v1.internal.Ingesting
-	(*Error)(nil),                              // 9: nominal.ingest.v1.internal.Error
-	(*Succeeded)(nil),                          // 10: nominal.ingest.v1.internal.Succeeded
-	(*object_storage.Handle)(nil),              // 11: nominal.types.object_storage.Handle
-	(*time.Range)(nil),                         // 12: nominal.types.time.Range
-	(*time.Timestamp)(nil),                     // 13: nominal.types.time.Timestamp
+	(BatchType)(0),                             // 0: nominal.ingest.v1.internal.BatchType
+	(*MarkBatchesCompletedRequest)(nil),        // 1: nominal.ingest.v1.internal.MarkBatchesCompletedRequest
+	(*CompletedBatch)(nil),                     // 2: nominal.ingest.v1.internal.CompletedBatch
+	(*MarkBatchesCompletedResponse)(nil),       // 3: nominal.ingest.v1.internal.MarkBatchesCompletedResponse
+	(*CreatePendingBatchesRequest)(nil),        // 4: nominal.ingest.v1.internal.CreatePendingBatchesRequest
+	(*PendingBatches)(nil),                     // 5: nominal.ingest.v1.internal.PendingBatches
+	(*CreatePendingBatchesResponse)(nil),       // 6: nominal.ingest.v1.internal.CreatePendingBatchesResponse
+	(*SetDatasetFileIngestStatusRequest)(nil),  // 7: nominal.ingest.v1.internal.SetDatasetFileIngestStatusRequest
+	(*SetDatasetFileIngestStatusResponse)(nil), // 8: nominal.ingest.v1.internal.SetDatasetFileIngestStatusResponse
+	(*Parsing)(nil),                            // 9: nominal.ingest.v1.internal.Parsing
+	(*Ingesting)(nil),                          // 10: nominal.ingest.v1.internal.Ingesting
+	(*Error)(nil),                              // 11: nominal.ingest.v1.internal.Error
+	(*Succeeded)(nil),                          // 12: nominal.ingest.v1.internal.Succeeded
+	(*object_storage.Handle)(nil),              // 13: nominal.types.object_storage.Handle
+	(*time.Range)(nil),                         // 14: nominal.types.time.Range
+	(*time.Timestamp)(nil),                     // 15: nominal.types.time.Timestamp
 }
 var file_nominal_protos_ingest_v1_internal_internal_ingest_batches_proto_depIdxs = []int32{
-	1,  // 0: nominal.ingest.v1.internal.MarkBatchesCompletedRequest.batches:type_name -> nominal.ingest.v1.internal.CompletedBatch
-	11, // 1: nominal.ingest.v1.internal.CompletedBatch.handle:type_name -> nominal.types.object_storage.Handle
-	7,  // 2: nominal.ingest.v1.internal.SetDatasetFileIngestStatusRequest.parsing:type_name -> nominal.ingest.v1.internal.Parsing
-	8,  // 3: nominal.ingest.v1.internal.SetDatasetFileIngestStatusRequest.ingesting:type_name -> nominal.ingest.v1.internal.Ingesting
-	9,  // 4: nominal.ingest.v1.internal.SetDatasetFileIngestStatusRequest.error:type_name -> nominal.ingest.v1.internal.Error
-	10, // 5: nominal.ingest.v1.internal.SetDatasetFileIngestStatusRequest.succeeded:type_name -> nominal.ingest.v1.internal.Succeeded
-	12, // 6: nominal.ingest.v1.internal.Parsing.bounds:type_name -> nominal.types.time.Range
-	12, // 7: nominal.ingest.v1.internal.Ingesting.bounds:type_name -> nominal.types.time.Range
-	12, // 8: nominal.ingest.v1.internal.Succeeded.bounds:type_name -> nominal.types.time.Range
-	13, // 9: nominal.ingest.v1.internal.Succeeded.ingested_at:type_name -> nominal.types.time.Timestamp
-	0,  // 10: nominal.ingest.v1.internal.InternalIngestBatchService.MarkBatchesCompleted:input_type -> nominal.ingest.v1.internal.MarkBatchesCompletedRequest
-	5,  // 11: nominal.ingest.v1.internal.InternalIngestBatchService.SetDatasetFileIngestStatus:input_type -> nominal.ingest.v1.internal.SetDatasetFileIngestStatusRequest
-	3,  // 12: nominal.ingest.v1.internal.InternalIngestBatchService.CreatePendingBatches:input_type -> nominal.ingest.v1.internal.CreatePendingBatchesRequest
-	2,  // 13: nominal.ingest.v1.internal.InternalIngestBatchService.MarkBatchesCompleted:output_type -> nominal.ingest.v1.internal.MarkBatchesCompletedResponse
-	6,  // 14: nominal.ingest.v1.internal.InternalIngestBatchService.SetDatasetFileIngestStatus:output_type -> nominal.ingest.v1.internal.SetDatasetFileIngestStatusResponse
-	4,  // 15: nominal.ingest.v1.internal.InternalIngestBatchService.CreatePendingBatches:output_type -> nominal.ingest.v1.internal.CreatePendingBatchesResponse
-	13, // [13:16] is the sub-list for method output_type
-	10, // [10:13] is the sub-list for method input_type
-	10, // [10:10] is the sub-list for extension type_name
-	10, // [10:10] is the sub-list for extension extendee
-	0,  // [0:10] is the sub-list for field type_name
+	2,  // 0: nominal.ingest.v1.internal.MarkBatchesCompletedRequest.batches:type_name -> nominal.ingest.v1.internal.CompletedBatch
+	13, // 1: nominal.ingest.v1.internal.CompletedBatch.handle:type_name -> nominal.types.object_storage.Handle
+	5,  // 2: nominal.ingest.v1.internal.CreatePendingBatchesRequest.pending_batches:type_name -> nominal.ingest.v1.internal.PendingBatches
+	0,  // 3: nominal.ingest.v1.internal.PendingBatches.type:type_name -> nominal.ingest.v1.internal.BatchType
+	9,  // 4: nominal.ingest.v1.internal.SetDatasetFileIngestStatusRequest.parsing:type_name -> nominal.ingest.v1.internal.Parsing
+	10, // 5: nominal.ingest.v1.internal.SetDatasetFileIngestStatusRequest.ingesting:type_name -> nominal.ingest.v1.internal.Ingesting
+	11, // 6: nominal.ingest.v1.internal.SetDatasetFileIngestStatusRequest.error:type_name -> nominal.ingest.v1.internal.Error
+	12, // 7: nominal.ingest.v1.internal.SetDatasetFileIngestStatusRequest.succeeded:type_name -> nominal.ingest.v1.internal.Succeeded
+	14, // 8: nominal.ingest.v1.internal.Parsing.bounds:type_name -> nominal.types.time.Range
+	14, // 9: nominal.ingest.v1.internal.Ingesting.bounds:type_name -> nominal.types.time.Range
+	14, // 10: nominal.ingest.v1.internal.Succeeded.bounds:type_name -> nominal.types.time.Range
+	15, // 11: nominal.ingest.v1.internal.Succeeded.ingested_at:type_name -> nominal.types.time.Timestamp
+	1,  // 12: nominal.ingest.v1.internal.InternalIngestBatchService.MarkBatchesCompleted:input_type -> nominal.ingest.v1.internal.MarkBatchesCompletedRequest
+	7,  // 13: nominal.ingest.v1.internal.InternalIngestBatchService.SetDatasetFileIngestStatus:input_type -> nominal.ingest.v1.internal.SetDatasetFileIngestStatusRequest
+	4,  // 14: nominal.ingest.v1.internal.InternalIngestBatchService.CreatePendingBatches:input_type -> nominal.ingest.v1.internal.CreatePendingBatchesRequest
+	3,  // 15: nominal.ingest.v1.internal.InternalIngestBatchService.MarkBatchesCompleted:output_type -> nominal.ingest.v1.internal.MarkBatchesCompletedResponse
+	8,  // 16: nominal.ingest.v1.internal.InternalIngestBatchService.SetDatasetFileIngestStatus:output_type -> nominal.ingest.v1.internal.SetDatasetFileIngestStatusResponse
+	6,  // 17: nominal.ingest.v1.internal.InternalIngestBatchService.CreatePendingBatches:output_type -> nominal.ingest.v1.internal.CreatePendingBatchesResponse
+	15, // [15:18] is the sub-list for method output_type
+	12, // [12:15] is the sub-list for method input_type
+	12, // [12:12] is the sub-list for extension type_name
+	12, // [12:12] is the sub-list for extension extendee
+	0,  // [0:12] is the sub-list for field type_name
 }
 
 func init() { file_nominal_protos_ingest_v1_internal_internal_ingest_batches_proto_init() }
@@ -766,25 +900,27 @@ func file_nominal_protos_ingest_v1_internal_internal_ingest_batches_proto_init()
 	if File_nominal_protos_ingest_v1_internal_internal_ingest_batches_proto != nil {
 		return
 	}
-	file_nominal_protos_ingest_v1_internal_internal_ingest_batches_proto_msgTypes[5].OneofWrappers = []any{
+	file_nominal_protos_ingest_v1_internal_internal_ingest_batches_proto_msgTypes[6].OneofWrappers = []any{
 		(*SetDatasetFileIngestStatusRequest_Parsing)(nil),
 		(*SetDatasetFileIngestStatusRequest_Ingesting)(nil),
 		(*SetDatasetFileIngestStatusRequest_Error)(nil),
 		(*SetDatasetFileIngestStatusRequest_Succeeded)(nil),
 	}
 	file_nominal_protos_ingest_v1_internal_internal_ingest_batches_proto_msgTypes[9].OneofWrappers = []any{}
+	file_nominal_protos_ingest_v1_internal_internal_ingest_batches_proto_msgTypes[10].OneofWrappers = []any{}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_nominal_protos_ingest_v1_internal_internal_ingest_batches_proto_rawDesc), len(file_nominal_protos_ingest_v1_internal_internal_ingest_batches_proto_rawDesc)),
-			NumEnums:      0,
-			NumMessages:   11,
+			NumEnums:      1,
+			NumMessages:   12,
 			NumExtensions: 0,
 			NumServices:   1,
 		},
 		GoTypes:           file_nominal_protos_ingest_v1_internal_internal_ingest_batches_proto_goTypes,
 		DependencyIndexes: file_nominal_protos_ingest_v1_internal_internal_ingest_batches_proto_depIdxs,
+		EnumInfos:         file_nominal_protos_ingest_v1_internal_internal_ingest_batches_proto_enumTypes,
 		MessageInfos:      file_nominal_protos_ingest_v1_internal_internal_ingest_batches_proto_msgTypes,
 	}.Build()
 	File_nominal_protos_ingest_v1_internal_internal_ingest_batches_proto = out.File

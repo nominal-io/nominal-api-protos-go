@@ -22,6 +22,7 @@ package ingestv2
 
 import (
 	_ "buf.build/gen/go/bufbuild/protovalidate/protocolbuffers/go/buf/validate"
+	_ "github.com/nominal-io/nominal-api-protos-go/nominal/protos/authz/v1"
 	_ "github.com/nominal-io/nominal-api-protos-go/nominal/protos/gen/v1"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
@@ -443,7 +444,7 @@ var File_nominal_protos_ingest_v2_native_extractor_proto protoreflect.FileDescri
 
 const file_nominal_protos_ingest_v2_native_extractor_proto_rawDesc = "" +
 	"\n" +
-	"/nominal/protos/ingest/v2/native_extractor.proto\x12\x11nominal.ingest.v2\x1a\x1bbuf/validate/validate.proto\x1a\x1cgoogle/api/annotations.proto\x1a!nominal/protos/gen/v1/alias.proto\x1a6nominal/protos/ingest/v2/containerized_extractor.proto\"\xe0\x02\n" +
+	"/nominal/protos/ingest/v2/native_extractor.proto\x12\x11nominal.ingest.v2\x1a\x1bbuf/validate/validate.proto\x1a\x1cgoogle/api/annotations.proto\x1a)nominal/protos/authz/v1/annotations.proto\x1a!nominal/protos/gen/v1/alias.proto\x1a6nominal/protos/ingest/v2/containerized_extractor.proto\"\xe0\x02\n" +
 	"\x0fNativeExtractor\x12\x1d\n" +
 	"\n" +
 	"catalog_id\x18\x01 \x01(\tR\tcatalogId\x12-\n" +
@@ -482,11 +483,17 @@ const file_nominal_protos_ingest_v2_native_extractor_proto_rawDesc = "" +
 	" io.nominal.api.rids.WorkspaceRidR\fworkspaceRid\x12%\n" +
 	"\n" +
 	"catalog_id\x18\x02 \x01(\tB\x06\xbaH\x03\xc8\x01\x01R\tcatalogId\" \n" +
-	"\x1eDisableNativeExtractorResponse2\x9b\x04\n" +
-	"\x16NativeExtractorService\x12\x96\x01\n" +
-	"\x14ListNativeExtractors\x12..nominal.ingest.v2.ListNativeExtractorsRequest\x1a/.nominal.ingest.v2.ListNativeExtractorsResponse\"\x1d\x82\xd3\xe4\x93\x02\x17\x12\x15/extractors/v2/native\x12\xb0\x01\n" +
-	"\x15EnableNativeExtractor\x12/.nominal.ingest.v2.EnableNativeExtractorRequest\x1a0.nominal.ingest.v2.EnableNativeExtractorResponse\"4\x82\xd3\xe4\x93\x02.:\x01*\")/extractors/v2/native/{catalog_id}/enable\x12\xb4\x01\n" +
-	"\x16DisableNativeExtractor\x120.nominal.ingest.v2.DisableNativeExtractorRequest\x1a1.nominal.ingest.v2.DisableNativeExtractorResponse\"5\x82\xd3\xe4\x93\x02/:\x01*\"*/extractors/v2/native/{catalog_id}/disableB\xe2\x01\n" +
+	"\x1eDisableNativeExtractorResponse2\xfd\x04\n" +
+	"\x16NativeExtractorService\x12\xae\x01\n" +
+	"\x14ListNativeExtractors\x12..nominal.ingest.v2.ListNativeExtractorsRequest\x1a/.nominal.ingest.v2.ListNativeExtractorsResponse\"5\xba\xb2\x1a\x14\n" +
+	"\x12\n" +
+	"\x0eworkspace:view\"\x00\x82\xd3\xe4\x93\x02\x17\x12\x15/extractors/v2/native\x12\xd5\x01\n" +
+	"\x15EnableNativeExtractor\x12/.nominal.ingest.v2.EnableNativeExtractorRequest\x1a0.nominal.ingest.v2.EnableNativeExtractorResponse\"Y\xba\xb2\x1a!\n" +
+	"\x1f\n" +
+	"\x1bworkspace:edit_connectivity\"\x00\x82\xd3\xe4\x93\x02.:\x01*\")/extractors/v2/native/{catalog_id}/enable\x12\xd9\x01\n" +
+	"\x16DisableNativeExtractor\x120.nominal.ingest.v2.DisableNativeExtractorRequest\x1a1.nominal.ingest.v2.DisableNativeExtractorResponse\"Z\xba\xb2\x1a!\n" +
+	"\x1f\n" +
+	"\x1bworkspace:edit_connectivity\"\x00\x82\xd3\xe4\x93\x02/:\x01*\"*/extractors/v2/native/{catalog_id}/disableB\xe2\x01\n" +
 	"\x15com.nominal.ingest.v2B\x14NativeExtractorProtoP\x01ZMgithub.com/nominal-io/nominal-api-protos-go/nominal/protos/ingest/v2;ingestv2\xa2\x02\x03NIX\xaa\x02\x11Nominal.Ingest.V2\xca\x02\x11Nominal\\Ingest\\V2\xe2\x02\x1dNominal\\Ingest\\V2\\GPBMetadata\xea\x02\x13Nominal::Ingest::V2b\x06proto3"
 
 var (

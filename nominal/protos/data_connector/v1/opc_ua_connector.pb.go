@@ -178,6 +178,104 @@ func (OpcUaFailedMonitorHandling) EnumDescriptor() ([]byte, []int) {
 	return file_nominal_protos_data_connector_v1_opc_ua_connector_proto_rawDescGZIP(), []int{2}
 }
 
+type OpcUaSecurityPolicy int32
+
+const (
+	OpcUaSecurityPolicy_OPC_UA_SECURITY_POLICY_UNSPECIFIED     OpcUaSecurityPolicy = 0
+	OpcUaSecurityPolicy_OPC_UA_SECURITY_POLICY_NONE            OpcUaSecurityPolicy = 1
+	OpcUaSecurityPolicy_OPC_UA_SECURITY_POLICY_BASIC256_SHA256 OpcUaSecurityPolicy = 2
+)
+
+// Enum value maps for OpcUaSecurityPolicy.
+var (
+	OpcUaSecurityPolicy_name = map[int32]string{
+		0: "OPC_UA_SECURITY_POLICY_UNSPECIFIED",
+		1: "OPC_UA_SECURITY_POLICY_NONE",
+		2: "OPC_UA_SECURITY_POLICY_BASIC256_SHA256",
+	}
+	OpcUaSecurityPolicy_value = map[string]int32{
+		"OPC_UA_SECURITY_POLICY_UNSPECIFIED":     0,
+		"OPC_UA_SECURITY_POLICY_NONE":            1,
+		"OPC_UA_SECURITY_POLICY_BASIC256_SHA256": 2,
+	}
+)
+
+func (x OpcUaSecurityPolicy) Enum() *OpcUaSecurityPolicy {
+	p := new(OpcUaSecurityPolicy)
+	*p = x
+	return p
+}
+
+func (x OpcUaSecurityPolicy) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (OpcUaSecurityPolicy) Descriptor() protoreflect.EnumDescriptor {
+	return file_nominal_protos_data_connector_v1_opc_ua_connector_proto_enumTypes[3].Descriptor()
+}
+
+func (OpcUaSecurityPolicy) Type() protoreflect.EnumType {
+	return &file_nominal_protos_data_connector_v1_opc_ua_connector_proto_enumTypes[3]
+}
+
+func (x OpcUaSecurityPolicy) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use OpcUaSecurityPolicy.Descriptor instead.
+func (OpcUaSecurityPolicy) EnumDescriptor() ([]byte, []int) {
+	return file_nominal_protos_data_connector_v1_opc_ua_connector_proto_rawDescGZIP(), []int{3}
+}
+
+type OpcUaMessageSecurityMode int32
+
+const (
+	OpcUaMessageSecurityMode_OPC_UA_MESSAGE_SECURITY_MODE_UNSPECIFIED      OpcUaMessageSecurityMode = 0
+	OpcUaMessageSecurityMode_OPC_UA_MESSAGE_SECURITY_MODE_NONE             OpcUaMessageSecurityMode = 1
+	OpcUaMessageSecurityMode_OPC_UA_MESSAGE_SECURITY_MODE_SIGN_AND_ENCRYPT OpcUaMessageSecurityMode = 2
+)
+
+// Enum value maps for OpcUaMessageSecurityMode.
+var (
+	OpcUaMessageSecurityMode_name = map[int32]string{
+		0: "OPC_UA_MESSAGE_SECURITY_MODE_UNSPECIFIED",
+		1: "OPC_UA_MESSAGE_SECURITY_MODE_NONE",
+		2: "OPC_UA_MESSAGE_SECURITY_MODE_SIGN_AND_ENCRYPT",
+	}
+	OpcUaMessageSecurityMode_value = map[string]int32{
+		"OPC_UA_MESSAGE_SECURITY_MODE_UNSPECIFIED":      0,
+		"OPC_UA_MESSAGE_SECURITY_MODE_NONE":             1,
+		"OPC_UA_MESSAGE_SECURITY_MODE_SIGN_AND_ENCRYPT": 2,
+	}
+)
+
+func (x OpcUaMessageSecurityMode) Enum() *OpcUaMessageSecurityMode {
+	p := new(OpcUaMessageSecurityMode)
+	*p = x
+	return p
+}
+
+func (x OpcUaMessageSecurityMode) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (OpcUaMessageSecurityMode) Descriptor() protoreflect.EnumDescriptor {
+	return file_nominal_protos_data_connector_v1_opc_ua_connector_proto_enumTypes[4].Descriptor()
+}
+
+func (OpcUaMessageSecurityMode) Type() protoreflect.EnumType {
+	return &file_nominal_protos_data_connector_v1_opc_ua_connector_proto_enumTypes[4]
+}
+
+func (x OpcUaMessageSecurityMode) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use OpcUaMessageSecurityMode.Descriptor instead.
+func (OpcUaMessageSecurityMode) EnumDescriptor() ([]byte, []int) {
+	return file_nominal_protos_data_connector_v1_opc_ua_connector_proto_rawDescGZIP(), []int{4}
+}
+
 type OpcUaDataChangeTrigger int32
 
 const (
@@ -214,11 +312,11 @@ func (x OpcUaDataChangeTrigger) String() string {
 }
 
 func (OpcUaDataChangeTrigger) Descriptor() protoreflect.EnumDescriptor {
-	return file_nominal_protos_data_connector_v1_opc_ua_connector_proto_enumTypes[3].Descriptor()
+	return file_nominal_protos_data_connector_v1_opc_ua_connector_proto_enumTypes[5].Descriptor()
 }
 
 func (OpcUaDataChangeTrigger) Type() protoreflect.EnumType {
-	return &file_nominal_protos_data_connector_v1_opc_ua_connector_proto_enumTypes[3]
+	return &file_nominal_protos_data_connector_v1_opc_ua_connector_proto_enumTypes[5]
 }
 
 func (x OpcUaDataChangeTrigger) Number() protoreflect.EnumNumber {
@@ -227,7 +325,7 @@ func (x OpcUaDataChangeTrigger) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use OpcUaDataChangeTrigger.Descriptor instead.
 func (OpcUaDataChangeTrigger) EnumDescriptor() ([]byte, []int) {
-	return file_nominal_protos_data_connector_v1_opc_ua_connector_proto_rawDescGZIP(), []int{3}
+	return file_nominal_protos_data_connector_v1_opc_ua_connector_proto_rawDescGZIP(), []int{5}
 }
 
 type OpcUaDeadbandType int32
@@ -266,11 +364,11 @@ func (x OpcUaDeadbandType) String() string {
 }
 
 func (OpcUaDeadbandType) Descriptor() protoreflect.EnumDescriptor {
-	return file_nominal_protos_data_connector_v1_opc_ua_connector_proto_enumTypes[4].Descriptor()
+	return file_nominal_protos_data_connector_v1_opc_ua_connector_proto_enumTypes[6].Descriptor()
 }
 
 func (OpcUaDeadbandType) Type() protoreflect.EnumType {
-	return &file_nominal_protos_data_connector_v1_opc_ua_connector_proto_enumTypes[4]
+	return &file_nominal_protos_data_connector_v1_opc_ua_connector_proto_enumTypes[6]
 }
 
 func (x OpcUaDeadbandType) Number() protoreflect.EnumNumber {
@@ -279,7 +377,7 @@ func (x OpcUaDeadbandType) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use OpcUaDeadbandType.Descriptor instead.
 func (OpcUaDeadbandType) EnumDescriptor() ([]byte, []int) {
-	return file_nominal_protos_data_connector_v1_opc_ua_connector_proto_rawDescGZIP(), []int{4}
+	return file_nominal_protos_data_connector_v1_opc_ua_connector_proto_rawDescGZIP(), []int{6}
 }
 
 // Authentication configuration for OPC-UA server connection
@@ -292,6 +390,7 @@ type OpcAuthenticationConfig struct {
 	//	*OpcAuthenticationConfig_Anonymous
 	//	*OpcAuthenticationConfig_UsernamePassword
 	//	*OpcAuthenticationConfig_Token
+	//	*OpcAuthenticationConfig_Certificate
 	OpcAuthenticationConfig isOpcAuthenticationConfig_OpcAuthenticationConfig `protobuf_oneof:"opc_authentication_config"`
 	unknownFields           protoimpl.UnknownFields
 	sizeCache               protoimpl.SizeCache
@@ -361,6 +460,15 @@ func (x *OpcAuthenticationConfig) GetToken() *OpcTokenAuthentication {
 	return nil
 }
 
+func (x *OpcAuthenticationConfig) GetCertificate() *OpcCertificateAuthentication {
+	if x != nil {
+		if x, ok := x.OpcAuthenticationConfig.(*OpcAuthenticationConfig_Certificate); ok {
+			return x.Certificate
+		}
+	}
+	return nil
+}
+
 type isOpcAuthenticationConfig_OpcAuthenticationConfig interface {
 	isOpcAuthenticationConfig_OpcAuthenticationConfig()
 }
@@ -377,12 +485,19 @@ type OpcAuthenticationConfig_Token struct {
 	Token *OpcTokenAuthentication `protobuf:"bytes,3,opt,name=token,proto3,oneof"`
 }
 
+type OpcAuthenticationConfig_Certificate struct {
+	// Not yet supported: create and update requests that set this are rejected.
+	Certificate *OpcCertificateAuthentication `protobuf:"bytes,4,opt,name=certificate,proto3,oneof"`
+}
+
 func (*OpcAuthenticationConfig_Anonymous) isOpcAuthenticationConfig_OpcAuthenticationConfig() {}
 
 func (*OpcAuthenticationConfig_UsernamePassword) isOpcAuthenticationConfig_OpcAuthenticationConfig() {
 }
 
 func (*OpcAuthenticationConfig_Token) isOpcAuthenticationConfig_OpcAuthenticationConfig() {}
+
+func (*OpcAuthenticationConfig_Certificate) isOpcAuthenticationConfig_OpcAuthenticationConfig() {}
 
 // Authentication configuration for OPC-UA server connection with secrets
 type OpcAuthenticationConfigSecret struct {
@@ -392,6 +507,7 @@ type OpcAuthenticationConfigSecret struct {
 	//	*OpcAuthenticationConfigSecret_Anonymous
 	//	*OpcAuthenticationConfigSecret_UsernamePassword
 	//	*OpcAuthenticationConfigSecret_Token
+	//	*OpcAuthenticationConfigSecret_Certificate
 	OpcAuthenticationConfig isOpcAuthenticationConfigSecret_OpcAuthenticationConfig `protobuf_oneof:"opc_authentication_config"`
 	unknownFields           protoimpl.UnknownFields
 	sizeCache               protoimpl.SizeCache
@@ -461,6 +577,15 @@ func (x *OpcAuthenticationConfigSecret) GetToken() *OpcTokenAuthenticationSecret
 	return nil
 }
 
+func (x *OpcAuthenticationConfigSecret) GetCertificate() *OpcCertificateAuthenticationSecret {
+	if x != nil {
+		if x, ok := x.OpcAuthenticationConfig.(*OpcAuthenticationConfigSecret_Certificate); ok {
+			return x.Certificate
+		}
+	}
+	return nil
+}
+
 type isOpcAuthenticationConfigSecret_OpcAuthenticationConfig interface {
 	isOpcAuthenticationConfigSecret_OpcAuthenticationConfig()
 }
@@ -477,6 +602,10 @@ type OpcAuthenticationConfigSecret_Token struct {
 	Token *OpcTokenAuthenticationSecret `protobuf:"bytes,3,opt,name=token,proto3,oneof"`
 }
 
+type OpcAuthenticationConfigSecret_Certificate struct {
+	Certificate *OpcCertificateAuthenticationSecret `protobuf:"bytes,4,opt,name=certificate,proto3,oneof"`
+}
+
 func (*OpcAuthenticationConfigSecret_Anonymous) isOpcAuthenticationConfigSecret_OpcAuthenticationConfig() {
 }
 
@@ -484,6 +613,9 @@ func (*OpcAuthenticationConfigSecret_UsernamePassword) isOpcAuthenticationConfig
 }
 
 func (*OpcAuthenticationConfigSecret_Token) isOpcAuthenticationConfigSecret_OpcAuthenticationConfig() {
+}
+
+func (*OpcAuthenticationConfigSecret_Certificate) isOpcAuthenticationConfigSecret_OpcAuthenticationConfig() {
 }
 
 type OpcUsernamePasswordAuthentication struct {
@@ -678,6 +810,114 @@ func (x *OpcTokenAuthenticationSecret) GetToken() string {
 	return ""
 }
 
+// Authenticates the user with an X.509 certificate (OPC-UA X509IdentityToken).
+type OpcCertificateAuthentication struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// PEM-encoded certificate presented to the server as the user identity.
+	Certificate string `protobuf:"bytes,1,opt,name=certificate,proto3" json:"certificate,omitempty"`
+	// PEM-encoded, unencrypted RSA or EC private key (PKCS#8, or PKCS#1 for RSA), used to sign the identity token.
+	PrivateKey    string `protobuf:"bytes,2,opt,name=private_key,json=privateKey,proto3" json:"private_key,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *OpcCertificateAuthentication) Reset() {
+	*x = OpcCertificateAuthentication{}
+	mi := &file_nominal_protos_data_connector_v1_opc_ua_connector_proto_msgTypes[6]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *OpcCertificateAuthentication) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*OpcCertificateAuthentication) ProtoMessage() {}
+
+func (x *OpcCertificateAuthentication) ProtoReflect() protoreflect.Message {
+	mi := &file_nominal_protos_data_connector_v1_opc_ua_connector_proto_msgTypes[6]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use OpcCertificateAuthentication.ProtoReflect.Descriptor instead.
+func (*OpcCertificateAuthentication) Descriptor() ([]byte, []int) {
+	return file_nominal_protos_data_connector_v1_opc_ua_connector_proto_rawDescGZIP(), []int{6}
+}
+
+func (x *OpcCertificateAuthentication) GetCertificate() string {
+	if x != nil {
+		return x.Certificate
+	}
+	return ""
+}
+
+func (x *OpcCertificateAuthentication) GetPrivateKey() string {
+	if x != nil {
+		return x.PrivateKey
+	}
+	return ""
+}
+
+type OpcCertificateAuthenticationSecret struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// PEM-encoded certificate. Stored and returned as-is: unlike the private key, it is not secret.
+	Certificate   string `protobuf:"bytes,1,opt,name=certificate,proto3" json:"certificate,omitempty"`
+	PrivateKey    string `protobuf:"bytes,2,opt,name=private_key,json=privateKey,proto3" json:"private_key,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *OpcCertificateAuthenticationSecret) Reset() {
+	*x = OpcCertificateAuthenticationSecret{}
+	mi := &file_nominal_protos_data_connector_v1_opc_ua_connector_proto_msgTypes[7]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *OpcCertificateAuthenticationSecret) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*OpcCertificateAuthenticationSecret) ProtoMessage() {}
+
+func (x *OpcCertificateAuthenticationSecret) ProtoReflect() protoreflect.Message {
+	mi := &file_nominal_protos_data_connector_v1_opc_ua_connector_proto_msgTypes[7]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use OpcCertificateAuthenticationSecret.ProtoReflect.Descriptor instead.
+func (*OpcCertificateAuthenticationSecret) Descriptor() ([]byte, []int) {
+	return file_nominal_protos_data_connector_v1_opc_ua_connector_proto_rawDescGZIP(), []int{7}
+}
+
+func (x *OpcCertificateAuthenticationSecret) GetCertificate() string {
+	if x != nil {
+		return x.Certificate
+	}
+	return ""
+}
+
+func (x *OpcCertificateAuthenticationSecret) GetPrivateKey() string {
+	if x != nil {
+		return x.PrivateKey
+	}
+	return ""
+}
+
 // The identifier field for an OPC-UA node
 type OpcIdentifierValue struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
@@ -692,7 +932,7 @@ type OpcIdentifierValue struct {
 
 func (x *OpcIdentifierValue) Reset() {
 	*x = OpcIdentifierValue{}
-	mi := &file_nominal_protos_data_connector_v1_opc_ua_connector_proto_msgTypes[6]
+	mi := &file_nominal_protos_data_connector_v1_opc_ua_connector_proto_msgTypes[8]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -704,7 +944,7 @@ func (x *OpcIdentifierValue) String() string {
 func (*OpcIdentifierValue) ProtoMessage() {}
 
 func (x *OpcIdentifierValue) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_data_connector_v1_opc_ua_connector_proto_msgTypes[6]
+	mi := &file_nominal_protos_data_connector_v1_opc_ua_connector_proto_msgTypes[8]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -717,7 +957,7 @@ func (x *OpcIdentifierValue) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use OpcIdentifierValue.ProtoReflect.Descriptor instead.
 func (*OpcIdentifierValue) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_data_connector_v1_opc_ua_connector_proto_rawDescGZIP(), []int{6}
+	return file_nominal_protos_data_connector_v1_opc_ua_connector_proto_rawDescGZIP(), []int{8}
 }
 
 func (x *OpcIdentifierValue) GetOpcIdentifierValue() isOpcIdentifierValue_OpcIdentifierValue {
@@ -772,7 +1012,7 @@ type OpcNode struct {
 
 func (x *OpcNode) Reset() {
 	*x = OpcNode{}
-	mi := &file_nominal_protos_data_connector_v1_opc_ua_connector_proto_msgTypes[7]
+	mi := &file_nominal_protos_data_connector_v1_opc_ua_connector_proto_msgTypes[9]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -784,7 +1024,7 @@ func (x *OpcNode) String() string {
 func (*OpcNode) ProtoMessage() {}
 
 func (x *OpcNode) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_data_connector_v1_opc_ua_connector_proto_msgTypes[7]
+	mi := &file_nominal_protos_data_connector_v1_opc_ua_connector_proto_msgTypes[9]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -797,7 +1037,7 @@ func (x *OpcNode) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use OpcNode.ProtoReflect.Descriptor instead.
 func (*OpcNode) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_data_connector_v1_opc_ua_connector_proto_rawDescGZIP(), []int{7}
+	return file_nominal_protos_data_connector_v1_opc_ua_connector_proto_rawDescGZIP(), []int{9}
 }
 
 func (x *OpcNode) GetNamespace() uint32 {
@@ -830,7 +1070,7 @@ type OpcUaChannelNamingConvention struct {
 
 func (x *OpcUaChannelNamingConvention) Reset() {
 	*x = OpcUaChannelNamingConvention{}
-	mi := &file_nominal_protos_data_connector_v1_opc_ua_connector_proto_msgTypes[8]
+	mi := &file_nominal_protos_data_connector_v1_opc_ua_connector_proto_msgTypes[10]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -842,7 +1082,7 @@ func (x *OpcUaChannelNamingConvention) String() string {
 func (*OpcUaChannelNamingConvention) ProtoMessage() {}
 
 func (x *OpcUaChannelNamingConvention) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_data_connector_v1_opc_ua_connector_proto_msgTypes[8]
+	mi := &file_nominal_protos_data_connector_v1_opc_ua_connector_proto_msgTypes[10]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -855,7 +1095,7 @@ func (x *OpcUaChannelNamingConvention) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use OpcUaChannelNamingConvention.ProtoReflect.Descriptor instead.
 func (*OpcUaChannelNamingConvention) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_data_connector_v1_opc_ua_connector_proto_rawDescGZIP(), []int{8}
+	return file_nominal_protos_data_connector_v1_opc_ua_connector_proto_rawDescGZIP(), []int{10}
 }
 
 func (x *OpcUaChannelNamingConvention) GetNamingConvention() isOpcUaChannelNamingConvention_NamingConvention {
@@ -946,7 +1186,7 @@ type OpcUaSubscriptionConfig struct {
 
 func (x *OpcUaSubscriptionConfig) Reset() {
 	*x = OpcUaSubscriptionConfig{}
-	mi := &file_nominal_protos_data_connector_v1_opc_ua_connector_proto_msgTypes[9]
+	mi := &file_nominal_protos_data_connector_v1_opc_ua_connector_proto_msgTypes[11]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -958,7 +1198,7 @@ func (x *OpcUaSubscriptionConfig) String() string {
 func (*OpcUaSubscriptionConfig) ProtoMessage() {}
 
 func (x *OpcUaSubscriptionConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_data_connector_v1_opc_ua_connector_proto_msgTypes[9]
+	mi := &file_nominal_protos_data_connector_v1_opc_ua_connector_proto_msgTypes[11]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -971,7 +1211,7 @@ func (x *OpcUaSubscriptionConfig) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use OpcUaSubscriptionConfig.ProtoReflect.Descriptor instead.
 func (*OpcUaSubscriptionConfig) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_data_connector_v1_opc_ua_connector_proto_rawDescGZIP(), []int{9}
+	return file_nominal_protos_data_connector_v1_opc_ua_connector_proto_rawDescGZIP(), []int{11}
 }
 
 func (x *OpcUaSubscriptionConfig) GetFailedMonitorHandling() OpcUaFailedMonitorHandling {
@@ -999,7 +1239,7 @@ type OpcUaPollingConfig struct {
 
 func (x *OpcUaPollingConfig) Reset() {
 	*x = OpcUaPollingConfig{}
-	mi := &file_nominal_protos_data_connector_v1_opc_ua_connector_proto_msgTypes[10]
+	mi := &file_nominal_protos_data_connector_v1_opc_ua_connector_proto_msgTypes[12]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1011,7 +1251,7 @@ func (x *OpcUaPollingConfig) String() string {
 func (*OpcUaPollingConfig) ProtoMessage() {}
 
 func (x *OpcUaPollingConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_data_connector_v1_opc_ua_connector_proto_msgTypes[10]
+	mi := &file_nominal_protos_data_connector_v1_opc_ua_connector_proto_msgTypes[12]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1024,7 +1264,7 @@ func (x *OpcUaPollingConfig) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use OpcUaPollingConfig.ProtoReflect.Descriptor instead.
 func (*OpcUaPollingConfig) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_data_connector_v1_opc_ua_connector_proto_rawDescGZIP(), []int{10}
+	return file_nominal_protos_data_connector_v1_opc_ua_connector_proto_rawDescGZIP(), []int{12}
 }
 
 func (x *OpcUaPollingConfig) GetPollingIntervalMs() uint64 {
@@ -1048,7 +1288,7 @@ type OpcUaDataAcquisitionConfig struct {
 
 func (x *OpcUaDataAcquisitionConfig) Reset() {
 	*x = OpcUaDataAcquisitionConfig{}
-	mi := &file_nominal_protos_data_connector_v1_opc_ua_connector_proto_msgTypes[11]
+	mi := &file_nominal_protos_data_connector_v1_opc_ua_connector_proto_msgTypes[13]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1060,7 +1300,7 @@ func (x *OpcUaDataAcquisitionConfig) String() string {
 func (*OpcUaDataAcquisitionConfig) ProtoMessage() {}
 
 func (x *OpcUaDataAcquisitionConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_data_connector_v1_opc_ua_connector_proto_msgTypes[11]
+	mi := &file_nominal_protos_data_connector_v1_opc_ua_connector_proto_msgTypes[13]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1073,7 +1313,7 @@ func (x *OpcUaDataAcquisitionConfig) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use OpcUaDataAcquisitionConfig.ProtoReflect.Descriptor instead.
 func (*OpcUaDataAcquisitionConfig) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_data_connector_v1_opc_ua_connector_proto_rawDescGZIP(), []int{11}
+	return file_nominal_protos_data_connector_v1_opc_ua_connector_proto_rawDescGZIP(), []int{13}
 }
 
 func (x *OpcUaDataAcquisitionConfig) GetAcquisitionMode() isOpcUaDataAcquisitionConfig_AcquisitionMode {
@@ -1119,19 +1359,194 @@ func (*OpcUaDataAcquisitionConfig_Subscription) isOpcUaDataAcquisitionConfig_Acq
 
 func (*OpcUaDataAcquisitionConfig_Polling) isOpcUaDataAcquisitionConfig_AcquisitionMode() {}
 
-// Configuration for connecting to an OPC-UA server
+// Application instance certificate that identifies this client to the server when establishing a secure channel.
+// Not yet supported: create and update requests that set this are rejected.
+type OpcUaApplicationCertificate struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// PEM-encoded application instance certificate issued for this client, optionally followed by its intermediate
+	// CA certificates. The client's OPC-UA ApplicationUri is taken from the certificate's URI subject alternative name.
+	Certificate string `protobuf:"bytes,1,opt,name=certificate,proto3" json:"certificate,omitempty"`
+	// PEM-encoded, unencrypted RSA private key (PKCS#8 or PKCS#1) for the certificate.
+	PrivateKey    string `protobuf:"bytes,2,opt,name=private_key,json=privateKey,proto3" json:"private_key,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *OpcUaApplicationCertificate) Reset() {
+	*x = OpcUaApplicationCertificate{}
+	mi := &file_nominal_protos_data_connector_v1_opc_ua_connector_proto_msgTypes[14]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *OpcUaApplicationCertificate) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*OpcUaApplicationCertificate) ProtoMessage() {}
+
+func (x *OpcUaApplicationCertificate) ProtoReflect() protoreflect.Message {
+	mi := &file_nominal_protos_data_connector_v1_opc_ua_connector_proto_msgTypes[14]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use OpcUaApplicationCertificate.ProtoReflect.Descriptor instead.
+func (*OpcUaApplicationCertificate) Descriptor() ([]byte, []int) {
+	return file_nominal_protos_data_connector_v1_opc_ua_connector_proto_rawDescGZIP(), []int{14}
+}
+
+func (x *OpcUaApplicationCertificate) GetCertificate() string {
+	if x != nil {
+		return x.Certificate
+	}
+	return ""
+}
+
+func (x *OpcUaApplicationCertificate) GetPrivateKey() string {
+	if x != nil {
+		return x.PrivateKey
+	}
+	return ""
+}
+
+type OpcUaApplicationCertificateSecret struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// PEM-encoded application certificate. Stored and returned as-is: unlike the private key, it is not secret.
+	Certificate   string `protobuf:"bytes,1,opt,name=certificate,proto3" json:"certificate,omitempty"`
+	PrivateKey    string `protobuf:"bytes,2,opt,name=private_key,json=privateKey,proto3" json:"private_key,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *OpcUaApplicationCertificateSecret) Reset() {
+	*x = OpcUaApplicationCertificateSecret{}
+	mi := &file_nominal_protos_data_connector_v1_opc_ua_connector_proto_msgTypes[15]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *OpcUaApplicationCertificateSecret) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*OpcUaApplicationCertificateSecret) ProtoMessage() {}
+
+func (x *OpcUaApplicationCertificateSecret) ProtoReflect() protoreflect.Message {
+	mi := &file_nominal_protos_data_connector_v1_opc_ua_connector_proto_msgTypes[15]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use OpcUaApplicationCertificateSecret.ProtoReflect.Descriptor instead.
+func (*OpcUaApplicationCertificateSecret) Descriptor() ([]byte, []int) {
+	return file_nominal_protos_data_connector_v1_opc_ua_connector_proto_rawDescGZIP(), []int{15}
+}
+
+func (x *OpcUaApplicationCertificateSecret) GetCertificate() string {
+	if x != nil {
+		return x.Certificate
+	}
+	return ""
+}
+
+func (x *OpcUaApplicationCertificateSecret) GetPrivateKey() string {
+	if x != nil {
+		return x.PrivateKey
+	}
+	return ""
+}
+
+// How the OPC-UA secure channel is protected. This is independent of how the user authenticates.
+//
+// With both set to NONE, messages are neither signed nor encrypted, and neither side's application certificate is
+// checked. Otherwise the channel is secured with the connector's application certificate, and the server's
+// application instance certificate is validated in return; connecting fails, rather than falling back to an
+// unsecured endpoint, when the server does not offer this security policy and mode. Not yet supported: create and
+// update requests that set a policy other than NONE are rejected.
+type OpcUaChannelSecurityConfig struct {
+	state               protoimpl.MessageState   `protogen:"open.v1"`
+	SecurityPolicy      OpcUaSecurityPolicy      `protobuf:"varint,1,opt,name=security_policy,json=securityPolicy,proto3,enum=nominal.data_connector.v1.OpcUaSecurityPolicy" json:"security_policy,omitempty"`
+	MessageSecurityMode OpcUaMessageSecurityMode `protobuf:"varint,2,opt,name=message_security_mode,json=messageSecurityMode,proto3,enum=nominal.data_connector.v1.OpcUaMessageSecurityMode" json:"message_security_mode,omitempty"`
+	unknownFields       protoimpl.UnknownFields
+	sizeCache           protoimpl.SizeCache
+}
+
+func (x *OpcUaChannelSecurityConfig) Reset() {
+	*x = OpcUaChannelSecurityConfig{}
+	mi := &file_nominal_protos_data_connector_v1_opc_ua_connector_proto_msgTypes[16]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *OpcUaChannelSecurityConfig) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*OpcUaChannelSecurityConfig) ProtoMessage() {}
+
+func (x *OpcUaChannelSecurityConfig) ProtoReflect() protoreflect.Message {
+	mi := &file_nominal_protos_data_connector_v1_opc_ua_connector_proto_msgTypes[16]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use OpcUaChannelSecurityConfig.ProtoReflect.Descriptor instead.
+func (*OpcUaChannelSecurityConfig) Descriptor() ([]byte, []int) {
+	return file_nominal_protos_data_connector_v1_opc_ua_connector_proto_rawDescGZIP(), []int{16}
+}
+
+func (x *OpcUaChannelSecurityConfig) GetSecurityPolicy() OpcUaSecurityPolicy {
+	if x != nil {
+		return x.SecurityPolicy
+	}
+	return OpcUaSecurityPolicy_OPC_UA_SECURITY_POLICY_UNSPECIFIED
+}
+
+func (x *OpcUaChannelSecurityConfig) GetMessageSecurityMode() OpcUaMessageSecurityMode {
+	if x != nil {
+		return x.MessageSecurityMode
+	}
+	return OpcUaMessageSecurityMode_OPC_UA_MESSAGE_SECURITY_MODE_UNSPECIFIED
+}
+
+// Settings for a data connector that streams from an OPC-UA server: the server URI, how to authenticate, which nodes
+// to read and how to name their channels, and an optional application certificate and channel security. Passwords,
+// tokens, and private keys are stored as secrets.
 type OpcUaConnectorDetails struct {
-	state                protoimpl.MessageState   `protogen:"open.v1"`
-	Uri                  string                   `protobuf:"bytes,1,opt,name=uri,proto3" json:"uri,omitempty"`
-	AuthenticationConfig *OpcAuthenticationConfig `protobuf:"bytes,2,opt,name=authentication_config,json=authenticationConfig,proto3" json:"authentication_config,omitempty"`
-	ScrapingConfig       *OpcUaScrapingConfig     `protobuf:"bytes,3,opt,name=scraping_config,json=scrapingConfig,proto3" json:"scraping_config,omitempty"`
-	unknownFields        protoimpl.UnknownFields
-	sizeCache            protoimpl.SizeCache
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Endpoint URL of the OPC-UA server.
+	Uri                    string                       `protobuf:"bytes,1,opt,name=uri,proto3" json:"uri,omitempty"`
+	AuthenticationConfig   *OpcAuthenticationConfig     `protobuf:"bytes,2,opt,name=authentication_config,json=authenticationConfig,proto3" json:"authentication_config,omitempty"`
+	ScrapingConfig         *OpcUaScrapingConfig         `protobuf:"bytes,3,opt,name=scraping_config,json=scrapingConfig,proto3" json:"scraping_config,omitempty"`
+	ApplicationCertificate *OpcUaApplicationCertificate `protobuf:"bytes,4,opt,name=application_certificate,json=applicationCertificate,proto3" json:"application_certificate,omitempty"`
+	// Unset means an unsecured channel, the same as setting both the policy and the mode to NONE.
+	ChannelSecurityConfig *OpcUaChannelSecurityConfig `protobuf:"bytes,5,opt,name=channel_security_config,json=channelSecurityConfig,proto3" json:"channel_security_config,omitempty"`
+	unknownFields         protoimpl.UnknownFields
+	sizeCache             protoimpl.SizeCache
 }
 
 func (x *OpcUaConnectorDetails) Reset() {
 	*x = OpcUaConnectorDetails{}
-	mi := &file_nominal_protos_data_connector_v1_opc_ua_connector_proto_msgTypes[12]
+	mi := &file_nominal_protos_data_connector_v1_opc_ua_connector_proto_msgTypes[17]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1143,7 +1558,7 @@ func (x *OpcUaConnectorDetails) String() string {
 func (*OpcUaConnectorDetails) ProtoMessage() {}
 
 func (x *OpcUaConnectorDetails) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_data_connector_v1_opc_ua_connector_proto_msgTypes[12]
+	mi := &file_nominal_protos_data_connector_v1_opc_ua_connector_proto_msgTypes[17]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1156,7 +1571,7 @@ func (x *OpcUaConnectorDetails) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use OpcUaConnectorDetails.ProtoReflect.Descriptor instead.
 func (*OpcUaConnectorDetails) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_data_connector_v1_opc_ua_connector_proto_rawDescGZIP(), []int{12}
+	return file_nominal_protos_data_connector_v1_opc_ua_connector_proto_rawDescGZIP(), []int{17}
 }
 
 func (x *OpcUaConnectorDetails) GetUri() string {
@@ -1180,19 +1595,35 @@ func (x *OpcUaConnectorDetails) GetScrapingConfig() *OpcUaScrapingConfig {
 	return nil
 }
 
-// Updated configuration for connecting to an OPC-UA server
+func (x *OpcUaConnectorDetails) GetApplicationCertificate() *OpcUaApplicationCertificate {
+	if x != nil {
+		return x.ApplicationCertificate
+	}
+	return nil
+}
+
+func (x *OpcUaConnectorDetails) GetChannelSecurityConfig() *OpcUaChannelSecurityConfig {
+	if x != nil {
+		return x.ChannelSecurityConfig
+	}
+	return nil
+}
+
+// Changes to the settings of an OPC-UA data connector. Only the fields that are set change.
 type OpcUaConnectorDetailsUpdates struct {
-	state                protoimpl.MessageState      `protogen:"open.v1"`
-	Uri                  *string                     `protobuf:"bytes,1,opt,name=uri,proto3,oneof" json:"uri,omitempty"`
-	AuthenticationConfig *OpcAuthenticationConfig    `protobuf:"bytes,2,opt,name=authentication_config,json=authenticationConfig,proto3,oneof" json:"authentication_config,omitempty"`
-	ScrapingConfig       *OpcUaScrapingConfigUpdates `protobuf:"bytes,3,opt,name=scraping_config,json=scrapingConfig,proto3,oneof" json:"scraping_config,omitempty"`
-	unknownFields        protoimpl.UnknownFields
-	sizeCache            protoimpl.SizeCache
+	state                  protoimpl.MessageState       `protogen:"open.v1"`
+	Uri                    *string                      `protobuf:"bytes,1,opt,name=uri,proto3,oneof" json:"uri,omitempty"`
+	AuthenticationConfig   *OpcAuthenticationConfig     `protobuf:"bytes,2,opt,name=authentication_config,json=authenticationConfig,proto3,oneof" json:"authentication_config,omitempty"`
+	ScrapingConfig         *OpcUaScrapingConfigUpdates  `protobuf:"bytes,3,opt,name=scraping_config,json=scrapingConfig,proto3,oneof" json:"scraping_config,omitempty"`
+	ApplicationCertificate *OpcUaApplicationCertificate `protobuf:"bytes,4,opt,name=application_certificate,json=applicationCertificate,proto3,oneof" json:"application_certificate,omitempty"`
+	ChannelSecurityConfig  *OpcUaChannelSecurityConfig  `protobuf:"bytes,5,opt,name=channel_security_config,json=channelSecurityConfig,proto3,oneof" json:"channel_security_config,omitempty"`
+	unknownFields          protoimpl.UnknownFields
+	sizeCache              protoimpl.SizeCache
 }
 
 func (x *OpcUaConnectorDetailsUpdates) Reset() {
 	*x = OpcUaConnectorDetailsUpdates{}
-	mi := &file_nominal_protos_data_connector_v1_opc_ua_connector_proto_msgTypes[13]
+	mi := &file_nominal_protos_data_connector_v1_opc_ua_connector_proto_msgTypes[18]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1204,7 +1635,7 @@ func (x *OpcUaConnectorDetailsUpdates) String() string {
 func (*OpcUaConnectorDetailsUpdates) ProtoMessage() {}
 
 func (x *OpcUaConnectorDetailsUpdates) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_data_connector_v1_opc_ua_connector_proto_msgTypes[13]
+	mi := &file_nominal_protos_data_connector_v1_opc_ua_connector_proto_msgTypes[18]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1217,7 +1648,7 @@ func (x *OpcUaConnectorDetailsUpdates) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use OpcUaConnectorDetailsUpdates.ProtoReflect.Descriptor instead.
 func (*OpcUaConnectorDetailsUpdates) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_data_connector_v1_opc_ua_connector_proto_rawDescGZIP(), []int{13}
+	return file_nominal_protos_data_connector_v1_opc_ua_connector_proto_rawDescGZIP(), []int{18}
 }
 
 func (x *OpcUaConnectorDetailsUpdates) GetUri() string {
@@ -1241,19 +1672,38 @@ func (x *OpcUaConnectorDetailsUpdates) GetScrapingConfig() *OpcUaScrapingConfigU
 	return nil
 }
 
-// Configuration for connecting to an OPC-UA server with secrets
+func (x *OpcUaConnectorDetailsUpdates) GetApplicationCertificate() *OpcUaApplicationCertificate {
+	if x != nil {
+		return x.ApplicationCertificate
+	}
+	return nil
+}
+
+func (x *OpcUaConnectorDetailsUpdates) GetChannelSecurityConfig() *OpcUaChannelSecurityConfig {
+	if x != nil {
+		return x.ChannelSecurityConfig
+	}
+	return nil
+}
+
+// The settings of an OPC-UA data connector as stored, with each password, token, and private key held as a reference
+// to a secret instead of its value.
 type OpcUaConnectorDetailsSecret struct {
-	state                protoimpl.MessageState         `protogen:"open.v1"`
-	Uri                  string                         `protobuf:"bytes,1,opt,name=uri,proto3" json:"uri,omitempty"`
-	AuthenticationConfig *OpcAuthenticationConfigSecret `protobuf:"bytes,2,opt,name=authentication_config,json=authenticationConfig,proto3" json:"authentication_config,omitempty"`
-	ScrapingConfig       *OpcUaScrapingConfig           `protobuf:"bytes,3,opt,name=scraping_config,json=scrapingConfig,proto3,oneof" json:"scraping_config,omitempty"`
-	unknownFields        protoimpl.UnknownFields
-	sizeCache            protoimpl.SizeCache
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Endpoint URL of the OPC-UA server.
+	Uri                    string                             `protobuf:"bytes,1,opt,name=uri,proto3" json:"uri,omitempty"`
+	AuthenticationConfig   *OpcAuthenticationConfigSecret     `protobuf:"bytes,2,opt,name=authentication_config,json=authenticationConfig,proto3" json:"authentication_config,omitempty"`
+	ScrapingConfig         *OpcUaScrapingConfig               `protobuf:"bytes,3,opt,name=scraping_config,json=scrapingConfig,proto3,oneof" json:"scraping_config,omitempty"`
+	ApplicationCertificate *OpcUaApplicationCertificateSecret `protobuf:"bytes,4,opt,name=application_certificate,json=applicationCertificate,proto3" json:"application_certificate,omitempty"`
+	// Unset means an unsecured channel, the same as setting both the policy and the mode to NONE.
+	ChannelSecurityConfig *OpcUaChannelSecurityConfig `protobuf:"bytes,5,opt,name=channel_security_config,json=channelSecurityConfig,proto3" json:"channel_security_config,omitempty"`
+	unknownFields         protoimpl.UnknownFields
+	sizeCache             protoimpl.SizeCache
 }
 
 func (x *OpcUaConnectorDetailsSecret) Reset() {
 	*x = OpcUaConnectorDetailsSecret{}
-	mi := &file_nominal_protos_data_connector_v1_opc_ua_connector_proto_msgTypes[14]
+	mi := &file_nominal_protos_data_connector_v1_opc_ua_connector_proto_msgTypes[19]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1265,7 +1715,7 @@ func (x *OpcUaConnectorDetailsSecret) String() string {
 func (*OpcUaConnectorDetailsSecret) ProtoMessage() {}
 
 func (x *OpcUaConnectorDetailsSecret) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_data_connector_v1_opc_ua_connector_proto_msgTypes[14]
+	mi := &file_nominal_protos_data_connector_v1_opc_ua_connector_proto_msgTypes[19]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1278,7 +1728,7 @@ func (x *OpcUaConnectorDetailsSecret) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use OpcUaConnectorDetailsSecret.ProtoReflect.Descriptor instead.
 func (*OpcUaConnectorDetailsSecret) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_data_connector_v1_opc_ua_connector_proto_rawDescGZIP(), []int{14}
+	return file_nominal_protos_data_connector_v1_opc_ua_connector_proto_rawDescGZIP(), []int{19}
 }
 
 func (x *OpcUaConnectorDetailsSecret) GetUri() string {
@@ -1302,6 +1752,20 @@ func (x *OpcUaConnectorDetailsSecret) GetScrapingConfig() *OpcUaScrapingConfig {
 	return nil
 }
 
+func (x *OpcUaConnectorDetailsSecret) GetApplicationCertificate() *OpcUaApplicationCertificateSecret {
+	if x != nil {
+		return x.ApplicationCertificate
+	}
+	return nil
+}
+
+func (x *OpcUaConnectorDetailsSecret) GetChannelSecurityConfig() *OpcUaChannelSecurityConfig {
+	if x != nil {
+		return x.ChannelSecurityConfig
+	}
+	return nil
+}
+
 type OpcUaTraversalConfig struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Root nodes to start traversing for variable nodes. For each node specified here, we will recursively traverse
@@ -1318,7 +1782,7 @@ type OpcUaTraversalConfig struct {
 
 func (x *OpcUaTraversalConfig) Reset() {
 	*x = OpcUaTraversalConfig{}
-	mi := &file_nominal_protos_data_connector_v1_opc_ua_connector_proto_msgTypes[15]
+	mi := &file_nominal_protos_data_connector_v1_opc_ua_connector_proto_msgTypes[20]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1330,7 +1794,7 @@ func (x *OpcUaTraversalConfig) String() string {
 func (*OpcUaTraversalConfig) ProtoMessage() {}
 
 func (x *OpcUaTraversalConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_data_connector_v1_opc_ua_connector_proto_msgTypes[15]
+	mi := &file_nominal_protos_data_connector_v1_opc_ua_connector_proto_msgTypes[20]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1343,7 +1807,7 @@ func (x *OpcUaTraversalConfig) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use OpcUaTraversalConfig.ProtoReflect.Descriptor instead.
 func (*OpcUaTraversalConfig) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_data_connector_v1_opc_ua_connector_proto_rawDescGZIP(), []int{15}
+	return file_nominal_protos_data_connector_v1_opc_ua_connector_proto_rawDescGZIP(), []int{20}
 }
 
 func (x *OpcUaTraversalConfig) GetRootNodes() []*OpcNode {
@@ -1376,7 +1840,7 @@ type OpcUaDirectNodeSubscription struct {
 
 func (x *OpcUaDirectNodeSubscription) Reset() {
 	*x = OpcUaDirectNodeSubscription{}
-	mi := &file_nominal_protos_data_connector_v1_opc_ua_connector_proto_msgTypes[16]
+	mi := &file_nominal_protos_data_connector_v1_opc_ua_connector_proto_msgTypes[21]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1388,7 +1852,7 @@ func (x *OpcUaDirectNodeSubscription) String() string {
 func (*OpcUaDirectNodeSubscription) ProtoMessage() {}
 
 func (x *OpcUaDirectNodeSubscription) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_data_connector_v1_opc_ua_connector_proto_msgTypes[16]
+	mi := &file_nominal_protos_data_connector_v1_opc_ua_connector_proto_msgTypes[21]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1401,7 +1865,7 @@ func (x *OpcUaDirectNodeSubscription) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use OpcUaDirectNodeSubscription.ProtoReflect.Descriptor instead.
 func (*OpcUaDirectNodeSubscription) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_data_connector_v1_opc_ua_connector_proto_rawDescGZIP(), []int{16}
+	return file_nominal_protos_data_connector_v1_opc_ua_connector_proto_rawDescGZIP(), []int{21}
 }
 
 func (x *OpcUaDirectNodeSubscription) GetNodes() []*OpcNode {
@@ -1424,7 +1888,7 @@ type OpcUaNodeExplorationConfig struct {
 
 func (x *OpcUaNodeExplorationConfig) Reset() {
 	*x = OpcUaNodeExplorationConfig{}
-	mi := &file_nominal_protos_data_connector_v1_opc_ua_connector_proto_msgTypes[17]
+	mi := &file_nominal_protos_data_connector_v1_opc_ua_connector_proto_msgTypes[22]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1436,7 +1900,7 @@ func (x *OpcUaNodeExplorationConfig) String() string {
 func (*OpcUaNodeExplorationConfig) ProtoMessage() {}
 
 func (x *OpcUaNodeExplorationConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_data_connector_v1_opc_ua_connector_proto_msgTypes[17]
+	mi := &file_nominal_protos_data_connector_v1_opc_ua_connector_proto_msgTypes[22]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1449,7 +1913,7 @@ func (x *OpcUaNodeExplorationConfig) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use OpcUaNodeExplorationConfig.ProtoReflect.Descriptor instead.
 func (*OpcUaNodeExplorationConfig) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_data_connector_v1_opc_ua_connector_proto_rawDescGZIP(), []int{17}
+	return file_nominal_protos_data_connector_v1_opc_ua_connector_proto_rawDescGZIP(), []int{22}
 }
 
 func (x *OpcUaNodeExplorationConfig) GetOpcUaNodeExplorationConfig() isOpcUaNodeExplorationConfig_OpcUaNodeExplorationConfig {
@@ -1509,7 +1973,7 @@ type OpcUaTimestampHandling struct {
 
 func (x *OpcUaTimestampHandling) Reset() {
 	*x = OpcUaTimestampHandling{}
-	mi := &file_nominal_protos_data_connector_v1_opc_ua_connector_proto_msgTypes[18]
+	mi := &file_nominal_protos_data_connector_v1_opc_ua_connector_proto_msgTypes[23]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1521,7 +1985,7 @@ func (x *OpcUaTimestampHandling) String() string {
 func (*OpcUaTimestampHandling) ProtoMessage() {}
 
 func (x *OpcUaTimestampHandling) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_data_connector_v1_opc_ua_connector_proto_msgTypes[18]
+	mi := &file_nominal_protos_data_connector_v1_opc_ua_connector_proto_msgTypes[23]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1534,7 +1998,7 @@ func (x *OpcUaTimestampHandling) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use OpcUaTimestampHandling.ProtoReflect.Descriptor instead.
 func (*OpcUaTimestampHandling) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_data_connector_v1_opc_ua_connector_proto_rawDescGZIP(), []int{18}
+	return file_nominal_protos_data_connector_v1_opc_ua_connector_proto_rawDescGZIP(), []int{23}
 }
 
 func (x *OpcUaTimestampHandling) GetTimestampType() isOpcUaTimestampHandling_TimestampType {
@@ -1605,7 +2069,7 @@ type OpcUaDataChangeFilter struct {
 
 func (x *OpcUaDataChangeFilter) Reset() {
 	*x = OpcUaDataChangeFilter{}
-	mi := &file_nominal_protos_data_connector_v1_opc_ua_connector_proto_msgTypes[19]
+	mi := &file_nominal_protos_data_connector_v1_opc_ua_connector_proto_msgTypes[24]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1617,7 +2081,7 @@ func (x *OpcUaDataChangeFilter) String() string {
 func (*OpcUaDataChangeFilter) ProtoMessage() {}
 
 func (x *OpcUaDataChangeFilter) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_data_connector_v1_opc_ua_connector_proto_msgTypes[19]
+	mi := &file_nominal_protos_data_connector_v1_opc_ua_connector_proto_msgTypes[24]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1630,7 +2094,7 @@ func (x *OpcUaDataChangeFilter) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use OpcUaDataChangeFilter.ProtoReflect.Descriptor instead.
 func (*OpcUaDataChangeFilter) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_data_connector_v1_opc_ua_connector_proto_rawDescGZIP(), []int{19}
+	return file_nominal_protos_data_connector_v1_opc_ua_connector_proto_rawDescGZIP(), []int{24}
 }
 
 func (x *OpcUaDataChangeFilter) GetTrigger() OpcUaDataChangeTrigger {
@@ -1684,7 +2148,7 @@ type OpcUaScrapingConfig struct {
 
 func (x *OpcUaScrapingConfig) Reset() {
 	*x = OpcUaScrapingConfig{}
-	mi := &file_nominal_protos_data_connector_v1_opc_ua_connector_proto_msgTypes[20]
+	mi := &file_nominal_protos_data_connector_v1_opc_ua_connector_proto_msgTypes[25]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1696,7 +2160,7 @@ func (x *OpcUaScrapingConfig) String() string {
 func (*OpcUaScrapingConfig) ProtoMessage() {}
 
 func (x *OpcUaScrapingConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_data_connector_v1_opc_ua_connector_proto_msgTypes[20]
+	mi := &file_nominal_protos_data_connector_v1_opc_ua_connector_proto_msgTypes[25]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1709,7 +2173,7 @@ func (x *OpcUaScrapingConfig) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use OpcUaScrapingConfig.ProtoReflect.Descriptor instead.
 func (*OpcUaScrapingConfig) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_data_connector_v1_opc_ua_connector_proto_rawDescGZIP(), []int{20}
+	return file_nominal_protos_data_connector_v1_opc_ua_connector_proto_rawDescGZIP(), []int{25}
 }
 
 func (x *OpcUaScrapingConfig) GetNodeExplorationConfig() *OpcUaNodeExplorationConfig {
@@ -1806,7 +2270,7 @@ type OpcUaScrapingConfigUpdates struct {
 
 func (x *OpcUaScrapingConfigUpdates) Reset() {
 	*x = OpcUaScrapingConfigUpdates{}
-	mi := &file_nominal_protos_data_connector_v1_opc_ua_connector_proto_msgTypes[21]
+	mi := &file_nominal_protos_data_connector_v1_opc_ua_connector_proto_msgTypes[26]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1818,7 +2282,7 @@ func (x *OpcUaScrapingConfigUpdates) String() string {
 func (*OpcUaScrapingConfigUpdates) ProtoMessage() {}
 
 func (x *OpcUaScrapingConfigUpdates) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_data_connector_v1_opc_ua_connector_proto_msgTypes[21]
+	mi := &file_nominal_protos_data_connector_v1_opc_ua_connector_proto_msgTypes[26]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1831,7 +2295,7 @@ func (x *OpcUaScrapingConfigUpdates) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use OpcUaScrapingConfigUpdates.ProtoReflect.Descriptor instead.
 func (*OpcUaScrapingConfigUpdates) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_data_connector_v1_opc_ua_connector_proto_rawDescGZIP(), []int{21}
+	return file_nominal_protos_data_connector_v1_opc_ua_connector_proto_rawDescGZIP(), []int{26}
 }
 
 func (x *OpcUaScrapingConfigUpdates) GetNodeExplorationConfig() *OpcUaNodeExplorationConfig {
@@ -1907,7 +2371,7 @@ type OpcUaChannelNamingConvention_OpcUaNodeId struct {
 
 func (x *OpcUaChannelNamingConvention_OpcUaNodeId) Reset() {
 	*x = OpcUaChannelNamingConvention_OpcUaNodeId{}
-	mi := &file_nominal_protos_data_connector_v1_opc_ua_connector_proto_msgTypes[22]
+	mi := &file_nominal_protos_data_connector_v1_opc_ua_connector_proto_msgTypes[27]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1919,7 +2383,7 @@ func (x *OpcUaChannelNamingConvention_OpcUaNodeId) String() string {
 func (*OpcUaChannelNamingConvention_OpcUaNodeId) ProtoMessage() {}
 
 func (x *OpcUaChannelNamingConvention_OpcUaNodeId) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_data_connector_v1_opc_ua_connector_proto_msgTypes[22]
+	mi := &file_nominal_protos_data_connector_v1_opc_ua_connector_proto_msgTypes[27]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1932,7 +2396,7 @@ func (x *OpcUaChannelNamingConvention_OpcUaNodeId) ProtoReflect() protoreflect.M
 
 // Deprecated: Use OpcUaChannelNamingConvention_OpcUaNodeId.ProtoReflect.Descriptor instead.
 func (*OpcUaChannelNamingConvention_OpcUaNodeId) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_data_connector_v1_opc_ua_connector_proto_rawDescGZIP(), []int{8, 0}
+	return file_nominal_protos_data_connector_v1_opc_ua_connector_proto_rawDescGZIP(), []int{10, 0}
 }
 
 type OpcUaChannelNamingConvention_OpcUaBrowseName struct {
@@ -1943,7 +2407,7 @@ type OpcUaChannelNamingConvention_OpcUaBrowseName struct {
 
 func (x *OpcUaChannelNamingConvention_OpcUaBrowseName) Reset() {
 	*x = OpcUaChannelNamingConvention_OpcUaBrowseName{}
-	mi := &file_nominal_protos_data_connector_v1_opc_ua_connector_proto_msgTypes[23]
+	mi := &file_nominal_protos_data_connector_v1_opc_ua_connector_proto_msgTypes[28]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1955,7 +2419,7 @@ func (x *OpcUaChannelNamingConvention_OpcUaBrowseName) String() string {
 func (*OpcUaChannelNamingConvention_OpcUaBrowseName) ProtoMessage() {}
 
 func (x *OpcUaChannelNamingConvention_OpcUaBrowseName) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_data_connector_v1_opc_ua_connector_proto_msgTypes[23]
+	mi := &file_nominal_protos_data_connector_v1_opc_ua_connector_proto_msgTypes[28]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1968,7 +2432,7 @@ func (x *OpcUaChannelNamingConvention_OpcUaBrowseName) ProtoReflect() protorefle
 
 // Deprecated: Use OpcUaChannelNamingConvention_OpcUaBrowseName.ProtoReflect.Descriptor instead.
 func (*OpcUaChannelNamingConvention_OpcUaBrowseName) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_data_connector_v1_opc_ua_connector_proto_rawDescGZIP(), []int{8, 1}
+	return file_nominal_protos_data_connector_v1_opc_ua_connector_proto_rawDescGZIP(), []int{10, 1}
 }
 
 type OpcUaChannelNamingConvention_OpcUaDisplayName struct {
@@ -1979,7 +2443,7 @@ type OpcUaChannelNamingConvention_OpcUaDisplayName struct {
 
 func (x *OpcUaChannelNamingConvention_OpcUaDisplayName) Reset() {
 	*x = OpcUaChannelNamingConvention_OpcUaDisplayName{}
-	mi := &file_nominal_protos_data_connector_v1_opc_ua_connector_proto_msgTypes[24]
+	mi := &file_nominal_protos_data_connector_v1_opc_ua_connector_proto_msgTypes[29]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1991,7 +2455,7 @@ func (x *OpcUaChannelNamingConvention_OpcUaDisplayName) String() string {
 func (*OpcUaChannelNamingConvention_OpcUaDisplayName) ProtoMessage() {}
 
 func (x *OpcUaChannelNamingConvention_OpcUaDisplayName) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_data_connector_v1_opc_ua_connector_proto_msgTypes[24]
+	mi := &file_nominal_protos_data_connector_v1_opc_ua_connector_proto_msgTypes[29]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2004,7 +2468,7 @@ func (x *OpcUaChannelNamingConvention_OpcUaDisplayName) ProtoReflect() protorefl
 
 // Deprecated: Use OpcUaChannelNamingConvention_OpcUaDisplayName.ProtoReflect.Descriptor instead.
 func (*OpcUaChannelNamingConvention_OpcUaDisplayName) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_data_connector_v1_opc_ua_connector_proto_rawDescGZIP(), []int{8, 2}
+	return file_nominal_protos_data_connector_v1_opc_ua_connector_proto_rawDescGZIP(), []int{10, 2}
 }
 
 // Configuration for full path naming convention
@@ -2023,7 +2487,7 @@ type OpcUaChannelNamingConvention_OpcUaFullPath struct {
 
 func (x *OpcUaChannelNamingConvention_OpcUaFullPath) Reset() {
 	*x = OpcUaChannelNamingConvention_OpcUaFullPath{}
-	mi := &file_nominal_protos_data_connector_v1_opc_ua_connector_proto_msgTypes[25]
+	mi := &file_nominal_protos_data_connector_v1_opc_ua_connector_proto_msgTypes[30]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2035,7 +2499,7 @@ func (x *OpcUaChannelNamingConvention_OpcUaFullPath) String() string {
 func (*OpcUaChannelNamingConvention_OpcUaFullPath) ProtoMessage() {}
 
 func (x *OpcUaChannelNamingConvention_OpcUaFullPath) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_data_connector_v1_opc_ua_connector_proto_msgTypes[25]
+	mi := &file_nominal_protos_data_connector_v1_opc_ua_connector_proto_msgTypes[30]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2048,7 +2512,7 @@ func (x *OpcUaChannelNamingConvention_OpcUaFullPath) ProtoReflect() protoreflect
 
 // Deprecated: Use OpcUaChannelNamingConvention_OpcUaFullPath.ProtoReflect.Descriptor instead.
 func (*OpcUaChannelNamingConvention_OpcUaFullPath) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_data_connector_v1_opc_ua_connector_proto_rawDescGZIP(), []int{8, 3}
+	return file_nominal_protos_data_connector_v1_opc_ua_connector_proto_rawDescGZIP(), []int{10, 3}
 }
 
 func (x *OpcUaChannelNamingConvention_OpcUaFullPath) GetRootNodes() []*OpcNode {
@@ -2081,7 +2545,7 @@ type OpcUaTimestampHandling_OpcUaServerTime struct {
 
 func (x *OpcUaTimestampHandling_OpcUaServerTime) Reset() {
 	*x = OpcUaTimestampHandling_OpcUaServerTime{}
-	mi := &file_nominal_protos_data_connector_v1_opc_ua_connector_proto_msgTypes[26]
+	mi := &file_nominal_protos_data_connector_v1_opc_ua_connector_proto_msgTypes[31]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2093,7 +2557,7 @@ func (x *OpcUaTimestampHandling_OpcUaServerTime) String() string {
 func (*OpcUaTimestampHandling_OpcUaServerTime) ProtoMessage() {}
 
 func (x *OpcUaTimestampHandling_OpcUaServerTime) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_data_connector_v1_opc_ua_connector_proto_msgTypes[26]
+	mi := &file_nominal_protos_data_connector_v1_opc_ua_connector_proto_msgTypes[31]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2106,7 +2570,7 @@ func (x *OpcUaTimestampHandling_OpcUaServerTime) ProtoReflect() protoreflect.Mes
 
 // Deprecated: Use OpcUaTimestampHandling_OpcUaServerTime.ProtoReflect.Descriptor instead.
 func (*OpcUaTimestampHandling_OpcUaServerTime) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_data_connector_v1_opc_ua_connector_proto_rawDescGZIP(), []int{18, 0}
+	return file_nominal_protos_data_connector_v1_opc_ua_connector_proto_rawDescGZIP(), []int{23, 0}
 }
 
 // Use the source timestamp https://reference.opcfoundation.org/Core/Part4/v104/docs/7.7.3
@@ -2118,7 +2582,7 @@ type OpcUaTimestampHandling_OpcUaSourceTime struct {
 
 func (x *OpcUaTimestampHandling_OpcUaSourceTime) Reset() {
 	*x = OpcUaTimestampHandling_OpcUaSourceTime{}
-	mi := &file_nominal_protos_data_connector_v1_opc_ua_connector_proto_msgTypes[27]
+	mi := &file_nominal_protos_data_connector_v1_opc_ua_connector_proto_msgTypes[32]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2130,7 +2594,7 @@ func (x *OpcUaTimestampHandling_OpcUaSourceTime) String() string {
 func (*OpcUaTimestampHandling_OpcUaSourceTime) ProtoMessage() {}
 
 func (x *OpcUaTimestampHandling_OpcUaSourceTime) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_data_connector_v1_opc_ua_connector_proto_msgTypes[27]
+	mi := &file_nominal_protos_data_connector_v1_opc_ua_connector_proto_msgTypes[32]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2143,7 +2607,7 @@ func (x *OpcUaTimestampHandling_OpcUaSourceTime) ProtoReflect() protoreflect.Mes
 
 // Deprecated: Use OpcUaTimestampHandling_OpcUaSourceTime.ProtoReflect.Descriptor instead.
 func (*OpcUaTimestampHandling_OpcUaSourceTime) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_data_connector_v1_opc_ua_connector_proto_rawDescGZIP(), []int{18, 1}
+	return file_nominal_protos_data_connector_v1_opc_ua_connector_proto_rawDescGZIP(), []int{23, 1}
 }
 
 // Use the server timestamp, but add an optional offset. By default, the offset will be the time now.
@@ -2157,7 +2621,7 @@ type OpcUaTimestampHandling_OpcUaRelativeTimestamp struct {
 
 func (x *OpcUaTimestampHandling_OpcUaRelativeTimestamp) Reset() {
 	*x = OpcUaTimestampHandling_OpcUaRelativeTimestamp{}
-	mi := &file_nominal_protos_data_connector_v1_opc_ua_connector_proto_msgTypes[28]
+	mi := &file_nominal_protos_data_connector_v1_opc_ua_connector_proto_msgTypes[33]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2169,7 +2633,7 @@ func (x *OpcUaTimestampHandling_OpcUaRelativeTimestamp) String() string {
 func (*OpcUaTimestampHandling_OpcUaRelativeTimestamp) ProtoMessage() {}
 
 func (x *OpcUaTimestampHandling_OpcUaRelativeTimestamp) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_data_connector_v1_opc_ua_connector_proto_msgTypes[28]
+	mi := &file_nominal_protos_data_connector_v1_opc_ua_connector_proto_msgTypes[33]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2182,7 +2646,7 @@ func (x *OpcUaTimestampHandling_OpcUaRelativeTimestamp) ProtoReflect() protorefl
 
 // Deprecated: Use OpcUaTimestampHandling_OpcUaRelativeTimestamp.ProtoReflect.Descriptor instead.
 func (*OpcUaTimestampHandling_OpcUaRelativeTimestamp) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_data_connector_v1_opc_ua_connector_proto_rawDescGZIP(), []int{18, 2}
+	return file_nominal_protos_data_connector_v1_opc_ua_connector_proto_rawDescGZIP(), []int{23, 2}
 }
 
 func (x *OpcUaTimestampHandling_OpcUaRelativeTimestamp) GetOffset() *timestamppb.Timestamp {
@@ -2196,16 +2660,18 @@ var File_nominal_protos_data_connector_v1_opc_ua_connector_proto protoreflect.Fi
 
 const file_nominal_protos_data_connector_v1_opc_ua_connector_proto_rawDesc = "" +
 	"\n" +
-	"7nominal/protos/data_connector/v1/opc_ua_connector.proto\x12\x19nominal.data_connector.v1\x1a\x1bbuf/validate/validate.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a!nominal/protos/gen/v1/alias.proto\"\xad\x02\n" +
+	"7nominal/protos/data_connector/v1/opc_ua_connector.proto\x12\x19nominal.data_connector.v1\x1a\x1bbuf/validate/validate.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a!nominal/protos/gen/v1/alias.proto\"\x8a\x03\n" +
 	"\x17OpcAuthenticationConfig\x126\n" +
 	"\tanonymous\x18\x01 \x01(\v2\x16.google.protobuf.EmptyH\x00R\tanonymous\x12k\n" +
 	"\x11username_password\x18\x02 \x01(\v2<.nominal.data_connector.v1.OpcUsernamePasswordAuthenticationH\x00R\x10usernamePassword\x12I\n" +
-	"\x05token\x18\x03 \x01(\v21.nominal.data_connector.v1.OpcTokenAuthenticationH\x00R\x05tokenB\"\n" +
-	"\x19opc_authentication_config\x12\x05\xbaH\x02\b\x01\"\xbf\x02\n" +
+	"\x05token\x18\x03 \x01(\v21.nominal.data_connector.v1.OpcTokenAuthenticationH\x00R\x05token\x12[\n" +
+	"\vcertificate\x18\x04 \x01(\v27.nominal.data_connector.v1.OpcCertificateAuthenticationH\x00R\vcertificateB\"\n" +
+	"\x19opc_authentication_config\x12\x05\xbaH\x02\b\x01\"\xa2\x03\n" +
 	"\x1dOpcAuthenticationConfigSecret\x126\n" +
 	"\tanonymous\x18\x01 \x01(\v2\x16.google.protobuf.EmptyH\x00R\tanonymous\x12q\n" +
 	"\x11username_password\x18\x02 \x01(\v2B.nominal.data_connector.v1.OpcUsernamePasswordAuthenticationSecretH\x00R\x10usernamePassword\x12O\n" +
-	"\x05token\x18\x03 \x01(\v27.nominal.data_connector.v1.OpcTokenAuthenticationSecretH\x00R\x05tokenB\"\n" +
+	"\x05token\x18\x03 \x01(\v27.nominal.data_connector.v1.OpcTokenAuthenticationSecretH\x00R\x05token\x12a\n" +
+	"\vcertificate\x18\x04 \x01(\v2=.nominal.data_connector.v1.OpcCertificateAuthenticationSecretH\x00R\vcertificateB\"\n" +
 	"\x19opc_authentication_config\x12\x05\xbaH\x02\b\x01\"k\n" +
 	"!OpcUsernamePasswordAuthentication\x12\"\n" +
 	"\busername\x18\x01 \x01(\tB\x06\xbaH\x03\xc8\x01\x01R\busername\x12\"\n" +
@@ -2218,7 +2684,16 @@ const file_nominal_protos_data_connector_v1_opc_ua_connector_proto_rawDesc = "" 
 	"\x05token\x18\x01 \x01(\tB\x06\xbaH\x03\xc8\x01\x01R\x05token\"\\\n" +
 	"\x1cOpcTokenAuthenticationSecret\x12<\n" +
 	"\x05token\x18\x01 \x01(\tB&\x9a\xb2\x1a\"\n" +
-	" io.nominal.secrets.api.SecretRidR\x05token\"i\n" +
+	" io.nominal.secrets.api.SecretRidR\x05token\"}\n" +
+	"\x1cOpcCertificateAuthentication\x12.\n" +
+	"\vcertificate\x18\x01 \x01(\tB\f\xbaH\t\xc8\x01\x01r\x04\x18\x80\x80\x01R\vcertificate\x12-\n" +
+	"\vprivate_key\x18\x02 \x01(\tB\f\xbaH\t\xc8\x01\x01r\x04\x18\x80\x80\x01R\n" +
+	"privateKey\"\x8f\x01\n" +
+	"\"OpcCertificateAuthenticationSecret\x12 \n" +
+	"\vcertificate\x18\x01 \x01(\tR\vcertificate\x12G\n" +
+	"\vprivate_key\x18\x02 \x01(\tB&\x9a\xb2\x1a\"\n" +
+	" io.nominal.secrets.api.SecretRidR\n" +
+	"privateKey\"i\n" +
 	"\x12OpcIdentifierValue\x12\x1a\n" +
 	"\anumeric\x18\x01 \x01(\x05H\x00R\anumeric\x12\x18\n" +
 	"\x06string\x18\x02 \x01(\tH\x00R\x06stringB\x1d\n" +
@@ -2254,22 +2729,43 @@ const file_nominal_protos_data_connector_v1_opc_ua_connector_proto_rawDesc = "" 
 	"\x1aOpcUaDataAcquisitionConfig\x12X\n" +
 	"\fsubscription\x18\x01 \x01(\v22.nominal.data_connector.v1.OpcUaSubscriptionConfigH\x00R\fsubscription\x12I\n" +
 	"\apolling\x18\x02 \x01(\v2-.nominal.data_connector.v1.OpcUaPollingConfigH\x00R\apollingB\x12\n" +
-	"\x10acquisition_mode\"\x83\x02\n" +
+	"\x10acquisition_mode\"|\n" +
+	"\x1bOpcUaApplicationCertificate\x12.\n" +
+	"\vcertificate\x18\x01 \x01(\tB\f\xbaH\t\xc8\x01\x01r\x04\x18\x80\x80\x01R\vcertificate\x12-\n" +
+	"\vprivate_key\x18\x02 \x01(\tB\f\xbaH\t\xc8\x01\x01r\x04\x18\x80\x80\x01R\n" +
+	"privateKey\"\x8e\x01\n" +
+	"!OpcUaApplicationCertificateSecret\x12 \n" +
+	"\vcertificate\x18\x01 \x01(\tR\vcertificate\x12G\n" +
+	"\vprivate_key\x18\x02 \x01(\tB&\x9a\xb2\x1a\"\n" +
+	" io.nominal.secrets.api.SecretRidR\n" +
+	"privateKey\"\xc8\x03\n" +
+	"\x1aOpcUaChannelSecurityConfig\x12d\n" +
+	"\x0fsecurity_policy\x18\x01 \x01(\x0e2..nominal.data_connector.v1.OpcUaSecurityPolicyB\v\xbaH\b\xc8\x01\x01\x82\x01\x02\x10\x01R\x0esecurityPolicy\x12t\n" +
+	"\x15message_security_mode\x18\x02 \x01(\x0e23.nominal.data_connector.v1.OpcUaMessageSecurityModeB\v\xbaH\b\xc8\x01\x01\x82\x01\x02\x10\x01R\x13messageSecurityMode:\xcd\x01\xbaH\xc9\x01\x1a\xc6\x01\n" +
+	",opc_ua_channel_security_config.none_together\x12Tsecurity_policy and message_security_mode must either both be NONE or both be secure\x1a@(this.security_policy == 1) == (this.message_security_mode == 1)\"\xe3\x03\n" +
 	"\x15OpcUaConnectorDetails\x12\x18\n" +
 	"\x03uri\x18\x01 \x01(\tB\x06\xbaH\x03\xc8\x01\x01R\x03uri\x12o\n" +
 	"\x15authentication_config\x18\x02 \x01(\v22.nominal.data_connector.v1.OpcAuthenticationConfigB\x06\xbaH\x03\xc8\x01\x01R\x14authenticationConfig\x12_\n" +
-	"\x0fscraping_config\x18\x03 \x01(\v2..nominal.data_connector.v1.OpcUaScrapingConfigB\x06\xbaH\x03\xc8\x01\x01R\x0escrapingConfig\"\xbe\x02\n" +
+	"\x0fscraping_config\x18\x03 \x01(\v2..nominal.data_connector.v1.OpcUaScrapingConfigB\x06\xbaH\x03\xc8\x01\x01R\x0escrapingConfig\x12o\n" +
+	"\x17application_certificate\x18\x04 \x01(\v26.nominal.data_connector.v1.OpcUaApplicationCertificateR\x16applicationCertificate\x12m\n" +
+	"\x17channel_security_config\x18\x05 \x01(\v25.nominal.data_connector.v1.OpcUaChannelSecurityConfigR\x15channelSecurityConfig\"\xe0\x04\n" +
 	"\x1cOpcUaConnectorDetailsUpdates\x12\x15\n" +
 	"\x03uri\x18\x01 \x01(\tH\x00R\x03uri\x88\x01\x01\x12l\n" +
 	"\x15authentication_config\x18\x02 \x01(\v22.nominal.data_connector.v1.OpcAuthenticationConfigH\x01R\x14authenticationConfig\x88\x01\x01\x12c\n" +
-	"\x0fscraping_config\x18\x03 \x01(\v25.nominal.data_connector.v1.OpcUaScrapingConfigUpdatesH\x02R\x0escrapingConfig\x88\x01\x01B\x06\n" +
+	"\x0fscraping_config\x18\x03 \x01(\v25.nominal.data_connector.v1.OpcUaScrapingConfigUpdatesH\x02R\x0escrapingConfig\x88\x01\x01\x12t\n" +
+	"\x17application_certificate\x18\x04 \x01(\v26.nominal.data_connector.v1.OpcUaApplicationCertificateH\x03R\x16applicationCertificate\x88\x01\x01\x12r\n" +
+	"\x17channel_security_config\x18\x05 \x01(\v25.nominal.data_connector.v1.OpcUaChannelSecurityConfigH\x04R\x15channelSecurityConfig\x88\x01\x01B\x06\n" +
 	"\x04_uriB\x18\n" +
 	"\x16_authentication_configB\x12\n" +
-	"\x10_scraping_config\"\x90\x02\n" +
+	"\x10_scraping_configB\x1a\n" +
+	"\x18_application_certificateB\x1a\n" +
+	"\x18_channel_security_config\"\xf6\x03\n" +
 	"\x1bOpcUaConnectorDetailsSecret\x12\x10\n" +
 	"\x03uri\x18\x01 \x01(\tR\x03uri\x12m\n" +
 	"\x15authentication_config\x18\x02 \x01(\v28.nominal.data_connector.v1.OpcAuthenticationConfigSecretR\x14authenticationConfig\x12\\\n" +
-	"\x0fscraping_config\x18\x03 \x01(\v2..nominal.data_connector.v1.OpcUaScrapingConfigH\x00R\x0escrapingConfig\x88\x01\x01B\x12\n" +
+	"\x0fscraping_config\x18\x03 \x01(\v2..nominal.data_connector.v1.OpcUaScrapingConfigH\x00R\x0escrapingConfig\x88\x01\x01\x12u\n" +
+	"\x17application_certificate\x18\x04 \x01(\v2<.nominal.data_connector.v1.OpcUaApplicationCertificateSecretR\x16applicationCertificate\x12m\n" +
+	"\x17channel_security_config\x18\x05 \x01(\v25.nominal.data_connector.v1.OpcUaChannelSecurityConfigR\x15channelSecurityConfigB\x12\n" +
 	"\x10_scraping_config\"\x9c\x02\n" +
 	"\x14OpcUaTraversalConfig\x12A\n" +
 	"\n" +
@@ -2343,7 +2839,15 @@ const file_nominal_protos_data_connector_v1_opc_ua_connector_proto_rawDesc = "" 
 	"\x1aOpcUaFailedMonitorHandling\x12.\n" +
 	"*OPC_UA_FAILED_MONITOR_HANDLING_UNSPECIFIED\x10\x00\x12(\n" +
 	"$OPC_UA_FAILED_MONITOR_HANDLING_ERROR\x10\x01\x12)\n" +
-	"%OPC_UA_FAILED_MONITOR_HANDLING_IGNORE\x10\x02*\xd4\x01\n" +
+	"%OPC_UA_FAILED_MONITOR_HANDLING_IGNORE\x10\x02*\x8a\x01\n" +
+	"\x13OpcUaSecurityPolicy\x12&\n" +
+	"\"OPC_UA_SECURITY_POLICY_UNSPECIFIED\x10\x00\x12\x1f\n" +
+	"\x1bOPC_UA_SECURITY_POLICY_NONE\x10\x01\x12*\n" +
+	"&OPC_UA_SECURITY_POLICY_BASIC256_SHA256\x10\x02*\xa2\x01\n" +
+	"\x18OpcUaMessageSecurityMode\x12,\n" +
+	"(OPC_UA_MESSAGE_SECURITY_MODE_UNSPECIFIED\x10\x00\x12%\n" +
+	"!OPC_UA_MESSAGE_SECURITY_MODE_NONE\x10\x01\x121\n" +
+	"-OPC_UA_MESSAGE_SECURITY_MODE_SIGN_AND_ENCRYPT\x10\x02*\xd4\x01\n" +
 	"\x16OpcUaDataChangeTrigger\x12*\n" +
 	"&OPC_UA_DATA_CHANGE_TRIGGER_UNSPECIFIED\x10\x00\x12*\n" +
 	"&OPC_UA_DATA_CHANGE_TRIGGER_STATUS_ONLY\x10\x01\x12+\n" +
@@ -2368,100 +2872,117 @@ func file_nominal_protos_data_connector_v1_opc_ua_connector_proto_rawDescGZIP() 
 	return file_nominal_protos_data_connector_v1_opc_ua_connector_proto_rawDescData
 }
 
-var file_nominal_protos_data_connector_v1_opc_ua_connector_proto_enumTypes = make([]protoimpl.EnumInfo, 5)
-var file_nominal_protos_data_connector_v1_opc_ua_connector_proto_msgTypes = make([]protoimpl.MessageInfo, 29)
+var file_nominal_protos_data_connector_v1_opc_ua_connector_proto_enumTypes = make([]protoimpl.EnumInfo, 7)
+var file_nominal_protos_data_connector_v1_opc_ua_connector_proto_msgTypes = make([]protoimpl.MessageInfo, 34)
 var file_nominal_protos_data_connector_v1_opc_ua_connector_proto_goTypes = []any{
 	(OpcUaReferenceExplorationType)(0),                    // 0: nominal.data_connector.v1.OpcUaReferenceExplorationType
 	(OpcUaUnknownDataTypeHandling)(0),                     // 1: nominal.data_connector.v1.OpcUaUnknownDataTypeHandling
 	(OpcUaFailedMonitorHandling)(0),                       // 2: nominal.data_connector.v1.OpcUaFailedMonitorHandling
-	(OpcUaDataChangeTrigger)(0),                           // 3: nominal.data_connector.v1.OpcUaDataChangeTrigger
-	(OpcUaDeadbandType)(0),                                // 4: nominal.data_connector.v1.OpcUaDeadbandType
-	(*OpcAuthenticationConfig)(nil),                       // 5: nominal.data_connector.v1.OpcAuthenticationConfig
-	(*OpcAuthenticationConfigSecret)(nil),                 // 6: nominal.data_connector.v1.OpcAuthenticationConfigSecret
-	(*OpcUsernamePasswordAuthentication)(nil),             // 7: nominal.data_connector.v1.OpcUsernamePasswordAuthentication
-	(*OpcUsernamePasswordAuthenticationSecret)(nil),       // 8: nominal.data_connector.v1.OpcUsernamePasswordAuthenticationSecret
-	(*OpcTokenAuthentication)(nil),                        // 9: nominal.data_connector.v1.OpcTokenAuthentication
-	(*OpcTokenAuthenticationSecret)(nil),                  // 10: nominal.data_connector.v1.OpcTokenAuthenticationSecret
-	(*OpcIdentifierValue)(nil),                            // 11: nominal.data_connector.v1.OpcIdentifierValue
-	(*OpcNode)(nil),                                       // 12: nominal.data_connector.v1.OpcNode
-	(*OpcUaChannelNamingConvention)(nil),                  // 13: nominal.data_connector.v1.OpcUaChannelNamingConvention
-	(*OpcUaSubscriptionConfig)(nil),                       // 14: nominal.data_connector.v1.OpcUaSubscriptionConfig
-	(*OpcUaPollingConfig)(nil),                            // 15: nominal.data_connector.v1.OpcUaPollingConfig
-	(*OpcUaDataAcquisitionConfig)(nil),                    // 16: nominal.data_connector.v1.OpcUaDataAcquisitionConfig
-	(*OpcUaConnectorDetails)(nil),                         // 17: nominal.data_connector.v1.OpcUaConnectorDetails
-	(*OpcUaConnectorDetailsUpdates)(nil),                  // 18: nominal.data_connector.v1.OpcUaConnectorDetailsUpdates
-	(*OpcUaConnectorDetailsSecret)(nil),                   // 19: nominal.data_connector.v1.OpcUaConnectorDetailsSecret
-	(*OpcUaTraversalConfig)(nil),                          // 20: nominal.data_connector.v1.OpcUaTraversalConfig
-	(*OpcUaDirectNodeSubscription)(nil),                   // 21: nominal.data_connector.v1.OpcUaDirectNodeSubscription
-	(*OpcUaNodeExplorationConfig)(nil),                    // 22: nominal.data_connector.v1.OpcUaNodeExplorationConfig
-	(*OpcUaTimestampHandling)(nil),                        // 23: nominal.data_connector.v1.OpcUaTimestampHandling
-	(*OpcUaDataChangeFilter)(nil),                         // 24: nominal.data_connector.v1.OpcUaDataChangeFilter
-	(*OpcUaScrapingConfig)(nil),                           // 25: nominal.data_connector.v1.OpcUaScrapingConfig
-	(*OpcUaScrapingConfigUpdates)(nil),                    // 26: nominal.data_connector.v1.OpcUaScrapingConfigUpdates
-	(*OpcUaChannelNamingConvention_OpcUaNodeId)(nil),      // 27: nominal.data_connector.v1.OpcUaChannelNamingConvention.OpcUaNodeId
-	(*OpcUaChannelNamingConvention_OpcUaBrowseName)(nil),  // 28: nominal.data_connector.v1.OpcUaChannelNamingConvention.OpcUaBrowseName
-	(*OpcUaChannelNamingConvention_OpcUaDisplayName)(nil), // 29: nominal.data_connector.v1.OpcUaChannelNamingConvention.OpcUaDisplayName
-	(*OpcUaChannelNamingConvention_OpcUaFullPath)(nil),    // 30: nominal.data_connector.v1.OpcUaChannelNamingConvention.OpcUaFullPath
-	(*OpcUaTimestampHandling_OpcUaServerTime)(nil),        // 31: nominal.data_connector.v1.OpcUaTimestampHandling.OpcUaServerTime
-	(*OpcUaTimestampHandling_OpcUaSourceTime)(nil),        // 32: nominal.data_connector.v1.OpcUaTimestampHandling.OpcUaSourceTime
-	(*OpcUaTimestampHandling_OpcUaRelativeTimestamp)(nil), // 33: nominal.data_connector.v1.OpcUaTimestampHandling.OpcUaRelativeTimestamp
-	(*emptypb.Empty)(nil),                                 // 34: google.protobuf.Empty
-	(*timestamppb.Timestamp)(nil),                         // 35: google.protobuf.Timestamp
+	(OpcUaSecurityPolicy)(0),                              // 3: nominal.data_connector.v1.OpcUaSecurityPolicy
+	(OpcUaMessageSecurityMode)(0),                         // 4: nominal.data_connector.v1.OpcUaMessageSecurityMode
+	(OpcUaDataChangeTrigger)(0),                           // 5: nominal.data_connector.v1.OpcUaDataChangeTrigger
+	(OpcUaDeadbandType)(0),                                // 6: nominal.data_connector.v1.OpcUaDeadbandType
+	(*OpcAuthenticationConfig)(nil),                       // 7: nominal.data_connector.v1.OpcAuthenticationConfig
+	(*OpcAuthenticationConfigSecret)(nil),                 // 8: nominal.data_connector.v1.OpcAuthenticationConfigSecret
+	(*OpcUsernamePasswordAuthentication)(nil),             // 9: nominal.data_connector.v1.OpcUsernamePasswordAuthentication
+	(*OpcUsernamePasswordAuthenticationSecret)(nil),       // 10: nominal.data_connector.v1.OpcUsernamePasswordAuthenticationSecret
+	(*OpcTokenAuthentication)(nil),                        // 11: nominal.data_connector.v1.OpcTokenAuthentication
+	(*OpcTokenAuthenticationSecret)(nil),                  // 12: nominal.data_connector.v1.OpcTokenAuthenticationSecret
+	(*OpcCertificateAuthentication)(nil),                  // 13: nominal.data_connector.v1.OpcCertificateAuthentication
+	(*OpcCertificateAuthenticationSecret)(nil),            // 14: nominal.data_connector.v1.OpcCertificateAuthenticationSecret
+	(*OpcIdentifierValue)(nil),                            // 15: nominal.data_connector.v1.OpcIdentifierValue
+	(*OpcNode)(nil),                                       // 16: nominal.data_connector.v1.OpcNode
+	(*OpcUaChannelNamingConvention)(nil),                  // 17: nominal.data_connector.v1.OpcUaChannelNamingConvention
+	(*OpcUaSubscriptionConfig)(nil),                       // 18: nominal.data_connector.v1.OpcUaSubscriptionConfig
+	(*OpcUaPollingConfig)(nil),                            // 19: nominal.data_connector.v1.OpcUaPollingConfig
+	(*OpcUaDataAcquisitionConfig)(nil),                    // 20: nominal.data_connector.v1.OpcUaDataAcquisitionConfig
+	(*OpcUaApplicationCertificate)(nil),                   // 21: nominal.data_connector.v1.OpcUaApplicationCertificate
+	(*OpcUaApplicationCertificateSecret)(nil),             // 22: nominal.data_connector.v1.OpcUaApplicationCertificateSecret
+	(*OpcUaChannelSecurityConfig)(nil),                    // 23: nominal.data_connector.v1.OpcUaChannelSecurityConfig
+	(*OpcUaConnectorDetails)(nil),                         // 24: nominal.data_connector.v1.OpcUaConnectorDetails
+	(*OpcUaConnectorDetailsUpdates)(nil),                  // 25: nominal.data_connector.v1.OpcUaConnectorDetailsUpdates
+	(*OpcUaConnectorDetailsSecret)(nil),                   // 26: nominal.data_connector.v1.OpcUaConnectorDetailsSecret
+	(*OpcUaTraversalConfig)(nil),                          // 27: nominal.data_connector.v1.OpcUaTraversalConfig
+	(*OpcUaDirectNodeSubscription)(nil),                   // 28: nominal.data_connector.v1.OpcUaDirectNodeSubscription
+	(*OpcUaNodeExplorationConfig)(nil),                    // 29: nominal.data_connector.v1.OpcUaNodeExplorationConfig
+	(*OpcUaTimestampHandling)(nil),                        // 30: nominal.data_connector.v1.OpcUaTimestampHandling
+	(*OpcUaDataChangeFilter)(nil),                         // 31: nominal.data_connector.v1.OpcUaDataChangeFilter
+	(*OpcUaScrapingConfig)(nil),                           // 32: nominal.data_connector.v1.OpcUaScrapingConfig
+	(*OpcUaScrapingConfigUpdates)(nil),                    // 33: nominal.data_connector.v1.OpcUaScrapingConfigUpdates
+	(*OpcUaChannelNamingConvention_OpcUaNodeId)(nil),      // 34: nominal.data_connector.v1.OpcUaChannelNamingConvention.OpcUaNodeId
+	(*OpcUaChannelNamingConvention_OpcUaBrowseName)(nil),  // 35: nominal.data_connector.v1.OpcUaChannelNamingConvention.OpcUaBrowseName
+	(*OpcUaChannelNamingConvention_OpcUaDisplayName)(nil), // 36: nominal.data_connector.v1.OpcUaChannelNamingConvention.OpcUaDisplayName
+	(*OpcUaChannelNamingConvention_OpcUaFullPath)(nil),    // 37: nominal.data_connector.v1.OpcUaChannelNamingConvention.OpcUaFullPath
+	(*OpcUaTimestampHandling_OpcUaServerTime)(nil),        // 38: nominal.data_connector.v1.OpcUaTimestampHandling.OpcUaServerTime
+	(*OpcUaTimestampHandling_OpcUaSourceTime)(nil),        // 39: nominal.data_connector.v1.OpcUaTimestampHandling.OpcUaSourceTime
+	(*OpcUaTimestampHandling_OpcUaRelativeTimestamp)(nil), // 40: nominal.data_connector.v1.OpcUaTimestampHandling.OpcUaRelativeTimestamp
+	(*emptypb.Empty)(nil),                                 // 41: google.protobuf.Empty
+	(*timestamppb.Timestamp)(nil),                         // 42: google.protobuf.Timestamp
 }
 var file_nominal_protos_data_connector_v1_opc_ua_connector_proto_depIdxs = []int32{
-	34, // 0: nominal.data_connector.v1.OpcAuthenticationConfig.anonymous:type_name -> google.protobuf.Empty
-	7,  // 1: nominal.data_connector.v1.OpcAuthenticationConfig.username_password:type_name -> nominal.data_connector.v1.OpcUsernamePasswordAuthentication
-	9,  // 2: nominal.data_connector.v1.OpcAuthenticationConfig.token:type_name -> nominal.data_connector.v1.OpcTokenAuthentication
-	34, // 3: nominal.data_connector.v1.OpcAuthenticationConfigSecret.anonymous:type_name -> google.protobuf.Empty
-	8,  // 4: nominal.data_connector.v1.OpcAuthenticationConfigSecret.username_password:type_name -> nominal.data_connector.v1.OpcUsernamePasswordAuthenticationSecret
-	10, // 5: nominal.data_connector.v1.OpcAuthenticationConfigSecret.token:type_name -> nominal.data_connector.v1.OpcTokenAuthenticationSecret
-	11, // 6: nominal.data_connector.v1.OpcNode.identifier:type_name -> nominal.data_connector.v1.OpcIdentifierValue
-	27, // 7: nominal.data_connector.v1.OpcUaChannelNamingConvention.node_id:type_name -> nominal.data_connector.v1.OpcUaChannelNamingConvention.OpcUaNodeId
-	28, // 8: nominal.data_connector.v1.OpcUaChannelNamingConvention.browse_name:type_name -> nominal.data_connector.v1.OpcUaChannelNamingConvention.OpcUaBrowseName
-	29, // 9: nominal.data_connector.v1.OpcUaChannelNamingConvention.display_name:type_name -> nominal.data_connector.v1.OpcUaChannelNamingConvention.OpcUaDisplayName
-	30, // 10: nominal.data_connector.v1.OpcUaChannelNamingConvention.full_path:type_name -> nominal.data_connector.v1.OpcUaChannelNamingConvention.OpcUaFullPath
-	2,  // 11: nominal.data_connector.v1.OpcUaSubscriptionConfig.failed_monitor_handling:type_name -> nominal.data_connector.v1.OpcUaFailedMonitorHandling
-	24, // 12: nominal.data_connector.v1.OpcUaSubscriptionConfig.data_change_filter:type_name -> nominal.data_connector.v1.OpcUaDataChangeFilter
-	14, // 13: nominal.data_connector.v1.OpcUaDataAcquisitionConfig.subscription:type_name -> nominal.data_connector.v1.OpcUaSubscriptionConfig
-	15, // 14: nominal.data_connector.v1.OpcUaDataAcquisitionConfig.polling:type_name -> nominal.data_connector.v1.OpcUaPollingConfig
-	5,  // 15: nominal.data_connector.v1.OpcUaConnectorDetails.authentication_config:type_name -> nominal.data_connector.v1.OpcAuthenticationConfig
-	25, // 16: nominal.data_connector.v1.OpcUaConnectorDetails.scraping_config:type_name -> nominal.data_connector.v1.OpcUaScrapingConfig
-	5,  // 17: nominal.data_connector.v1.OpcUaConnectorDetailsUpdates.authentication_config:type_name -> nominal.data_connector.v1.OpcAuthenticationConfig
-	26, // 18: nominal.data_connector.v1.OpcUaConnectorDetailsUpdates.scraping_config:type_name -> nominal.data_connector.v1.OpcUaScrapingConfigUpdates
-	6,  // 19: nominal.data_connector.v1.OpcUaConnectorDetailsSecret.authentication_config:type_name -> nominal.data_connector.v1.OpcAuthenticationConfigSecret
-	25, // 20: nominal.data_connector.v1.OpcUaConnectorDetailsSecret.scraping_config:type_name -> nominal.data_connector.v1.OpcUaScrapingConfig
-	12, // 21: nominal.data_connector.v1.OpcUaTraversalConfig.root_nodes:type_name -> nominal.data_connector.v1.OpcNode
-	12, // 22: nominal.data_connector.v1.OpcUaTraversalConfig.skip_nodes:type_name -> nominal.data_connector.v1.OpcNode
-	0,  // 23: nominal.data_connector.v1.OpcUaTraversalConfig.reference_exploration_type:type_name -> nominal.data_connector.v1.OpcUaReferenceExplorationType
-	12, // 24: nominal.data_connector.v1.OpcUaDirectNodeSubscription.nodes:type_name -> nominal.data_connector.v1.OpcNode
-	20, // 25: nominal.data_connector.v1.OpcUaNodeExplorationConfig.opc_ua_traversal_config:type_name -> nominal.data_connector.v1.OpcUaTraversalConfig
-	21, // 26: nominal.data_connector.v1.OpcUaNodeExplorationConfig.opc_ua_direct_node_subscription:type_name -> nominal.data_connector.v1.OpcUaDirectNodeSubscription
-	31, // 27: nominal.data_connector.v1.OpcUaTimestampHandling.server:type_name -> nominal.data_connector.v1.OpcUaTimestampHandling.OpcUaServerTime
-	32, // 28: nominal.data_connector.v1.OpcUaTimestampHandling.source:type_name -> nominal.data_connector.v1.OpcUaTimestampHandling.OpcUaSourceTime
-	33, // 29: nominal.data_connector.v1.OpcUaTimestampHandling.relative:type_name -> nominal.data_connector.v1.OpcUaTimestampHandling.OpcUaRelativeTimestamp
-	3,  // 30: nominal.data_connector.v1.OpcUaDataChangeFilter.trigger:type_name -> nominal.data_connector.v1.OpcUaDataChangeTrigger
-	4,  // 31: nominal.data_connector.v1.OpcUaDataChangeFilter.deadband_type:type_name -> nominal.data_connector.v1.OpcUaDeadbandType
-	22, // 32: nominal.data_connector.v1.OpcUaScrapingConfig.node_exploration_config:type_name -> nominal.data_connector.v1.OpcUaNodeExplorationConfig
-	13, // 33: nominal.data_connector.v1.OpcUaScrapingConfig.channel_naming_convention:type_name -> nominal.data_connector.v1.OpcUaChannelNamingConvention
-	1,  // 34: nominal.data_connector.v1.OpcUaScrapingConfig.unknown_data_type_handling:type_name -> nominal.data_connector.v1.OpcUaUnknownDataTypeHandling
-	2,  // 35: nominal.data_connector.v1.OpcUaScrapingConfig.failed_monitor_handling:type_name -> nominal.data_connector.v1.OpcUaFailedMonitorHandling
-	23, // 36: nominal.data_connector.v1.OpcUaScrapingConfig.timestamp_handling:type_name -> nominal.data_connector.v1.OpcUaTimestampHandling
-	24, // 37: nominal.data_connector.v1.OpcUaScrapingConfig.data_change_filter:type_name -> nominal.data_connector.v1.OpcUaDataChangeFilter
-	16, // 38: nominal.data_connector.v1.OpcUaScrapingConfig.data_acquisition_config:type_name -> nominal.data_connector.v1.OpcUaDataAcquisitionConfig
-	22, // 39: nominal.data_connector.v1.OpcUaScrapingConfigUpdates.node_exploration_config:type_name -> nominal.data_connector.v1.OpcUaNodeExplorationConfig
-	13, // 40: nominal.data_connector.v1.OpcUaScrapingConfigUpdates.channel_naming_convention:type_name -> nominal.data_connector.v1.OpcUaChannelNamingConvention
-	1,  // 41: nominal.data_connector.v1.OpcUaScrapingConfigUpdates.unknown_data_type_handling:type_name -> nominal.data_connector.v1.OpcUaUnknownDataTypeHandling
-	2,  // 42: nominal.data_connector.v1.OpcUaScrapingConfigUpdates.failed_monitor_handling:type_name -> nominal.data_connector.v1.OpcUaFailedMonitorHandling
-	23, // 43: nominal.data_connector.v1.OpcUaScrapingConfigUpdates.timestamp_handling:type_name -> nominal.data_connector.v1.OpcUaTimestampHandling
-	24, // 44: nominal.data_connector.v1.OpcUaScrapingConfigUpdates.data_change_filter:type_name -> nominal.data_connector.v1.OpcUaDataChangeFilter
-	16, // 45: nominal.data_connector.v1.OpcUaScrapingConfigUpdates.data_acquisition_config:type_name -> nominal.data_connector.v1.OpcUaDataAcquisitionConfig
-	12, // 46: nominal.data_connector.v1.OpcUaChannelNamingConvention.OpcUaFullPath.root_nodes:type_name -> nominal.data_connector.v1.OpcNode
-	35, // 47: nominal.data_connector.v1.OpcUaTimestampHandling.OpcUaRelativeTimestamp.offset:type_name -> google.protobuf.Timestamp
-	48, // [48:48] is the sub-list for method output_type
-	48, // [48:48] is the sub-list for method input_type
-	48, // [48:48] is the sub-list for extension type_name
-	48, // [48:48] is the sub-list for extension extendee
-	0,  // [0:48] is the sub-list for field type_name
+	41, // 0: nominal.data_connector.v1.OpcAuthenticationConfig.anonymous:type_name -> google.protobuf.Empty
+	9,  // 1: nominal.data_connector.v1.OpcAuthenticationConfig.username_password:type_name -> nominal.data_connector.v1.OpcUsernamePasswordAuthentication
+	11, // 2: nominal.data_connector.v1.OpcAuthenticationConfig.token:type_name -> nominal.data_connector.v1.OpcTokenAuthentication
+	13, // 3: nominal.data_connector.v1.OpcAuthenticationConfig.certificate:type_name -> nominal.data_connector.v1.OpcCertificateAuthentication
+	41, // 4: nominal.data_connector.v1.OpcAuthenticationConfigSecret.anonymous:type_name -> google.protobuf.Empty
+	10, // 5: nominal.data_connector.v1.OpcAuthenticationConfigSecret.username_password:type_name -> nominal.data_connector.v1.OpcUsernamePasswordAuthenticationSecret
+	12, // 6: nominal.data_connector.v1.OpcAuthenticationConfigSecret.token:type_name -> nominal.data_connector.v1.OpcTokenAuthenticationSecret
+	14, // 7: nominal.data_connector.v1.OpcAuthenticationConfigSecret.certificate:type_name -> nominal.data_connector.v1.OpcCertificateAuthenticationSecret
+	15, // 8: nominal.data_connector.v1.OpcNode.identifier:type_name -> nominal.data_connector.v1.OpcIdentifierValue
+	34, // 9: nominal.data_connector.v1.OpcUaChannelNamingConvention.node_id:type_name -> nominal.data_connector.v1.OpcUaChannelNamingConvention.OpcUaNodeId
+	35, // 10: nominal.data_connector.v1.OpcUaChannelNamingConvention.browse_name:type_name -> nominal.data_connector.v1.OpcUaChannelNamingConvention.OpcUaBrowseName
+	36, // 11: nominal.data_connector.v1.OpcUaChannelNamingConvention.display_name:type_name -> nominal.data_connector.v1.OpcUaChannelNamingConvention.OpcUaDisplayName
+	37, // 12: nominal.data_connector.v1.OpcUaChannelNamingConvention.full_path:type_name -> nominal.data_connector.v1.OpcUaChannelNamingConvention.OpcUaFullPath
+	2,  // 13: nominal.data_connector.v1.OpcUaSubscriptionConfig.failed_monitor_handling:type_name -> nominal.data_connector.v1.OpcUaFailedMonitorHandling
+	31, // 14: nominal.data_connector.v1.OpcUaSubscriptionConfig.data_change_filter:type_name -> nominal.data_connector.v1.OpcUaDataChangeFilter
+	18, // 15: nominal.data_connector.v1.OpcUaDataAcquisitionConfig.subscription:type_name -> nominal.data_connector.v1.OpcUaSubscriptionConfig
+	19, // 16: nominal.data_connector.v1.OpcUaDataAcquisitionConfig.polling:type_name -> nominal.data_connector.v1.OpcUaPollingConfig
+	3,  // 17: nominal.data_connector.v1.OpcUaChannelSecurityConfig.security_policy:type_name -> nominal.data_connector.v1.OpcUaSecurityPolicy
+	4,  // 18: nominal.data_connector.v1.OpcUaChannelSecurityConfig.message_security_mode:type_name -> nominal.data_connector.v1.OpcUaMessageSecurityMode
+	7,  // 19: nominal.data_connector.v1.OpcUaConnectorDetails.authentication_config:type_name -> nominal.data_connector.v1.OpcAuthenticationConfig
+	32, // 20: nominal.data_connector.v1.OpcUaConnectorDetails.scraping_config:type_name -> nominal.data_connector.v1.OpcUaScrapingConfig
+	21, // 21: nominal.data_connector.v1.OpcUaConnectorDetails.application_certificate:type_name -> nominal.data_connector.v1.OpcUaApplicationCertificate
+	23, // 22: nominal.data_connector.v1.OpcUaConnectorDetails.channel_security_config:type_name -> nominal.data_connector.v1.OpcUaChannelSecurityConfig
+	7,  // 23: nominal.data_connector.v1.OpcUaConnectorDetailsUpdates.authentication_config:type_name -> nominal.data_connector.v1.OpcAuthenticationConfig
+	33, // 24: nominal.data_connector.v1.OpcUaConnectorDetailsUpdates.scraping_config:type_name -> nominal.data_connector.v1.OpcUaScrapingConfigUpdates
+	21, // 25: nominal.data_connector.v1.OpcUaConnectorDetailsUpdates.application_certificate:type_name -> nominal.data_connector.v1.OpcUaApplicationCertificate
+	23, // 26: nominal.data_connector.v1.OpcUaConnectorDetailsUpdates.channel_security_config:type_name -> nominal.data_connector.v1.OpcUaChannelSecurityConfig
+	8,  // 27: nominal.data_connector.v1.OpcUaConnectorDetailsSecret.authentication_config:type_name -> nominal.data_connector.v1.OpcAuthenticationConfigSecret
+	32, // 28: nominal.data_connector.v1.OpcUaConnectorDetailsSecret.scraping_config:type_name -> nominal.data_connector.v1.OpcUaScrapingConfig
+	22, // 29: nominal.data_connector.v1.OpcUaConnectorDetailsSecret.application_certificate:type_name -> nominal.data_connector.v1.OpcUaApplicationCertificateSecret
+	23, // 30: nominal.data_connector.v1.OpcUaConnectorDetailsSecret.channel_security_config:type_name -> nominal.data_connector.v1.OpcUaChannelSecurityConfig
+	16, // 31: nominal.data_connector.v1.OpcUaTraversalConfig.root_nodes:type_name -> nominal.data_connector.v1.OpcNode
+	16, // 32: nominal.data_connector.v1.OpcUaTraversalConfig.skip_nodes:type_name -> nominal.data_connector.v1.OpcNode
+	0,  // 33: nominal.data_connector.v1.OpcUaTraversalConfig.reference_exploration_type:type_name -> nominal.data_connector.v1.OpcUaReferenceExplorationType
+	16, // 34: nominal.data_connector.v1.OpcUaDirectNodeSubscription.nodes:type_name -> nominal.data_connector.v1.OpcNode
+	27, // 35: nominal.data_connector.v1.OpcUaNodeExplorationConfig.opc_ua_traversal_config:type_name -> nominal.data_connector.v1.OpcUaTraversalConfig
+	28, // 36: nominal.data_connector.v1.OpcUaNodeExplorationConfig.opc_ua_direct_node_subscription:type_name -> nominal.data_connector.v1.OpcUaDirectNodeSubscription
+	38, // 37: nominal.data_connector.v1.OpcUaTimestampHandling.server:type_name -> nominal.data_connector.v1.OpcUaTimestampHandling.OpcUaServerTime
+	39, // 38: nominal.data_connector.v1.OpcUaTimestampHandling.source:type_name -> nominal.data_connector.v1.OpcUaTimestampHandling.OpcUaSourceTime
+	40, // 39: nominal.data_connector.v1.OpcUaTimestampHandling.relative:type_name -> nominal.data_connector.v1.OpcUaTimestampHandling.OpcUaRelativeTimestamp
+	5,  // 40: nominal.data_connector.v1.OpcUaDataChangeFilter.trigger:type_name -> nominal.data_connector.v1.OpcUaDataChangeTrigger
+	6,  // 41: nominal.data_connector.v1.OpcUaDataChangeFilter.deadband_type:type_name -> nominal.data_connector.v1.OpcUaDeadbandType
+	29, // 42: nominal.data_connector.v1.OpcUaScrapingConfig.node_exploration_config:type_name -> nominal.data_connector.v1.OpcUaNodeExplorationConfig
+	17, // 43: nominal.data_connector.v1.OpcUaScrapingConfig.channel_naming_convention:type_name -> nominal.data_connector.v1.OpcUaChannelNamingConvention
+	1,  // 44: nominal.data_connector.v1.OpcUaScrapingConfig.unknown_data_type_handling:type_name -> nominal.data_connector.v1.OpcUaUnknownDataTypeHandling
+	2,  // 45: nominal.data_connector.v1.OpcUaScrapingConfig.failed_monitor_handling:type_name -> nominal.data_connector.v1.OpcUaFailedMonitorHandling
+	30, // 46: nominal.data_connector.v1.OpcUaScrapingConfig.timestamp_handling:type_name -> nominal.data_connector.v1.OpcUaTimestampHandling
+	31, // 47: nominal.data_connector.v1.OpcUaScrapingConfig.data_change_filter:type_name -> nominal.data_connector.v1.OpcUaDataChangeFilter
+	20, // 48: nominal.data_connector.v1.OpcUaScrapingConfig.data_acquisition_config:type_name -> nominal.data_connector.v1.OpcUaDataAcquisitionConfig
+	29, // 49: nominal.data_connector.v1.OpcUaScrapingConfigUpdates.node_exploration_config:type_name -> nominal.data_connector.v1.OpcUaNodeExplorationConfig
+	17, // 50: nominal.data_connector.v1.OpcUaScrapingConfigUpdates.channel_naming_convention:type_name -> nominal.data_connector.v1.OpcUaChannelNamingConvention
+	1,  // 51: nominal.data_connector.v1.OpcUaScrapingConfigUpdates.unknown_data_type_handling:type_name -> nominal.data_connector.v1.OpcUaUnknownDataTypeHandling
+	2,  // 52: nominal.data_connector.v1.OpcUaScrapingConfigUpdates.failed_monitor_handling:type_name -> nominal.data_connector.v1.OpcUaFailedMonitorHandling
+	30, // 53: nominal.data_connector.v1.OpcUaScrapingConfigUpdates.timestamp_handling:type_name -> nominal.data_connector.v1.OpcUaTimestampHandling
+	31, // 54: nominal.data_connector.v1.OpcUaScrapingConfigUpdates.data_change_filter:type_name -> nominal.data_connector.v1.OpcUaDataChangeFilter
+	20, // 55: nominal.data_connector.v1.OpcUaScrapingConfigUpdates.data_acquisition_config:type_name -> nominal.data_connector.v1.OpcUaDataAcquisitionConfig
+	16, // 56: nominal.data_connector.v1.OpcUaChannelNamingConvention.OpcUaFullPath.root_nodes:type_name -> nominal.data_connector.v1.OpcNode
+	42, // 57: nominal.data_connector.v1.OpcUaTimestampHandling.OpcUaRelativeTimestamp.offset:type_name -> google.protobuf.Timestamp
+	58, // [58:58] is the sub-list for method output_type
+	58, // [58:58] is the sub-list for method input_type
+	58, // [58:58] is the sub-list for extension type_name
+	58, // [58:58] is the sub-list for extension extendee
+	0,  // [0:58] is the sub-list for field type_name
 }
 
 func init() { file_nominal_protos_data_connector_v1_opc_ua_connector_proto_init() }
@@ -2473,48 +2994,50 @@ func file_nominal_protos_data_connector_v1_opc_ua_connector_proto_init() {
 		(*OpcAuthenticationConfig_Anonymous)(nil),
 		(*OpcAuthenticationConfig_UsernamePassword)(nil),
 		(*OpcAuthenticationConfig_Token)(nil),
+		(*OpcAuthenticationConfig_Certificate)(nil),
 	}
 	file_nominal_protos_data_connector_v1_opc_ua_connector_proto_msgTypes[1].OneofWrappers = []any{
 		(*OpcAuthenticationConfigSecret_Anonymous)(nil),
 		(*OpcAuthenticationConfigSecret_UsernamePassword)(nil),
 		(*OpcAuthenticationConfigSecret_Token)(nil),
+		(*OpcAuthenticationConfigSecret_Certificate)(nil),
 	}
-	file_nominal_protos_data_connector_v1_opc_ua_connector_proto_msgTypes[6].OneofWrappers = []any{
+	file_nominal_protos_data_connector_v1_opc_ua_connector_proto_msgTypes[8].OneofWrappers = []any{
 		(*OpcIdentifierValue_Numeric)(nil),
 		(*OpcIdentifierValue_String_)(nil),
 	}
-	file_nominal_protos_data_connector_v1_opc_ua_connector_proto_msgTypes[7].OneofWrappers = []any{}
-	file_nominal_protos_data_connector_v1_opc_ua_connector_proto_msgTypes[8].OneofWrappers = []any{
+	file_nominal_protos_data_connector_v1_opc_ua_connector_proto_msgTypes[9].OneofWrappers = []any{}
+	file_nominal_protos_data_connector_v1_opc_ua_connector_proto_msgTypes[10].OneofWrappers = []any{
 		(*OpcUaChannelNamingConvention_NodeId)(nil),
 		(*OpcUaChannelNamingConvention_BrowseName)(nil),
 		(*OpcUaChannelNamingConvention_DisplayName)(nil),
 		(*OpcUaChannelNamingConvention_FullPath)(nil),
 	}
-	file_nominal_protos_data_connector_v1_opc_ua_connector_proto_msgTypes[11].OneofWrappers = []any{
+	file_nominal_protos_data_connector_v1_opc_ua_connector_proto_msgTypes[13].OneofWrappers = []any{
 		(*OpcUaDataAcquisitionConfig_Subscription)(nil),
 		(*OpcUaDataAcquisitionConfig_Polling)(nil),
 	}
-	file_nominal_protos_data_connector_v1_opc_ua_connector_proto_msgTypes[13].OneofWrappers = []any{}
-	file_nominal_protos_data_connector_v1_opc_ua_connector_proto_msgTypes[14].OneofWrappers = []any{}
-	file_nominal_protos_data_connector_v1_opc_ua_connector_proto_msgTypes[17].OneofWrappers = []any{
+	file_nominal_protos_data_connector_v1_opc_ua_connector_proto_msgTypes[18].OneofWrappers = []any{}
+	file_nominal_protos_data_connector_v1_opc_ua_connector_proto_msgTypes[19].OneofWrappers = []any{}
+	file_nominal_protos_data_connector_v1_opc_ua_connector_proto_msgTypes[22].OneofWrappers = []any{
 		(*OpcUaNodeExplorationConfig_OpcUaTraversalConfig)(nil),
 		(*OpcUaNodeExplorationConfig_OpcUaDirectNodeSubscription)(nil),
 	}
-	file_nominal_protos_data_connector_v1_opc_ua_connector_proto_msgTypes[18].OneofWrappers = []any{
+	file_nominal_protos_data_connector_v1_opc_ua_connector_proto_msgTypes[23].OneofWrappers = []any{
 		(*OpcUaTimestampHandling_Server)(nil),
 		(*OpcUaTimestampHandling_Source)(nil),
 		(*OpcUaTimestampHandling_Relative)(nil),
 	}
-	file_nominal_protos_data_connector_v1_opc_ua_connector_proto_msgTypes[20].OneofWrappers = []any{}
-	file_nominal_protos_data_connector_v1_opc_ua_connector_proto_msgTypes[21].OneofWrappers = []any{}
-	file_nominal_protos_data_connector_v1_opc_ua_connector_proto_msgTypes[28].OneofWrappers = []any{}
+	file_nominal_protos_data_connector_v1_opc_ua_connector_proto_msgTypes[25].OneofWrappers = []any{}
+	file_nominal_protos_data_connector_v1_opc_ua_connector_proto_msgTypes[26].OneofWrappers = []any{}
+	file_nominal_protos_data_connector_v1_opc_ua_connector_proto_msgTypes[33].OneofWrappers = []any{}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_nominal_protos_data_connector_v1_opc_ua_connector_proto_rawDesc), len(file_nominal_protos_data_connector_v1_opc_ua_connector_proto_rawDesc)),
-			NumEnums:      5,
-			NumMessages:   29,
+			NumEnums:      7,
+			NumMessages:   34,
 			NumExtensions: 0,
 			NumServices:   0,
 		},

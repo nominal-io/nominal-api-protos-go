@@ -31,21 +31,41 @@ const (
 // Data Deletion Service manages deletion of stored data.
 type DataDeletionServiceClient interface {
 	// Deprecated: Do not use.
-	// Deprecated: This legacy endpoint is unsupported for Iceberg-backed or DUAL datasets, so it may not delete all
-	// requested data. Do not use it for new integrations.
+	// Deletes data from a dataset, limited by time range, tags, and channel names when given, otherwise all of
+	// its data.
 	//
-	// Deletes stored data. This is an irreversible operation so be careful about specified
-	// time range, channel names, and tag scope. requires the user to be an admin for the organization.
+	// The deletion is irreversible. It runs as a background job, so the call returns before the data is gone.
+	// Repeating an identical request while its job runs does not start a second job. The time range, tags, and
+	// channel names narrow the deletion together. It can leave data behind in datasets stored in Iceberg, alone or
+	// beside ClickHouse; for those, DeleteChannelWithTags removes whole series.
+	//
+	// With delete_metadata, channel metadata is deleted too, so the request must set no time range, tags, or
+	// channel names. The caller needs the datasource:delete_data permission on the data source.
+	//
+	// Errors:
+	// - PERMISSION_DENIED: the caller lacks the datasource:delete_data permission on the data source.
+	// - INVALID_ARGUMENT: delete_metadata is true and the request sets a time range, tags, or channel names.
 	DeleteData(ctx context.Context, in *DeleteDataRequest, opts ...grpc.CallOption) (*DeleteDataResponse, error)
-	// Deletes channels with tags within a data source.
-	// Requires DATASOURCE__DELETE_DATA permission on the data source.
-	// Deletions are soft — deleted channels with tags are marked for deletion and will eventually be hard deleted.
-	// The request will be rejected if there are too many pending deletions for the data source.
-	// Throws if the request matches too many channels with tags.
+	// Soft-deletes the series (channel plus tag set) of a dataset that have all of the given tags, optionally for
+	// one channel. Returns the channels with tag sets that were deleted, or with apply false, that would be
+	// deleted without deleting any.
+	//
+	// With apply false nothing is deleted. A background job permanently removes deleted series after a grace
+	// period. Until then, UndeleteChannelWithTags restores them. The caller needs the datasource:delete_data
+	// permission on the data source.
+	//
+	// Errors:
+	// - PERMISSION_DENIED: the caller lacks the datasource:delete_data permission on the data source.
 	DeleteChannelWithTags(ctx context.Context, in *DeleteChannelWithTagsRequest, opts ...grpc.CallOption) (*DeleteChannelWithTagsResponse, error)
-	// Best effort to undelete channels with tags within a data source.
-	// Requires DATASOURCE__DELETE_DATA permission on the data source.
-	// The batch size of channels with tags in the request must be <= 1000.
+	// Restores soft-deleted series of a dataset, each matched by channel name and exact tag set. Reverses
+	// DeleteChannelWithTags.
+	//
+	// Best effort: entries that match no series are ignored. Returns nothing. For datasets stored in Iceberg, the
+	// restore finishes in a background job after the call returns. The caller needs the datasource:delete_data
+	// permission on the data source.
+	//
+	// Errors:
+	// - PERMISSION_DENIED: the caller lacks the datasource:delete_data permission on the data source.
 	UndeleteChannelWithTags(ctx context.Context, in *UndeleteChannelWithTagsRequest, opts ...grpc.CallOption) (*UndeleteChannelWithTagsResponse, error)
 }
 
@@ -95,21 +115,41 @@ func (c *dataDeletionServiceClient) UndeleteChannelWithTags(ctx context.Context,
 // Data Deletion Service manages deletion of stored data.
 type DataDeletionServiceServer interface {
 	// Deprecated: Do not use.
-	// Deprecated: This legacy endpoint is unsupported for Iceberg-backed or DUAL datasets, so it may not delete all
-	// requested data. Do not use it for new integrations.
+	// Deletes data from a dataset, limited by time range, tags, and channel names when given, otherwise all of
+	// its data.
 	//
-	// Deletes stored data. This is an irreversible operation so be careful about specified
-	// time range, channel names, and tag scope. requires the user to be an admin for the organization.
+	// The deletion is irreversible. It runs as a background job, so the call returns before the data is gone.
+	// Repeating an identical request while its job runs does not start a second job. The time range, tags, and
+	// channel names narrow the deletion together. It can leave data behind in datasets stored in Iceberg, alone or
+	// beside ClickHouse; for those, DeleteChannelWithTags removes whole series.
+	//
+	// With delete_metadata, channel metadata is deleted too, so the request must set no time range, tags, or
+	// channel names. The caller needs the datasource:delete_data permission on the data source.
+	//
+	// Errors:
+	// - PERMISSION_DENIED: the caller lacks the datasource:delete_data permission on the data source.
+	// - INVALID_ARGUMENT: delete_metadata is true and the request sets a time range, tags, or channel names.
 	DeleteData(context.Context, *DeleteDataRequest) (*DeleteDataResponse, error)
-	// Deletes channels with tags within a data source.
-	// Requires DATASOURCE__DELETE_DATA permission on the data source.
-	// Deletions are soft — deleted channels with tags are marked for deletion and will eventually be hard deleted.
-	// The request will be rejected if there are too many pending deletions for the data source.
-	// Throws if the request matches too many channels with tags.
+	// Soft-deletes the series (channel plus tag set) of a dataset that have all of the given tags, optionally for
+	// one channel. Returns the channels with tag sets that were deleted, or with apply false, that would be
+	// deleted without deleting any.
+	//
+	// With apply false nothing is deleted. A background job permanently removes deleted series after a grace
+	// period. Until then, UndeleteChannelWithTags restores them. The caller needs the datasource:delete_data
+	// permission on the data source.
+	//
+	// Errors:
+	// - PERMISSION_DENIED: the caller lacks the datasource:delete_data permission on the data source.
 	DeleteChannelWithTags(context.Context, *DeleteChannelWithTagsRequest) (*DeleteChannelWithTagsResponse, error)
-	// Best effort to undelete channels with tags within a data source.
-	// Requires DATASOURCE__DELETE_DATA permission on the data source.
-	// The batch size of channels with tags in the request must be <= 1000.
+	// Restores soft-deleted series of a dataset, each matched by channel name and exact tag set. Reverses
+	// DeleteChannelWithTags.
+	//
+	// Best effort: entries that match no series are ignored. Returns nothing. For datasets stored in Iceberg, the
+	// restore finishes in a background job after the call returns. The caller needs the datasource:delete_data
+	// permission on the data source.
+	//
+	// Errors:
+	// - PERMISSION_DENIED: the caller lacks the datasource:delete_data permission on the data source.
 	UndeleteChannelWithTags(context.Context, *UndeleteChannelWithTagsRequest) (*UndeleteChannelWithTagsResponse, error)
 	mustEmbedUnimplementedDataDeletionServiceServer()
 }

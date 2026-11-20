@@ -26,12 +26,13 @@ const (
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 //
-// Privileged physical cleanup for an Iceberg-backed dataset. The gRPC package is intentionally
+// Privileged physical cleanup of a dataset's Iceberg namespace. The gRPC package is intentionally
 // separate from public packages so it can be omitted from ingress; the resource also requires an
 // admin user token.
 type InternalIcebergDatasetServiceClient interface {
 	// Deletes every table in the dataset's Iceberg namespace, then deletes the namespace itself.
-	// The dataset must have ICEBERG or DUAL backing. This does not remove the catalog dataset row.
+	// The dataset must have ICEBERG, DUAL or LEGACY backing; for a LEGACY dataset with no namespace
+	// this is a no-op. This does not remove the catalog dataset row.
 	DeleteDatasetNamespace(ctx context.Context, in *DeleteDatasetNamespaceRequest, opts ...grpc.CallOption) (*DeleteDatasetNamespaceResponse, error)
 }
 
@@ -57,12 +58,13 @@ func (c *internalIcebergDatasetServiceClient) DeleteDatasetNamespace(ctx context
 // All implementations must embed UnimplementedInternalIcebergDatasetServiceServer
 // for forward compatibility.
 //
-// Privileged physical cleanup for an Iceberg-backed dataset. The gRPC package is intentionally
+// Privileged physical cleanup of a dataset's Iceberg namespace. The gRPC package is intentionally
 // separate from public packages so it can be omitted from ingress; the resource also requires an
 // admin user token.
 type InternalIcebergDatasetServiceServer interface {
 	// Deletes every table in the dataset's Iceberg namespace, then deletes the namespace itself.
-	// The dataset must have ICEBERG or DUAL backing. This does not remove the catalog dataset row.
+	// The dataset must have ICEBERG, DUAL or LEGACY backing; for a LEGACY dataset with no namespace
+	// this is a no-op. This does not remove the catalog dataset row.
 	DeleteDatasetNamespace(context.Context, *DeleteDatasetNamespaceRequest) (*DeleteDatasetNamespaceResponse, error)
 	mustEmbedUnimplementedInternalIcebergDatasetServiceServer()
 }

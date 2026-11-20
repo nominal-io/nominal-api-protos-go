@@ -28,7 +28,7 @@ const (
 //
 // A service that returns metadata about the service.
 type ServiceMetadataServiceClient interface {
-	// AuthHeader is not required
+	// Returns the service version and the schema versions it supports. Callable without credentials.
 	GetServiceMetadata(ctx context.Context, in *GetServiceMetadataRequest, opts ...grpc.CallOption) (*GetServiceMetadataResponse, error)
 }
 
@@ -56,7 +56,7 @@ func (c *serviceMetadataServiceClient) GetServiceMetadata(ctx context.Context, i
 //
 // A service that returns metadata about the service.
 type ServiceMetadataServiceServer interface {
-	// AuthHeader is not required
+	// Returns the service version and the schema versions it supports. Callable without credentials.
 	GetServiceMetadata(context.Context, *GetServiceMetadataRequest) (*GetServiceMetadataResponse, error)
 	mustEmbedUnimplementedServiceMetadataServiceServer()
 }

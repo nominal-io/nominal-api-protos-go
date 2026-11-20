@@ -35,42 +35,144 @@ const (
 //
 // Manages File Store files and revisions.
 type FilesServiceClient interface {
-	// Gets a file by path.
+	// Gets the file at a path in a drive, with its state, size, and current revision. Use GetFileByIdentity when
+	// you hold the file's identity.
 	//
-	// Errors: FileStoreCommonError (DRIVE_NOT_FOUND, FILE_NOT_FOUND, PERMISSION_DENIED),
-	// VirtualDriveUpstreamError (on virtual drives).
+	// A removed file is returned only with include_removed, and only when no active file has that path. If several
+	// removed files had the path, the most recently removed is returned. On a virtual drive the file is read from
+	// the upstream provider, which has no removed files, so include_removed has no effect. The caller needs
+	// permission to read files in the drive.
+	//
+	// Errors:
+	//   - INVALID_ARGUMENT: the path is not a valid drive path.
+	//   - NOT_FOUND (DRIVE_NOT_FOUND): the drive does not exist or the caller cannot read it.
+	//   - NOT_FOUND (FILE_NOT_FOUND): no file has this path.
+	//   - FAILED_PRECONDITION: on a virtual drive, the stored credentials are missing, malformed, or rejected, or
+	//     the upstream storage is unusable.
+	//   - UNAVAILABLE: on a virtual drive, the upstream provider is unreachable or failing.
+	//   - UNIMPLEMENTED: the virtual drive's provider is not supported.
 	GetFile(ctx context.Context, in *GetFileRequest, opts ...grpc.CallOption) (*GetFileResponse, error)
-	// Gets a file by its unique identifier.
+	// Gets a file by its identity, which is a file RID on a managed drive or a provider locator on a virtual
+	// drive. Returns the file's current path, state, size, and revision.
 	//
-	// Errors: FileStoreCommonError (DRIVE_NOT_FOUND, FILE_NOT_FOUND, PERMISSION_DENIED),
-	// VirtualDriveUpstreamError (on virtual drives).
+	// A managed file that was removed but not purged is returned with its removed state. Use GetFile when you only
+	// know the path. The caller needs permission to read files in the file's drive.
+	//
+	// Errors:
+	//   - INVALID_ARGUMENT: the identity, or the kind of a virtual identity, is not set.
+	//   - NOT_FOUND (FILE_NOT_FOUND): no file has this identity.
+	//   - NOT_FOUND (DRIVE_NOT_FOUND): the file's drive does not exist or the caller cannot read it.
+	//   - FAILED_PRECONDITION: on a virtual drive, the stored credentials are missing, malformed, or rejected, or
+	//     the upstream storage is unusable.
+	//   - UNAVAILABLE: on a virtual drive, the upstream provider is unreachable or failing.
+	//   - UNIMPLEMENTED: the virtual drive's provider is not supported.
 	GetFileByIdentity(ctx context.Context, in *GetFileByIdentityRequest, opts ...grpc.CallOption) (*GetFileByIdentityResponse, error)
-	// Resolves a potentially-transient file reference to a stable content target.
+	// Resolves a file revision reference from GetFile or ListFiles to a revision RID that names that content
+	// permanently. Returns the revision RID, its drive RID, and the revision.
 	//
-	// Errors: FileStoreCommonError (DRIVE_NOT_FOUND, FILE_REVISION_NOT_FOUND,
-	// PERMISSION_DENIED), VirtualDriveUpstreamError (on virtual drives).
+	// A reference to a managed revision, or to a virtual revision resolved before, returns that revision. On a
+	// virtual drive the first call records the pinned upstream version without copying its bytes, and later calls
+	// for the same version return the same revision even if the upstream file changes or disappears. The reference
+	// must pin the version: an etag for S3, a generation for GCS, or a file ID and revision ID for Google Drive.
+	// The caller needs permission to read files in the drive.
+	//
+	// Errors:
+	//   - INVALID_ARGUMENT: source_ref or its kind is not set, a virtual reference names a drive that is not
+	//     virtual, a reference lacks its pin or, for Google Drive, its file ID, or a path is invalid.
+	//   - NOT_FOUND (FILE_REVISION_NOT_FOUND): a managed reference names no revision.
+	//   - NOT_FOUND (DRIVE_NOT_FOUND): no drive the caller can read holds the revision, or the virtual drive does
+	//     not exist.
+	//   - NOT_FOUND (UPSTREAM_FILE_NOT_FOUND): the upstream provider no longer has the pinned version.
+	//   - FAILED_PRECONDITION: on a virtual drive, the stored credentials are missing, malformed, or rejected, or
+	//     the upstream storage is unusable.
+	//   - UNAVAILABLE: on a virtual drive, the upstream provider is unreachable or failing.
+	//   - UNIMPLEMENTED: the reference is for Azure Blob, or the provider is not supported.
 	ResolveFileRevision(ctx context.Context, in *ResolveFileRevisionRequest, opts ...grpc.CallOption) (*ResolveFileRevisionResponse, error)
-	// Lists files under a drive path.
+	// Lists the files and folders directly under a path in a drive. With recursive, lists every active file at any
+	// depth under the path instead.
 	//
-	// Errors: FileStoreCommonError (DRIVE_NOT_FOUND, PERMISSION_DENIED), VirtualDriveUpstreamError (on virtual drives).
+	// On a managed drive, folders come first, then files, each ordered by name ignoring case, and a path's active
+	// file comes before its removed files. Removed files are included only with include_removed, one entry for
+	// each. A recursive listing is ordered by path, has no folder entries, and works only on managed drives. A
+	// page token from one mode is rejected in the other. On a virtual drive the page token is the upstream
+	// provider's. The caller needs permission to read files in the drive.
+	//
+	// Errors:
+	//   - INVALID_ARGUMENT: the parent path or page token is invalid, or recursive is combined with include_removed.
+	//   - NOT_FOUND (DRIVE_NOT_FOUND): the drive does not exist or the caller cannot read it.
+	//   - UNIMPLEMENTED: recursive is set on a virtual drive, or the provider is not supported.
+	//   - FAILED_PRECONDITION: on a virtual drive, the stored credentials are missing, malformed, or rejected, or
+	//     the upstream storage is unusable.
+	//   - UNAVAILABLE: on a virtual drive, the upstream provider is unreachable or failing.
 	ListFiles(ctx context.Context, in *ListFilesRequest, opts ...grpc.CallOption) (*ListFilesResponse, error)
-	// Applies file mutations to a managed drive. Virtual drives are read-only.
+	// Applies a batch of changes to the files of a managed drive: put an uploaded object, move or remove a file,
+	// restore a revision, or move a folder. Returns one result per change, in order.
 	//
-	// Errors: FileStoreCommonError (DRIVE_NOT_FOUND, PERMISSION_DENIED), FileChangeError
-	// (READ_ONLY_DRIVE). Per-item failures ride in FileChangeResult instead of failing the RPC.
+	// A put commits an object uploaded to File Store storage as a new revision. Putting the same object to the
+	// same destination again succeeds and returns the same file. A move onto another file's current revision
+	// removes that file. A remove keeps the history, so a restore can bring the file back. A folder move re-paths
+	// every active file under it and needs an empty destination. A put, move, restore, or folder move can trigger
+	// the drive's ingest rules.
+	//
+	// Changes run in order, and earlier changes are visible to later ones. By default each change succeeds or
+	// fails alone, and its failure is reported in its FileChangeResult. Under FAILURE_POLICY_ABORT the batch
+	// applies all or nothing: the first failure is reported on its change, and the others report
+	// FILE_CHANGE_ERROR_BATCH_FAILURE. The caller needs permission to write files in the drive.
+	//
+	// Errors:
+	//   - INVALID_ARGUMENT: the request has more than 1,000 changes (100 under FAILURE_POLICY_ABORT) or an
+	//     unrecognized failure policy.
+	//   - NOT_FOUND (DRIVE_NOT_FOUND): the drive does not exist or the caller cannot access it.
+	//   - PERMISSION_DENIED: the caller cannot write files in the drive.
+	//   - FAILED_PRECONDITION (FILE_CHANGE_ERROR_READ_ONLY_DRIVE): the drive is virtual.
 	ApplyFileChanges(ctx context.Context, in *ApplyFileChangesRequest, opts ...grpc.CallOption) (*ApplyFileChangesResponse, error)
-	// Lists revisions for a managed file. Virtual drives do not expose file history.
+	// Lists the revisions of a managed file, newest first. Each revision records the operation that produced it:
+	// put, move, remove, or restore.
 	//
-	// Errors: FileStoreCommonError (DRIVE_NOT_FOUND, FILE_NOT_FOUND, PERMISSION_DENIED).
+	// Returns a page. A page token for a revision that was purged restarts at the newest revision. A file RID that
+	// is not in the drive returns an empty page. Virtual drives do not expose file history. The caller needs
+	// permission to read files in the drive.
+	//
+	// Errors:
+	// - INVALID_ARGUMENT: the page token is invalid.
+	// - NOT_FOUND (DRIVE_NOT_FOUND): the drive does not exist or the caller cannot read it.
+	// - UNIMPLEMENTED: the drive is virtual.
 	ListFileRevisions(ctx context.Context, in *ListFileRevisionsRequest, opts ...grpc.CallOption) (*ListFileRevisionsResponse, error)
-	// Currently admin-only: permanently removes a managed file revision and its backing object.
+	// Permanently deletes one managed file revision and its backing object, which cannot be undone. To remove a
+	// file but keep its history, use ApplyFileChanges with a remove change.
 	//
-	// Errors: FileStoreCommonError (FILE_REVISION_NOT_FOUND, PERMISSION_DENIED).
+	// Currently admin-only: the caller must be an organization admin with permission to purge files in the drive.
+	// If the revision is the file's current one, the file is deleted when this was its only revision, and
+	// otherwise the file becomes removed. A revision that other drives share is purged from all of them.
+	//
+	// Errors:
+	//   - NOT_FOUND (FILE_REVISION_NOT_FOUND): the revision does not exist.
+	//   - NOT_FOUND (DRIVE_NOT_FOUND): no drive the caller can read holds the revision, or the caller is not a
+	//     member of that drive's workspace.
+	//   - PERMISSION_DENIED: the caller cannot purge files in the drive or is not an organization admin.
+	//   - UNIMPLEMENTED: the revision is on a virtual drive.
 	PurgeFile(ctx context.Context, in *PurgeFileRequest, opts ...grpc.CallOption) (*PurgeFileResponse, error)
-	// Returns a short-lived signed URL to download a file revision's content.
+	// Returns a short-lived signed URL that downloads the content of a file revision.
 	//
-	// Errors: FileStoreCommonError (FILE_REVISION_NOT_FOUND, PERMISSION_DENIED),
-	// RevisionReadError (BYTES_RECLAIMED), VirtualDriveUpstreamError (on virtual drives).
+	// The revision is named by its RID, or by a source ref from GetFile or ListFiles, which is resolved first as
+	// ResolveFileRevision does, so a virtual revision needs no separate call. The download must start within one
+	// minute. It saves the content under the file name from the revision's path. The URL supports HTTP range
+	// requests, but only a single byte range. A virtual revision whose content Nominal has not stored gets a URL
+	// that streams the content from the drive's upstream provider. The caller needs permission to read files in
+	// the drive.
+	//
+	// Errors:
+	//   - INVALID_ARGUMENT: neither file_revision_rid nor source_ref is set, or the source_ref is invalid as for
+	//     ResolveFileRevision.
+	//   - NOT_FOUND (FILE_REVISION_NOT_FOUND): the revision does not exist.
+	//   - NOT_FOUND (DRIVE_NOT_FOUND): no drive the caller can read holds the revision.
+	//   - NOT_FOUND (BYTES_RECLAIMED): the revision's content is no longer in storage, because retention or a purge
+	//     reclaimed it.
+	//   - NOT_FOUND (UPSTREAM_FILE_NOT_FOUND): a virtual source_ref pins a version the upstream provider no longer has.
+	//   - FAILED_PRECONDITION: a virtual source_ref names a drive whose stored credentials are missing, malformed, or
+	//     rejected, or whose upstream storage is unusable.
+	//   - UNAVAILABLE: a virtual source_ref names a drive whose upstream provider is unreachable or failing.
+	//   - UNIMPLEMENTED: a source_ref is for Azure Blob or an unsupported provider.
 	GetDownloadUrl(ctx context.Context, in *GetDownloadUrlRequest, opts ...grpc.CallOption) (*GetDownloadUrlResponse, error)
 }
 
@@ -168,42 +270,144 @@ func (c *filesServiceClient) GetDownloadUrl(ctx context.Context, in *GetDownload
 //
 // Manages File Store files and revisions.
 type FilesServiceServer interface {
-	// Gets a file by path.
+	// Gets the file at a path in a drive, with its state, size, and current revision. Use GetFileByIdentity when
+	// you hold the file's identity.
 	//
-	// Errors: FileStoreCommonError (DRIVE_NOT_FOUND, FILE_NOT_FOUND, PERMISSION_DENIED),
-	// VirtualDriveUpstreamError (on virtual drives).
+	// A removed file is returned only with include_removed, and only when no active file has that path. If several
+	// removed files had the path, the most recently removed is returned. On a virtual drive the file is read from
+	// the upstream provider, which has no removed files, so include_removed has no effect. The caller needs
+	// permission to read files in the drive.
+	//
+	// Errors:
+	//   - INVALID_ARGUMENT: the path is not a valid drive path.
+	//   - NOT_FOUND (DRIVE_NOT_FOUND): the drive does not exist or the caller cannot read it.
+	//   - NOT_FOUND (FILE_NOT_FOUND): no file has this path.
+	//   - FAILED_PRECONDITION: on a virtual drive, the stored credentials are missing, malformed, or rejected, or
+	//     the upstream storage is unusable.
+	//   - UNAVAILABLE: on a virtual drive, the upstream provider is unreachable or failing.
+	//   - UNIMPLEMENTED: the virtual drive's provider is not supported.
 	GetFile(context.Context, *GetFileRequest) (*GetFileResponse, error)
-	// Gets a file by its unique identifier.
+	// Gets a file by its identity, which is a file RID on a managed drive or a provider locator on a virtual
+	// drive. Returns the file's current path, state, size, and revision.
 	//
-	// Errors: FileStoreCommonError (DRIVE_NOT_FOUND, FILE_NOT_FOUND, PERMISSION_DENIED),
-	// VirtualDriveUpstreamError (on virtual drives).
+	// A managed file that was removed but not purged is returned with its removed state. Use GetFile when you only
+	// know the path. The caller needs permission to read files in the file's drive.
+	//
+	// Errors:
+	//   - INVALID_ARGUMENT: the identity, or the kind of a virtual identity, is not set.
+	//   - NOT_FOUND (FILE_NOT_FOUND): no file has this identity.
+	//   - NOT_FOUND (DRIVE_NOT_FOUND): the file's drive does not exist or the caller cannot read it.
+	//   - FAILED_PRECONDITION: on a virtual drive, the stored credentials are missing, malformed, or rejected, or
+	//     the upstream storage is unusable.
+	//   - UNAVAILABLE: on a virtual drive, the upstream provider is unreachable or failing.
+	//   - UNIMPLEMENTED: the virtual drive's provider is not supported.
 	GetFileByIdentity(context.Context, *GetFileByIdentityRequest) (*GetFileByIdentityResponse, error)
-	// Resolves a potentially-transient file reference to a stable content target.
+	// Resolves a file revision reference from GetFile or ListFiles to a revision RID that names that content
+	// permanently. Returns the revision RID, its drive RID, and the revision.
 	//
-	// Errors: FileStoreCommonError (DRIVE_NOT_FOUND, FILE_REVISION_NOT_FOUND,
-	// PERMISSION_DENIED), VirtualDriveUpstreamError (on virtual drives).
+	// A reference to a managed revision, or to a virtual revision resolved before, returns that revision. On a
+	// virtual drive the first call records the pinned upstream version without copying its bytes, and later calls
+	// for the same version return the same revision even if the upstream file changes or disappears. The reference
+	// must pin the version: an etag for S3, a generation for GCS, or a file ID and revision ID for Google Drive.
+	// The caller needs permission to read files in the drive.
+	//
+	// Errors:
+	//   - INVALID_ARGUMENT: source_ref or its kind is not set, a virtual reference names a drive that is not
+	//     virtual, a reference lacks its pin or, for Google Drive, its file ID, or a path is invalid.
+	//   - NOT_FOUND (FILE_REVISION_NOT_FOUND): a managed reference names no revision.
+	//   - NOT_FOUND (DRIVE_NOT_FOUND): no drive the caller can read holds the revision, or the virtual drive does
+	//     not exist.
+	//   - NOT_FOUND (UPSTREAM_FILE_NOT_FOUND): the upstream provider no longer has the pinned version.
+	//   - FAILED_PRECONDITION: on a virtual drive, the stored credentials are missing, malformed, or rejected, or
+	//     the upstream storage is unusable.
+	//   - UNAVAILABLE: on a virtual drive, the upstream provider is unreachable or failing.
+	//   - UNIMPLEMENTED: the reference is for Azure Blob, or the provider is not supported.
 	ResolveFileRevision(context.Context, *ResolveFileRevisionRequest) (*ResolveFileRevisionResponse, error)
-	// Lists files under a drive path.
+	// Lists the files and folders directly under a path in a drive. With recursive, lists every active file at any
+	// depth under the path instead.
 	//
-	// Errors: FileStoreCommonError (DRIVE_NOT_FOUND, PERMISSION_DENIED), VirtualDriveUpstreamError (on virtual drives).
+	// On a managed drive, folders come first, then files, each ordered by name ignoring case, and a path's active
+	// file comes before its removed files. Removed files are included only with include_removed, one entry for
+	// each. A recursive listing is ordered by path, has no folder entries, and works only on managed drives. A
+	// page token from one mode is rejected in the other. On a virtual drive the page token is the upstream
+	// provider's. The caller needs permission to read files in the drive.
+	//
+	// Errors:
+	//   - INVALID_ARGUMENT: the parent path or page token is invalid, or recursive is combined with include_removed.
+	//   - NOT_FOUND (DRIVE_NOT_FOUND): the drive does not exist or the caller cannot read it.
+	//   - UNIMPLEMENTED: recursive is set on a virtual drive, or the provider is not supported.
+	//   - FAILED_PRECONDITION: on a virtual drive, the stored credentials are missing, malformed, or rejected, or
+	//     the upstream storage is unusable.
+	//   - UNAVAILABLE: on a virtual drive, the upstream provider is unreachable or failing.
 	ListFiles(context.Context, *ListFilesRequest) (*ListFilesResponse, error)
-	// Applies file mutations to a managed drive. Virtual drives are read-only.
+	// Applies a batch of changes to the files of a managed drive: put an uploaded object, move or remove a file,
+	// restore a revision, or move a folder. Returns one result per change, in order.
 	//
-	// Errors: FileStoreCommonError (DRIVE_NOT_FOUND, PERMISSION_DENIED), FileChangeError
-	// (READ_ONLY_DRIVE). Per-item failures ride in FileChangeResult instead of failing the RPC.
+	// A put commits an object uploaded to File Store storage as a new revision. Putting the same object to the
+	// same destination again succeeds and returns the same file. A move onto another file's current revision
+	// removes that file. A remove keeps the history, so a restore can bring the file back. A folder move re-paths
+	// every active file under it and needs an empty destination. A put, move, restore, or folder move can trigger
+	// the drive's ingest rules.
+	//
+	// Changes run in order, and earlier changes are visible to later ones. By default each change succeeds or
+	// fails alone, and its failure is reported in its FileChangeResult. Under FAILURE_POLICY_ABORT the batch
+	// applies all or nothing: the first failure is reported on its change, and the others report
+	// FILE_CHANGE_ERROR_BATCH_FAILURE. The caller needs permission to write files in the drive.
+	//
+	// Errors:
+	//   - INVALID_ARGUMENT: the request has more than 1,000 changes (100 under FAILURE_POLICY_ABORT) or an
+	//     unrecognized failure policy.
+	//   - NOT_FOUND (DRIVE_NOT_FOUND): the drive does not exist or the caller cannot access it.
+	//   - PERMISSION_DENIED: the caller cannot write files in the drive.
+	//   - FAILED_PRECONDITION (FILE_CHANGE_ERROR_READ_ONLY_DRIVE): the drive is virtual.
 	ApplyFileChanges(context.Context, *ApplyFileChangesRequest) (*ApplyFileChangesResponse, error)
-	// Lists revisions for a managed file. Virtual drives do not expose file history.
+	// Lists the revisions of a managed file, newest first. Each revision records the operation that produced it:
+	// put, move, remove, or restore.
 	//
-	// Errors: FileStoreCommonError (DRIVE_NOT_FOUND, FILE_NOT_FOUND, PERMISSION_DENIED).
+	// Returns a page. A page token for a revision that was purged restarts at the newest revision. A file RID that
+	// is not in the drive returns an empty page. Virtual drives do not expose file history. The caller needs
+	// permission to read files in the drive.
+	//
+	// Errors:
+	// - INVALID_ARGUMENT: the page token is invalid.
+	// - NOT_FOUND (DRIVE_NOT_FOUND): the drive does not exist or the caller cannot read it.
+	// - UNIMPLEMENTED: the drive is virtual.
 	ListFileRevisions(context.Context, *ListFileRevisionsRequest) (*ListFileRevisionsResponse, error)
-	// Currently admin-only: permanently removes a managed file revision and its backing object.
+	// Permanently deletes one managed file revision and its backing object, which cannot be undone. To remove a
+	// file but keep its history, use ApplyFileChanges with a remove change.
 	//
-	// Errors: FileStoreCommonError (FILE_REVISION_NOT_FOUND, PERMISSION_DENIED).
+	// Currently admin-only: the caller must be an organization admin with permission to purge files in the drive.
+	// If the revision is the file's current one, the file is deleted when this was its only revision, and
+	// otherwise the file becomes removed. A revision that other drives share is purged from all of them.
+	//
+	// Errors:
+	//   - NOT_FOUND (FILE_REVISION_NOT_FOUND): the revision does not exist.
+	//   - NOT_FOUND (DRIVE_NOT_FOUND): no drive the caller can read holds the revision, or the caller is not a
+	//     member of that drive's workspace.
+	//   - PERMISSION_DENIED: the caller cannot purge files in the drive or is not an organization admin.
+	//   - UNIMPLEMENTED: the revision is on a virtual drive.
 	PurgeFile(context.Context, *PurgeFileRequest) (*PurgeFileResponse, error)
-	// Returns a short-lived signed URL to download a file revision's content.
+	// Returns a short-lived signed URL that downloads the content of a file revision.
 	//
-	// Errors: FileStoreCommonError (FILE_REVISION_NOT_FOUND, PERMISSION_DENIED),
-	// RevisionReadError (BYTES_RECLAIMED), VirtualDriveUpstreamError (on virtual drives).
+	// The revision is named by its RID, or by a source ref from GetFile or ListFiles, which is resolved first as
+	// ResolveFileRevision does, so a virtual revision needs no separate call. The download must start within one
+	// minute. It saves the content under the file name from the revision's path. The URL supports HTTP range
+	// requests, but only a single byte range. A virtual revision whose content Nominal has not stored gets a URL
+	// that streams the content from the drive's upstream provider. The caller needs permission to read files in
+	// the drive.
+	//
+	// Errors:
+	//   - INVALID_ARGUMENT: neither file_revision_rid nor source_ref is set, or the source_ref is invalid as for
+	//     ResolveFileRevision.
+	//   - NOT_FOUND (FILE_REVISION_NOT_FOUND): the revision does not exist.
+	//   - NOT_FOUND (DRIVE_NOT_FOUND): no drive the caller can read holds the revision.
+	//   - NOT_FOUND (BYTES_RECLAIMED): the revision's content is no longer in storage, because retention or a purge
+	//     reclaimed it.
+	//   - NOT_FOUND (UPSTREAM_FILE_NOT_FOUND): a virtual source_ref pins a version the upstream provider no longer has.
+	//   - FAILED_PRECONDITION: a virtual source_ref names a drive whose stored credentials are missing, malformed, or
+	//     rejected, or whose upstream storage is unusable.
+	//   - UNAVAILABLE: a virtual source_ref names a drive whose upstream provider is unreachable or failing.
+	//   - UNIMPLEMENTED: a source_ref is for Azure Blob or an unsupported provider.
 	GetDownloadUrl(context.Context, *GetDownloadUrlRequest) (*GetDownloadUrlResponse, error)
 	mustEmbedUnimplementedFilesServiceServer()
 }

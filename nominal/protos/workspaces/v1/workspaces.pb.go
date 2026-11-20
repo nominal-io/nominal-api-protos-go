@@ -768,8 +768,11 @@ type GetWorkspacesRequest struct {
 	FilterBySessionOrg *bool `protobuf:"varint,1,opt,name=filter_by_session_org,json=filterBySessionOrg,proto3,oneof" json:"filter_by_session_org,omitempty"`
 	// When unset, defaults to false.
 	IncludeGuestWorkspaces *bool `protobuf:"varint,2,opt,name=include_guest_workspaces,json=includeGuestWorkspaces,proto3,oneof" json:"include_guest_workspaces,omitempty"`
-	unknownFields          protoimpl.UnknownFields
-	sizeCache              protoimpl.SizeCache
+	// When unset, defaults to false. Also returns the session org's workspaces where a role binding grants the caller
+	// workspace:view.
+	IncludeRoleBoundWorkspaces *bool `protobuf:"varint,3,opt,name=include_role_bound_workspaces,json=includeRoleBoundWorkspaces,proto3,oneof" json:"include_role_bound_workspaces,omitempty"`
+	unknownFields              protoimpl.UnknownFields
+	sizeCache                  protoimpl.SizeCache
 }
 
 func (x *GetWorkspacesRequest) Reset() {
@@ -812,6 +815,13 @@ func (x *GetWorkspacesRequest) GetFilterBySessionOrg() bool {
 func (x *GetWorkspacesRequest) GetIncludeGuestWorkspaces() bool {
 	if x != nil && x.IncludeGuestWorkspaces != nil {
 		return *x.IncludeGuestWorkspaces
+	}
+	return false
+}
+
+func (x *GetWorkspacesRequest) GetIncludeRoleBoundWorkspaces() bool {
+	if x != nil && x.IncludeRoleBoundWorkspaces != nil {
+		return *x.IncludeRoleBoundWorkspaces
 	}
 	return false
 }
@@ -1480,12 +1490,14 @@ const file_nominal_protos_workspaces_v1_workspaces_proto_rawDesc = "" +
 	"\x04icon\x18\x01 \x01(\tH\x00R\x04icon\x12\x16\n" +
 	"\x05emoji\x18\x02 \x01(\tH\x00R\x05emoji\x12\x16\n" +
 	"\x05image\x18\x03 \x01(\tH\x00R\x05imageB\x19\n" +
-	"\x10workspace_symbol\x12\x05\xbaH\x02\b\x01\"\xc4\x01\n" +
+	"\x10workspace_symbol\x12\x05\xbaH\x02\b\x01\"\xae\x02\n" +
 	"\x14GetWorkspacesRequest\x126\n" +
 	"\x15filter_by_session_org\x18\x01 \x01(\bH\x00R\x12filterBySessionOrg\x88\x01\x01\x12=\n" +
-	"\x18include_guest_workspaces\x18\x02 \x01(\bH\x01R\x16includeGuestWorkspaces\x88\x01\x01B\x18\n" +
+	"\x18include_guest_workspaces\x18\x02 \x01(\bH\x01R\x16includeGuestWorkspaces\x88\x01\x01\x12F\n" +
+	"\x1dinclude_role_bound_workspaces\x18\x03 \x01(\bH\x02R\x1aincludeRoleBoundWorkspaces\x88\x01\x01B\x18\n" +
 	"\x16_filter_by_session_orgB\x1b\n" +
-	"\x19_include_guest_workspaces\"Y\n" +
+	"\x19_include_guest_workspacesB \n" +
+	"\x1e_include_role_bound_workspaces\"Y\n" +
 	"\x15GetWorkspacesResponse\x12@\n" +
 	"\n" +
 	"workspaces\x18\x01 \x03(\v2 .nominal.workspaces.v1.WorkspaceR\n" +
@@ -1525,13 +1537,13 @@ const file_nominal_protos_workspaces_v1_workspaces_proto_rawDesc = "" +
 	"\"SECURITY_ERROR_WORKSPACE_NOT_FOUND\x10\x01\x1aD\xb2\xb2\x1a@\n" +
 	"\tNOT_FOUND\x123The workspace with the specified rid was not found.\x12|\n" +
 	"&SECURITY_ERROR_WORKSPACE_NOT_SPECIFIED\x10\x02\x1aP\xb2\xb2\x1aL\n" +
-	"\x10INVALID_ARGUMENT\x128A workspace was not specified and could not be inferred.2\xc4\x06\n" +
-	"\x10WorkspaceService\x12\x8d\x01\n" +
-	"\rGetWorkspaces\x12+.nominal.workspaces.v1.GetWorkspacesRequest\x1a,.nominal.workspaces.v1.GetWorkspacesResponse\"!\x82\xd3\xe4\x93\x02\x1b\x12\x19/workspaces/v2/workspaces\x12\x9a\x01\n" +
-	"\fGetWorkspace\x12*.nominal.workspaces.v1.GetWorkspaceRequest\x1a+.nominal.workspaces.v1.GetWorkspaceResponse\"1\x82\xd3\xe4\x93\x02+\x12)/workspaces/v2/workspaces/{workspace_rid}\x12\xa3\x01\n" +
-	"\x0fUpdateWorkspace\x124.nominal.workspaces.v1.UpdateWorkspaceRequestWrapper\x1a..nominal.workspaces.v1.UpdateWorkspaceResponse\"*\x82\xd3\xe4\x93\x02$:\x01*\x1a\x1f/workspaces/v2/workspaces/{rid}\x12\xa6\x01\n" +
-	"\x13GetDefaultWorkspace\x121.nominal.workspaces.v1.GetDefaultWorkspaceRequest\x1a2.nominal.workspaces.v1.GetDefaultWorkspaceResponse\"(\x82\xd3\xe4\x93\x02\"\x12 /workspaces/v2/default-workspace\x12\xb3\x01\n" +
-	"\x12GetWorkspaceBanner\x120.nominal.workspaces.v1.GetWorkspaceBannerRequest\x1a1.nominal.workspaces.v1.GetWorkspaceBannerResponse\"8\x82\xd3\xe4\x93\x022\x120/workspaces/v2/workspaces/{workspace_rid}/bannerB\xf9\x01\n" +
+	"\x10INVALID_ARGUMENT\x128A workspace was not specified and could not be inferred.2\xd3\x06\n" +
+	"\x10WorkspaceService\x12\x90\x01\n" +
+	"\rGetWorkspaces\x12+.nominal.workspaces.v1.GetWorkspacesRequest\x1a,.nominal.workspaces.v1.GetWorkspacesResponse\"$\x82\xd3\xe4\x93\x02\x1b\x12\x19/workspaces/v2/workspaces\x90\x02\x01\x12\x9d\x01\n" +
+	"\fGetWorkspace\x12*.nominal.workspaces.v1.GetWorkspaceRequest\x1a+.nominal.workspaces.v1.GetWorkspaceResponse\"4\x82\xd3\xe4\x93\x02+\x12)/workspaces/v2/workspaces/{workspace_rid}\x90\x02\x01\x12\xa6\x01\n" +
+	"\x0fUpdateWorkspace\x124.nominal.workspaces.v1.UpdateWorkspaceRequestWrapper\x1a..nominal.workspaces.v1.UpdateWorkspaceResponse\"-\x82\xd3\xe4\x93\x02$:\x01*\x1a\x1f/workspaces/v2/workspaces/{rid}\x90\x02\x02\x12\xa9\x01\n" +
+	"\x13GetDefaultWorkspace\x121.nominal.workspaces.v1.GetDefaultWorkspaceRequest\x1a2.nominal.workspaces.v1.GetDefaultWorkspaceResponse\"+\x82\xd3\xe4\x93\x02\"\x12 /workspaces/v2/default-workspace\x90\x02\x01\x12\xb6\x01\n" +
+	"\x12GetWorkspaceBanner\x120.nominal.workspaces.v1.GetWorkspaceBannerRequest\x1a1.nominal.workspaces.v1.GetWorkspaceBannerResponse\";\x82\xd3\xe4\x93\x022\x120/workspaces/v2/workspaces/{workspace_rid}/banner\x90\x02\x01B\xf9\x01\n" +
 	"\x19com.nominal.workspaces.v1B\x0fWorkspacesProtoP\x01ZUgithub.com/nominal-io/nominal-api-protos-go/nominal/protos/workspaces/v1;workspacesv1\xa2\x02\x03NWX\xaa\x02\x15Nominal.Workspaces.V1\xca\x02\x15Nominal\\Workspaces\\V1\xe2\x02!Nominal\\Workspaces\\V1\\GPBMetadata\xea\x02\x17Nominal::Workspaces::V1b\x06proto3"
 
 var (

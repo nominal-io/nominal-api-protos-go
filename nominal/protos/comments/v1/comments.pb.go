@@ -475,7 +475,7 @@ type CommentParentResource struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// The type of resource that the comment is associated with
 	ResourceType ResourceType `protobuf:"varint,1,opt,name=resource_type,json=resourceType,proto3,enum=nominal.comments.v1.ResourceType" json:"resource_type,omitempty"`
-	// The resource identifier for the resource that the comment is associated with. For example, a run or a workbook.
+	// The resource identifier for the resource that the comment is associated with. For example, a run or an event.
 	ResourceRid   string `protobuf:"bytes,2,opt,name=resource_rid,json=resourceRid,proto3" json:"resource_rid,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -531,8 +531,8 @@ type Conversation struct {
 	ResourceRid string `protobuf:"bytes,1,opt,name=resource_rid,json=resourceRid,proto3" json:"resource_rid,omitempty"`
 	// The type of the resource that the conversation is associated with.
 	ResourceType ResourceType `protobuf:"varint,2,opt,name=resource_type,json=resourceType,proto3,enum=nominal.comments.v1.ResourceType" json:"resource_type,omitempty"`
-	// The comments on the conversation ordered by creation time.
-	// Empty if the comment has no replies.
+	// The top-level comments on the resource, ordered by creation time, each with its replies nested.
+	// Empty if the resource has no comments.
 	Comments      []*ConversationNode `protobuf:"bytes,3,rep,name=comments,proto3" json:"comments,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -935,7 +935,7 @@ type GetConversationCountRequest struct {
 	ResourceType ResourceType `protobuf:"varint,1,opt,name=resource_type,json=resourceType,proto3,enum=nominal.comments.v1.ResourceType" json:"resource_type,omitempty"`
 	// The RID of resource that the comments are associated with
 	ResourceRid string `protobuf:"bytes,2,opt,name=resource_rid,json=resourceRid,proto3" json:"resource_rid,omitempty"`
-	// Whether to include deleted comments in the count
+	// Whether to include deleted comments in the count. Defaults to false.
 	IncludeDeleted *bool `protobuf:"varint,3,opt,name=include_deleted,json=includeDeleted,proto3,oneof" json:"include_deleted,omitempty"`
 	unknownFields  protoimpl.UnknownFields
 	sizeCache      protoimpl.SizeCache
@@ -1535,7 +1535,7 @@ func (x *UnpinCommentResponse) GetComment() *Comment {
 
 type AddReactionRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
-	// The RID of comment to delete
+	// The RID of the comment to react to
 	CommentRid string `protobuf:"bytes,1,opt,name=comment_rid,json=commentRid,proto3" json:"comment_rid,omitempty"`
 	// The type of reaction
 	Type          ReactionType `protobuf:"varint,2,opt,name=type,proto3,enum=nominal.comments.v1.ReactionType" json:"type,omitempty"`
@@ -1633,7 +1633,7 @@ func (x *AddReactionResponse) GetComment() *Comment {
 
 type RemoveReactionRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
-	// The RID of comment to delete
+	// The RID of the comment to remove the reaction from
 	CommentRid string `protobuf:"bytes,1,opt,name=comment_rid,json=commentRid,proto3" json:"comment_rid,omitempty"`
 	// The type of reaction
 	Type          ReactionType `protobuf:"varint,2,opt,name=type,proto3,enum=nominal.comments.v1.ReactionType" json:"type,omitempty"`

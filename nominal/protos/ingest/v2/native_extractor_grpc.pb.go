@@ -48,8 +48,9 @@ type NativeExtractorServiceClient interface {
 	ListNativeExtractors(ctx context.Context, in *ListNativeExtractorsRequest, opts ...grpc.CallOption) (*ListNativeExtractorsResponse, error)
 	// Enables a catalog entry in a workspace and converges it to the deployment's current desired
 	// version, materializing the workspace-local extractor and importing its container image.
-	// Idempotent: calling it on an already-enabled entry re-converges to the current desired
-	// version (this is also how a stale installation picks up a newly published version).
+	//
+	// Idempotent: calling it on an already-enabled entry re-converges to the current desired version
+	// (this is also how a stale installation picks up a newly published version).
 	EnableNativeExtractor(ctx context.Context, in *EnableNativeExtractorRequest, opts ...grpc.CallOption) (*EnableNativeExtractorResponse, error)
 	// Archives the workspace's extractor, which is the installation; re-enabling unarchives it.
 	DisableNativeExtractor(ctx context.Context, in *DisableNativeExtractorRequest, opts ...grpc.CallOption) (*DisableNativeExtractorResponse, error)
@@ -103,8 +104,9 @@ type NativeExtractorServiceServer interface {
 	ListNativeExtractors(context.Context, *ListNativeExtractorsRequest) (*ListNativeExtractorsResponse, error)
 	// Enables a catalog entry in a workspace and converges it to the deployment's current desired
 	// version, materializing the workspace-local extractor and importing its container image.
-	// Idempotent: calling it on an already-enabled entry re-converges to the current desired
-	// version (this is also how a stale installation picks up a newly published version).
+	//
+	// Idempotent: calling it on an already-enabled entry re-converges to the current desired version
+	// (this is also how a stale installation picks up a newly published version).
 	EnableNativeExtractor(context.Context, *EnableNativeExtractorRequest) (*EnableNativeExtractorResponse, error)
 	// Archives the workspace's extractor, which is the installation; re-enabling unarchives it.
 	DisableNativeExtractor(context.Context, *DisableNativeExtractorRequest) (*DisableNativeExtractorResponse, error)

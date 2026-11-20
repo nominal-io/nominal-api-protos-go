@@ -34,13 +34,16 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
+// Whether a resource is archived. A search uses it to choose which resources to return.
 // buf:lint:ignore ENUM_VALUE_PREFIX
 type ArchivedStatus int32
 
 const (
 	ArchivedStatus_ARCHIVED_STATUS_UNSPECIFIED ArchivedStatus = 0
-	ArchivedStatus_NOT_ARCHIVED                ArchivedStatus = 1
-	ArchivedStatus_ARCHIVED                    ArchivedStatus = 2
+	// The resource is not archived.
+	ArchivedStatus_NOT_ARCHIVED ArchivedStatus = 1
+	// The resource is archived.
+	ArchivedStatus_ARCHIVED ArchivedStatus = 2
 )
 
 // Enum value maps for ArchivedStatus.
@@ -1010,6 +1013,7 @@ func (x *TypedPropertyUpdateWrapper) GetTypedProperties() map[string]*TypedPrope
 	return nil
 }
 
+// The ref name of a data scope, paired with the type of the data source it refers to.
 type RefNameAndType struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Name          string                 `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`

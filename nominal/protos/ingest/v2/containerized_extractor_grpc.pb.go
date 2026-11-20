@@ -11,8 +11,7 @@
 //     v1 mismatch where extractor- and image-level schemas could drift.
 //   - Self-hosted images are the only supported source — the deprecated `image: DockerImageSource`
 //     field from v1 is gone.
-//   - Archive has a dedicated RPC; unarchive happens through Update by setting `is_archived` to
-//     false.
+//   - Archive and unarchive each have a dedicated RPC.
 //
 // V1 remains the canonical API while clients migrate.
 
@@ -37,29 +36,77 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	ContainerizedExtractorService_CreateContainerizedExtractor_FullMethodName  = "/nominal.ingest.v2.ContainerizedExtractorService/CreateContainerizedExtractor"
-	ContainerizedExtractorService_GetContainerizedExtractor_FullMethodName     = "/nominal.ingest.v2.ContainerizedExtractorService/GetContainerizedExtractor"
-	ContainerizedExtractorService_UpdateContainerizedExtractor_FullMethodName  = "/nominal.ingest.v2.ContainerizedExtractorService/UpdateContainerizedExtractor"
-	ContainerizedExtractorService_ArchiveContainerizedExtractor_FullMethodName = "/nominal.ingest.v2.ContainerizedExtractorService/ArchiveContainerizedExtractor"
-	ContainerizedExtractorService_SearchContainerizedExtractors_FullMethodName = "/nominal.ingest.v2.ContainerizedExtractorService/SearchContainerizedExtractors"
+	ContainerizedExtractorService_CreateContainerizedExtractor_FullMethodName    = "/nominal.ingest.v2.ContainerizedExtractorService/CreateContainerizedExtractor"
+	ContainerizedExtractorService_GetContainerizedExtractor_FullMethodName       = "/nominal.ingest.v2.ContainerizedExtractorService/GetContainerizedExtractor"
+	ContainerizedExtractorService_UpdateContainerizedExtractor_FullMethodName    = "/nominal.ingest.v2.ContainerizedExtractorService/UpdateContainerizedExtractor"
+	ContainerizedExtractorService_ArchiveContainerizedExtractor_FullMethodName   = "/nominal.ingest.v2.ContainerizedExtractorService/ArchiveContainerizedExtractor"
+	ContainerizedExtractorService_UnarchiveContainerizedExtractor_FullMethodName = "/nominal.ingest.v2.ContainerizedExtractorService/UnarchiveContainerizedExtractor"
+	ContainerizedExtractorService_SearchContainerizedExtractors_FullMethodName   = "/nominal.ingest.v2.ContainerizedExtractorService/SearchContainerizedExtractors"
 )
 
 // ContainerizedExtractorServiceClient is the client API for ContainerizedExtractorService service.
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 //
-// Manages containerized extractors backed by self-hosted images in the internal registry.
+// Manages file extractors (containerized extractors in the API), which run self-hosted container images.
 type ContainerizedExtractorServiceClient interface {
-	// Create a new extractor in a workspace. Container images are attached separately via
-	// RegistryService.CreateImage.
+	// Creates a file extractor (containerized extractor in the API) in a workspace, with a name, description, labels,
+	// and properties. Returns the extractor.
+	//
+	// The server assigns the RID. Names need not be unique. The new extractor has no active container image: attach
+	// images with RegistryService.CreateImage, then select one with UpdateContainerizedExtractor. The caller needs
+	// permission to edit connectivity in the workspace.
+	//
+	// Errors:
+	// - NOT_FOUND: the caller cannot edit connectivity in the workspace (reported as workspace not found).
 	CreateContainerizedExtractor(ctx context.Context, in *CreateContainerizedExtractorRequest, opts ...grpc.CallOption) (*CreateContainerizedExtractorResponse, error)
-	// Fetch a single extractor by RID.
+	// Returns one file extractor, with its active container image, by RID. Archived extractors are returned too.
+	//
+	// Errors:
+	//   - NOT_FOUND: the extractor does not exist or belongs to a different workspace than workspace_rid, or the caller
+	//     cannot view the workspace (reported as workspace not found).
 	GetContainerizedExtractor(ctx context.Context, in *GetContainerizedExtractorRequest, opts ...grpc.CallOption) (*GetContainerizedExtractorResponse, error)
-	// Partial update of an existing extractor. Use the `is_archived` field to archive / unarchive.
+	// Changes the name, description, labels, properties, archived state, or active container image of a file extractor,
+	// and returns it.
+	//
+	// Fields that are not set stay unchanged. A labels or properties value that is set replaces the existing
+	// collection, and an empty one clears it. The active image must be in the same workspace, built for this extractor,
+	// and READY. The caller needs permission to edit connectivity in the workspace.
+	//
+	// Errors:
+	//   - NOT_FOUND: the caller cannot edit connectivity in the workspace (reported as workspace not found), the active
+	//     image is not found in the workspace, or the extractor does not exist in the workspace and no active image is
+	//     set.
+	//   - FAILED_PRECONDITION: the active image was not built for this extractor (this includes an extractor that does
+	//     not exist), or is not READY.
 	UpdateContainerizedExtractor(ctx context.Context, in *UpdateContainerizedExtractorRequest, opts ...grpc.CallOption) (*UpdateContainerizedExtractorResponse, error)
-	// Archive an extractor so it is hidden from default search results and rejects new ingests.
+	// Archives a file extractor so default search results hide it. Archiving an archived extractor succeeds. Reverse
+	// with UnarchiveContainerizedExtractor.
+	//
+	// The caller needs permission to edit connectivity in the workspace.
+	//
+	// Errors:
+	//   - NOT_FOUND: the extractor does not exist in the workspace, or the caller cannot edit connectivity there
+	//     (reported as workspace not found).
 	ArchiveContainerizedExtractor(ctx context.Context, in *ArchiveContainerizedExtractorRequest, opts ...grpc.CallOption) (*ArchiveContainerizedExtractorResponse, error)
-	// Search extractors within a workspace, with cursor-based pagination.
+	// Restores an archived file extractor so default search results include it again.
+	//
+	// The caller needs permission to edit connectivity in the workspace.
+	//
+	// Errors:
+	//   - NOT_FOUND: the extractor does not exist in the workspace, or the caller cannot edit connectivity there
+	//     (reported as workspace not found).
+	UnarchiveContainerizedExtractor(ctx context.Context, in *UnarchiveContainerizedExtractorRequest, opts ...grpc.CallOption) (*UnarchiveContainerizedExtractorResponse, error)
+	// Searches the file extractors in a workspace by label, property, or accepted file extension. Returns a page,
+	// newest first.
+	//
+	// Archived extractors are excluded unless include_archived is set. Only v2 extractors are listed, including first-
+	// party catalog ones, not extractors created through the v1 service. The caller needs permission to view the
+	// workspace.
+	//
+	// Errors:
+	// - NOT_FOUND: the caller cannot view the workspace (reported as workspace not found).
+	// - INVALID_ARGUMENT: next_page_token is not a token from a previous response.
 	SearchContainerizedExtractors(ctx context.Context, in *SearchContainerizedExtractorsRequest, opts ...grpc.CallOption) (*SearchContainerizedExtractorsResponse, error)
 }
 
@@ -111,6 +158,16 @@ func (c *containerizedExtractorServiceClient) ArchiveContainerizedExtractor(ctx 
 	return out, nil
 }
 
+func (c *containerizedExtractorServiceClient) UnarchiveContainerizedExtractor(ctx context.Context, in *UnarchiveContainerizedExtractorRequest, opts ...grpc.CallOption) (*UnarchiveContainerizedExtractorResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(UnarchiveContainerizedExtractorResponse)
+	err := c.cc.Invoke(ctx, ContainerizedExtractorService_UnarchiveContainerizedExtractor_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *containerizedExtractorServiceClient) SearchContainerizedExtractors(ctx context.Context, in *SearchContainerizedExtractorsRequest, opts ...grpc.CallOption) (*SearchContainerizedExtractorsResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(SearchContainerizedExtractorsResponse)
@@ -125,18 +182,65 @@ func (c *containerizedExtractorServiceClient) SearchContainerizedExtractors(ctx 
 // All implementations must embed UnimplementedContainerizedExtractorServiceServer
 // for forward compatibility.
 //
-// Manages containerized extractors backed by self-hosted images in the internal registry.
+// Manages file extractors (containerized extractors in the API), which run self-hosted container images.
 type ContainerizedExtractorServiceServer interface {
-	// Create a new extractor in a workspace. Container images are attached separately via
-	// RegistryService.CreateImage.
+	// Creates a file extractor (containerized extractor in the API) in a workspace, with a name, description, labels,
+	// and properties. Returns the extractor.
+	//
+	// The server assigns the RID. Names need not be unique. The new extractor has no active container image: attach
+	// images with RegistryService.CreateImage, then select one with UpdateContainerizedExtractor. The caller needs
+	// permission to edit connectivity in the workspace.
+	//
+	// Errors:
+	// - NOT_FOUND: the caller cannot edit connectivity in the workspace (reported as workspace not found).
 	CreateContainerizedExtractor(context.Context, *CreateContainerizedExtractorRequest) (*CreateContainerizedExtractorResponse, error)
-	// Fetch a single extractor by RID.
+	// Returns one file extractor, with its active container image, by RID. Archived extractors are returned too.
+	//
+	// Errors:
+	//   - NOT_FOUND: the extractor does not exist or belongs to a different workspace than workspace_rid, or the caller
+	//     cannot view the workspace (reported as workspace not found).
 	GetContainerizedExtractor(context.Context, *GetContainerizedExtractorRequest) (*GetContainerizedExtractorResponse, error)
-	// Partial update of an existing extractor. Use the `is_archived` field to archive / unarchive.
+	// Changes the name, description, labels, properties, archived state, or active container image of a file extractor,
+	// and returns it.
+	//
+	// Fields that are not set stay unchanged. A labels or properties value that is set replaces the existing
+	// collection, and an empty one clears it. The active image must be in the same workspace, built for this extractor,
+	// and READY. The caller needs permission to edit connectivity in the workspace.
+	//
+	// Errors:
+	//   - NOT_FOUND: the caller cannot edit connectivity in the workspace (reported as workspace not found), the active
+	//     image is not found in the workspace, or the extractor does not exist in the workspace and no active image is
+	//     set.
+	//   - FAILED_PRECONDITION: the active image was not built for this extractor (this includes an extractor that does
+	//     not exist), or is not READY.
 	UpdateContainerizedExtractor(context.Context, *UpdateContainerizedExtractorRequest) (*UpdateContainerizedExtractorResponse, error)
-	// Archive an extractor so it is hidden from default search results and rejects new ingests.
+	// Archives a file extractor so default search results hide it. Archiving an archived extractor succeeds. Reverse
+	// with UnarchiveContainerizedExtractor.
+	//
+	// The caller needs permission to edit connectivity in the workspace.
+	//
+	// Errors:
+	//   - NOT_FOUND: the extractor does not exist in the workspace, or the caller cannot edit connectivity there
+	//     (reported as workspace not found).
 	ArchiveContainerizedExtractor(context.Context, *ArchiveContainerizedExtractorRequest) (*ArchiveContainerizedExtractorResponse, error)
-	// Search extractors within a workspace, with cursor-based pagination.
+	// Restores an archived file extractor so default search results include it again.
+	//
+	// The caller needs permission to edit connectivity in the workspace.
+	//
+	// Errors:
+	//   - NOT_FOUND: the extractor does not exist in the workspace, or the caller cannot edit connectivity there
+	//     (reported as workspace not found).
+	UnarchiveContainerizedExtractor(context.Context, *UnarchiveContainerizedExtractorRequest) (*UnarchiveContainerizedExtractorResponse, error)
+	// Searches the file extractors in a workspace by label, property, or accepted file extension. Returns a page,
+	// newest first.
+	//
+	// Archived extractors are excluded unless include_archived is set. Only v2 extractors are listed, including first-
+	// party catalog ones, not extractors created through the v1 service. The caller needs permission to view the
+	// workspace.
+	//
+	// Errors:
+	// - NOT_FOUND: the caller cannot view the workspace (reported as workspace not found).
+	// - INVALID_ARGUMENT: next_page_token is not a token from a previous response.
 	SearchContainerizedExtractors(context.Context, *SearchContainerizedExtractorsRequest) (*SearchContainerizedExtractorsResponse, error)
 	mustEmbedUnimplementedContainerizedExtractorServiceServer()
 }
@@ -159,6 +263,9 @@ func (UnimplementedContainerizedExtractorServiceServer) UpdateContainerizedExtra
 }
 func (UnimplementedContainerizedExtractorServiceServer) ArchiveContainerizedExtractor(context.Context, *ArchiveContainerizedExtractorRequest) (*ArchiveContainerizedExtractorResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method ArchiveContainerizedExtractor not implemented")
+}
+func (UnimplementedContainerizedExtractorServiceServer) UnarchiveContainerizedExtractor(context.Context, *UnarchiveContainerizedExtractorRequest) (*UnarchiveContainerizedExtractorResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method UnarchiveContainerizedExtractor not implemented")
 }
 func (UnimplementedContainerizedExtractorServiceServer) SearchContainerizedExtractors(context.Context, *SearchContainerizedExtractorsRequest) (*SearchContainerizedExtractorsResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method SearchContainerizedExtractors not implemented")
@@ -257,6 +364,24 @@ func _ContainerizedExtractorService_ArchiveContainerizedExtractor_Handler(srv in
 	return interceptor(ctx, in, info, handler)
 }
 
+func _ContainerizedExtractorService_UnarchiveContainerizedExtractor_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UnarchiveContainerizedExtractorRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ContainerizedExtractorServiceServer).UnarchiveContainerizedExtractor(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ContainerizedExtractorService_UnarchiveContainerizedExtractor_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ContainerizedExtractorServiceServer).UnarchiveContainerizedExtractor(ctx, req.(*UnarchiveContainerizedExtractorRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _ContainerizedExtractorService_SearchContainerizedExtractors_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(SearchContainerizedExtractorsRequest)
 	if err := dec(in); err != nil {
@@ -297,6 +422,10 @@ var ContainerizedExtractorService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "ArchiveContainerizedExtractor",
 			Handler:    _ContainerizedExtractorService_ArchiveContainerizedExtractor_Handler,
+		},
+		{
+			MethodName: "UnarchiveContainerizedExtractor",
+			Handler:    _ContainerizedExtractorService_UnarchiveContainerizedExtractor_Handler,
 		},
 		{
 			MethodName: "SearchContainerizedExtractors",

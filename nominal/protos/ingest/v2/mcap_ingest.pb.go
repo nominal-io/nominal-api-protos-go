@@ -22,8 +22,7 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
-// One mcap file conversion. Worker-mcap converts the file's protobuf channels into an avro
-// stream that is then ingested into the dataset.
+// One MCAP file whose protobuf channels are ingested into the dataset.
 type McapIngestItem struct {
 	state  protoimpl.MessageState `protogen:"open.v1"`
 	Source *IngestSource          `protobuf:"bytes,1,opt,name=source,proto3" json:"source,omitempty"`
@@ -213,8 +212,7 @@ func (x *McapTopicNames) GetTopics() []string {
 	return nil
 }
 
-// One ArduPilot dataflash log conversion. Worker-mcap converts the log into an avro stream
-// that is then ingested into the dataset.
+// One ArduPilot dataflash log ingested into the dataset.
 type DataflashIngestItem struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Source        *IngestSource          `protobuf:"bytes,1,opt,name=source,proto3" json:"source,omitempty"`

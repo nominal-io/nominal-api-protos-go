@@ -44,12 +44,34 @@ const (
 //
 // Comments service manages conversations about resources.
 type CommentsServiceClient interface {
-	// A conversation is a fully resolved comment tree. It includes all comments for the given resource
-	// and all the nested comments/replies to those comments.
+	// Gets the comment thread on a run or an event: every comment on it, with replies nested under their
+	// parent comment.
+	//
+	// Comments and replies are ordered by creation time. Deleted comments are included, with deleted_at
+	// set and empty content. A resource with no comments returns an empty conversation.
+	//
+	// Errors:
+	// - INVALID_ARGUMENT: resource_type is unspecified.
+	// - PERMISSION_DENIED: the caller cannot view the resource.
 	GetConversation(ctx context.Context, in *GetConversationRequest, opts ...grpc.CallOption) (*GetConversationResponse, error)
-	// Returns the number of comments in a conversation.
+	// Counts the comments in the conversation on a run or an event, replies at every depth included. Use
+	// GetConversation to read the comments.
+	//
+	// Deleted comments are counted only when include_deleted is true.
+	//
+	// Errors:
+	// - INVALID_ARGUMENT: resource_type is unspecified.
+	// - PERMISSION_DENIED: the caller cannot view the resource.
 	GetConversationCount(ctx context.Context, in *GetConversationCountRequest, opts ...grpc.CallOption) (*GetConversationCountResponse, error)
-	// Get a comment identified by its RID
+	// Gets one comment by RID, with its reactions and attachments but not its replies. Use GetConversation
+	// to read replies.
+	//
+	// A deleted comment is returned, with deleted_at set and empty content.
+	//
+	// Errors:
+	// - NOT_FOUND: the comment does not exist.
+	// - INVALID_ARGUMENT: the comment is nested too deeply for its resource to be found.
+	// - PERMISSION_DENIED: the caller cannot view the resource the comment belongs to.
 	GetComment(ctx context.Context, in *GetCommentRequest, opts ...grpc.CallOption) (*GetCommentResponse, error)
 	// buf:lint:ignore RPC_REQUEST_STANDARD_NAME
 	// Create a comment on a resource
@@ -57,15 +79,48 @@ type CommentsServiceClient interface {
 	// buf:lint:ignore RPC_REQUEST_STANDARD_NAME
 	// Edit an existing comment
 	EditComment(ctx context.Context, in *EditCommentRequestWrapper, opts ...grpc.CallOption) (*EditCommentResponse, error)
-	// Delete an existing comment
+	// Soft-deletes a comment on a run or an event. Only its author can delete it. Returns the deleted comment.
+	//
+	// The comment stays in conversations with deleted_at set, and its content is returned empty.
+	//
+	// Errors:
+	// - NOT_FOUND: no comment has this RID, or the comment is already deleted.
+	// - PERMISSION_DENIED: the caller is not the author of the comment.
 	DeleteComment(ctx context.Context, in *DeleteCommentRequest, opts ...grpc.CallOption) (*DeleteCommentResponse, error)
-	// Pin a comment to the top of the conversation
+	// Pins a comment on a run or an event, recording who pinned it and when. Returns the comment.
+	//
+	// Any caller with access to the run or event can pin a comment, not only its author. Pinned comments keep
+	// their place in the conversation order.
+	//
+	// Errors:
+	// - NOT_FOUND: no comment has this RID, or the comment is already pinned.
+	// - PERMISSION_DENIED: the caller cannot access the run or event the comment belongs to.
 	PinComment(ctx context.Context, in *PinCommentRequest, opts ...grpc.CallOption) (*PinCommentResponse, error)
-	// Unpin a comment from the top of the conversation
+	// Clears the pin on a comment. Returns the comment.
+	//
+	// Succeeds when the comment is not pinned. Any caller with access to the run or event can unpin a comment.
+	//
+	// Errors:
+	// - NOT_FOUND: no comment has this RID.
+	// - PERMISSION_DENIED: the caller cannot access the run or event the comment belongs to.
 	UnpinComment(ctx context.Context, in *UnpinCommentRequest, opts ...grpc.CallOption) (*UnpinCommentResponse, error)
-	// Create a reaction on a comment
+	// Adds the caller's reaction of the given type, such as like or heart, to a comment. Returns the comment.
+	//
+	// Each user can add each type once per comment.
+	//
+	// Errors:
+	// - INVALID_ARGUMENT: type is unspecified.
+	// - NOT_FOUND: no comment has this RID, or the caller already added this type of reaction to the comment.
+	// - PERMISSION_DENIED: the caller cannot access the run or event the comment belongs to.
 	AddReaction(ctx context.Context, in *AddReactionRequest, opts ...grpc.CallOption) (*AddReactionResponse, error)
-	// Create a reaction on a comment
+	// Removes the caller's reaction of the given type from a comment. Returns the comment.
+	//
+	// Succeeds when the caller had not added that reaction. Reactions from other users stay.
+	//
+	// Errors:
+	// - INVALID_ARGUMENT: type is unspecified.
+	// - NOT_FOUND: no comment has this RID.
+	// - PERMISSION_DENIED: the caller cannot access the run or event the comment belongs to.
 	RemoveReaction(ctx context.Context, in *RemoveReactionRequest, opts ...grpc.CallOption) (*RemoveReactionResponse, error)
 }
 
@@ -183,12 +238,34 @@ func (c *commentsServiceClient) RemoveReaction(ctx context.Context, in *RemoveRe
 //
 // Comments service manages conversations about resources.
 type CommentsServiceServer interface {
-	// A conversation is a fully resolved comment tree. It includes all comments for the given resource
-	// and all the nested comments/replies to those comments.
+	// Gets the comment thread on a run or an event: every comment on it, with replies nested under their
+	// parent comment.
+	//
+	// Comments and replies are ordered by creation time. Deleted comments are included, with deleted_at
+	// set and empty content. A resource with no comments returns an empty conversation.
+	//
+	// Errors:
+	// - INVALID_ARGUMENT: resource_type is unspecified.
+	// - PERMISSION_DENIED: the caller cannot view the resource.
 	GetConversation(context.Context, *GetConversationRequest) (*GetConversationResponse, error)
-	// Returns the number of comments in a conversation.
+	// Counts the comments in the conversation on a run or an event, replies at every depth included. Use
+	// GetConversation to read the comments.
+	//
+	// Deleted comments are counted only when include_deleted is true.
+	//
+	// Errors:
+	// - INVALID_ARGUMENT: resource_type is unspecified.
+	// - PERMISSION_DENIED: the caller cannot view the resource.
 	GetConversationCount(context.Context, *GetConversationCountRequest) (*GetConversationCountResponse, error)
-	// Get a comment identified by its RID
+	// Gets one comment by RID, with its reactions and attachments but not its replies. Use GetConversation
+	// to read replies.
+	//
+	// A deleted comment is returned, with deleted_at set and empty content.
+	//
+	// Errors:
+	// - NOT_FOUND: the comment does not exist.
+	// - INVALID_ARGUMENT: the comment is nested too deeply for its resource to be found.
+	// - PERMISSION_DENIED: the caller cannot view the resource the comment belongs to.
 	GetComment(context.Context, *GetCommentRequest) (*GetCommentResponse, error)
 	// buf:lint:ignore RPC_REQUEST_STANDARD_NAME
 	// Create a comment on a resource
@@ -196,15 +273,48 @@ type CommentsServiceServer interface {
 	// buf:lint:ignore RPC_REQUEST_STANDARD_NAME
 	// Edit an existing comment
 	EditComment(context.Context, *EditCommentRequestWrapper) (*EditCommentResponse, error)
-	// Delete an existing comment
+	// Soft-deletes a comment on a run or an event. Only its author can delete it. Returns the deleted comment.
+	//
+	// The comment stays in conversations with deleted_at set, and its content is returned empty.
+	//
+	// Errors:
+	// - NOT_FOUND: no comment has this RID, or the comment is already deleted.
+	// - PERMISSION_DENIED: the caller is not the author of the comment.
 	DeleteComment(context.Context, *DeleteCommentRequest) (*DeleteCommentResponse, error)
-	// Pin a comment to the top of the conversation
+	// Pins a comment on a run or an event, recording who pinned it and when. Returns the comment.
+	//
+	// Any caller with access to the run or event can pin a comment, not only its author. Pinned comments keep
+	// their place in the conversation order.
+	//
+	// Errors:
+	// - NOT_FOUND: no comment has this RID, or the comment is already pinned.
+	// - PERMISSION_DENIED: the caller cannot access the run or event the comment belongs to.
 	PinComment(context.Context, *PinCommentRequest) (*PinCommentResponse, error)
-	// Unpin a comment from the top of the conversation
+	// Clears the pin on a comment. Returns the comment.
+	//
+	// Succeeds when the comment is not pinned. Any caller with access to the run or event can unpin a comment.
+	//
+	// Errors:
+	// - NOT_FOUND: no comment has this RID.
+	// - PERMISSION_DENIED: the caller cannot access the run or event the comment belongs to.
 	UnpinComment(context.Context, *UnpinCommentRequest) (*UnpinCommentResponse, error)
-	// Create a reaction on a comment
+	// Adds the caller's reaction of the given type, such as like or heart, to a comment. Returns the comment.
+	//
+	// Each user can add each type once per comment.
+	//
+	// Errors:
+	// - INVALID_ARGUMENT: type is unspecified.
+	// - NOT_FOUND: no comment has this RID, or the caller already added this type of reaction to the comment.
+	// - PERMISSION_DENIED: the caller cannot access the run or event the comment belongs to.
 	AddReaction(context.Context, *AddReactionRequest) (*AddReactionResponse, error)
-	// Create a reaction on a comment
+	// Removes the caller's reaction of the given type from a comment. Returns the comment.
+	//
+	// Succeeds when the caller had not added that reaction. Reactions from other users stay.
+	//
+	// Errors:
+	// - INVALID_ARGUMENT: type is unspecified.
+	// - NOT_FOUND: no comment has this RID.
+	// - PERMISSION_DENIED: the caller cannot access the run or event the comment belongs to.
 	RemoveReaction(context.Context, *RemoveReactionRequest) (*RemoveReactionResponse, error)
 	mustEmbedUnimplementedCommentsServiceServer()
 }

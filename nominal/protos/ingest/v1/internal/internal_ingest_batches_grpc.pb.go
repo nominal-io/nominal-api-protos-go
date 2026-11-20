@@ -32,20 +32,22 @@ const (
 // the gRPC path (nominal.ingest.v1.internal.*) is excluded from public ingress.
 type InternalIngestBatchServiceClient interface {
 	// Mark the supplied batches for {@code dataset_file_id} as COMPLETED. Within the same
-	// transaction, if all batches for the file are now complete, mark the file's ingest
-	// status as COMPLETED; if all files for {@code ingest_job_rid} are then in a terminal
-	// ingest status (COMPLETED or FAILED), mark the ingest job COMPLETED. Internal-only
-	// (service-token auth).
+	// transaction, if all batches for the file are now complete, mark the file's ingest status as
+	// COMPLETED; if all files for {@code ingest_job_rid} are then in a terminal ingest status
+	// (COMPLETED or FAILED), mark the ingest job COMPLETED.
+	//
+	// Internal-only (service-token auth).
 	//
 	// Idempotent: re-issuing the same request after success is a no-op. Already-COMPLETED
 	// batches/files/jobs are left in place and the cascade short-circuits at each step.
 	MarkBatchesCompleted(ctx context.Context, in *MarkBatchesCompletedRequest, opts ...grpc.CallOption) (*MarkBatchesCompletedResponse, error)
-	// Set a dataset file's ingest status. PARSING / INGESTING transitions only update the file
-	// row. Terminal transitions (ERROR, and SUCCEEDED for files with no batch bookkeeping) lock
-	// the owning ingest job and, if all of its files and transforms are now terminal, mark it
-	// COMPLETED (if any file succeeded) or FAILED. SUCCEEDED additionally expands the owning
-	// dataset's global bounds. Internal-only (service-token auth). Idempotent: a file already in
-	// a terminal status is left unchanged.
+	// Set a dataset file's ingest status. PARSING / INGESTING transitions only update the file row.
+	//
+	// Terminal transitions (ERROR, and SUCCEEDED for files with no batch bookkeeping) lock the owning
+	// ingest job and, if all of its files and transforms are now terminal, mark it COMPLETED (if any
+	// file succeeded) or FAILED. SUCCEEDED additionally expands the owning dataset's global bounds.
+	// Internal-only (service-token auth). Idempotent: a file already in a terminal status is left
+	// unchanged.
 	SetDatasetFileIngestStatus(ctx context.Context, in *SetDatasetFileIngestStatusRequest, opts ...grpc.CallOption) (*SetDatasetFileIngestStatusResponse, error)
 	// Insert PENDING batch rows for {@code dataset_file_id} before its batches are published.
 	// Idempotent on retry. Internal-only (service-token auth).
@@ -98,20 +100,22 @@ func (c *internalIngestBatchServiceClient) CreatePendingBatches(ctx context.Cont
 // the gRPC path (nominal.ingest.v1.internal.*) is excluded from public ingress.
 type InternalIngestBatchServiceServer interface {
 	// Mark the supplied batches for {@code dataset_file_id} as COMPLETED. Within the same
-	// transaction, if all batches for the file are now complete, mark the file's ingest
-	// status as COMPLETED; if all files for {@code ingest_job_rid} are then in a terminal
-	// ingest status (COMPLETED or FAILED), mark the ingest job COMPLETED. Internal-only
-	// (service-token auth).
+	// transaction, if all batches for the file are now complete, mark the file's ingest status as
+	// COMPLETED; if all files for {@code ingest_job_rid} are then in a terminal ingest status
+	// (COMPLETED or FAILED), mark the ingest job COMPLETED.
+	//
+	// Internal-only (service-token auth).
 	//
 	// Idempotent: re-issuing the same request after success is a no-op. Already-COMPLETED
 	// batches/files/jobs are left in place and the cascade short-circuits at each step.
 	MarkBatchesCompleted(context.Context, *MarkBatchesCompletedRequest) (*MarkBatchesCompletedResponse, error)
-	// Set a dataset file's ingest status. PARSING / INGESTING transitions only update the file
-	// row. Terminal transitions (ERROR, and SUCCEEDED for files with no batch bookkeeping) lock
-	// the owning ingest job and, if all of its files and transforms are now terminal, mark it
-	// COMPLETED (if any file succeeded) or FAILED. SUCCEEDED additionally expands the owning
-	// dataset's global bounds. Internal-only (service-token auth). Idempotent: a file already in
-	// a terminal status is left unchanged.
+	// Set a dataset file's ingest status. PARSING / INGESTING transitions only update the file row.
+	//
+	// Terminal transitions (ERROR, and SUCCEEDED for files with no batch bookkeeping) lock the owning
+	// ingest job and, if all of its files and transforms are now terminal, mark it COMPLETED (if any
+	// file succeeded) or FAILED. SUCCEEDED additionally expands the owning dataset's global bounds.
+	// Internal-only (service-token auth). Idempotent: a file already in a terminal status is left
+	// unchanged.
 	SetDatasetFileIngestStatus(context.Context, *SetDatasetFileIngestStatusRequest) (*SetDatasetFileIngestStatusResponse, error)
 	// Insert PENDING batch rows for {@code dataset_file_id} before its batches are published.
 	// Idempotent on retry. Internal-only (service-token auth).

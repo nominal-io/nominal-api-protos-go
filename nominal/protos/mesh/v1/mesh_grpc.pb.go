@@ -47,31 +47,97 @@ type MeshServiceClient interface {
 	HealthCheck(ctx context.Context, in *HealthCheckRequest, opts ...grpc.CallOption) (*HealthCheckResponse, error)
 	// Link operations.
 	// ------------------------------------------------------------------------------------------------------------
-	// Creates a link which allows the specified resource to be synced between mesh environments.
-	// Throws MESH_SERVICE_ERROR_LINK_ALREADY_EXISTS if a link already exists.
+	// Creates a link that syncs a dataset in this environment with a dataset in a remote Nominal environment, through a
+	// remote connection.
+	//
+	// The server assigns the link RID and registers it in the workspace. The response is empty: find the new link's RID
+	// with SearchLinks. The caller needs permission to edit connectivity in the workspace and must be able to read the
+	// local dataset's data. The local dataset must be in the given workspace.
+	//
+	// Errors:
+	//   - NOT_FOUND: the caller cannot edit connectivity in the workspace (reported as workspace not found), or the local
+	//     dataset does not exist or the caller cannot read it.
+	//   - INVALID_ARGUMENT: the local dataset is in a different workspace.
+	//   - ALREADY_EXISTS: the local dataset already has a link to this remote dataset.
 	CreateLink(ctx context.Context, in *CreateLinkRequest, opts ...grpc.CallOption) (*CreateLinkResponse, error)
-	// Retrieves a link for the requested resource, throwing MESH_SERVICE_ERROR_LINK_NOT_FOUND if there is no link.
+	// Gets one link between a local dataset and a remote dataset.
+	//
+	// Errors:
+	// - NOT_FOUND: the link does not exist, or the caller cannot view its workspace.
 	GetLink(ctx context.Context, in *GetLinkRequest, opts ...grpc.CallOption) (*GetLinkResponse, error)
-	// Updates a link for the requested resource, throwing MESH_SERVICE_ERROR_LINK_NOT_FOUND if there is no link.
+	// Changes a link's remote connection, remote dataset, or enabled state, and returns the updated link.
+	//
+	// Fields that are not set stay unchanged, and a request that sets none returns the link as stored. The local
+	// dataset cannot change. The caller needs permission to edit connectivity in the link's workspace.
+	//
+	// Errors:
+	//   - NOT_FOUND: the link does not exist, or the caller cannot edit connectivity in its workspace.
+	//   - ALREADY_EXISTS: the change would duplicate another link between the same local and remote dataset. A remote
+	//     connection that does not exist also returns this error.
 	UpdateLink(ctx context.Context, in *UpdateLinkRequest, opts ...grpc.CallOption) (*UpdateLinkResponse, error)
-	// Deletes a link for the specified resource.
+	// Deletes a link between a local dataset and a remote dataset. Neither dataset is deleted.
+	//
+	// The caller needs permission to edit connectivity in the link's workspace.
+	//
+	// Errors:
+	// - NOT_FOUND: the link does not exist, or the caller cannot edit connectivity in its workspace.
 	DeleteLink(ctx context.Context, in *DeleteLinkRequest, opts ...grpc.CallOption) (*DeleteLinkResponse, error)
-	// Searches for links with optional filters and pagination.
+	// Searches the links in one workspace, optionally filtered by enabled state, resource type, local dataset, or
+	// remote connection. Returns a page of links, newest first.
+	//
+	// A next-page token is returned whenever a page is full, so the last page can be followed by an empty one. The
+	// caller needs permission to view the workspace.
+	//
+	// Errors:
+	// - NOT_FOUND: the caller cannot view the workspace (reported as workspace not found).
 	SearchLinks(ctx context.Context, in *SearchLinksRequest, opts ...grpc.CallOption) (*SearchLinksResponse, error)
 	// Remote Connection operations.
 	// ------------------------------------------------------------------------------------------------------------
-	// Creates a remote connection for mesh links.
-	// Throws MESH_SERVICE_ERROR_REMOTE_CONNECTION_ALREADY_EXISTS if a remote connection with the same name already exists.
+	// Creates a remote connection: a named connection to another Nominal environment, with its base URL and an API
+	// token stored as a secret in the same workspace. Returns the remote connection.
+	//
+	// The server assigns the RID. The new connection has no flags: set them with UpdateRemoteConnection. Names are
+	// unique across all workspaces. The caller needs permission to edit connectivity in the workspace and to edit
+	// secrets in the secret's workspace.
+	//
+	// Errors:
+	//   - NOT_FOUND: the caller cannot edit connectivity in the workspace (reported as workspace not found).
+	//   - INVALID_ARGUMENT: the secret does not exist, is in a different workspace, or cannot be edited by the caller, or
+	//     its value is not a valid Nominal API token.
+	//   - ALREADY_EXISTS: another remote connection has this name.
 	CreateRemoteConnection(ctx context.Context, in *CreateRemoteConnectionRequest, opts ...grpc.CallOption) (*CreateRemoteConnectionResponse, error)
-	// Retrieves a remote connection by RID.
-	// Throws MESH_SERVICE_ERROR_REMOTE_CONNECTION_NOT_FOUND if there is no remote connection.
+	// Gets one remote connection, with its status and its flags, if the caller can view its
+	// workspace.
+	//
+	// Errors:
+	// - NOT_FOUND: the remote connection does not exist, or the caller cannot view its workspace.
 	GetRemoteConnection(ctx context.Context, in *GetRemoteConnectionRequest, opts ...grpc.CallOption) (*GetRemoteConnectionResponse, error)
-	// Updates a remote connection by RID.
-	// Throws MESH_SERVICE_ERROR_REMOTE_CONNECTION_NOT_FOUND if there is no remote connection.
+	// Changes a remote connection's name, base URL, secret, remote workspace, or flags, and returns the updated
+	// connection.
+	//
+	// Fields that are not set stay unchanged. When flag_rids is set, it replaces the connection's flags, and an empty
+	// list removes them all. A new secret must meet the same conditions as on create. The caller needs permission to
+	// edit connectivity in the connection's workspace.
+	//
+	// Errors:
+	//   - NOT_FOUND: the remote connection does not exist, or the caller cannot edit connectivity in its workspace.
+	//   - INVALID_ARGUMENT: a new secret does not exist, is in a different workspace, or cannot be edited by the caller,
+	//     or its value is not a valid Nominal API token.
+	//   - NOT_FOUND: a flag in flag_rids is not in the connection's workspace.
 	UpdateRemoteConnection(ctx context.Context, in *UpdateRemoteConnectionRequest, opts ...grpc.CallOption) (*UpdateRemoteConnectionResponse, error)
-	// Deletes a remote connection by RID.
+	// Deletes a remote connection. The caller needs permission to edit connectivity in the connection's
+	// workspace.
+	//
+	// Errors:
+	// - NOT_FOUND: the remote connection does not exist, or the caller cannot edit connectivity in its workspace.
+	// - FAILED_PRECONDITION: a link still uses the remote connection.
 	DeleteRemoteConnection(ctx context.Context, in *DeleteRemoteConnectionRequest, opts ...grpc.CallOption) (*DeleteRemoteConnectionResponse, error)
-	// Lists all remote connections.
+	// Lists the remote connections in one workspace, each with its flags. Returns a page ordered by RID.
+	//
+	// The caller needs permission to view the workspace.
+	//
+	// Errors:
+	// - NOT_FOUND: the caller cannot view the workspace (reported as workspace not found).
 	ListRemoteConnections(ctx context.Context, in *ListRemoteConnectionsRequest, opts ...grpc.CallOption) (*ListRemoteConnectionsResponse, error)
 }
 
@@ -217,31 +283,97 @@ type MeshServiceServer interface {
 	HealthCheck(context.Context, *HealthCheckRequest) (*HealthCheckResponse, error)
 	// Link operations.
 	// ------------------------------------------------------------------------------------------------------------
-	// Creates a link which allows the specified resource to be synced between mesh environments.
-	// Throws MESH_SERVICE_ERROR_LINK_ALREADY_EXISTS if a link already exists.
+	// Creates a link that syncs a dataset in this environment with a dataset in a remote Nominal environment, through a
+	// remote connection.
+	//
+	// The server assigns the link RID and registers it in the workspace. The response is empty: find the new link's RID
+	// with SearchLinks. The caller needs permission to edit connectivity in the workspace and must be able to read the
+	// local dataset's data. The local dataset must be in the given workspace.
+	//
+	// Errors:
+	//   - NOT_FOUND: the caller cannot edit connectivity in the workspace (reported as workspace not found), or the local
+	//     dataset does not exist or the caller cannot read it.
+	//   - INVALID_ARGUMENT: the local dataset is in a different workspace.
+	//   - ALREADY_EXISTS: the local dataset already has a link to this remote dataset.
 	CreateLink(context.Context, *CreateLinkRequest) (*CreateLinkResponse, error)
-	// Retrieves a link for the requested resource, throwing MESH_SERVICE_ERROR_LINK_NOT_FOUND if there is no link.
+	// Gets one link between a local dataset and a remote dataset.
+	//
+	// Errors:
+	// - NOT_FOUND: the link does not exist, or the caller cannot view its workspace.
 	GetLink(context.Context, *GetLinkRequest) (*GetLinkResponse, error)
-	// Updates a link for the requested resource, throwing MESH_SERVICE_ERROR_LINK_NOT_FOUND if there is no link.
+	// Changes a link's remote connection, remote dataset, or enabled state, and returns the updated link.
+	//
+	// Fields that are not set stay unchanged, and a request that sets none returns the link as stored. The local
+	// dataset cannot change. The caller needs permission to edit connectivity in the link's workspace.
+	//
+	// Errors:
+	//   - NOT_FOUND: the link does not exist, or the caller cannot edit connectivity in its workspace.
+	//   - ALREADY_EXISTS: the change would duplicate another link between the same local and remote dataset. A remote
+	//     connection that does not exist also returns this error.
 	UpdateLink(context.Context, *UpdateLinkRequest) (*UpdateLinkResponse, error)
-	// Deletes a link for the specified resource.
+	// Deletes a link between a local dataset and a remote dataset. Neither dataset is deleted.
+	//
+	// The caller needs permission to edit connectivity in the link's workspace.
+	//
+	// Errors:
+	// - NOT_FOUND: the link does not exist, or the caller cannot edit connectivity in its workspace.
 	DeleteLink(context.Context, *DeleteLinkRequest) (*DeleteLinkResponse, error)
-	// Searches for links with optional filters and pagination.
+	// Searches the links in one workspace, optionally filtered by enabled state, resource type, local dataset, or
+	// remote connection. Returns a page of links, newest first.
+	//
+	// A next-page token is returned whenever a page is full, so the last page can be followed by an empty one. The
+	// caller needs permission to view the workspace.
+	//
+	// Errors:
+	// - NOT_FOUND: the caller cannot view the workspace (reported as workspace not found).
 	SearchLinks(context.Context, *SearchLinksRequest) (*SearchLinksResponse, error)
 	// Remote Connection operations.
 	// ------------------------------------------------------------------------------------------------------------
-	// Creates a remote connection for mesh links.
-	// Throws MESH_SERVICE_ERROR_REMOTE_CONNECTION_ALREADY_EXISTS if a remote connection with the same name already exists.
+	// Creates a remote connection: a named connection to another Nominal environment, with its base URL and an API
+	// token stored as a secret in the same workspace. Returns the remote connection.
+	//
+	// The server assigns the RID. The new connection has no flags: set them with UpdateRemoteConnection. Names are
+	// unique across all workspaces. The caller needs permission to edit connectivity in the workspace and to edit
+	// secrets in the secret's workspace.
+	//
+	// Errors:
+	//   - NOT_FOUND: the caller cannot edit connectivity in the workspace (reported as workspace not found).
+	//   - INVALID_ARGUMENT: the secret does not exist, is in a different workspace, or cannot be edited by the caller, or
+	//     its value is not a valid Nominal API token.
+	//   - ALREADY_EXISTS: another remote connection has this name.
 	CreateRemoteConnection(context.Context, *CreateRemoteConnectionRequest) (*CreateRemoteConnectionResponse, error)
-	// Retrieves a remote connection by RID.
-	// Throws MESH_SERVICE_ERROR_REMOTE_CONNECTION_NOT_FOUND if there is no remote connection.
+	// Gets one remote connection, with its status and its flags, if the caller can view its
+	// workspace.
+	//
+	// Errors:
+	// - NOT_FOUND: the remote connection does not exist, or the caller cannot view its workspace.
 	GetRemoteConnection(context.Context, *GetRemoteConnectionRequest) (*GetRemoteConnectionResponse, error)
-	// Updates a remote connection by RID.
-	// Throws MESH_SERVICE_ERROR_REMOTE_CONNECTION_NOT_FOUND if there is no remote connection.
+	// Changes a remote connection's name, base URL, secret, remote workspace, or flags, and returns the updated
+	// connection.
+	//
+	// Fields that are not set stay unchanged. When flag_rids is set, it replaces the connection's flags, and an empty
+	// list removes them all. A new secret must meet the same conditions as on create. The caller needs permission to
+	// edit connectivity in the connection's workspace.
+	//
+	// Errors:
+	//   - NOT_FOUND: the remote connection does not exist, or the caller cannot edit connectivity in its workspace.
+	//   - INVALID_ARGUMENT: a new secret does not exist, is in a different workspace, or cannot be edited by the caller,
+	//     or its value is not a valid Nominal API token.
+	//   - NOT_FOUND: a flag in flag_rids is not in the connection's workspace.
 	UpdateRemoteConnection(context.Context, *UpdateRemoteConnectionRequest) (*UpdateRemoteConnectionResponse, error)
-	// Deletes a remote connection by RID.
+	// Deletes a remote connection. The caller needs permission to edit connectivity in the connection's
+	// workspace.
+	//
+	// Errors:
+	// - NOT_FOUND: the remote connection does not exist, or the caller cannot edit connectivity in its workspace.
+	// - FAILED_PRECONDITION: a link still uses the remote connection.
 	DeleteRemoteConnection(context.Context, *DeleteRemoteConnectionRequest) (*DeleteRemoteConnectionResponse, error)
-	// Lists all remote connections.
+	// Lists the remote connections in one workspace, each with its flags. Returns a page ordered by RID.
+	//
+	// The caller needs permission to view the workspace.
+	//
+	// Errors:
+	// - NOT_FOUND: the caller cannot view the workspace (reported as workspace not found).
 	ListRemoteConnections(context.Context, *ListRemoteConnectionsRequest) (*ListRemoteConnectionsResponse, error)
 	mustEmbedUnimplementedMeshServiceServer()
 }

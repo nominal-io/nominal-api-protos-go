@@ -27,8 +27,10 @@ const (
 // Request to submit a V2 ingest job.
 type IngestRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
-	// Existing dataset that all items in this job will ingest into.
-	DatasetRid   string   `protobuf:"bytes,1,opt,name=dataset_rid,json=datasetRid,proto3" json:"dataset_rid,omitempty"`
+	// Existing dataset that all items in this job will ingest into. The caller must be able to write data to it, and it
+	// cannot be a composition (derived dataset).
+	DatasetRid string `protobuf:"bytes,1,opt,name=dataset_rid,json=datasetRid,proto3" json:"dataset_rid,omitempty"`
+	// Runs whose time bounds are expanded to cover the new data when files from this job complete.
 	RunsToExpand []string `protobuf:"bytes,2,rep,name=runs_to_expand,json=runsToExpand,proto3" json:"runs_to_expand,omitempty"`
 	// Units of ingest work to submit under one ingest job RID.
 	Items []*IngestItem `protobuf:"bytes,3,rep,name=items,proto3" json:"items,omitempty"`
@@ -289,6 +291,7 @@ type IngestItem_Video struct {
 }
 
 type IngestItem_PointCloud struct {
+	// Rejected: v2 ingest does not accept point cloud items.
 	PointCloud *PointCloudIngestItem `protobuf:"bytes,6,opt,name=point_cloud,json=pointCloud,proto3,oneof"`
 }
 

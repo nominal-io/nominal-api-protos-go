@@ -7,6 +7,7 @@
 package servicemetadatav1
 
 import (
+	_ "github.com/nominal-io/nominal-api-protos-go/nominal/protos/authn/v1"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
@@ -130,15 +131,15 @@ var File_nominal_protos_internal_servicemetadata_v1_servicemetadata_proto protor
 
 const file_nominal_protos_internal_servicemetadata_v1_servicemetadata_proto_rawDesc = "" +
 	"\n" +
-	"@nominal/protos/internal/servicemetadata/v1/servicemetadata.proto\x12#nominal.internal.servicemetadata.v1\x1a\x1cgoogle/api/annotations.proto\"\x1b\n" +
+	"@nominal/protos/internal/servicemetadata/v1/servicemetadata.proto\x12#nominal.internal.servicemetadata.v1\x1a\x1cgoogle/api/annotations.proto\x1a)nominal/protos/authn/v1/annotations.proto\"\x1b\n" +
 	"\x19GetServiceMetadataRequest\"\x94\x02\n" +
 	"\x1aGetServiceMetadataResponse\x12\x18\n" +
 	"\aversion\x18\x01 \x01(\tR\aversion\x12R\n" +
 	"&min_supported_schema_version_inclusive\x18\x02 \x01(\x05R\"minSupportedSchemaVersionInclusive\x12R\n" +
 	"&max_supported_schema_version_inclusive\x18\x03 \x01(\x05R\"maxSupportedSchemaVersionInclusive\x124\n" +
-	"\x16current_schema_version\x18\x04 \x01(\x05R\x14currentSchemaVersion2\xd6\x01\n" +
-	"\x16ServiceMetadataService\x12\xbb\x01\n" +
-	"\x12GetServiceMetadata\x12>.nominal.internal.servicemetadata.v1.GetServiceMetadataRequest\x1a?.nominal.internal.servicemetadata.v1.GetServiceMetadataResponse\"$\x82\xd3\xe4\x93\x02\x1e\x12\x1c/internal/servicemetadata/v1B\xd8\x02\n" +
+	"\x16current_schema_version\x18\x04 \x01(\x05R\x14currentSchemaVersion2\xda\x01\n" +
+	"\x16ServiceMetadataService\x12\xbf\x01\n" +
+	"\x12GetServiceMetadata\x12>.nominal.internal.servicemetadata.v1.GetServiceMetadataRequest\x1a?.nominal.internal.servicemetadata.v1.GetServiceMetadataResponse\"(\xc0\xb2\x1a\x01\x82\xd3\xe4\x93\x02\x1e\x12\x1c/internal/servicemetadata/v1B\xd8\x02\n" +
 	"'com.nominal.internal.servicemetadata.v1B\x14ServicemetadataProtoP\x01Zhgithub.com/nominal-io/nominal-api-protos-go/nominal/protos/internal/servicemetadata/v1;servicemetadatav1\xa2\x02\x03NIS\xaa\x02#Nominal.Internal.Servicemetadata.V1\xca\x02#Nominal\\Internal\\Servicemetadata\\V1\xe2\x02/Nominal\\Internal\\Servicemetadata\\V1\\GPBMetadata\xea\x02&Nominal::Internal::Servicemetadata::V1b\x06proto3"
 
 var (

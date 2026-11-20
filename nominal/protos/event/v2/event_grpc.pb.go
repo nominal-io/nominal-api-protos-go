@@ -42,45 +42,160 @@ const (
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 //
-// An Event is an annotated moment or time range. The Event Service is responsible for creating and retrieving events
-// for a particular data source.
+// An Event is an annotated moment or time range on one or more assets (a flag event in the app). The Event Service
+// creates, updates, archives, searches, and aggregates events.
 type EventServiceClient interface {
-	// Creates an event.
+	// Creates an event (a flag event in the app) on one or more assets, and returns it.
+	//
+	// The server assigns the RID and sets the creator to the caller. The event belongs to the workspace
+	// of its assets and origins. Type, timestamp, duration, and at least one asset RID are required. If
+	// origins is empty, the event gets a single API origin. If description is not set, it is empty. The
+	// caller needs permission to edit events in that workspace.
+	//
+	// Errors:
+	//   - INVALID_ARGUMENT: type, timestamp, or duration is not set or is out of range, asset_rids is
+	//     empty or holds a RID that is not an asset RID, or an origin has no kind set.
+	//   - NOT_FOUND: an asset or origin resource does not exist or the caller cannot see it.
+	//   - INVALID_ARGUMENT: the assets and origins are in more than one workspace.
+	//   - NOT_FOUND: the caller cannot edit events in the workspace.
+	//   - INVALID_ARGUMENT: the disposition has no priority or state.
 	CreateEvent(ctx context.Context, in *CreateEventRequest, opts ...grpc.CallOption) (*CreateEventResponse, error)
-	// Gets a set of events by UUIDs.
+	// Returns events (flag events in the app) by legacy event UUID, archived events included.
+	//
+	// UUIDs with no event, and events the caller cannot view, are omitted without an error. The order
+	// is not defined. BatchGetEvents takes RIDs.
+	//
+	// Errors:
+	// - INVALID_ARGUMENT: a UUID is not valid.
 	GetEvents(ctx context.Context, in *GetEventsRequest, opts ...grpc.CallOption) (*GetEventsResponse, error)
-	// Gets a set of events by RID.
+	// Returns events by RID, archived events included, each with its assets and origins.
+	//
+	// RIDs with no event, and events the caller cannot view, are omitted without an error. The order
+	// is not defined. GetEvents takes legacy UUIDs.
 	BatchGetEvents(ctx context.Context, in *BatchGetEventsRequest, opts ...grpc.CallOption) (*BatchGetEventsResponse, error)
-	// Gets a filtered set of events by RID and search filters.
+	// Returns the events among the given RIDs that match a filter query on labels, properties, assets,
+	// times, origins, or other fields.
+	//
+	// Archived events are included unless the query filters on archived state. Events that do not
+	// match, do not exist, or cannot be viewed by the caller are omitted. The order is not defined.
+	//
+	// Errors:
+	// - INVALID_ARGUMENT: filter_query has no filter set, or a nested filter has none.
 	BatchFilterEvents(ctx context.Context, in *BatchFilterEventsRequest, opts ...grpc.CallOption) (*BatchFilterEventsResponse, error)
 	// Updates the fields of an event. Empty fields are left unchanged.
 	UpdateEvent(ctx context.Context, in *UpdateEventRequest, opts ...grpc.CallOption) (*UpdateEventResponse, error)
 	// Updates the fields of an event specified by each request in the batch. Empty fields are left unchanged.
 	BatchUpdateEvent(ctx context.Context, in *BatchUpdateEventRequest, opts ...grpc.CallOption) (*BatchUpdateEventResponse, error)
-	// Updates the disposition of a set of events.
-	BatchUpdateDisposition(ctx context.Context, in *BatchUpdateDispositionRequest, opts ...grpc.CallOption) (*BatchUpdateDispositionResponse, error)
-	// Archives an event.
-	ArchiveEvent(ctx context.Context, in *ArchiveEventRequest, opts ...grpc.CallOption) (*ArchiveEventResponse, error)
-	// Archives a set of events.
-	BatchArchiveEvent(ctx context.Context, in *BatchArchiveEventRequest, opts ...grpc.CallOption) (*BatchArchiveEventResponse, error)
-	// Unarchives a set of events.
-	BatchUnarchiveEvent(ctx context.Context, in *BatchUnarchiveEventRequest, opts ...grpc.CallOption) (*BatchUnarchiveEventResponse, error)
-	// Searches for events that match the given filters.
-	SearchEvents(ctx context.Context, in *SearchEventsRequest, opts ...grpc.CallOption) (*SearchEventsResponse, error)
-	// Finds, for each batched query, the single event at the query's index among events matching the shared base
-	// query within the query's asset and time-window constraints. Returns one result per query in the same order.
+	// Sets or clears the review disposition (priority, state, and assignees) of each listed event, and
+	// returns the updated events.
 	//
-	// Best-effort under permission filtering: each query fetches index + 1 candidate rows and then removes events
-	// the caller cannot view, so when hidden events fall inside those candidates a query may report no event even
-	// though a later visible match exists.
+	// Each request replaces the whole disposition of its event, so priority, state, and assignees are all
+	// replaced. A request with no disposition removes the disposition. No event changes unless the caller
+	// can edit every listed event. The returned events have no defined order.
+	//
+	// Errors:
+	// - NOT_FOUND: an event does not exist, or the caller cannot edit events in its workspace.
+	// - INVALID_ARGUMENT: a disposition has no priority or state set.
+	BatchUpdateDisposition(ctx context.Context, in *BatchUpdateDispositionRequest, opts ...grpc.CallOption) (*BatchUpdateDispositionResponse, error)
+	// Archives one event, identified by its legacy event UUID (the UUID part of its RID).
+	//
+	// Searches and aggregates exclude an archived event unless they ask for archived events, and gets by
+	// RID or UUID still return it. Archiving an archived event changes nothing. BatchUnarchiveEvent
+	// restores events.
+	//
+	// Errors:
+	// - INVALID_ARGUMENT: uuid is not a valid UUID.
+	// - NOT_FOUND: the event does not exist, or the caller cannot edit events in its workspace.
+	ArchiveEvent(ctx context.Context, in *ArchiveEventRequest, opts ...grpc.CallOption) (*ArchiveEventResponse, error)
+	// Archives the events with the given RIDs, which hides them from searches and aggregates by default.
+	//
+	// Searches and aggregates exclude an archived event unless they ask for archived events, and gets by
+	// RID still return it. An event that is already archived stays archived. If the caller cannot edit
+	// every listed event, no event is archived. BatchUnarchiveEvent restores events.
+	//
+	// Errors:
+	// - NOT_FOUND: an event does not exist, or the caller cannot edit events in its workspace.
+	BatchArchiveEvent(ctx context.Context, in *BatchArchiveEventRequest, opts ...grpc.CallOption) (*BatchArchiveEventResponse, error)
+	// Unarchives the events with the given RIDs, so searches and aggregates include them again.
+	//
+	// An event that is not archived stays unarchived. If the caller cannot edit every listed event, no
+	// event is unarchived.
+	//
+	// Errors:
+	// - NOT_FOUND: an event does not exist, or the caller cannot edit events in its workspace.
+	BatchUnarchiveEvent(ctx context.Context, in *BatchUnarchiveEventRequest, opts ...grpc.CallOption) (*BatchUnarchiveEventResponse, error)
+	// Searches events by text, time, asset, workbook, data review, procedure, label, property,
+	// disposition, and other filters. Returns one page ordered by the required sort field.
+	//
+	// Ties are ordered by event ID descending. Only events in workspaces the caller can view are
+	// searched. Archived events are excluded unless requested. Events the caller cannot view are
+	// dropped after paging, so a page can hold fewer events than the page size. Pass the returned
+	// next_page_token to get the next page.
+	//
+	// Errors:
+	//   - INVALID_ARGUMENT: page_size is not positive or is over 10,000, sort.field is not set, the
+	//     query has no filter set (or a nested filter has none), or next_page_token is not a token from
+	//     a previous response.
+	//   - INVALID_ARGUMENT: the query is too broad and times out. Add both after and before, a resource
+	//     filter such as an asset, or a time bound on the same axis as the sort.
+	SearchEvents(ctx context.Context, in *SearchEventsRequest, opts ...grpc.CallOption) (*SearchEventsResponse, error)
+	// Finds, for each query, the event at its index rank among events that match a shared base query,
+	// within the query's assets and start-time window. Returns one result per query, in the same
+	// order.
+	//
+	// Archived events are excluded unless the base query filters on archived state. Events the caller
+	// cannot view are removed after index + 1 candidates are fetched, so a result can be empty though
+	// a later match exists.
+	//
+	// Errors:
+	//   - INVALID_ARGUMENT: there are more than 1,000 queries, a query index is negative or at least
+	//     10,000, sort.field is not set, or the base query has no filter set.
+	//   - INVALID_ARGUMENT: a query, combined with the base query, is too broad and times out. Add both
+	//     after and before, a resource filter such as an asset, or a time bound on the same axis as the
+	//     sort.
 	BatchFindEvents(ctx context.Context, in *BatchFindEventsRequest, opts ...grpc.CallOption) (*BatchFindEventsResponse, error)
-	// Searches for events matching the given filter and aggregates them based on the requested functions.
+	// Totals the count or summed duration of events that match a query, across workspaces the caller
+	// can view. Returns one value per requested aggregate type.
+	//
+	// Archived events are excluded unless the query filters on archived state.
+	//
+	// Errors:
+	//   - INVALID_ARGUMENT: aggregate_types is empty or holds an unspecified value, or the query has no
+	//     filter set (or a nested filter has none).
+	//   - INVALID_ARGUMENT: the query is too broad and times out. Add both after and before, or a
+	//     resource filter such as an asset.
 	AggregateEvents(ctx context.Context, in *AggregateEventsRequest, opts ...grpc.CallOption) (*AggregateEventsResponse, error)
-	// Aggregates each batched request and returns responses in the same order.
+	// Runs AggregateEvents for each request, so each response totals the count or summed duration of
+	// the events that match that request's query. Returns one response per request, in the same
+	// order.
+	//
+	// A request with no aggregate types gets an empty response instead of an error.
+	//
+	// Errors:
+	//   - INVALID_ARGUMENT: a query has no filter set (or a nested filter has none), or an aggregate
+	//     type is unspecified.
+	//   - INVALID_ARGUMENT: a query is too broad and times out. Add both after and before, or a
+	//     resource filter such as an asset.
 	BatchAggregateEvents(ctx context.Context, in *BatchAggregateEventsRequest, opts ...grpc.CallOption) (*BatchAggregateEventsResponse, error)
-	// Gets a histogram of events that match the given filters.
+	// Counts events by start time in equal-width buckets over a time window, optionally filtered by a
+	// query. Returns the buckets in time order.
+	//
+	// Archived events are excluded. The query selects events that overlap the window, and at most
+	// event_limit of them are counted, earliest start first, so a crowded window can lose its latest
+	// events. An event that starts before the window counts toward the limit. It is placed in the
+	// first bucket if it starts less than one bucket width early, and in no bucket otherwise.
+	//
+	// Errors:
+	// - INVALID_ARGUMENT: event_limit is below 1 or over 10,000.
+	// - INVALID_ARGUMENT: num_bins is below 1 or over 1,000.
+	// - INVALID_ARGUMENT: filter_query is set but has no filter set, or a nested filter has none.
 	GetEventsHistogram(ctx context.Context, in *GetEventsHistogramRequest, opts ...grpc.CallOption) (*GetEventsHistogramResponse, error)
-	// Lists the properties and labels of active events in the provided workspaces.
+	// Lists the labels, and the property names with their values, used on active (not archived)
+	// events in the given workspaces, or in all workspaces the caller can view when none are given.
+	//
+	// Returns the 500 most used labels and, for each property name, its 500 most used values.
+	// Workspaces the caller cannot view are ignored. Use it to find valid label and property filters
+	// for event searches.
 	ListPropertiesAndLabels(ctx context.Context, in *ListPropertiesAndLabelsRequest, opts ...grpc.CallOption) (*v2.ListPropertiesAndLabelsResponse, error)
 }
 
@@ -256,45 +371,160 @@ func (c *eventServiceClient) ListPropertiesAndLabels(ctx context.Context, in *Li
 // All implementations must embed UnimplementedEventServiceServer
 // for forward compatibility.
 //
-// An Event is an annotated moment or time range. The Event Service is responsible for creating and retrieving events
-// for a particular data source.
+// An Event is an annotated moment or time range on one or more assets (a flag event in the app). The Event Service
+// creates, updates, archives, searches, and aggregates events.
 type EventServiceServer interface {
-	// Creates an event.
+	// Creates an event (a flag event in the app) on one or more assets, and returns it.
+	//
+	// The server assigns the RID and sets the creator to the caller. The event belongs to the workspace
+	// of its assets and origins. Type, timestamp, duration, and at least one asset RID are required. If
+	// origins is empty, the event gets a single API origin. If description is not set, it is empty. The
+	// caller needs permission to edit events in that workspace.
+	//
+	// Errors:
+	//   - INVALID_ARGUMENT: type, timestamp, or duration is not set or is out of range, asset_rids is
+	//     empty or holds a RID that is not an asset RID, or an origin has no kind set.
+	//   - NOT_FOUND: an asset or origin resource does not exist or the caller cannot see it.
+	//   - INVALID_ARGUMENT: the assets and origins are in more than one workspace.
+	//   - NOT_FOUND: the caller cannot edit events in the workspace.
+	//   - INVALID_ARGUMENT: the disposition has no priority or state.
 	CreateEvent(context.Context, *CreateEventRequest) (*CreateEventResponse, error)
-	// Gets a set of events by UUIDs.
+	// Returns events (flag events in the app) by legacy event UUID, archived events included.
+	//
+	// UUIDs with no event, and events the caller cannot view, are omitted without an error. The order
+	// is not defined. BatchGetEvents takes RIDs.
+	//
+	// Errors:
+	// - INVALID_ARGUMENT: a UUID is not valid.
 	GetEvents(context.Context, *GetEventsRequest) (*GetEventsResponse, error)
-	// Gets a set of events by RID.
+	// Returns events by RID, archived events included, each with its assets and origins.
+	//
+	// RIDs with no event, and events the caller cannot view, are omitted without an error. The order
+	// is not defined. GetEvents takes legacy UUIDs.
 	BatchGetEvents(context.Context, *BatchGetEventsRequest) (*BatchGetEventsResponse, error)
-	// Gets a filtered set of events by RID and search filters.
+	// Returns the events among the given RIDs that match a filter query on labels, properties, assets,
+	// times, origins, or other fields.
+	//
+	// Archived events are included unless the query filters on archived state. Events that do not
+	// match, do not exist, or cannot be viewed by the caller are omitted. The order is not defined.
+	//
+	// Errors:
+	// - INVALID_ARGUMENT: filter_query has no filter set, or a nested filter has none.
 	BatchFilterEvents(context.Context, *BatchFilterEventsRequest) (*BatchFilterEventsResponse, error)
 	// Updates the fields of an event. Empty fields are left unchanged.
 	UpdateEvent(context.Context, *UpdateEventRequest) (*UpdateEventResponse, error)
 	// Updates the fields of an event specified by each request in the batch. Empty fields are left unchanged.
 	BatchUpdateEvent(context.Context, *BatchUpdateEventRequest) (*BatchUpdateEventResponse, error)
-	// Updates the disposition of a set of events.
-	BatchUpdateDisposition(context.Context, *BatchUpdateDispositionRequest) (*BatchUpdateDispositionResponse, error)
-	// Archives an event.
-	ArchiveEvent(context.Context, *ArchiveEventRequest) (*ArchiveEventResponse, error)
-	// Archives a set of events.
-	BatchArchiveEvent(context.Context, *BatchArchiveEventRequest) (*BatchArchiveEventResponse, error)
-	// Unarchives a set of events.
-	BatchUnarchiveEvent(context.Context, *BatchUnarchiveEventRequest) (*BatchUnarchiveEventResponse, error)
-	// Searches for events that match the given filters.
-	SearchEvents(context.Context, *SearchEventsRequest) (*SearchEventsResponse, error)
-	// Finds, for each batched query, the single event at the query's index among events matching the shared base
-	// query within the query's asset and time-window constraints. Returns one result per query in the same order.
+	// Sets or clears the review disposition (priority, state, and assignees) of each listed event, and
+	// returns the updated events.
 	//
-	// Best-effort under permission filtering: each query fetches index + 1 candidate rows and then removes events
-	// the caller cannot view, so when hidden events fall inside those candidates a query may report no event even
-	// though a later visible match exists.
+	// Each request replaces the whole disposition of its event, so priority, state, and assignees are all
+	// replaced. A request with no disposition removes the disposition. No event changes unless the caller
+	// can edit every listed event. The returned events have no defined order.
+	//
+	// Errors:
+	// - NOT_FOUND: an event does not exist, or the caller cannot edit events in its workspace.
+	// - INVALID_ARGUMENT: a disposition has no priority or state set.
+	BatchUpdateDisposition(context.Context, *BatchUpdateDispositionRequest) (*BatchUpdateDispositionResponse, error)
+	// Archives one event, identified by its legacy event UUID (the UUID part of its RID).
+	//
+	// Searches and aggregates exclude an archived event unless they ask for archived events, and gets by
+	// RID or UUID still return it. Archiving an archived event changes nothing. BatchUnarchiveEvent
+	// restores events.
+	//
+	// Errors:
+	// - INVALID_ARGUMENT: uuid is not a valid UUID.
+	// - NOT_FOUND: the event does not exist, or the caller cannot edit events in its workspace.
+	ArchiveEvent(context.Context, *ArchiveEventRequest) (*ArchiveEventResponse, error)
+	// Archives the events with the given RIDs, which hides them from searches and aggregates by default.
+	//
+	// Searches and aggregates exclude an archived event unless they ask for archived events, and gets by
+	// RID still return it. An event that is already archived stays archived. If the caller cannot edit
+	// every listed event, no event is archived. BatchUnarchiveEvent restores events.
+	//
+	// Errors:
+	// - NOT_FOUND: an event does not exist, or the caller cannot edit events in its workspace.
+	BatchArchiveEvent(context.Context, *BatchArchiveEventRequest) (*BatchArchiveEventResponse, error)
+	// Unarchives the events with the given RIDs, so searches and aggregates include them again.
+	//
+	// An event that is not archived stays unarchived. If the caller cannot edit every listed event, no
+	// event is unarchived.
+	//
+	// Errors:
+	// - NOT_FOUND: an event does not exist, or the caller cannot edit events in its workspace.
+	BatchUnarchiveEvent(context.Context, *BatchUnarchiveEventRequest) (*BatchUnarchiveEventResponse, error)
+	// Searches events by text, time, asset, workbook, data review, procedure, label, property,
+	// disposition, and other filters. Returns one page ordered by the required sort field.
+	//
+	// Ties are ordered by event ID descending. Only events in workspaces the caller can view are
+	// searched. Archived events are excluded unless requested. Events the caller cannot view are
+	// dropped after paging, so a page can hold fewer events than the page size. Pass the returned
+	// next_page_token to get the next page.
+	//
+	// Errors:
+	//   - INVALID_ARGUMENT: page_size is not positive or is over 10,000, sort.field is not set, the
+	//     query has no filter set (or a nested filter has none), or next_page_token is not a token from
+	//     a previous response.
+	//   - INVALID_ARGUMENT: the query is too broad and times out. Add both after and before, a resource
+	//     filter such as an asset, or a time bound on the same axis as the sort.
+	SearchEvents(context.Context, *SearchEventsRequest) (*SearchEventsResponse, error)
+	// Finds, for each query, the event at its index rank among events that match a shared base query,
+	// within the query's assets and start-time window. Returns one result per query, in the same
+	// order.
+	//
+	// Archived events are excluded unless the base query filters on archived state. Events the caller
+	// cannot view are removed after index + 1 candidates are fetched, so a result can be empty though
+	// a later match exists.
+	//
+	// Errors:
+	//   - INVALID_ARGUMENT: there are more than 1,000 queries, a query index is negative or at least
+	//     10,000, sort.field is not set, or the base query has no filter set.
+	//   - INVALID_ARGUMENT: a query, combined with the base query, is too broad and times out. Add both
+	//     after and before, a resource filter such as an asset, or a time bound on the same axis as the
+	//     sort.
 	BatchFindEvents(context.Context, *BatchFindEventsRequest) (*BatchFindEventsResponse, error)
-	// Searches for events matching the given filter and aggregates them based on the requested functions.
+	// Totals the count or summed duration of events that match a query, across workspaces the caller
+	// can view. Returns one value per requested aggregate type.
+	//
+	// Archived events are excluded unless the query filters on archived state.
+	//
+	// Errors:
+	//   - INVALID_ARGUMENT: aggregate_types is empty or holds an unspecified value, or the query has no
+	//     filter set (or a nested filter has none).
+	//   - INVALID_ARGUMENT: the query is too broad and times out. Add both after and before, or a
+	//     resource filter such as an asset.
 	AggregateEvents(context.Context, *AggregateEventsRequest) (*AggregateEventsResponse, error)
-	// Aggregates each batched request and returns responses in the same order.
+	// Runs AggregateEvents for each request, so each response totals the count or summed duration of
+	// the events that match that request's query. Returns one response per request, in the same
+	// order.
+	//
+	// A request with no aggregate types gets an empty response instead of an error.
+	//
+	// Errors:
+	//   - INVALID_ARGUMENT: a query has no filter set (or a nested filter has none), or an aggregate
+	//     type is unspecified.
+	//   - INVALID_ARGUMENT: a query is too broad and times out. Add both after and before, or a
+	//     resource filter such as an asset.
 	BatchAggregateEvents(context.Context, *BatchAggregateEventsRequest) (*BatchAggregateEventsResponse, error)
-	// Gets a histogram of events that match the given filters.
+	// Counts events by start time in equal-width buckets over a time window, optionally filtered by a
+	// query. Returns the buckets in time order.
+	//
+	// Archived events are excluded. The query selects events that overlap the window, and at most
+	// event_limit of them are counted, earliest start first, so a crowded window can lose its latest
+	// events. An event that starts before the window counts toward the limit. It is placed in the
+	// first bucket if it starts less than one bucket width early, and in no bucket otherwise.
+	//
+	// Errors:
+	// - INVALID_ARGUMENT: event_limit is below 1 or over 10,000.
+	// - INVALID_ARGUMENT: num_bins is below 1 or over 1,000.
+	// - INVALID_ARGUMENT: filter_query is set but has no filter set, or a nested filter has none.
 	GetEventsHistogram(context.Context, *GetEventsHistogramRequest) (*GetEventsHistogramResponse, error)
-	// Lists the properties and labels of active events in the provided workspaces.
+	// Lists the labels, and the property names with their values, used on active (not archived)
+	// events in the given workspaces, or in all workspaces the caller can view when none are given.
+	//
+	// Returns the 500 most used labels and, for each property name, its 500 most used values.
+	// Workspaces the caller cannot view are ignored. Use it to find valid label and property filters
+	// for event searches.
 	ListPropertiesAndLabels(context.Context, *ListPropertiesAndLabelsRequest) (*v2.ListPropertiesAndLabelsResponse, error)
 	mustEmbedUnimplementedEventServiceServer()
 }

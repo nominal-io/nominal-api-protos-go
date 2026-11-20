@@ -82,6 +82,7 @@ const (
 	DriveSource_DRIVE_SOURCE_S3           DriveSource = 2
 	DriveSource_DRIVE_SOURCE_GOOGLE_DRIVE DriveSource = 3
 	DriveSource_DRIVE_SOURCE_GCS          DriveSource = 4
+	DriveSource_DRIVE_SOURCE_AZURE_BLOB   DriveSource = 5
 )
 
 // Enum value maps for DriveSource.
@@ -92,6 +93,7 @@ var (
 		2: "DRIVE_SOURCE_S3",
 		3: "DRIVE_SOURCE_GOOGLE_DRIVE",
 		4: "DRIVE_SOURCE_GCS",
+		5: "DRIVE_SOURCE_AZURE_BLOB",
 	}
 	DriveSource_value = map[string]int32{
 		"DRIVE_SOURCE_UNSPECIFIED":  0,
@@ -99,6 +101,7 @@ var (
 		"DRIVE_SOURCE_S3":           2,
 		"DRIVE_SOURCE_GOOGLE_DRIVE": 3,
 		"DRIVE_SOURCE_GCS":          4,
+		"DRIVE_SOURCE_AZURE_BLOB":   5,
 	}
 )
 
@@ -183,13 +186,18 @@ func (DriveMutability) EnumDescriptor() ([]byte, []int) {
 	return file_nominal_protos_file_store_v1_file_store_proto_rawDescGZIP(), []int{2}
 }
 
+// Whether a virtual drive can reach its external storage with its stored credentials.
 type VirtualDriveState int32
 
 const (
-	VirtualDriveState_VIRTUAL_DRIVE_STATE_UNSPECIFIED           VirtualDriveState = 0
-	VirtualDriveState_VIRTUAL_DRIVE_STATE_ACTIVE                VirtualDriveState = 1
-	VirtualDriveState_VIRTUAL_DRIVE_STATE_AUTH_ERROR            VirtualDriveState = 2
-	VirtualDriveState_VIRTUAL_DRIVE_STATE_UNREACHABLE           VirtualDriveState = 3
+	VirtualDriveState_VIRTUAL_DRIVE_STATE_UNSPECIFIED VirtualDriveState = 0
+	// The storage is reachable with the stored credentials.
+	VirtualDriveState_VIRTUAL_DRIVE_STATE_ACTIVE VirtualDriveState = 1
+	// The storage rejected the stored credentials.
+	VirtualDriveState_VIRTUAL_DRIVE_STATE_AUTH_ERROR VirtualDriveState = 2
+	// The connection to the storage failed, timed out, or returned a provider error.
+	VirtualDriveState_VIRTUAL_DRIVE_STATE_UNREACHABLE VirtualDriveState = 3
+	// The stored configuration cannot be used, for example because the bucket does not exist.
 	VirtualDriveState_VIRTUAL_DRIVE_STATE_INVALID_CONFIGURATION VirtualDriveState = 4
 )
 
@@ -538,17 +546,20 @@ type Drive struct {
 	state        protoimpl.MessageState `protogen:"open.v1"`
 	Rid          string                 `protobuf:"bytes,1,opt,name=rid,proto3" json:"rid,omitempty"`
 	WorkspaceRid string                 `protobuf:"bytes,2,opt,name=workspace_rid,json=workspaceRid,proto3" json:"workspace_rid,omitempty"`
-	Id           string                 `protobuf:"bytes,3,opt,name=id,proto3" json:"id,omitempty"`
-	State        DriveState             `protobuf:"varint,4,opt,name=state,proto3,enum=nominal.file_store.v1.DriveState" json:"state,omitempty"`
-	Created      *Attribution           `protobuf:"bytes,5,opt,name=created,proto3" json:"created,omitempty"`
+	// A user-facing identifier. Often unset for a drive created automatically.
+	Id      *string      `protobuf:"bytes,3,opt,name=id,proto3,oneof" json:"id,omitempty"`
+	State   DriveState   `protobuf:"varint,4,opt,name=state,proto3,enum=nominal.file_store.v1.DriveState" json:"state,omitempty"`
+	Created *Attribution `protobuf:"bytes,5,opt,name=created,proto3" json:"created,omitempty"`
 	// Where the drive's files come from.
 	Source DriveSource `protobuf:"varint,6,opt,name=source,proto3,enum=nominal.file_store.v1.DriveSource" json:"source,omitempty"`
 	// Whether the drive's contents can be modified through Nominal.
 	ContentMutability DriveMutability `protobuf:"varint,7,opt,name=content_mutability,json=contentMutability,proto3,enum=nominal.file_store.v1.DriveMutability" json:"content_mutability,omitempty"`
 	// A free-text description of the drive. Unset when the drive has none.
-	Description   *string `protobuf:"bytes,8,opt,name=description,proto3,oneof" json:"description,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	Description *string `protobuf:"bytes,8,opt,name=description,proto3,oneof" json:"description,omitempty"`
+	// The resource whose permissions and lifetime this drive takes. Unset for a drive with its own.
+	SubordinateToRid *string `protobuf:"bytes,9,opt,name=subordinate_to_rid,json=subordinateToRid,proto3,oneof" json:"subordinate_to_rid,omitempty"`
+	unknownFields    protoimpl.UnknownFields
+	sizeCache        protoimpl.SizeCache
 }
 
 func (x *Drive) Reset() {
@@ -596,8 +607,8 @@ func (x *Drive) GetWorkspaceRid() string {
 }
 
 func (x *Drive) GetId() string {
-	if x != nil {
-		return x.Id
+	if x != nil && x.Id != nil {
+		return *x.Id
 	}
 	return ""
 }
@@ -633,6 +644,13 @@ func (x *Drive) GetContentMutability() DriveMutability {
 func (x *Drive) GetDescription() string {
 	if x != nil && x.Description != nil {
 		return *x.Description
+	}
+	return ""
+}
+
+func (x *Drive) GetSubordinateToRid() string {
+	if x != nil && x.SubordinateToRid != nil {
+		return *x.SubordinateToRid
 	}
 	return ""
 }
@@ -752,14 +770,16 @@ func (x *VirtualDriveDetails) GetConnectionDetails() *VirtualDriveConnectionDeta
 	return nil
 }
 
+// The connection status of a virtual drive to its external storage.
 type VirtualDriveStatus struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	State VirtualDriveState      `protobuf:"varint,1,opt,name=state,proto3,enum=nominal.file_store.v1.VirtualDriveState" json:"state,omitempty"`
 	// The last time the drive was successfully reached. Absent if it has never been reached successfully.
 	LastSuccessfulCheckTime *timestamppb.Timestamp `protobuf:"bytes,2,opt,name=last_successful_check_time,json=lastSuccessfulCheckTime,proto3,oneof" json:"last_successful_check_time,omitempty"`
-	Message                 string                 `protobuf:"bytes,3,opt,name=message,proto3" json:"message,omitempty"`
-	unknownFields           protoimpl.UnknownFields
-	sizeCache               protoimpl.SizeCache
+	// A short reason for the state, such as "access denied" or "bucket not found". Empty when the state is ACTIVE.
+	Message       string `protobuf:"bytes,3,opt,name=message,proto3" json:"message,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
 }
 
 func (x *VirtualDriveStatus) Reset() {
@@ -820,6 +840,7 @@ type VirtualDriveConnectionDetails struct {
 	//	*VirtualDriveConnectionDetails_S3
 	//	*VirtualDriveConnectionDetails_GoogleDrive
 	//	*VirtualDriveConnectionDetails_Gcs
+	//	*VirtualDriveConnectionDetails_AzureBlob
 	Details       isVirtualDriveConnectionDetails_Details `protobuf_oneof:"details"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -889,6 +910,15 @@ func (x *VirtualDriveConnectionDetails) GetGcs() *GcsVirtualDriveConnectionDetai
 	return nil
 }
 
+func (x *VirtualDriveConnectionDetails) GetAzureBlob() *AzureBlobVirtualDriveConnectionDetails {
+	if x != nil {
+		if x, ok := x.Details.(*VirtualDriveConnectionDetails_AzureBlob); ok {
+			return x.AzureBlob
+		}
+	}
+	return nil
+}
+
 type isVirtualDriveConnectionDetails_Details interface {
 	isVirtualDriveConnectionDetails_Details()
 }
@@ -905,207 +935,17 @@ type VirtualDriveConnectionDetails_Gcs struct {
 	Gcs *GcsVirtualDriveConnectionDetails `protobuf:"bytes,3,opt,name=gcs,proto3,oneof"`
 }
 
+type VirtualDriveConnectionDetails_AzureBlob struct {
+	AzureBlob *AzureBlobVirtualDriveConnectionDetails `protobuf:"bytes,4,opt,name=azure_blob,json=azureBlob,proto3,oneof"`
+}
+
 func (*VirtualDriveConnectionDetails_S3) isVirtualDriveConnectionDetails_Details() {}
 
 func (*VirtualDriveConnectionDetails_GoogleDrive) isVirtualDriveConnectionDetails_Details() {}
 
 func (*VirtualDriveConnectionDetails_Gcs) isVirtualDriveConnectionDetails_Details() {}
 
-type S3VirtualDriveConnectionDetails struct {
-	state protoimpl.MessageState `protogen:"open.v1"`
-	// Max length is the S3 bucket-name limit (63). Must not be blank or contain whitespace.
-	Bucket string `protobuf:"bytes,1,opt,name=bucket,proto3" json:"bucket,omitempty"`
-	// Key prefix within the bucket, bounded to the S3 key-length limit (1024). Empty is allowed and means the bucket root.
-	Prefix string `protobuf:"bytes,2,opt,name=prefix,proto3" json:"prefix,omitempty"`
-	// Required secret holding the credentials for this drive's bucket. Virtual drives connect to a customer's own
-	// S3 and always authenticate per-drive, never with our ambient service credentials.
-	CredentialsSecretRid string `protobuf:"bytes,3,opt,name=credentials_secret_rid,json=credentialsSecretRid,proto3" json:"credentials_secret_rid,omitempty"`
-	// Required S3 endpoint of the customer's store (e.g. https://s3.us-east-1.amazonaws.com, or an S3-compatible
-	// endpoint such as MinIO/Ceph/R2).
-	Endpoint      string `protobuf:"bytes,4,opt,name=endpoint,proto3" json:"endpoint,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
-}
-
-func (x *S3VirtualDriveConnectionDetails) Reset() {
-	*x = S3VirtualDriveConnectionDetails{}
-	mi := &file_nominal_protos_file_store_v1_file_store_proto_msgTypes[6]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *S3VirtualDriveConnectionDetails) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*S3VirtualDriveConnectionDetails) ProtoMessage() {}
-
-func (x *S3VirtualDriveConnectionDetails) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_file_store_v1_file_store_proto_msgTypes[6]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use S3VirtualDriveConnectionDetails.ProtoReflect.Descriptor instead.
-func (*S3VirtualDriveConnectionDetails) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_file_store_v1_file_store_proto_rawDescGZIP(), []int{6}
-}
-
-func (x *S3VirtualDriveConnectionDetails) GetBucket() string {
-	if x != nil {
-		return x.Bucket
-	}
-	return ""
-}
-
-func (x *S3VirtualDriveConnectionDetails) GetPrefix() string {
-	if x != nil {
-		return x.Prefix
-	}
-	return ""
-}
-
-func (x *S3VirtualDriveConnectionDetails) GetCredentialsSecretRid() string {
-	if x != nil {
-		return x.CredentialsSecretRid
-	}
-	return ""
-}
-
-func (x *S3VirtualDriveConnectionDetails) GetEndpoint() string {
-	if x != nil {
-		return x.Endpoint
-	}
-	return ""
-}
-
-type GoogleDriveVirtualDriveConnectionDetails struct {
-	state protoimpl.MessageState `protogen:"open.v1"`
-	// The Google Drive folder whose contents (recursively) back this drive.
-	//
-	// This cannot be modified after creating a drive. Attempting to do so will
-	// result in the request being rejected.
-	FolderId string `protobuf:"bytes,1,opt,name=folder_id,json=folderId,proto3" json:"folder_id,omitempty"`
-	// Secret holding the Google service-account JSON used to read the folder (scoped drive.readonly).
-	CredentialsSecretRid string `protobuf:"bytes,2,opt,name=credentials_secret_rid,json=credentialsSecretRid,proto3" json:"credentials_secret_rid,omitempty"`
-	unknownFields        protoimpl.UnknownFields
-	sizeCache            protoimpl.SizeCache
-}
-
-func (x *GoogleDriveVirtualDriveConnectionDetails) Reset() {
-	*x = GoogleDriveVirtualDriveConnectionDetails{}
-	mi := &file_nominal_protos_file_store_v1_file_store_proto_msgTypes[7]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *GoogleDriveVirtualDriveConnectionDetails) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*GoogleDriveVirtualDriveConnectionDetails) ProtoMessage() {}
-
-func (x *GoogleDriveVirtualDriveConnectionDetails) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_file_store_v1_file_store_proto_msgTypes[7]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use GoogleDriveVirtualDriveConnectionDetails.ProtoReflect.Descriptor instead.
-func (*GoogleDriveVirtualDriveConnectionDetails) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_file_store_v1_file_store_proto_rawDescGZIP(), []int{7}
-}
-
-func (x *GoogleDriveVirtualDriveConnectionDetails) GetFolderId() string {
-	if x != nil {
-		return x.FolderId
-	}
-	return ""
-}
-
-func (x *GoogleDriveVirtualDriveConnectionDetails) GetCredentialsSecretRid() string {
-	if x != nil {
-		return x.CredentialsSecretRid
-	}
-	return ""
-}
-
-type GcsVirtualDriveConnectionDetails struct {
-	state protoimpl.MessageState `protogen:"open.v1"`
-	// GCS bucket whose contents back this drive. Bucket names can be up to 222 characters (dotted,
-	// domain-named buckets); must not be blank or contain whitespace.
-	Bucket string `protobuf:"bytes,1,opt,name=bucket,proto3" json:"bucket,omitempty"`
-	// Object-name prefix within the bucket, bounded to the GCS object-name limit (1024). Empty is allowed and means
-	// the bucket root.
-	Prefix string `protobuf:"bytes,2,opt,name=prefix,proto3" json:"prefix,omitempty"`
-	// Secret holding the Google service-account JSON used to read the bucket (scoped to object get/list).
-	CredentialsSecretRid string `protobuf:"bytes,3,opt,name=credentials_secret_rid,json=credentialsSecretRid,proto3" json:"credentials_secret_rid,omitempty"`
-	unknownFields        protoimpl.UnknownFields
-	sizeCache            protoimpl.SizeCache
-}
-
-func (x *GcsVirtualDriveConnectionDetails) Reset() {
-	*x = GcsVirtualDriveConnectionDetails{}
-	mi := &file_nominal_protos_file_store_v1_file_store_proto_msgTypes[8]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *GcsVirtualDriveConnectionDetails) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*GcsVirtualDriveConnectionDetails) ProtoMessage() {}
-
-func (x *GcsVirtualDriveConnectionDetails) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_file_store_v1_file_store_proto_msgTypes[8]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use GcsVirtualDriveConnectionDetails.ProtoReflect.Descriptor instead.
-func (*GcsVirtualDriveConnectionDetails) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_file_store_v1_file_store_proto_rawDescGZIP(), []int{8}
-}
-
-func (x *GcsVirtualDriveConnectionDetails) GetBucket() string {
-	if x != nil {
-		return x.Bucket
-	}
-	return ""
-}
-
-func (x *GcsVirtualDriveConnectionDetails) GetPrefix() string {
-	if x != nil {
-		return x.Prefix
-	}
-	return ""
-}
-
-func (x *GcsVirtualDriveConnectionDetails) GetCredentialsSecretRid() string {
-	if x != nil {
-		return x.CredentialsSecretRid
-	}
-	return ""
-}
+func (*VirtualDriveConnectionDetails_AzureBlob) isVirtualDriveConnectionDetails_Details() {}
 
 // Drive-relative normalized path, with no leading or trailing slash.
 type LogicalPath struct {
@@ -1123,7 +963,7 @@ type LogicalPath struct {
 
 func (x *LogicalPath) Reset() {
 	*x = LogicalPath{}
-	mi := &file_nominal_protos_file_store_v1_file_store_proto_msgTypes[9]
+	mi := &file_nominal_protos_file_store_v1_file_store_proto_msgTypes[6]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1135,7 +975,7 @@ func (x *LogicalPath) String() string {
 func (*LogicalPath) ProtoMessage() {}
 
 func (x *LogicalPath) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_file_store_v1_file_store_proto_msgTypes[9]
+	mi := &file_nominal_protos_file_store_v1_file_store_proto_msgTypes[6]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1148,7 +988,7 @@ func (x *LogicalPath) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use LogicalPath.ProtoReflect.Descriptor instead.
 func (*LogicalPath) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_file_store_v1_file_store_proto_rawDescGZIP(), []int{9}
+	return file_nominal_protos_file_store_v1_file_store_proto_rawDescGZIP(), []int{6}
 }
 
 func (x *LogicalPath) GetPath() string {
@@ -1177,7 +1017,7 @@ type LogicalFile struct {
 
 func (x *LogicalFile) Reset() {
 	*x = LogicalFile{}
-	mi := &file_nominal_protos_file_store_v1_file_store_proto_msgTypes[10]
+	mi := &file_nominal_protos_file_store_v1_file_store_proto_msgTypes[7]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1189,7 +1029,7 @@ func (x *LogicalFile) String() string {
 func (*LogicalFile) ProtoMessage() {}
 
 func (x *LogicalFile) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_file_store_v1_file_store_proto_msgTypes[10]
+	mi := &file_nominal_protos_file_store_v1_file_store_proto_msgTypes[7]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1202,7 +1042,7 @@ func (x *LogicalFile) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use LogicalFile.ProtoReflect.Descriptor instead.
 func (*LogicalFile) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_file_store_v1_file_store_proto_rawDescGZIP(), []int{10}
+	return file_nominal_protos_file_store_v1_file_store_proto_rawDescGZIP(), []int{7}
 }
 
 func (x *LogicalFile) GetIdentity() *LogicalFileIdentity {
@@ -1276,7 +1116,7 @@ type LogicalFileIdentity struct {
 
 func (x *LogicalFileIdentity) Reset() {
 	*x = LogicalFileIdentity{}
-	mi := &file_nominal_protos_file_store_v1_file_store_proto_msgTypes[11]
+	mi := &file_nominal_protos_file_store_v1_file_store_proto_msgTypes[8]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1288,7 +1128,7 @@ func (x *LogicalFileIdentity) String() string {
 func (*LogicalFileIdentity) ProtoMessage() {}
 
 func (x *LogicalFileIdentity) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_file_store_v1_file_store_proto_msgTypes[11]
+	mi := &file_nominal_protos_file_store_v1_file_store_proto_msgTypes[8]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1301,7 +1141,7 @@ func (x *LogicalFileIdentity) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use LogicalFileIdentity.ProtoReflect.Descriptor instead.
 func (*LogicalFileIdentity) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_file_store_v1_file_store_proto_rawDescGZIP(), []int{11}
+	return file_nominal_protos_file_store_v1_file_store_proto_rawDescGZIP(), []int{8}
 }
 
 func (x *LogicalFileIdentity) GetIdentity() isLogicalFileIdentity_Identity {
@@ -1354,7 +1194,7 @@ type ManagedFileIdentity struct {
 
 func (x *ManagedFileIdentity) Reset() {
 	*x = ManagedFileIdentity{}
-	mi := &file_nominal_protos_file_store_v1_file_store_proto_msgTypes[12]
+	mi := &file_nominal_protos_file_store_v1_file_store_proto_msgTypes[9]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1366,7 +1206,7 @@ func (x *ManagedFileIdentity) String() string {
 func (*ManagedFileIdentity) ProtoMessage() {}
 
 func (x *ManagedFileIdentity) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_file_store_v1_file_store_proto_msgTypes[12]
+	mi := &file_nominal_protos_file_store_v1_file_store_proto_msgTypes[9]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1379,7 +1219,7 @@ func (x *ManagedFileIdentity) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ManagedFileIdentity.ProtoReflect.Descriptor instead.
 func (*ManagedFileIdentity) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_file_store_v1_file_store_proto_rawDescGZIP(), []int{12}
+	return file_nominal_protos_file_store_v1_file_store_proto_rawDescGZIP(), []int{9}
 }
 
 func (x *ManagedFileIdentity) GetFileRid() string {
@@ -1396,6 +1236,7 @@ type VirtualFileIdentity struct {
 	//	*VirtualFileIdentity_S3
 	//	*VirtualFileIdentity_GoogleDrive
 	//	*VirtualFileIdentity_Gcs
+	//	*VirtualFileIdentity_AzureBlob
 	Kind          isVirtualFileIdentity_Kind `protobuf_oneof:"kind"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -1403,7 +1244,7 @@ type VirtualFileIdentity struct {
 
 func (x *VirtualFileIdentity) Reset() {
 	*x = VirtualFileIdentity{}
-	mi := &file_nominal_protos_file_store_v1_file_store_proto_msgTypes[13]
+	mi := &file_nominal_protos_file_store_v1_file_store_proto_msgTypes[10]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1415,7 +1256,7 @@ func (x *VirtualFileIdentity) String() string {
 func (*VirtualFileIdentity) ProtoMessage() {}
 
 func (x *VirtualFileIdentity) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_file_store_v1_file_store_proto_msgTypes[13]
+	mi := &file_nominal_protos_file_store_v1_file_store_proto_msgTypes[10]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1428,7 +1269,7 @@ func (x *VirtualFileIdentity) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use VirtualFileIdentity.ProtoReflect.Descriptor instead.
 func (*VirtualFileIdentity) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_file_store_v1_file_store_proto_rawDescGZIP(), []int{13}
+	return file_nominal_protos_file_store_v1_file_store_proto_rawDescGZIP(), []int{10}
 }
 
 func (x *VirtualFileIdentity) GetKind() isVirtualFileIdentity_Kind {
@@ -1465,6 +1306,15 @@ func (x *VirtualFileIdentity) GetGcs() *GcsFileIdentity {
 	return nil
 }
 
+func (x *VirtualFileIdentity) GetAzureBlob() *AzureBlobFileIdentity {
+	if x != nil {
+		if x, ok := x.Kind.(*VirtualFileIdentity_AzureBlob); ok {
+			return x.AzureBlob
+		}
+	}
+	return nil
+}
+
 type isVirtualFileIdentity_Kind interface {
 	isVirtualFileIdentity_Kind()
 }
@@ -1481,172 +1331,17 @@ type VirtualFileIdentity_Gcs struct {
 	Gcs *GcsFileIdentity `protobuf:"bytes,3,opt,name=gcs,proto3,oneof"`
 }
 
+type VirtualFileIdentity_AzureBlob struct {
+	AzureBlob *AzureBlobFileIdentity `protobuf:"bytes,4,opt,name=azure_blob,json=azureBlob,proto3,oneof"`
+}
+
 func (*VirtualFileIdentity_S3) isVirtualFileIdentity_Kind() {}
 
 func (*VirtualFileIdentity_GoogleDrive) isVirtualFileIdentity_Kind() {}
 
 func (*VirtualFileIdentity_Gcs) isVirtualFileIdentity_Kind() {}
 
-type S3FileIdentity struct {
-	state protoimpl.MessageState `protogen:"open.v1"`
-	// The virtual drive associated with this file.
-	DriveRid string `protobuf:"bytes,1,opt,name=drive_rid,json=driveRid,proto3" json:"drive_rid,omitempty"`
-	// S3 object path/key. Note that S3 has no notion of a file identity separate from its key.
-	Path          string `protobuf:"bytes,2,opt,name=path,proto3" json:"path,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
-}
-
-func (x *S3FileIdentity) Reset() {
-	*x = S3FileIdentity{}
-	mi := &file_nominal_protos_file_store_v1_file_store_proto_msgTypes[14]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *S3FileIdentity) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*S3FileIdentity) ProtoMessage() {}
-
-func (x *S3FileIdentity) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_file_store_v1_file_store_proto_msgTypes[14]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use S3FileIdentity.ProtoReflect.Descriptor instead.
-func (*S3FileIdentity) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_file_store_v1_file_store_proto_rawDescGZIP(), []int{14}
-}
-
-func (x *S3FileIdentity) GetDriveRid() string {
-	if x != nil {
-		return x.DriveRid
-	}
-	return ""
-}
-
-func (x *S3FileIdentity) GetPath() string {
-	if x != nil {
-		return x.Path
-	}
-	return ""
-}
-
-type GoogleDriveFileIdentity struct {
-	state protoimpl.MessageState `protogen:"open.v1"`
-	// The virtual drive associated with this file.
-	DriveRid      string `protobuf:"bytes,1,opt,name=drive_rid,json=driveRid,proto3" json:"drive_rid,omitempty"`
-	FileId        string `protobuf:"bytes,2,opt,name=file_id,json=fileId,proto3" json:"file_id,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
-}
-
-func (x *GoogleDriveFileIdentity) Reset() {
-	*x = GoogleDriveFileIdentity{}
-	mi := &file_nominal_protos_file_store_v1_file_store_proto_msgTypes[15]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *GoogleDriveFileIdentity) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*GoogleDriveFileIdentity) ProtoMessage() {}
-
-func (x *GoogleDriveFileIdentity) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_file_store_v1_file_store_proto_msgTypes[15]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use GoogleDriveFileIdentity.ProtoReflect.Descriptor instead.
-func (*GoogleDriveFileIdentity) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_file_store_v1_file_store_proto_rawDescGZIP(), []int{15}
-}
-
-func (x *GoogleDriveFileIdentity) GetDriveRid() string {
-	if x != nil {
-		return x.DriveRid
-	}
-	return ""
-}
-
-func (x *GoogleDriveFileIdentity) GetFileId() string {
-	if x != nil {
-		return x.FileId
-	}
-	return ""
-}
-
-type GcsFileIdentity struct {
-	state protoimpl.MessageState `protogen:"open.v1"`
-	// The virtual drive associated with this file.
-	DriveRid string `protobuf:"bytes,1,opt,name=drive_rid,json=driveRid,proto3" json:"drive_rid,omitempty"`
-	// GCS object name/path. Note that GCS has no notion of a file identity separate from its object name.
-	Path          string `protobuf:"bytes,2,opt,name=path,proto3" json:"path,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
-}
-
-func (x *GcsFileIdentity) Reset() {
-	*x = GcsFileIdentity{}
-	mi := &file_nominal_protos_file_store_v1_file_store_proto_msgTypes[16]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *GcsFileIdentity) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*GcsFileIdentity) ProtoMessage() {}
-
-func (x *GcsFileIdentity) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_file_store_v1_file_store_proto_msgTypes[16]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use GcsFileIdentity.ProtoReflect.Descriptor instead.
-func (*GcsFileIdentity) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_file_store_v1_file_store_proto_rawDescGZIP(), []int{16}
-}
-
-func (x *GcsFileIdentity) GetDriveRid() string {
-	if x != nil {
-		return x.DriveRid
-	}
-	return ""
-}
-
-func (x *GcsFileIdentity) GetPath() string {
-	if x != nil {
-		return x.Path
-	}
-	return ""
-}
+func (*VirtualFileIdentity_AzureBlob) isVirtualFileIdentity_Kind() {}
 
 // The operation that produced a revision, and the revision it carried forward. Mirrors the arms of the
 // FileChange a caller submits.
@@ -1665,7 +1360,7 @@ type FileRevisionAction struct {
 
 func (x *FileRevisionAction) Reset() {
 	*x = FileRevisionAction{}
-	mi := &file_nominal_protos_file_store_v1_file_store_proto_msgTypes[17]
+	mi := &file_nominal_protos_file_store_v1_file_store_proto_msgTypes[11]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1677,7 +1372,7 @@ func (x *FileRevisionAction) String() string {
 func (*FileRevisionAction) ProtoMessage() {}
 
 func (x *FileRevisionAction) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_file_store_v1_file_store_proto_msgTypes[17]
+	mi := &file_nominal_protos_file_store_v1_file_store_proto_msgTypes[11]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1690,7 +1385,7 @@ func (x *FileRevisionAction) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use FileRevisionAction.ProtoReflect.Descriptor instead.
 func (*FileRevisionAction) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_file_store_v1_file_store_proto_rawDescGZIP(), []int{17}
+	return file_nominal_protos_file_store_v1_file_store_proto_rawDescGZIP(), []int{11}
 }
 
 func (x *FileRevisionAction) GetKind() isFileRevisionAction_Kind {
@@ -1773,7 +1468,7 @@ type FilePut struct {
 
 func (x *FilePut) Reset() {
 	*x = FilePut{}
-	mi := &file_nominal_protos_file_store_v1_file_store_proto_msgTypes[18]
+	mi := &file_nominal_protos_file_store_v1_file_store_proto_msgTypes[12]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1785,7 +1480,7 @@ func (x *FilePut) String() string {
 func (*FilePut) ProtoMessage() {}
 
 func (x *FilePut) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_file_store_v1_file_store_proto_msgTypes[18]
+	mi := &file_nominal_protos_file_store_v1_file_store_proto_msgTypes[12]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1798,7 +1493,7 @@ func (x *FilePut) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use FilePut.ProtoReflect.Descriptor instead.
 func (*FilePut) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_file_store_v1_file_store_proto_rawDescGZIP(), []int{18}
+	return file_nominal_protos_file_store_v1_file_store_proto_rawDescGZIP(), []int{12}
 }
 
 // Re-path, carrying the previous revision's content forward.
@@ -1812,7 +1507,7 @@ type FileMoved struct {
 
 func (x *FileMoved) Reset() {
 	*x = FileMoved{}
-	mi := &file_nominal_protos_file_store_v1_file_store_proto_msgTypes[19]
+	mi := &file_nominal_protos_file_store_v1_file_store_proto_msgTypes[13]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1824,7 +1519,7 @@ func (x *FileMoved) String() string {
 func (*FileMoved) ProtoMessage() {}
 
 func (x *FileMoved) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_file_store_v1_file_store_proto_msgTypes[19]
+	mi := &file_nominal_protos_file_store_v1_file_store_proto_msgTypes[13]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1837,7 +1532,7 @@ func (x *FileMoved) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use FileMoved.ProtoReflect.Descriptor instead.
 func (*FileMoved) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_file_store_v1_file_store_proto_rawDescGZIP(), []int{19}
+	return file_nominal_protos_file_store_v1_file_store_proto_rawDescGZIP(), []int{13}
 }
 
 func (x *FileMoved) GetSourceRevisionRid() string {
@@ -1859,7 +1554,7 @@ type FileRemoved struct {
 
 func (x *FileRemoved) Reset() {
 	*x = FileRemoved{}
-	mi := &file_nominal_protos_file_store_v1_file_store_proto_msgTypes[20]
+	mi := &file_nominal_protos_file_store_v1_file_store_proto_msgTypes[14]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1871,7 +1566,7 @@ func (x *FileRemoved) String() string {
 func (*FileRemoved) ProtoMessage() {}
 
 func (x *FileRemoved) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_file_store_v1_file_store_proto_msgTypes[20]
+	mi := &file_nominal_protos_file_store_v1_file_store_proto_msgTypes[14]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1884,7 +1579,7 @@ func (x *FileRemoved) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use FileRemoved.ProtoReflect.Descriptor instead.
 func (*FileRemoved) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_file_store_v1_file_store_proto_rawDescGZIP(), []int{20}
+	return file_nominal_protos_file_store_v1_file_store_proto_rawDescGZIP(), []int{14}
 }
 
 func (x *FileRemoved) GetRemovedRevisionRid() string {
@@ -1905,7 +1600,7 @@ type FileRestored struct {
 
 func (x *FileRestored) Reset() {
 	*x = FileRestored{}
-	mi := &file_nominal_protos_file_store_v1_file_store_proto_msgTypes[21]
+	mi := &file_nominal_protos_file_store_v1_file_store_proto_msgTypes[15]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1917,7 +1612,7 @@ func (x *FileRestored) String() string {
 func (*FileRestored) ProtoMessage() {}
 
 func (x *FileRestored) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_file_store_v1_file_store_proto_msgTypes[21]
+	mi := &file_nominal_protos_file_store_v1_file_store_proto_msgTypes[15]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1930,7 +1625,7 @@ func (x *FileRestored) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use FileRestored.ProtoReflect.Descriptor instead.
 func (*FileRestored) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_file_store_v1_file_store_proto_rawDescGZIP(), []int{21}
+	return file_nominal_protos_file_store_v1_file_store_proto_rawDescGZIP(), []int{15}
 }
 
 func (x *FileRestored) GetRestoredFromRevisionRid() string {
@@ -1956,7 +1651,7 @@ type FileRevisionRef struct {
 
 func (x *FileRevisionRef) Reset() {
 	*x = FileRevisionRef{}
-	mi := &file_nominal_protos_file_store_v1_file_store_proto_msgTypes[22]
+	mi := &file_nominal_protos_file_store_v1_file_store_proto_msgTypes[16]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1968,7 +1663,7 @@ func (x *FileRevisionRef) String() string {
 func (*FileRevisionRef) ProtoMessage() {}
 
 func (x *FileRevisionRef) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_file_store_v1_file_store_proto_msgTypes[22]
+	mi := &file_nominal_protos_file_store_v1_file_store_proto_msgTypes[16]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1981,7 +1676,7 @@ func (x *FileRevisionRef) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use FileRevisionRef.ProtoReflect.Descriptor instead.
 func (*FileRevisionRef) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_file_store_v1_file_store_proto_rawDescGZIP(), []int{22}
+	return file_nominal_protos_file_store_v1_file_store_proto_rawDescGZIP(), []int{16}
 }
 
 func (x *FileRevisionRef) GetReference() isFileRevisionRef_Reference {
@@ -2027,7 +1722,7 @@ func (*FileRevisionRef_Virtual) isFileRevisionRef_Reference() {}
 
 type ManagedFileRevisionRef struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
-	// Exact managed revision backing this source.
+	// Exact revision backing this source. Also names a virtual revision that was resolved before.
 	FileRevisionRid string `protobuf:"bytes,1,opt,name=file_revision_rid,json=fileRevisionRid,proto3" json:"file_revision_rid,omitempty"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
@@ -2035,7 +1730,7 @@ type ManagedFileRevisionRef struct {
 
 func (x *ManagedFileRevisionRef) Reset() {
 	*x = ManagedFileRevisionRef{}
-	mi := &file_nominal_protos_file_store_v1_file_store_proto_msgTypes[23]
+	mi := &file_nominal_protos_file_store_v1_file_store_proto_msgTypes[17]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2047,7 +1742,7 @@ func (x *ManagedFileRevisionRef) String() string {
 func (*ManagedFileRevisionRef) ProtoMessage() {}
 
 func (x *ManagedFileRevisionRef) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_file_store_v1_file_store_proto_msgTypes[23]
+	mi := &file_nominal_protos_file_store_v1_file_store_proto_msgTypes[17]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2060,7 +1755,7 @@ func (x *ManagedFileRevisionRef) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ManagedFileRevisionRef.ProtoReflect.Descriptor instead.
 func (*ManagedFileRevisionRef) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_file_store_v1_file_store_proto_rawDescGZIP(), []int{23}
+	return file_nominal_protos_file_store_v1_file_store_proto_rawDescGZIP(), []int{17}
 }
 
 func (x *ManagedFileRevisionRef) GetFileRevisionRid() string {
@@ -2077,6 +1772,7 @@ type VirtualFileRevisionRef struct {
 	//	*VirtualFileRevisionRef_S3
 	//	*VirtualFileRevisionRef_GoogleDrive
 	//	*VirtualFileRevisionRef_Gcs
+	//	*VirtualFileRevisionRef_AzureBlob
 	Kind          isVirtualFileRevisionRef_Kind `protobuf_oneof:"kind"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -2084,7 +1780,7 @@ type VirtualFileRevisionRef struct {
 
 func (x *VirtualFileRevisionRef) Reset() {
 	*x = VirtualFileRevisionRef{}
-	mi := &file_nominal_protos_file_store_v1_file_store_proto_msgTypes[24]
+	mi := &file_nominal_protos_file_store_v1_file_store_proto_msgTypes[18]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2096,7 +1792,7 @@ func (x *VirtualFileRevisionRef) String() string {
 func (*VirtualFileRevisionRef) ProtoMessage() {}
 
 func (x *VirtualFileRevisionRef) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_file_store_v1_file_store_proto_msgTypes[24]
+	mi := &file_nominal_protos_file_store_v1_file_store_proto_msgTypes[18]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2109,7 +1805,7 @@ func (x *VirtualFileRevisionRef) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use VirtualFileRevisionRef.ProtoReflect.Descriptor instead.
 func (*VirtualFileRevisionRef) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_file_store_v1_file_store_proto_rawDescGZIP(), []int{24}
+	return file_nominal_protos_file_store_v1_file_store_proto_rawDescGZIP(), []int{18}
 }
 
 func (x *VirtualFileRevisionRef) GetKind() isVirtualFileRevisionRef_Kind {
@@ -2146,6 +1842,15 @@ func (x *VirtualFileRevisionRef) GetGcs() *GcsFileRevisionRef {
 	return nil
 }
 
+func (x *VirtualFileRevisionRef) GetAzureBlob() *AzureBlobFileRevisionRef {
+	if x != nil {
+		if x, ok := x.Kind.(*VirtualFileRevisionRef_AzureBlob); ok {
+			return x.AzureBlob
+		}
+	}
+	return nil
+}
+
 type isVirtualFileRevisionRef_Kind interface {
 	isVirtualFileRevisionRef_Kind()
 }
@@ -2162,207 +1867,32 @@ type VirtualFileRevisionRef_Gcs struct {
 	Gcs *GcsFileRevisionRef `protobuf:"bytes,3,opt,name=gcs,proto3,oneof"`
 }
 
+type VirtualFileRevisionRef_AzureBlob struct {
+	AzureBlob *AzureBlobFileRevisionRef `protobuf:"bytes,4,opt,name=azure_blob,json=azureBlob,proto3,oneof"`
+}
+
 func (*VirtualFileRevisionRef_S3) isVirtualFileRevisionRef_Kind() {}
 
 func (*VirtualFileRevisionRef_GoogleDrive) isVirtualFileRevisionRef_Kind() {}
 
 func (*VirtualFileRevisionRef_Gcs) isVirtualFileRevisionRef_Kind() {}
 
-type S3FileRevisionRef struct {
-	state protoimpl.MessageState `protogen:"open.v1"`
-	// The virtual drive associated with this file revision.
-	DriveRid string `protobuf:"bytes,1,opt,name=drive_rid,json=driveRid,proto3" json:"drive_rid,omitempty"`
-	// S3 object path/key.
-	Path string `protobuf:"bytes,2,opt,name=path,proto3" json:"path,omitempty"`
-	// The S3 ETag identifying the observed content; the revision is pinned to this ETag.
-	Etag          string `protobuf:"bytes,3,opt,name=etag,proto3" json:"etag,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
-}
-
-func (x *S3FileRevisionRef) Reset() {
-	*x = S3FileRevisionRef{}
-	mi := &file_nominal_protos_file_store_v1_file_store_proto_msgTypes[25]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *S3FileRevisionRef) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*S3FileRevisionRef) ProtoMessage() {}
-
-func (x *S3FileRevisionRef) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_file_store_v1_file_store_proto_msgTypes[25]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use S3FileRevisionRef.ProtoReflect.Descriptor instead.
-func (*S3FileRevisionRef) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_file_store_v1_file_store_proto_rawDescGZIP(), []int{25}
-}
-
-func (x *S3FileRevisionRef) GetDriveRid() string {
-	if x != nil {
-		return x.DriveRid
-	}
-	return ""
-}
-
-func (x *S3FileRevisionRef) GetPath() string {
-	if x != nil {
-		return x.Path
-	}
-	return ""
-}
-
-func (x *S3FileRevisionRef) GetEtag() string {
-	if x != nil {
-		return x.Etag
-	}
-	return ""
-}
-
-type GoogleDriveFileRevisionRef struct {
-	state protoimpl.MessageState `protogen:"open.v1"`
-	// The virtual drive associated with this file revision.
-	DriveRid string `protobuf:"bytes,1,opt,name=drive_rid,json=driveRid,proto3" json:"drive_rid,omitempty"`
-	// The ID of the file in the backing Google Drive.
-	FileId string `protobuf:"bytes,2,opt,name=file_id,json=fileId,proto3" json:"file_id,omitempty"`
-	// The Google Drive content-revision ID this revision is pinned to.
-	RevisionId    string `protobuf:"bytes,3,opt,name=revision_id,json=revisionId,proto3" json:"revision_id,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
-}
-
-func (x *GoogleDriveFileRevisionRef) Reset() {
-	*x = GoogleDriveFileRevisionRef{}
-	mi := &file_nominal_protos_file_store_v1_file_store_proto_msgTypes[26]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *GoogleDriveFileRevisionRef) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*GoogleDriveFileRevisionRef) ProtoMessage() {}
-
-func (x *GoogleDriveFileRevisionRef) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_file_store_v1_file_store_proto_msgTypes[26]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use GoogleDriveFileRevisionRef.ProtoReflect.Descriptor instead.
-func (*GoogleDriveFileRevisionRef) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_file_store_v1_file_store_proto_rawDescGZIP(), []int{26}
-}
-
-func (x *GoogleDriveFileRevisionRef) GetDriveRid() string {
-	if x != nil {
-		return x.DriveRid
-	}
-	return ""
-}
-
-func (x *GoogleDriveFileRevisionRef) GetFileId() string {
-	if x != nil {
-		return x.FileId
-	}
-	return ""
-}
-
-func (x *GoogleDriveFileRevisionRef) GetRevisionId() string {
-	if x != nil {
-		return x.RevisionId
-	}
-	return ""
-}
-
-type GcsFileRevisionRef struct {
-	state protoimpl.MessageState `protogen:"open.v1"`
-	// The virtual drive associated with this file revision.
-	DriveRid string `protobuf:"bytes,1,opt,name=drive_rid,json=driveRid,proto3" json:"drive_rid,omitempty"`
-	// GCS object name/path.
-	Path string `protobuf:"bytes,2,opt,name=path,proto3" json:"path,omitempty"`
-	// The GCS object generation identifying the observed content;.
-	Generation    string `protobuf:"bytes,3,opt,name=generation,proto3" json:"generation,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
-}
-
-func (x *GcsFileRevisionRef) Reset() {
-	*x = GcsFileRevisionRef{}
-	mi := &file_nominal_protos_file_store_v1_file_store_proto_msgTypes[27]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *GcsFileRevisionRef) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*GcsFileRevisionRef) ProtoMessage() {}
-
-func (x *GcsFileRevisionRef) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_file_store_v1_file_store_proto_msgTypes[27]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use GcsFileRevisionRef.ProtoReflect.Descriptor instead.
-func (*GcsFileRevisionRef) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_file_store_v1_file_store_proto_rawDescGZIP(), []int{27}
-}
-
-func (x *GcsFileRevisionRef) GetDriveRid() string {
-	if x != nil {
-		return x.DriveRid
-	}
-	return ""
-}
-
-func (x *GcsFileRevisionRef) GetPath() string {
-	if x != nil {
-		return x.Path
-	}
-	return ""
-}
-
-func (x *GcsFileRevisionRef) GetGeneration() string {
-	if x != nil {
-		return x.Generation
-	}
-	return ""
-}
+func (*VirtualFileRevisionRef_AzureBlob) isVirtualFileRevisionRef_Kind() {}
 
 // Linear history entry for a managed File Store file. Each entry names the operation that produced it,
 // so the timeline distinguishes content changes from non-content events such as moves and removes.
 type ManagedFileRevision struct {
-	state           protoimpl.MessageState `protogen:"open.v1"`
-	FileRevisionRid string                 `protobuf:"bytes,1,opt,name=file_revision_rid,json=fileRevisionRid,proto3" json:"file_revision_rid,omitempty"`
-	FileRid         string                 `protobuf:"bytes,2,opt,name=file_rid,json=fileRid,proto3" json:"file_rid,omitempty"`
+	state    protoimpl.MessageState `protogen:"open.v1"`
+	Ref      *FileRevisionRef       `protobuf:"bytes,9,opt,name=ref,proto3" json:"ref,omitempty"`
+	Identity *LogicalFileIdentity   `protobuf:"bytes,10,opt,name=identity,proto3" json:"identity,omitempty"`
+	// Deprecated: use ref.
+	//
+	// Deprecated: Marked as deprecated in nominal/protos/file_store/v1/file_store.proto.
+	FileRevisionRid string `protobuf:"bytes,1,opt,name=file_revision_rid,json=fileRevisionRid,proto3" json:"file_revision_rid,omitempty"`
+	// Deprecated: use identity.
+	//
+	// Deprecated: Marked as deprecated in nominal/protos/file_store/v1/file_store.proto.
+	FileRid string `protobuf:"bytes,2,opt,name=file_rid,json=fileRid,proto3" json:"file_rid,omitempty"`
 	// Path where this revision became current.
 	Path      *LogicalPath `protobuf:"bytes,3,opt,name=path,proto3" json:"path,omitempty"`
 	SizeBytes uint64       `protobuf:"varint,4,opt,name=size_bytes,json=sizeBytes,proto3" json:"size_bytes,omitempty"`
@@ -2379,7 +1909,7 @@ type ManagedFileRevision struct {
 
 func (x *ManagedFileRevision) Reset() {
 	*x = ManagedFileRevision{}
-	mi := &file_nominal_protos_file_store_v1_file_store_proto_msgTypes[28]
+	mi := &file_nominal_protos_file_store_v1_file_store_proto_msgTypes[19]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2391,7 +1921,7 @@ func (x *ManagedFileRevision) String() string {
 func (*ManagedFileRevision) ProtoMessage() {}
 
 func (x *ManagedFileRevision) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_file_store_v1_file_store_proto_msgTypes[28]
+	mi := &file_nominal_protos_file_store_v1_file_store_proto_msgTypes[19]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2404,9 +1934,24 @@ func (x *ManagedFileRevision) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ManagedFileRevision.ProtoReflect.Descriptor instead.
 func (*ManagedFileRevision) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_file_store_v1_file_store_proto_rawDescGZIP(), []int{28}
+	return file_nominal_protos_file_store_v1_file_store_proto_rawDescGZIP(), []int{19}
 }
 
+func (x *ManagedFileRevision) GetRef() *FileRevisionRef {
+	if x != nil {
+		return x.Ref
+	}
+	return nil
+}
+
+func (x *ManagedFileRevision) GetIdentity() *LogicalFileIdentity {
+	if x != nil {
+		return x.Identity
+	}
+	return nil
+}
+
+// Deprecated: Marked as deprecated in nominal/protos/file_store/v1/file_store.proto.
 func (x *ManagedFileRevision) GetFileRevisionRid() string {
 	if x != nil {
 		return x.FileRevisionRid
@@ -2414,6 +1959,7 @@ func (x *ManagedFileRevision) GetFileRevisionRid() string {
 	return ""
 }
 
+// Deprecated: Marked as deprecated in nominal/protos/file_store/v1/file_store.proto.
 func (x *ManagedFileRevision) GetFileRid() string {
 	if x != nil {
 		return x.FileRid
@@ -2480,7 +2026,7 @@ type VirtualFileRevision struct {
 
 func (x *VirtualFileRevision) Reset() {
 	*x = VirtualFileRevision{}
-	mi := &file_nominal_protos_file_store_v1_file_store_proto_msgTypes[29]
+	mi := &file_nominal_protos_file_store_v1_file_store_proto_msgTypes[20]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2492,7 +2038,7 @@ func (x *VirtualFileRevision) String() string {
 func (*VirtualFileRevision) ProtoMessage() {}
 
 func (x *VirtualFileRevision) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_file_store_v1_file_store_proto_msgTypes[29]
+	mi := &file_nominal_protos_file_store_v1_file_store_proto_msgTypes[20]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2505,7 +2051,7 @@ func (x *VirtualFileRevision) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use VirtualFileRevision.ProtoReflect.Descriptor instead.
 func (*VirtualFileRevision) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_file_store_v1_file_store_proto_rawDescGZIP(), []int{29}
+	return file_nominal_protos_file_store_v1_file_store_proto_rawDescGZIP(), []int{20}
 }
 
 func (x *VirtualFileRevision) GetFileRevisionRid() string {
@@ -2550,6 +2096,109 @@ func (x *VirtualFileRevision) GetDownloadAvailability() DownloadAvailability {
 	return DownloadAvailability_DOWNLOAD_AVAILABILITY_UNSPECIFIED
 }
 
+// A stored revision of a logical file.
+type FileRevision struct {
+	state     protoimpl.MessageState `protogen:"open.v1"`
+	Ref       *FileRevisionRef       `protobuf:"bytes,9,opt,name=ref,proto3" json:"ref,omitempty"`
+	Identity  *LogicalFileIdentity   `protobuf:"bytes,10,opt,name=identity,proto3" json:"identity,omitempty"`
+	Path      *LogicalPath           `protobuf:"bytes,3,opt,name=path,proto3" json:"path,omitempty"`
+	SizeBytes uint64                 `protobuf:"varint,4,opt,name=size_bytes,json=sizeBytes,proto3" json:"size_bytes,omitempty"`
+	Observed  *Attribution           `protobuf:"bytes,5,opt,name=observed,proto3" json:"observed,omitempty"`
+	// Always ACTIVE for a virtual revision.
+	State                FileState            `protobuf:"varint,6,opt,name=state,proto3,enum=nominal.file_store.v1.FileState" json:"state,omitempty"`
+	DownloadAvailability DownloadAvailability `protobuf:"varint,7,opt,name=download_availability,json=downloadAvailability,proto3,enum=nominal.file_store.v1.DownloadAvailability" json:"download_availability,omitempty"`
+	// Managed revisions only.
+	Action        *FileRevisionAction `protobuf:"bytes,8,opt,name=action,proto3" json:"action,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *FileRevision) Reset() {
+	*x = FileRevision{}
+	mi := &file_nominal_protos_file_store_v1_file_store_proto_msgTypes[21]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *FileRevision) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*FileRevision) ProtoMessage() {}
+
+func (x *FileRevision) ProtoReflect() protoreflect.Message {
+	mi := &file_nominal_protos_file_store_v1_file_store_proto_msgTypes[21]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use FileRevision.ProtoReflect.Descriptor instead.
+func (*FileRevision) Descriptor() ([]byte, []int) {
+	return file_nominal_protos_file_store_v1_file_store_proto_rawDescGZIP(), []int{21}
+}
+
+func (x *FileRevision) GetRef() *FileRevisionRef {
+	if x != nil {
+		return x.Ref
+	}
+	return nil
+}
+
+func (x *FileRevision) GetIdentity() *LogicalFileIdentity {
+	if x != nil {
+		return x.Identity
+	}
+	return nil
+}
+
+func (x *FileRevision) GetPath() *LogicalPath {
+	if x != nil {
+		return x.Path
+	}
+	return nil
+}
+
+func (x *FileRevision) GetSizeBytes() uint64 {
+	if x != nil {
+		return x.SizeBytes
+	}
+	return 0
+}
+
+func (x *FileRevision) GetObserved() *Attribution {
+	if x != nil {
+		return x.Observed
+	}
+	return nil
+}
+
+func (x *FileRevision) GetState() FileState {
+	if x != nil {
+		return x.State
+	}
+	return FileState_FILE_STATE_UNSPECIFIED
+}
+
+func (x *FileRevision) GetDownloadAvailability() DownloadAvailability {
+	if x != nil {
+		return x.DownloadAvailability
+	}
+	return DownloadAvailability_DOWNLOAD_AVAILABILITY_UNSPECIFIED
+}
+
+func (x *FileRevision) GetAction() *FileRevisionAction {
+	if x != nil {
+		return x.Action
+	}
+	return nil
+}
+
 type Directory struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Path          *LogicalPath           `protobuf:"bytes,1,opt,name=path,proto3" json:"path,omitempty"`
@@ -2559,7 +2208,7 @@ type Directory struct {
 
 func (x *Directory) Reset() {
 	*x = Directory{}
-	mi := &file_nominal_protos_file_store_v1_file_store_proto_msgTypes[30]
+	mi := &file_nominal_protos_file_store_v1_file_store_proto_msgTypes[22]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2571,7 +2220,7 @@ func (x *Directory) String() string {
 func (*Directory) ProtoMessage() {}
 
 func (x *Directory) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_file_store_v1_file_store_proto_msgTypes[30]
+	mi := &file_nominal_protos_file_store_v1_file_store_proto_msgTypes[22]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2584,7 +2233,7 @@ func (x *Directory) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Directory.ProtoReflect.Descriptor instead.
 func (*Directory) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_file_store_v1_file_store_proto_rawDescGZIP(), []int{30}
+	return file_nominal_protos_file_store_v1_file_store_proto_rawDescGZIP(), []int{22}
 }
 
 func (x *Directory) GetPath() *LogicalPath {
@@ -2607,7 +2256,7 @@ type FileEntry struct {
 
 func (x *FileEntry) Reset() {
 	*x = FileEntry{}
-	mi := &file_nominal_protos_file_store_v1_file_store_proto_msgTypes[31]
+	mi := &file_nominal_protos_file_store_v1_file_store_proto_msgTypes[23]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2619,7 +2268,7 @@ func (x *FileEntry) String() string {
 func (*FileEntry) ProtoMessage() {}
 
 func (x *FileEntry) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_file_store_v1_file_store_proto_msgTypes[31]
+	mi := &file_nominal_protos_file_store_v1_file_store_proto_msgTypes[23]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2632,7 +2281,7 @@ func (x *FileEntry) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use FileEntry.ProtoReflect.Descriptor instead.
 func (*FileEntry) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_file_store_v1_file_store_proto_rawDescGZIP(), []int{31}
+	return file_nominal_protos_file_store_v1_file_store_proto_rawDescGZIP(), []int{23}
 }
 
 func (x *FileEntry) GetEntry() isFileEntry_Entry {
@@ -2680,23 +2329,27 @@ var File_nominal_protos_file_store_v1_file_store_proto protoreflect.FileDescript
 
 const file_nominal_protos_file_store_v1_file_store_proto_rawDesc = "" +
 	"\n" +
-	"-nominal/protos/file_store/v1/file_store.proto\x12\x15nominal.file_store.v1\x1a\x1bbuf/validate/validate.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a!nominal/protos/gen/v1/alias.proto\x1a!nominal/protos/gen/v1/error.proto\"\x85\x01\n" +
+	"-nominal/protos/file_store/v1/file_store.proto\x12\x15nominal.file_store.v1\x1a\x1bbuf/validate/validate.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a-nominal/protos/file_store/v1/azure_blob.proto\x1a&nominal/protos/file_store/v1/gcs.proto\x1a/nominal/protos/file_store/v1/google_drive.proto\x1a%nominal/protos/file_store/v1/s3.proto\x1a!nominal/protos/gen/v1/alias.proto\x1a!nominal/protos/gen/v1/error.proto\"\x85\x01\n" +
 	"\vAttribution\x12.\n" +
 	"\x04time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampR\x04time\x12F\n" +
 	"\buser_rid\x18\x02 \x01(\tB+\x9a\xb2\x1a'\n" +
-	"%io.nominal.authentication.api.UserRidR\auserRid\"\xdb\x03\n" +
+	"%io.nominal.authentication.api.UserRidR\auserRid\"\xdb\x04\n" +
 	"\x05Drive\x124\n" +
 	"\x03rid\x18\x01 \x01(\tB\"\x9a\xb2\x1a\x1e\n" +
 	"\x1cio.nominal.api.rids.DriveRidR\x03rid\x12K\n" +
 	"\rworkspace_rid\x18\x02 \x01(\tB&\x9a\xb2\x1a\"\n" +
-	" io.nominal.api.rids.WorkspaceRidR\fworkspaceRid\x12\x0e\n" +
-	"\x02id\x18\x03 \x01(\tR\x02id\x127\n" +
+	" io.nominal.api.rids.WorkspaceRidR\fworkspaceRid\x12\x13\n" +
+	"\x02id\x18\x03 \x01(\tH\x00R\x02id\x88\x01\x01\x127\n" +
 	"\x05state\x18\x04 \x01(\x0e2!.nominal.file_store.v1.DriveStateR\x05state\x12<\n" +
 	"\acreated\x18\x05 \x01(\v2\".nominal.file_store.v1.AttributionR\acreated\x12:\n" +
 	"\x06source\x18\x06 \x01(\x0e2\".nominal.file_store.v1.DriveSourceR\x06source\x12U\n" +
 	"\x12content_mutability\x18\a \x01(\x0e2&.nominal.file_store.v1.DriveMutabilityR\x11contentMutability\x12%\n" +
-	"\vdescription\x18\b \x01(\tH\x00R\vdescription\x88\x01\x01B\x0e\n" +
-	"\f_description\"\xf7\x01\n" +
+	"\vdescription\x18\b \x01(\tH\x01R\vdescription\x88\x01\x01\x12[\n" +
+	"\x12subordinate_to_rid\x18\t \x01(\tB(\x9a\xb2\x1a$\n" +
+	"\"com.palantir.ri.ResourceIdentifierH\x02R\x10subordinateToRid\x88\x01\x01B\x05\n" +
+	"\x03_idB\x0e\n" +
+	"\f_descriptionB\x15\n" +
+	"\x13_subordinate_to_rid\"\xf7\x01\n" +
 	"\fVirtualDrive\x12?\n" +
 	"\tdrive_rid\x18\x01 \x01(\tB\"\x9a\xb2\x1a\x1e\n" +
 	"\x1cio.nominal.api.rids.DriveRidR\bdriveRid\x12c\n" +
@@ -2710,27 +2363,14 @@ const file_nominal_protos_file_store_v1_file_store_proto_rawDesc = "" +
 	"\x05state\x18\x01 \x01(\x0e2(.nominal.file_store.v1.VirtualDriveStateR\x05state\x12\\\n" +
 	"\x1alast_successful_check_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampH\x00R\x17lastSuccessfulCheckTime\x88\x01\x01\x12\x18\n" +
 	"\amessage\x18\x03 \x01(\tR\amessageB\x1d\n" +
-	"\x1b_last_successful_check_time\"\xae\x02\n" +
+	"\x1b_last_successful_check_time\"\x8e\x03\n" +
 	"\x1dVirtualDriveConnectionDetails\x12H\n" +
 	"\x02s3\x18\x01 \x01(\v26.nominal.file_store.v1.S3VirtualDriveConnectionDetailsH\x00R\x02s3\x12d\n" +
 	"\fgoogle_drive\x18\x02 \x01(\v2?.nominal.file_store.v1.GoogleDriveVirtualDriveConnectionDetailsH\x00R\vgoogleDrive\x12K\n" +
-	"\x03gcs\x18\x03 \x01(\v27.nominal.file_store.v1.GcsVirtualDriveConnectionDetailsH\x00R\x03gcsB\x10\n" +
-	"\adetails\x12\x05\xbaH\x02\b\x01\"\x8b\x02\n" +
-	"\x1fS3VirtualDriveConnectionDetails\x12(\n" +
-	"\x06bucket\x18\x01 \x01(\tB\x10\xbaH\rr\v\x10\x01\x18?2\x05^\\S+$R\x06bucket\x12 \n" +
-	"\x06prefix\x18\x02 \x01(\tB\b\xbaH\x05r\x03\x18\x80\bR\x06prefix\x12m\n" +
-	"\x16credentials_secret_rid\x18\x03 \x01(\tB7\xbaH\x0er\f\x10\x01\x18\x80\x042\x05^\\S+$\x9a\xb2\x1a\"\n" +
-	" io.nominal.secrets.api.SecretRidR\x14credentialsSecretRid\x12-\n" +
-	"\bendpoint\x18\x04 \x01(\tB\x11\xbaH\x0er\f\x10\x01\x18\x80\x102\x05^\\S+$R\bendpoint\"\xc9\x01\n" +
-	"(GoogleDriveVirtualDriveConnectionDetails\x12.\n" +
-	"\tfolder_id\x18\x01 \x01(\tB\x11\xbaH\x0er\f\x10\x01\x18\xff\x012\x05^\\S+$R\bfolderId\x12m\n" +
-	"\x16credentials_secret_rid\x18\x02 \x01(\tB7\xbaH\x0er\f\x10\x01\x18\x80\x042\x05^\\S+$\x9a\xb2\x1a\"\n" +
-	" io.nominal.secrets.api.SecretRidR\x14credentialsSecretRid\"\xcd\x01\n" +
-	" GcsVirtualDriveConnectionDetails\x12)\n" +
-	"\x06bucket\x18\x01 \x01(\tB\x11\xbaH\x0er\f\x10\x03\x18\xde\x012\x05^\\S+$R\x06bucket\x12 \n" +
-	"\x06prefix\x18\x02 \x01(\tB\b\xbaH\x05r\x03\x18\x80\bR\x06prefix\x12\\\n" +
-	"\x16credentials_secret_rid\x18\x03 \x01(\tB&\x9a\xb2\x1a\"\n" +
-	" io.nominal.secrets.api.SecretRidR\x14credentialsSecretRid\"!\n" +
+	"\x03gcs\x18\x03 \x01(\v27.nominal.file_store.v1.GcsVirtualDriveConnectionDetailsH\x00R\x03gcs\x12^\n" +
+	"\n" +
+	"azure_blob\x18\x04 \x01(\v2=.nominal.file_store.v1.AzureBlobVirtualDriveConnectionDetailsH\x00R\tazureBlobB\x10\n" +
+	"\adetails\x12\x05\xbaH\x02\b\x01\"!\n" +
 	"\vLogicalPath\x12\x12\n" +
 	"\x04path\x18\x01 \x01(\tR\x04path\"\x97\x04\n" +
 	"\vLogicalFile\x12F\n" +
@@ -2750,24 +2390,14 @@ const file_nominal_protos_file_store_v1_file_store_proto_rawDesc = "" +
 	"\bidentity\"X\n" +
 	"\x13ManagedFileIdentity\x12A\n" +
 	"\bfile_rid\x18\x01 \x01(\tB&\x9a\xb2\x1a\"\n" +
-	" io.nominal.api.rids.DriveFileRidR\afileRid\"\xe7\x01\n" +
+	" io.nominal.api.rids.DriveFileRidR\afileRid\"\xb6\x02\n" +
 	"\x13VirtualFileIdentity\x127\n" +
 	"\x02s3\x18\x01 \x01(\v2%.nominal.file_store.v1.S3FileIdentityH\x00R\x02s3\x12S\n" +
 	"\fgoogle_drive\x18\x02 \x01(\v2..nominal.file_store.v1.GoogleDriveFileIdentityH\x00R\vgoogleDrive\x12:\n" +
-	"\x03gcs\x18\x03 \x01(\v2&.nominal.file_store.v1.GcsFileIdentityH\x00R\x03gcsB\x06\n" +
-	"\x04kind\"e\n" +
-	"\x0eS3FileIdentity\x12?\n" +
-	"\tdrive_rid\x18\x01 \x01(\tB\"\x9a\xb2\x1a\x1e\n" +
-	"\x1cio.nominal.api.rids.DriveRidR\bdriveRid\x12\x12\n" +
-	"\x04path\x18\x02 \x01(\tR\x04path\"s\n" +
-	"\x17GoogleDriveFileIdentity\x12?\n" +
-	"\tdrive_rid\x18\x01 \x01(\tB\"\x9a\xb2\x1a\x1e\n" +
-	"\x1cio.nominal.api.rids.DriveRidR\bdriveRid\x12\x17\n" +
-	"\afile_id\x18\x02 \x01(\tR\x06fileId\"f\n" +
-	"\x0fGcsFileIdentity\x12?\n" +
-	"\tdrive_rid\x18\x01 \x01(\tB\"\x9a\xb2\x1a\x1e\n" +
-	"\x1cio.nominal.api.rids.DriveRidR\bdriveRid\x12\x12\n" +
-	"\x04path\x18\x02 \x01(\tR\x04path\"\x8d\x02\n" +
+	"\x03gcs\x18\x03 \x01(\v2&.nominal.file_store.v1.GcsFileIdentityH\x00R\x03gcs\x12M\n" +
+	"\n" +
+	"azure_blob\x18\x04 \x01(\v2,.nominal.file_store.v1.AzureBlobFileIdentityH\x00R\tazureBlobB\x06\n" +
+	"\x04kind\"\x8d\x02\n" +
 	"\x12FileRevisionAction\x122\n" +
 	"\x03put\x18\x01 \x01(\v2\x1e.nominal.file_store.v1.FilePutH\x00R\x03put\x128\n" +
 	"\x05moved\x18\x02 \x01(\v2 .nominal.file_store.v1.FileMovedH\x00R\x05moved\x12>\n" +
@@ -2793,35 +2423,22 @@ const file_nominal_protos_file_store_v1_file_store_proto_rawDesc = "" +
 	"\treference\"t\n" +
 	"\x16ManagedFileRevisionRef\x12Z\n" +
 	"\x11file_revision_rid\x18\x01 \x01(\tB.\x9a\xb2\x1a*\n" +
-	"(io.nominal.api.rids.DriveFileRevisionRidR\x0ffileRevisionRid\"\xf3\x01\n" +
+	"(io.nominal.api.rids.DriveFileRevisionRidR\x0ffileRevisionRid\"\xc5\x02\n" +
 	"\x16VirtualFileRevisionRef\x12:\n" +
 	"\x02s3\x18\x01 \x01(\v2(.nominal.file_store.v1.S3FileRevisionRefH\x00R\x02s3\x12V\n" +
 	"\fgoogle_drive\x18\x02 \x01(\v21.nominal.file_store.v1.GoogleDriveFileRevisionRefH\x00R\vgoogleDrive\x12=\n" +
-	"\x03gcs\x18\x03 \x01(\v2).nominal.file_store.v1.GcsFileRevisionRefH\x00R\x03gcsB\x06\n" +
-	"\x04kind\"|\n" +
-	"\x11S3FileRevisionRef\x12?\n" +
-	"\tdrive_rid\x18\x01 \x01(\tB\"\x9a\xb2\x1a\x1e\n" +
-	"\x1cio.nominal.api.rids.DriveRidR\bdriveRid\x12\x12\n" +
-	"\x04path\x18\x02 \x01(\tR\x04path\x12\x12\n" +
-	"\x04etag\x18\x03 \x01(\tR\x04etag\"\x97\x01\n" +
-	"\x1aGoogleDriveFileRevisionRef\x12?\n" +
-	"\tdrive_rid\x18\x01 \x01(\tB\"\x9a\xb2\x1a\x1e\n" +
-	"\x1cio.nominal.api.rids.DriveRidR\bdriveRid\x12\x17\n" +
-	"\afile_id\x18\x02 \x01(\tR\x06fileId\x12\x1f\n" +
-	"\vrevision_id\x18\x03 \x01(\tR\n" +
-	"revisionId\"\x89\x01\n" +
-	"\x12GcsFileRevisionRef\x12?\n" +
-	"\tdrive_rid\x18\x01 \x01(\tB\"\x9a\xb2\x1a\x1e\n" +
-	"\x1cio.nominal.api.rids.DriveRidR\bdriveRid\x12\x12\n" +
-	"\x04path\x18\x02 \x01(\tR\x04path\x12\x1e\n" +
+	"\x03gcs\x18\x03 \x01(\v2).nominal.file_store.v1.GcsFileRevisionRefH\x00R\x03gcs\x12P\n" +
 	"\n" +
-	"generation\x18\x03 \x01(\tR\n" +
-	"generation\"\xa6\x04\n" +
-	"\x13ManagedFileRevision\x12Z\n" +
-	"\x11file_revision_rid\x18\x01 \x01(\tB.\x9a\xb2\x1a*\n" +
-	"(io.nominal.api.rids.DriveFileRevisionRidR\x0ffileRevisionRid\x12A\n" +
-	"\bfile_rid\x18\x02 \x01(\tB&\x9a\xb2\x1a\"\n" +
-	" io.nominal.api.rids.DriveFileRidR\afileRid\x126\n" +
+	"azure_blob\x18\x04 \x01(\v2/.nominal.file_store.v1.AzureBlobFileRevisionRefH\x00R\tazureBlobB\x06\n" +
+	"\x04kind\"\xac\x05\n" +
+	"\x13ManagedFileRevision\x128\n" +
+	"\x03ref\x18\t \x01(\v2&.nominal.file_store.v1.FileRevisionRefR\x03ref\x12F\n" +
+	"\bidentity\x18\n" +
+	" \x01(\v2*.nominal.file_store.v1.LogicalFileIdentityR\bidentity\x12\\\n" +
+	"\x11file_revision_rid\x18\x01 \x01(\tB0\x9a\xb2\x1a*\n" +
+	"(io.nominal.api.rids.DriveFileRevisionRid\x18\x01R\x0ffileRevisionRid\x12C\n" +
+	"\bfile_rid\x18\x02 \x01(\tB(\x9a\xb2\x1a\"\n" +
+	" io.nominal.api.rids.DriveFileRid\x18\x01R\afileRid\x126\n" +
 	"\x04path\x18\x03 \x01(\v2\".nominal.file_store.v1.LogicalPathR\x04path\x12\x1d\n" +
 	"\n" +
 	"size_bytes\x18\x04 \x01(\x04R\tsizeBytes\x12<\n" +
@@ -2837,7 +2454,18 @@ const file_nominal_protos_file_store_v1_file_store_proto_rawDesc = "" +
 	"\n" +
 	"size_bytes\x18\x04 \x01(\x04R\tsizeBytes\x12>\n" +
 	"\bobserved\x18\x05 \x01(\v2\".nominal.file_store.v1.AttributionR\bobserved\x12`\n" +
-	"\x15download_availability\x18\x06 \x01(\x0e2+.nominal.file_store.v1.DownloadAvailabilityR\x14downloadAvailability\"C\n" +
+	"\x15download_availability\x18\x06 \x01(\x0e2+.nominal.file_store.v1.DownloadAvailabilityR\x14downloadAvailability\"\xad\x04\n" +
+	"\fFileRevision\x128\n" +
+	"\x03ref\x18\t \x01(\v2&.nominal.file_store.v1.FileRevisionRefR\x03ref\x12F\n" +
+	"\bidentity\x18\n" +
+	" \x01(\v2*.nominal.file_store.v1.LogicalFileIdentityR\bidentity\x126\n" +
+	"\x04path\x18\x03 \x01(\v2\".nominal.file_store.v1.LogicalPathR\x04path\x12\x1d\n" +
+	"\n" +
+	"size_bytes\x18\x04 \x01(\x04R\tsizeBytes\x12>\n" +
+	"\bobserved\x18\x05 \x01(\v2\".nominal.file_store.v1.AttributionR\bobserved\x126\n" +
+	"\x05state\x18\x06 \x01(\x0e2 .nominal.file_store.v1.FileStateR\x05state\x12`\n" +
+	"\x15download_availability\x18\a \x01(\x0e2+.nominal.file_store.v1.DownloadAvailabilityR\x14downloadAvailability\x12A\n" +
+	"\x06action\x18\b \x01(\v2).nominal.file_store.v1.FileRevisionActionR\x06actionJ\x04\b\x01\x10\x02J\x04\b\x02\x10\x03R\x11file_revision_ridR\bfile_rid\"C\n" +
 	"\tDirectory\x126\n" +
 	"\x04path\x18\x01 \x01(\v2\".nominal.file_store.v1.LogicalPathR\x04path\"\x90\x01\n" +
 	"\tFileEntry\x128\n" +
@@ -2848,13 +2476,14 @@ const file_nominal_protos_file_store_v1_file_store_proto_rawDesc = "" +
 	"DriveState\x12\x1b\n" +
 	"\x17DRIVE_STATE_UNSPECIFIED\x10\x00\x12\x16\n" +
 	"\x12DRIVE_STATE_ACTIVE\x10\x01\x12\x18\n" +
-	"\x14DRIVE_STATE_ARCHIVED\x10\x02*\x8f\x01\n" +
+	"\x14DRIVE_STATE_ARCHIVED\x10\x02*\xac\x01\n" +
 	"\vDriveSource\x12\x1c\n" +
 	"\x18DRIVE_SOURCE_UNSPECIFIED\x10\x00\x12\x18\n" +
 	"\x14DRIVE_SOURCE_NOMINAL\x10\x01\x12\x13\n" +
 	"\x0fDRIVE_SOURCE_S3\x10\x02\x12\x1d\n" +
 	"\x19DRIVE_SOURCE_GOOGLE_DRIVE\x10\x03\x12\x14\n" +
-	"\x10DRIVE_SOURCE_GCS\x10\x04*r\n" +
+	"\x10DRIVE_SOURCE_GCS\x10\x04\x12\x1b\n" +
+	"\x17DRIVE_SOURCE_AZURE_BLOB\x10\x05*r\n" +
 	"\x0fDriveMutability\x12 \n" +
 	"\x1cDRIVE_MUTABILITY_UNSPECIFIED\x10\x00\x12\x1d\n" +
 	"\x19DRIVE_MUTABILITY_WRITABLE\x10\x01\x12\x1e\n" +
@@ -2913,7 +2542,7 @@ func file_nominal_protos_file_store_v1_file_store_proto_rawDescGZIP() []byte {
 }
 
 var file_nominal_protos_file_store_v1_file_store_proto_enumTypes = make([]protoimpl.EnumInfo, 8)
-var file_nominal_protos_file_store_v1_file_store_proto_msgTypes = make([]protoimpl.MessageInfo, 32)
+var file_nominal_protos_file_store_v1_file_store_proto_msgTypes = make([]protoimpl.MessageInfo, 24)
 var file_nominal_protos_file_store_v1_file_store_proto_goTypes = []any{
 	(DriveState)(0),                                  // 0: nominal.file_store.v1.DriveState
 	(DriveSource)(0),                                 // 1: nominal.file_store.v1.DriveSource
@@ -2929,36 +2558,40 @@ var file_nominal_protos_file_store_v1_file_store_proto_goTypes = []any{
 	(*VirtualDriveDetails)(nil),                      // 11: nominal.file_store.v1.VirtualDriveDetails
 	(*VirtualDriveStatus)(nil),                       // 12: nominal.file_store.v1.VirtualDriveStatus
 	(*VirtualDriveConnectionDetails)(nil),            // 13: nominal.file_store.v1.VirtualDriveConnectionDetails
-	(*S3VirtualDriveConnectionDetails)(nil),          // 14: nominal.file_store.v1.S3VirtualDriveConnectionDetails
-	(*GoogleDriveVirtualDriveConnectionDetails)(nil), // 15: nominal.file_store.v1.GoogleDriveVirtualDriveConnectionDetails
-	(*GcsVirtualDriveConnectionDetails)(nil),         // 16: nominal.file_store.v1.GcsVirtualDriveConnectionDetails
-	(*LogicalPath)(nil),                              // 17: nominal.file_store.v1.LogicalPath
-	(*LogicalFile)(nil),                              // 18: nominal.file_store.v1.LogicalFile
-	(*LogicalFileIdentity)(nil),                      // 19: nominal.file_store.v1.LogicalFileIdentity
-	(*ManagedFileIdentity)(nil),                      // 20: nominal.file_store.v1.ManagedFileIdentity
-	(*VirtualFileIdentity)(nil),                      // 21: nominal.file_store.v1.VirtualFileIdentity
-	(*S3FileIdentity)(nil),                           // 22: nominal.file_store.v1.S3FileIdentity
-	(*GoogleDriveFileIdentity)(nil),                  // 23: nominal.file_store.v1.GoogleDriveFileIdentity
-	(*GcsFileIdentity)(nil),                          // 24: nominal.file_store.v1.GcsFileIdentity
-	(*FileRevisionAction)(nil),                       // 25: nominal.file_store.v1.FileRevisionAction
-	(*FilePut)(nil),                                  // 26: nominal.file_store.v1.FilePut
-	(*FileMoved)(nil),                                // 27: nominal.file_store.v1.FileMoved
-	(*FileRemoved)(nil),                              // 28: nominal.file_store.v1.FileRemoved
-	(*FileRestored)(nil),                             // 29: nominal.file_store.v1.FileRestored
-	(*FileRevisionRef)(nil),                          // 30: nominal.file_store.v1.FileRevisionRef
-	(*ManagedFileRevisionRef)(nil),                   // 31: nominal.file_store.v1.ManagedFileRevisionRef
-	(*VirtualFileRevisionRef)(nil),                   // 32: nominal.file_store.v1.VirtualFileRevisionRef
-	(*S3FileRevisionRef)(nil),                        // 33: nominal.file_store.v1.S3FileRevisionRef
-	(*GoogleDriveFileRevisionRef)(nil),               // 34: nominal.file_store.v1.GoogleDriveFileRevisionRef
-	(*GcsFileRevisionRef)(nil),                       // 35: nominal.file_store.v1.GcsFileRevisionRef
-	(*ManagedFileRevision)(nil),                      // 36: nominal.file_store.v1.ManagedFileRevision
-	(*VirtualFileRevision)(nil),                      // 37: nominal.file_store.v1.VirtualFileRevision
-	(*Directory)(nil),                                // 38: nominal.file_store.v1.Directory
-	(*FileEntry)(nil),                                // 39: nominal.file_store.v1.FileEntry
-	(*timestamppb.Timestamp)(nil),                    // 40: google.protobuf.Timestamp
+	(*LogicalPath)(nil),                              // 14: nominal.file_store.v1.LogicalPath
+	(*LogicalFile)(nil),                              // 15: nominal.file_store.v1.LogicalFile
+	(*LogicalFileIdentity)(nil),                      // 16: nominal.file_store.v1.LogicalFileIdentity
+	(*ManagedFileIdentity)(nil),                      // 17: nominal.file_store.v1.ManagedFileIdentity
+	(*VirtualFileIdentity)(nil),                      // 18: nominal.file_store.v1.VirtualFileIdentity
+	(*FileRevisionAction)(nil),                       // 19: nominal.file_store.v1.FileRevisionAction
+	(*FilePut)(nil),                                  // 20: nominal.file_store.v1.FilePut
+	(*FileMoved)(nil),                                // 21: nominal.file_store.v1.FileMoved
+	(*FileRemoved)(nil),                              // 22: nominal.file_store.v1.FileRemoved
+	(*FileRestored)(nil),                             // 23: nominal.file_store.v1.FileRestored
+	(*FileRevisionRef)(nil),                          // 24: nominal.file_store.v1.FileRevisionRef
+	(*ManagedFileRevisionRef)(nil),                   // 25: nominal.file_store.v1.ManagedFileRevisionRef
+	(*VirtualFileRevisionRef)(nil),                   // 26: nominal.file_store.v1.VirtualFileRevisionRef
+	(*ManagedFileRevision)(nil),                      // 27: nominal.file_store.v1.ManagedFileRevision
+	(*VirtualFileRevision)(nil),                      // 28: nominal.file_store.v1.VirtualFileRevision
+	(*FileRevision)(nil),                             // 29: nominal.file_store.v1.FileRevision
+	(*Directory)(nil),                                // 30: nominal.file_store.v1.Directory
+	(*FileEntry)(nil),                                // 31: nominal.file_store.v1.FileEntry
+	(*timestamppb.Timestamp)(nil),                    // 32: google.protobuf.Timestamp
+	(*S3VirtualDriveConnectionDetails)(nil),          // 33: nominal.file_store.v1.S3VirtualDriveConnectionDetails
+	(*GoogleDriveVirtualDriveConnectionDetails)(nil), // 34: nominal.file_store.v1.GoogleDriveVirtualDriveConnectionDetails
+	(*GcsVirtualDriveConnectionDetails)(nil),         // 35: nominal.file_store.v1.GcsVirtualDriveConnectionDetails
+	(*AzureBlobVirtualDriveConnectionDetails)(nil),   // 36: nominal.file_store.v1.AzureBlobVirtualDriveConnectionDetails
+	(*S3FileIdentity)(nil),                           // 37: nominal.file_store.v1.S3FileIdentity
+	(*GoogleDriveFileIdentity)(nil),                  // 38: nominal.file_store.v1.GoogleDriveFileIdentity
+	(*GcsFileIdentity)(nil),                          // 39: nominal.file_store.v1.GcsFileIdentity
+	(*AzureBlobFileIdentity)(nil),                    // 40: nominal.file_store.v1.AzureBlobFileIdentity
+	(*S3FileRevisionRef)(nil),                        // 41: nominal.file_store.v1.S3FileRevisionRef
+	(*GoogleDriveFileRevisionRef)(nil),               // 42: nominal.file_store.v1.GoogleDriveFileRevisionRef
+	(*GcsFileRevisionRef)(nil),                       // 43: nominal.file_store.v1.GcsFileRevisionRef
+	(*AzureBlobFileRevisionRef)(nil),                 // 44: nominal.file_store.v1.AzureBlobFileRevisionRef
 }
 var file_nominal_protos_file_store_v1_file_store_proto_depIdxs = []int32{
-	40, // 0: nominal.file_store.v1.Attribution.time:type_name -> google.protobuf.Timestamp
+	32, // 0: nominal.file_store.v1.Attribution.time:type_name -> google.protobuf.Timestamp
 	0,  // 1: nominal.file_store.v1.Drive.state:type_name -> nominal.file_store.v1.DriveState
 	8,  // 2: nominal.file_store.v1.Drive.created:type_name -> nominal.file_store.v1.Attribution
 	1,  // 3: nominal.file_store.v1.Drive.source:type_name -> nominal.file_store.v1.DriveSource
@@ -2967,48 +2600,60 @@ var file_nominal_protos_file_store_v1_file_store_proto_depIdxs = []int32{
 	12, // 6: nominal.file_store.v1.VirtualDrive.status:type_name -> nominal.file_store.v1.VirtualDriveStatus
 	13, // 7: nominal.file_store.v1.VirtualDriveDetails.connection_details:type_name -> nominal.file_store.v1.VirtualDriveConnectionDetails
 	3,  // 8: nominal.file_store.v1.VirtualDriveStatus.state:type_name -> nominal.file_store.v1.VirtualDriveState
-	40, // 9: nominal.file_store.v1.VirtualDriveStatus.last_successful_check_time:type_name -> google.protobuf.Timestamp
-	14, // 10: nominal.file_store.v1.VirtualDriveConnectionDetails.s3:type_name -> nominal.file_store.v1.S3VirtualDriveConnectionDetails
-	15, // 11: nominal.file_store.v1.VirtualDriveConnectionDetails.google_drive:type_name -> nominal.file_store.v1.GoogleDriveVirtualDriveConnectionDetails
-	16, // 12: nominal.file_store.v1.VirtualDriveConnectionDetails.gcs:type_name -> nominal.file_store.v1.GcsVirtualDriveConnectionDetails
-	19, // 13: nominal.file_store.v1.LogicalFile.identity:type_name -> nominal.file_store.v1.LogicalFileIdentity
-	17, // 14: nominal.file_store.v1.LogicalFile.path:type_name -> nominal.file_store.v1.LogicalPath
-	4,  // 15: nominal.file_store.v1.LogicalFile.state:type_name -> nominal.file_store.v1.FileState
-	8,  // 16: nominal.file_store.v1.LogicalFile.created:type_name -> nominal.file_store.v1.Attribution
-	8,  // 17: nominal.file_store.v1.LogicalFile.observed:type_name -> nominal.file_store.v1.Attribution
-	30, // 18: nominal.file_store.v1.LogicalFile.current_revision:type_name -> nominal.file_store.v1.FileRevisionRef
-	5,  // 19: nominal.file_store.v1.LogicalFile.download_availability:type_name -> nominal.file_store.v1.DownloadAvailability
-	20, // 20: nominal.file_store.v1.LogicalFileIdentity.managed:type_name -> nominal.file_store.v1.ManagedFileIdentity
-	21, // 21: nominal.file_store.v1.LogicalFileIdentity.virtual:type_name -> nominal.file_store.v1.VirtualFileIdentity
-	22, // 22: nominal.file_store.v1.VirtualFileIdentity.s3:type_name -> nominal.file_store.v1.S3FileIdentity
-	23, // 23: nominal.file_store.v1.VirtualFileIdentity.google_drive:type_name -> nominal.file_store.v1.GoogleDriveFileIdentity
-	24, // 24: nominal.file_store.v1.VirtualFileIdentity.gcs:type_name -> nominal.file_store.v1.GcsFileIdentity
-	26, // 25: nominal.file_store.v1.FileRevisionAction.put:type_name -> nominal.file_store.v1.FilePut
-	27, // 26: nominal.file_store.v1.FileRevisionAction.moved:type_name -> nominal.file_store.v1.FileMoved
-	28, // 27: nominal.file_store.v1.FileRevisionAction.removed:type_name -> nominal.file_store.v1.FileRemoved
-	29, // 28: nominal.file_store.v1.FileRevisionAction.restored:type_name -> nominal.file_store.v1.FileRestored
-	31, // 29: nominal.file_store.v1.FileRevisionRef.managed:type_name -> nominal.file_store.v1.ManagedFileRevisionRef
-	32, // 30: nominal.file_store.v1.FileRevisionRef.virtual:type_name -> nominal.file_store.v1.VirtualFileRevisionRef
-	33, // 31: nominal.file_store.v1.VirtualFileRevisionRef.s3:type_name -> nominal.file_store.v1.S3FileRevisionRef
-	34, // 32: nominal.file_store.v1.VirtualFileRevisionRef.google_drive:type_name -> nominal.file_store.v1.GoogleDriveFileRevisionRef
-	35, // 33: nominal.file_store.v1.VirtualFileRevisionRef.gcs:type_name -> nominal.file_store.v1.GcsFileRevisionRef
-	17, // 34: nominal.file_store.v1.ManagedFileRevision.path:type_name -> nominal.file_store.v1.LogicalPath
-	8,  // 35: nominal.file_store.v1.ManagedFileRevision.created:type_name -> nominal.file_store.v1.Attribution
-	4,  // 36: nominal.file_store.v1.ManagedFileRevision.state:type_name -> nominal.file_store.v1.FileState
-	5,  // 37: nominal.file_store.v1.ManagedFileRevision.download_availability:type_name -> nominal.file_store.v1.DownloadAvailability
-	25, // 38: nominal.file_store.v1.ManagedFileRevision.action:type_name -> nominal.file_store.v1.FileRevisionAction
-	21, // 39: nominal.file_store.v1.VirtualFileRevision.file_identity:type_name -> nominal.file_store.v1.VirtualFileIdentity
-	17, // 40: nominal.file_store.v1.VirtualFileRevision.path:type_name -> nominal.file_store.v1.LogicalPath
-	8,  // 41: nominal.file_store.v1.VirtualFileRevision.observed:type_name -> nominal.file_store.v1.Attribution
-	5,  // 42: nominal.file_store.v1.VirtualFileRevision.download_availability:type_name -> nominal.file_store.v1.DownloadAvailability
-	17, // 43: nominal.file_store.v1.Directory.path:type_name -> nominal.file_store.v1.LogicalPath
-	18, // 44: nominal.file_store.v1.FileEntry.file:type_name -> nominal.file_store.v1.LogicalFile
-	38, // 45: nominal.file_store.v1.FileEntry.directory:type_name -> nominal.file_store.v1.Directory
-	46, // [46:46] is the sub-list for method output_type
-	46, // [46:46] is the sub-list for method input_type
-	46, // [46:46] is the sub-list for extension type_name
-	46, // [46:46] is the sub-list for extension extendee
-	0,  // [0:46] is the sub-list for field type_name
+	32, // 9: nominal.file_store.v1.VirtualDriveStatus.last_successful_check_time:type_name -> google.protobuf.Timestamp
+	33, // 10: nominal.file_store.v1.VirtualDriveConnectionDetails.s3:type_name -> nominal.file_store.v1.S3VirtualDriveConnectionDetails
+	34, // 11: nominal.file_store.v1.VirtualDriveConnectionDetails.google_drive:type_name -> nominal.file_store.v1.GoogleDriveVirtualDriveConnectionDetails
+	35, // 12: nominal.file_store.v1.VirtualDriveConnectionDetails.gcs:type_name -> nominal.file_store.v1.GcsVirtualDriveConnectionDetails
+	36, // 13: nominal.file_store.v1.VirtualDriveConnectionDetails.azure_blob:type_name -> nominal.file_store.v1.AzureBlobVirtualDriveConnectionDetails
+	16, // 14: nominal.file_store.v1.LogicalFile.identity:type_name -> nominal.file_store.v1.LogicalFileIdentity
+	14, // 15: nominal.file_store.v1.LogicalFile.path:type_name -> nominal.file_store.v1.LogicalPath
+	4,  // 16: nominal.file_store.v1.LogicalFile.state:type_name -> nominal.file_store.v1.FileState
+	8,  // 17: nominal.file_store.v1.LogicalFile.created:type_name -> nominal.file_store.v1.Attribution
+	8,  // 18: nominal.file_store.v1.LogicalFile.observed:type_name -> nominal.file_store.v1.Attribution
+	24, // 19: nominal.file_store.v1.LogicalFile.current_revision:type_name -> nominal.file_store.v1.FileRevisionRef
+	5,  // 20: nominal.file_store.v1.LogicalFile.download_availability:type_name -> nominal.file_store.v1.DownloadAvailability
+	17, // 21: nominal.file_store.v1.LogicalFileIdentity.managed:type_name -> nominal.file_store.v1.ManagedFileIdentity
+	18, // 22: nominal.file_store.v1.LogicalFileIdentity.virtual:type_name -> nominal.file_store.v1.VirtualFileIdentity
+	37, // 23: nominal.file_store.v1.VirtualFileIdentity.s3:type_name -> nominal.file_store.v1.S3FileIdentity
+	38, // 24: nominal.file_store.v1.VirtualFileIdentity.google_drive:type_name -> nominal.file_store.v1.GoogleDriveFileIdentity
+	39, // 25: nominal.file_store.v1.VirtualFileIdentity.gcs:type_name -> nominal.file_store.v1.GcsFileIdentity
+	40, // 26: nominal.file_store.v1.VirtualFileIdentity.azure_blob:type_name -> nominal.file_store.v1.AzureBlobFileIdentity
+	20, // 27: nominal.file_store.v1.FileRevisionAction.put:type_name -> nominal.file_store.v1.FilePut
+	21, // 28: nominal.file_store.v1.FileRevisionAction.moved:type_name -> nominal.file_store.v1.FileMoved
+	22, // 29: nominal.file_store.v1.FileRevisionAction.removed:type_name -> nominal.file_store.v1.FileRemoved
+	23, // 30: nominal.file_store.v1.FileRevisionAction.restored:type_name -> nominal.file_store.v1.FileRestored
+	25, // 31: nominal.file_store.v1.FileRevisionRef.managed:type_name -> nominal.file_store.v1.ManagedFileRevisionRef
+	26, // 32: nominal.file_store.v1.FileRevisionRef.virtual:type_name -> nominal.file_store.v1.VirtualFileRevisionRef
+	41, // 33: nominal.file_store.v1.VirtualFileRevisionRef.s3:type_name -> nominal.file_store.v1.S3FileRevisionRef
+	42, // 34: nominal.file_store.v1.VirtualFileRevisionRef.google_drive:type_name -> nominal.file_store.v1.GoogleDriveFileRevisionRef
+	43, // 35: nominal.file_store.v1.VirtualFileRevisionRef.gcs:type_name -> nominal.file_store.v1.GcsFileRevisionRef
+	44, // 36: nominal.file_store.v1.VirtualFileRevisionRef.azure_blob:type_name -> nominal.file_store.v1.AzureBlobFileRevisionRef
+	24, // 37: nominal.file_store.v1.ManagedFileRevision.ref:type_name -> nominal.file_store.v1.FileRevisionRef
+	16, // 38: nominal.file_store.v1.ManagedFileRevision.identity:type_name -> nominal.file_store.v1.LogicalFileIdentity
+	14, // 39: nominal.file_store.v1.ManagedFileRevision.path:type_name -> nominal.file_store.v1.LogicalPath
+	8,  // 40: nominal.file_store.v1.ManagedFileRevision.created:type_name -> nominal.file_store.v1.Attribution
+	4,  // 41: nominal.file_store.v1.ManagedFileRevision.state:type_name -> nominal.file_store.v1.FileState
+	5,  // 42: nominal.file_store.v1.ManagedFileRevision.download_availability:type_name -> nominal.file_store.v1.DownloadAvailability
+	19, // 43: nominal.file_store.v1.ManagedFileRevision.action:type_name -> nominal.file_store.v1.FileRevisionAction
+	18, // 44: nominal.file_store.v1.VirtualFileRevision.file_identity:type_name -> nominal.file_store.v1.VirtualFileIdentity
+	14, // 45: nominal.file_store.v1.VirtualFileRevision.path:type_name -> nominal.file_store.v1.LogicalPath
+	8,  // 46: nominal.file_store.v1.VirtualFileRevision.observed:type_name -> nominal.file_store.v1.Attribution
+	5,  // 47: nominal.file_store.v1.VirtualFileRevision.download_availability:type_name -> nominal.file_store.v1.DownloadAvailability
+	24, // 48: nominal.file_store.v1.FileRevision.ref:type_name -> nominal.file_store.v1.FileRevisionRef
+	16, // 49: nominal.file_store.v1.FileRevision.identity:type_name -> nominal.file_store.v1.LogicalFileIdentity
+	14, // 50: nominal.file_store.v1.FileRevision.path:type_name -> nominal.file_store.v1.LogicalPath
+	8,  // 51: nominal.file_store.v1.FileRevision.observed:type_name -> nominal.file_store.v1.Attribution
+	4,  // 52: nominal.file_store.v1.FileRevision.state:type_name -> nominal.file_store.v1.FileState
+	5,  // 53: nominal.file_store.v1.FileRevision.download_availability:type_name -> nominal.file_store.v1.DownloadAvailability
+	19, // 54: nominal.file_store.v1.FileRevision.action:type_name -> nominal.file_store.v1.FileRevisionAction
+	14, // 55: nominal.file_store.v1.Directory.path:type_name -> nominal.file_store.v1.LogicalPath
+	15, // 56: nominal.file_store.v1.FileEntry.file:type_name -> nominal.file_store.v1.LogicalFile
+	30, // 57: nominal.file_store.v1.FileEntry.directory:type_name -> nominal.file_store.v1.Directory
+	58, // [58:58] is the sub-list for method output_type
+	58, // [58:58] is the sub-list for method input_type
+	58, // [58:58] is the sub-list for extension type_name
+	58, // [58:58] is the sub-list for extension extendee
+	0,  // [0:58] is the sub-list for field type_name
 }
 
 func init() { file_nominal_protos_file_store_v1_file_store_proto_init() }
@@ -3016,41 +2661,48 @@ func file_nominal_protos_file_store_v1_file_store_proto_init() {
 	if File_nominal_protos_file_store_v1_file_store_proto != nil {
 		return
 	}
+	file_nominal_protos_file_store_v1_azure_blob_proto_init()
+	file_nominal_protos_file_store_v1_gcs_proto_init()
+	file_nominal_protos_file_store_v1_google_drive_proto_init()
+	file_nominal_protos_file_store_v1_s3_proto_init()
 	file_nominal_protos_file_store_v1_file_store_proto_msgTypes[1].OneofWrappers = []any{}
 	file_nominal_protos_file_store_v1_file_store_proto_msgTypes[4].OneofWrappers = []any{}
 	file_nominal_protos_file_store_v1_file_store_proto_msgTypes[5].OneofWrappers = []any{
 		(*VirtualDriveConnectionDetails_S3)(nil),
 		(*VirtualDriveConnectionDetails_GoogleDrive)(nil),
 		(*VirtualDriveConnectionDetails_Gcs)(nil),
+		(*VirtualDriveConnectionDetails_AzureBlob)(nil),
 	}
-	file_nominal_protos_file_store_v1_file_store_proto_msgTypes[11].OneofWrappers = []any{
+	file_nominal_protos_file_store_v1_file_store_proto_msgTypes[8].OneofWrappers = []any{
 		(*LogicalFileIdentity_Managed)(nil),
 		(*LogicalFileIdentity_Virtual)(nil),
 	}
-	file_nominal_protos_file_store_v1_file_store_proto_msgTypes[13].OneofWrappers = []any{
+	file_nominal_protos_file_store_v1_file_store_proto_msgTypes[10].OneofWrappers = []any{
 		(*VirtualFileIdentity_S3)(nil),
 		(*VirtualFileIdentity_GoogleDrive)(nil),
 		(*VirtualFileIdentity_Gcs)(nil),
+		(*VirtualFileIdentity_AzureBlob)(nil),
 	}
-	file_nominal_protos_file_store_v1_file_store_proto_msgTypes[17].OneofWrappers = []any{
+	file_nominal_protos_file_store_v1_file_store_proto_msgTypes[11].OneofWrappers = []any{
 		(*FileRevisionAction_Put)(nil),
 		(*FileRevisionAction_Moved)(nil),
 		(*FileRevisionAction_Removed)(nil),
 		(*FileRevisionAction_Restored)(nil),
 	}
-	file_nominal_protos_file_store_v1_file_store_proto_msgTypes[19].OneofWrappers = []any{}
-	file_nominal_protos_file_store_v1_file_store_proto_msgTypes[20].OneofWrappers = []any{}
-	file_nominal_protos_file_store_v1_file_store_proto_msgTypes[21].OneofWrappers = []any{}
-	file_nominal_protos_file_store_v1_file_store_proto_msgTypes[22].OneofWrappers = []any{
+	file_nominal_protos_file_store_v1_file_store_proto_msgTypes[13].OneofWrappers = []any{}
+	file_nominal_protos_file_store_v1_file_store_proto_msgTypes[14].OneofWrappers = []any{}
+	file_nominal_protos_file_store_v1_file_store_proto_msgTypes[15].OneofWrappers = []any{}
+	file_nominal_protos_file_store_v1_file_store_proto_msgTypes[16].OneofWrappers = []any{
 		(*FileRevisionRef_Managed)(nil),
 		(*FileRevisionRef_Virtual)(nil),
 	}
-	file_nominal_protos_file_store_v1_file_store_proto_msgTypes[24].OneofWrappers = []any{
+	file_nominal_protos_file_store_v1_file_store_proto_msgTypes[18].OneofWrappers = []any{
 		(*VirtualFileRevisionRef_S3)(nil),
 		(*VirtualFileRevisionRef_GoogleDrive)(nil),
 		(*VirtualFileRevisionRef_Gcs)(nil),
+		(*VirtualFileRevisionRef_AzureBlob)(nil),
 	}
-	file_nominal_protos_file_store_v1_file_store_proto_msgTypes[31].OneofWrappers = []any{
+	file_nominal_protos_file_store_v1_file_store_proto_msgTypes[23].OneofWrappers = []any{
 		(*FileEntry_File)(nil),
 		(*FileEntry_Directory)(nil),
 	}
@@ -3060,7 +2712,7 @@ func file_nominal_protos_file_store_v1_file_store_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_nominal_protos_file_store_v1_file_store_proto_rawDesc), len(file_nominal_protos_file_store_v1_file_store_proto_rawDesc)),
 			NumEnums:      8,
-			NumMessages:   32,
+			NumMessages:   24,
 			NumExtensions: 0,
 			NumServices:   0,
 		},

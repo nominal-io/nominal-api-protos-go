@@ -31,16 +31,35 @@ const (
 //
 // Service for managing coachmark dismissals for the authenticated user.
 type CoachmarksServiceClient interface {
-	// Lists coachmark dismissals for the authenticated user.
-	// Optionally filter by specific coachmark IDs.
+	// Lists the calling user's coachmark dismissals, keyed by coachmark ID. Coachmarks are guided hints in the app.
+	//
+	// Returns all of the user's dismissals, or only those for the given coachmark IDs when any are sent.
+	// Coachmarks the user has not dismissed are not listed.
 	ListCoachmarkDismissals(ctx context.Context, in *ListCoachmarkDismissalsRequest, opts ...grpc.CallOption) (*ListCoachmarkDismissalsResponse, error)
-	// Dismisses a coachmark for the authenticated user.
-	// Records the dismissal timestamp and app version.
+	// Records that the calling user dismissed a coachmark, with the app version and, for multi-step coachmarks,
+	// the step. Returns the stored dismissal.
+	//
+	// The server sets the dismissal time. Dismissing the same coachmark again overwrites the earlier record: the
+	// time and app version are replaced, and the step index is cleared when the request does not set it.
+	//
+	// Errors:
+	// - INVALID_ARGUMENT: coachmark_id or app_version is empty.
 	DismissCoachmark(ctx context.Context, in *DismissCoachmarkRequest, opts ...grpc.CallOption) (*DismissCoachmarkResponse, error)
-	// Gets a specific coachmark dismissal for the authenticated user.
+	// Gets the calling user's dismissal of one coachmark.
+	//
+	// The dismissal is absent from the response when the user has not dismissed the coachmark. An unknown
+	// coachmark ID is not an error.
+	//
+	// Errors:
+	// - INVALID_ARGUMENT: coachmark_id is empty.
 	GetCoachmarkDismissal(ctx context.Context, in *GetCoachmarkDismissalRequest, opts ...grpc.CallOption) (*GetCoachmarkDismissalResponse, error)
-	// Deletes a coachmark dismissal for the authenticated user.
-	// This allows the coachmark to be shown again. Primarily intended for testing and debugging.
+	// Removes the calling user's dismissal of one coachmark so the coachmark can show again. Intended for testing
+	// and debugging.
+	//
+	// Succeeds without change when the user has no dismissal of the coachmark.
+	//
+	// Errors:
+	// - INVALID_ARGUMENT: coachmark_id is empty.
 	DeleteCoachmarkDismissal(ctx context.Context, in *DeleteCoachmarkDismissalRequest, opts ...grpc.CallOption) (*DeleteCoachmarkDismissalResponse, error)
 }
 
@@ -98,16 +117,35 @@ func (c *coachmarksServiceClient) DeleteCoachmarkDismissal(ctx context.Context, 
 //
 // Service for managing coachmark dismissals for the authenticated user.
 type CoachmarksServiceServer interface {
-	// Lists coachmark dismissals for the authenticated user.
-	// Optionally filter by specific coachmark IDs.
+	// Lists the calling user's coachmark dismissals, keyed by coachmark ID. Coachmarks are guided hints in the app.
+	//
+	// Returns all of the user's dismissals, or only those for the given coachmark IDs when any are sent.
+	// Coachmarks the user has not dismissed are not listed.
 	ListCoachmarkDismissals(context.Context, *ListCoachmarkDismissalsRequest) (*ListCoachmarkDismissalsResponse, error)
-	// Dismisses a coachmark for the authenticated user.
-	// Records the dismissal timestamp and app version.
+	// Records that the calling user dismissed a coachmark, with the app version and, for multi-step coachmarks,
+	// the step. Returns the stored dismissal.
+	//
+	// The server sets the dismissal time. Dismissing the same coachmark again overwrites the earlier record: the
+	// time and app version are replaced, and the step index is cleared when the request does not set it.
+	//
+	// Errors:
+	// - INVALID_ARGUMENT: coachmark_id or app_version is empty.
 	DismissCoachmark(context.Context, *DismissCoachmarkRequest) (*DismissCoachmarkResponse, error)
-	// Gets a specific coachmark dismissal for the authenticated user.
+	// Gets the calling user's dismissal of one coachmark.
+	//
+	// The dismissal is absent from the response when the user has not dismissed the coachmark. An unknown
+	// coachmark ID is not an error.
+	//
+	// Errors:
+	// - INVALID_ARGUMENT: coachmark_id is empty.
 	GetCoachmarkDismissal(context.Context, *GetCoachmarkDismissalRequest) (*GetCoachmarkDismissalResponse, error)
-	// Deletes a coachmark dismissal for the authenticated user.
-	// This allows the coachmark to be shown again. Primarily intended for testing and debugging.
+	// Removes the calling user's dismissal of one coachmark so the coachmark can show again. Intended for testing
+	// and debugging.
+	//
+	// Succeeds without change when the user has no dismissal of the coachmark.
+	//
+	// Errors:
+	// - INVALID_ARGUMENT: coachmark_id is empty.
 	DeleteCoachmarkDismissal(context.Context, *DeleteCoachmarkDismissalRequest) (*DeleteCoachmarkDismissalResponse, error)
 	mustEmbedUnimplementedCoachmarksServiceServer()
 }

@@ -34,16 +34,20 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
+// A priority level from P0 to P4.
 // buf:lint:ignore ENUM_VALUE_PREFIX
 type Priority int32
 
 const (
+	// No priority is set.
 	Priority_PRIORITY_UNSPECIFIED Priority = 0
-	Priority_P0                   Priority = 1
-	Priority_P1                   Priority = 2
-	Priority_P2                   Priority = 3
-	Priority_P3                   Priority = 4
-	Priority_P4                   Priority = 5
+	// The most important level.
+	Priority_P0 Priority = 1
+	Priority_P1 Priority = 2
+	Priority_P2 Priority = 3
+	Priority_P3 Priority = 4
+	// The least important level.
+	Priority_P4 Priority = 5
 )
 
 // Enum value maps for Priority.
@@ -93,13 +97,16 @@ func (Priority) EnumDescriptor() ([]byte, []int) {
 	return file_nominal_protos_types_common_proto_rawDescGZIP(), []int{0}
 }
 
+// How a filter combines the items it lists.
 // buf:lint:ignore ENUM_VALUE_PREFIX
 type SetOperator int32
 
 const (
 	SetOperator_SET_OPERATOR_UNSPECIFIED SetOperator = 0
-	SetOperator_AND                      SetOperator = 1
-	SetOperator_OR                       SetOperator = 2
+	// Matches only when every listed item matches.
+	SetOperator_AND SetOperator = 1
+	// Matches when at least one listed item matches.
+	SetOperator_OR SetOperator = 2
 )
 
 // Enum value maps for SetOperator.
@@ -195,6 +202,7 @@ func (x *Duration) GetNanos() int64 {
 	return 0
 }
 
+// Matches resources whose property with this name has any one of the listed values.
 type PropertiesFilter struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Name          string                 `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
@@ -247,6 +255,7 @@ func (x *PropertiesFilter) GetValues() []string {
 	return nil
 }
 
+// Matches resources that carry every listed label when the operator is AND, or at least one of them when it is OR.
 type LabelsFilter struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Operator      SetOperator            `protobuf:"varint,1,opt,name=operator,proto3,enum=nominal.types.SetOperator" json:"operator,omitempty"`

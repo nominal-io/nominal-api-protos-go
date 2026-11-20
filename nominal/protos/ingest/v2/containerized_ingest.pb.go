@@ -23,7 +23,8 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
-// One containerized extractor invocation. Input sources are bound to environment variables.
+// One run of a file extractor (a containerized extractor in the API) on its input files. Each input source is bound to
+// an environment variable of the extractor.
 type ContainerizedIngestItem struct {
 	state             protoimpl.MessageState   `protogen:"open.v1"`
 	ExtractorRid      string                   `protobuf:"bytes,1,opt,name=extractor_rid,json=extractorRid,proto3" json:"extractor_rid,omitempty"`

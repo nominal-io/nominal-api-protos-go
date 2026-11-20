@@ -8,6 +8,7 @@ package novav1
 
 import (
 	_ "buf.build/gen/go/bufbuild/protovalidate/protocolbuffers/go/buf/validate"
+	_ "github.com/nominal-io/nominal-api-protos-go/nominal/protos/authz/v1"
 	_ "github.com/nominal-io/nominal-api-protos-go/nominal/protos/gen/v1"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
@@ -388,7 +389,7 @@ var File_nominal_protos_nova_v1_app_proxy_proto protoreflect.FileDescriptor
 
 const file_nominal_protos_nova_v1_app_proxy_proto_rawDesc = "" +
 	"\n" +
-	"&nominal/protos/nova/v1/app_proxy.proto\x12\x0fnominal.nova.v1\x1a\x1bbuf/validate/validate.proto\x1a\x1cgoogle/api/annotations.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a!nominal/protos/gen/v1/alias.proto\"\xe3\x01\n" +
+	"&nominal/protos/nova/v1/app_proxy.proto\x12\x0fnominal.nova.v1\x1a\x1bbuf/validate/validate.proto\x1a\x1cgoogle/api/annotations.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a)nominal/protos/authz/v1/annotations.proto\x1a!nominal/protos/gen/v1/alias.proto\"\xe3\x01\n" +
 	"\bAppProxy\x12E\n" +
 	"\aapp_rid\x18\x01 \x01(\tB,\xbaH\x05r\x03\x18\x80\x04\x9a\xb2\x1a \n" +
 	"\x1eio.nominal.api.rids.NovaAppRidR\x06appRid\x12U\n" +
@@ -429,11 +430,17 @@ const file_nominal_protos_nova_v1_app_proxy_proto_rawDesc = "" +
 	"appProxies\x12G\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tB\x1a\x9a\xb2\x1a\x16\n" +
 	"\x14io.nominal.api.TokenH\x00R\rnextPageToken\x88\x01\x01B\x12\n" +
-	"\x10_next_page_token2\xcb\x03\n" +
-	"\x0fAppProxyService\x12\x8d\x01\n" +
-	"\x0eCreateAppProxy\x12&.nominal.nova.v1.CreateAppProxyRequest\x1a'.nominal.nova.v1.CreateAppProxyResponse\"*\x82\xd3\xe4\x93\x02$:\x01*\"\x1f/nova/v1/apps/{app_rid}/proxies\x12\x9a\x01\n" +
-	"\x0eDeleteAppProxy\x12&.nominal.nova.v1.DeleteAppProxyRequest\x1a'.nominal.nova.v1.DeleteAppProxyResponse\"7\x82\xd3\xe4\x93\x021*//nova/v1/apps/{app_rid}/proxies/{api_proxy_rid}\x12\x8a\x01\n" +
-	"\x0eListAppProxies\x12&.nominal.nova.v1.ListAppProxiesRequest\x1a'.nominal.nova.v1.ListAppProxiesResponse\"'\x82\xd3\xe4\x93\x02!\x12\x1f/nova/v1/apps/{app_rid}/proxiesB\xcd\x01\n" +
+	"\x10_next_page_token2\xa7\x04\n" +
+	"\x0fAppProxyService\x12\xaf\x01\n" +
+	"\x0eCreateAppProxy\x12&.nominal.nova.v1.CreateAppProxyRequest\x1a'.nominal.nova.v1.CreateAppProxyResponse\"L\xba\xb2\x1a\x1e\n" +
+	"\x1c\n" +
+	"\x18workspace:edit_nova_apps\"\x00\x82\xd3\xe4\x93\x02$:\x01*\"\x1f/nova/v1/apps/{app_rid}/proxies\x12\xbc\x01\n" +
+	"\x0eDeleteAppProxy\x12&.nominal.nova.v1.DeleteAppProxyRequest\x1a'.nominal.nova.v1.DeleteAppProxyResponse\"Y\xba\xb2\x1a\x1e\n" +
+	"\x1c\n" +
+	"\x18workspace:edit_nova_apps\"\x00\x82\xd3\xe4\x93\x021*//nova/v1/apps/{app_rid}/proxies/{api_proxy_rid}\x12\xa2\x01\n" +
+	"\x0eListAppProxies\x12&.nominal.nova.v1.ListAppProxiesRequest\x1a'.nominal.nova.v1.ListAppProxiesResponse\"?\xba\xb2\x1a\x14\n" +
+	"\x12\n" +
+	"\x0eworkspace:view\"\x00\x82\xd3\xe4\x93\x02!\x12\x1f/nova/v1/apps/{app_rid}/proxiesB\xcd\x01\n" +
 	"\x13com.nominal.nova.v1B\rAppProxyProtoP\x01ZIgithub.com/nominal-io/nominal-api-protos-go/nominal/protos/nova/v1;novav1\xa2\x02\x03NNX\xaa\x02\x0fNominal.Nova.V1\xca\x02\x0fNominal\\Nova\\V1\xe2\x02\x1bNominal\\Nova\\V1\\GPBMetadata\xea\x02\x11Nominal::Nova::V1b\x06proto3"
 
 var (

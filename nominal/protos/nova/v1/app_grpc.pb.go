@@ -33,11 +33,25 @@ const (
 //
 // Nova application lifecycle.
 type NovaServiceClient interface {
-	// Creates an application in a workspace.
+	// Creates a Nova application (a sandboxed web app hosted in Nominal Core) in a workspace. Returns the new app.
+	//
+	// The server assigns the RID, the creator, and the timestamps. The app starts unarchived with no versions, and
+	// default_version_rid is ignored. Publish code with AppVersionService. The name must be unused among all
+	// apps of the workspace, archived apps included. The caller needs permission to edit Nova apps in the
+	// workspace, and Nova must be enabled for the caller's organization.
+	//
+	// Errors:
+	//   - PERMISSION_DENIED: Nova is not enabled for the caller's organization.
+	//   - NOT_FOUND: the workspace does not exist or the caller cannot edit Nova apps in it.
+	//   - INVALID_ARGUMENT: the app sets a server-assigned field, or the deprecated signed_bundle is not a valid
+	//     bundle.
+	//   - ALREADY_EXISTS: the workspace already has an app with this name.
+	//   - FAILED_PRECONDITION: the deprecated signed_bundle fails signature verification.
 	CreateApp(ctx context.Context, in *CreateAppRequest, opts ...grpc.CallOption) (*CreateAppResponse, error)
 	// Returns one application. Absent and unauthorized apps are indistinguishable.
 	GetApp(ctx context.Context, in *GetAppRequest, opts ...grpc.CallOption) (*GetAppResponse, error)
-	// Overwrites an application's mutable metadata.
+	// Updates an application's mutable metadata: every mutable field when
+	// update_mask is absent, only the listed fields when it is present.
 	UpdateApp(ctx context.Context, in *UpdateAppRequest, opts ...grpc.CallOption) (*UpdateAppResponse, error)
 	// Permanently removes an application, releasing its name for reuse.
 	DeleteApp(ctx context.Context, in *DeleteAppRequest, opts ...grpc.CallOption) (*DeleteAppResponse, error)
@@ -121,11 +135,25 @@ func (c *novaServiceClient) SearchAppLabels(ctx context.Context, in *SearchAppLa
 //
 // Nova application lifecycle.
 type NovaServiceServer interface {
-	// Creates an application in a workspace.
+	// Creates a Nova application (a sandboxed web app hosted in Nominal Core) in a workspace. Returns the new app.
+	//
+	// The server assigns the RID, the creator, and the timestamps. The app starts unarchived with no versions, and
+	// default_version_rid is ignored. Publish code with AppVersionService. The name must be unused among all
+	// apps of the workspace, archived apps included. The caller needs permission to edit Nova apps in the
+	// workspace, and Nova must be enabled for the caller's organization.
+	//
+	// Errors:
+	//   - PERMISSION_DENIED: Nova is not enabled for the caller's organization.
+	//   - NOT_FOUND: the workspace does not exist or the caller cannot edit Nova apps in it.
+	//   - INVALID_ARGUMENT: the app sets a server-assigned field, or the deprecated signed_bundle is not a valid
+	//     bundle.
+	//   - ALREADY_EXISTS: the workspace already has an app with this name.
+	//   - FAILED_PRECONDITION: the deprecated signed_bundle fails signature verification.
 	CreateApp(context.Context, *CreateAppRequest) (*CreateAppResponse, error)
 	// Returns one application. Absent and unauthorized apps are indistinguishable.
 	GetApp(context.Context, *GetAppRequest) (*GetAppResponse, error)
-	// Overwrites an application's mutable metadata.
+	// Updates an application's mutable metadata: every mutable field when
+	// update_mask is absent, only the listed fields when it is present.
 	UpdateApp(context.Context, *UpdateAppRequest) (*UpdateAppResponse, error)
 	// Permanently removes an application, releasing its name for reuse.
 	DeleteApp(context.Context, *DeleteAppRequest) (*DeleteAppResponse, error)

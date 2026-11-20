@@ -8,6 +8,7 @@ package commandv1
 
 import (
 	_ "buf.build/gen/go/bufbuild/protovalidate/protocolbuffers/go/buf/validate"
+	_ "github.com/nominal-io/nominal-api-protos-go/nominal/protos/authz/v1"
 	_ "github.com/nominal-io/nominal-api-protos-go/nominal/protos/gen/v1"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
@@ -376,7 +377,7 @@ var File_nominal_protos_command_v1_command_service_proto protoreflect.FileDescri
 
 const file_nominal_protos_command_v1_command_service_proto_rawDesc = "" +
 	"\n" +
-	"/nominal/protos/command/v1/command_service.proto\x12\x12nominal.command.v1\x1a\x1bbuf/validate/validate.proto\x1a\x1cgoogle/api/annotations.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a0nominal/protos/command/v1/command_delivery.proto\x1a!nominal/protos/gen/v1/alias.proto\"\x82\x03\n" +
+	"/nominal/protos/command/v1/command_service.proto\x12\x12nominal.command.v1\x1a\x1bbuf/validate/validate.proto\x1a\x1cgoogle/api/annotations.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a)nominal/protos/authz/v1/annotations.proto\x1a0nominal/protos/command/v1/command_delivery.proto\x1a!nominal/protos/gen/v1/alias.proto\"\x82\x03\n" +
 	"\x13SendCommandsRequest\x12O\n" +
 	"\vdataset_rid\x18\x01 \x01(\tB.\xbaH\ar\x05\x10\x01\x18\x80\b\x9a\xb2\x1a \n" +
 	"\x1eio.nominal.api.rids.DatasetRidR\n" +
@@ -408,9 +409,12 @@ const file_nominal_protos_command_v1_command_service_proto_rawDesc = "" +
 	"\x14REASON_MALFORMED_ACK\x10\x02\x12\x19\n" +
 	"\x15REASON_MISMATCHED_ACK\x10\x03\x12\x16\n" +
 	"\x12REASON_INTERRUPTED\x10\x04\x12\x1a\n" +
-	"\x16REASON_TRANSPORT_ERROR\x10\x052\x9a\x01\n" +
-	"\x0eCommandService\x12\x87\x01\n" +
-	"\fSendCommands\x12'.nominal.command.v1.SendCommandsRequest\x1a(.nominal.command.v1.SendCommandsResponse\"$\x82\xd3\xe4\x93\x02\x1e:\x01*\"\x19/command/v1/commands/sendB\xe8\x01\n" +
+	"\x16REASON_TRANSPORT_ERROR\x10\x052\xc3\x01\n" +
+	"\x0eCommandService\x12\xb0\x01\n" +
+	"\fSendCommands\x12'.nominal.command.v1.SendCommandsRequest\x1a(.nominal.command.v1.SendCommandsResponse\"M\xba\xb2\x1a%\n" +
+	"#\n" +
+	"\x12datasource:command\x12\r\n" +
+	"\vdataset_rid\x82\xd3\xe4\x93\x02\x1e:\x01*\"\x19/command/v1/commands/sendB\xe8\x01\n" +
 	"\x16com.nominal.command.v1B\x13CommandServiceProtoP\x01ZOgithub.com/nominal-io/nominal-api-protos-go/nominal/protos/command/v1;commandv1\xa2\x02\x03NCX\xaa\x02\x12Nominal.Command.V1\xca\x02\x12Nominal\\Command\\V1\xe2\x02\x1eNominal\\Command\\V1\\GPBMetadata\xea\x02\x14Nominal::Command::V1b\x06proto3"
 
 var (

@@ -40,42 +40,171 @@ const (
 //
 // Service for creating and managing procedure executions.
 type ProcedureExecutionsServiceClient interface {
-	// Create a new procedure execution from a procedure
+	// Creates a procedure execution, one run-through of a procedure at a given commit. Returns the new
+	// execution with its step state.
+	//
+	// The server assigns the RID, sets the caller as the creator, and adds the execution to the procedure's
+	// workspace. The execution copies the procedure's labels and properties. Its step state is built from the
+	// procedure at the given commit, and the execution keeps that commit until its metadata is updated. With
+	// start_immediately set, the execution is marked started by the caller; otherwise it has no start time.
+	// The caller needs permission to execute procedures in the procedure's workspace.
+	//
+	// Errors:
+	//   - NOT_FOUND: the procedure or the commit does not exist, or the caller cannot view the procedure or
+	//     execute procedures in its workspace.
+	//   - PERMISSION_DENIED: the edition of the procedure's workspace does not include procedures.
 	CreateProcedureExecution(ctx context.Context, in *CreateProcedureExecutionRequest, opts ...grpc.CallOption) (*CreateProcedureExecutionResponse, error)
-	// Search for procedure executions.
-	// The JSON transcoder ranks literal path segments above `/{...}` template captures, so the
-	// literal `/search` route wins over the `/{procedure_execution_rid}` template regardless of
-	// declaration order.
+	// Searches procedure executions (run-throughs of a procedure) in the workspaces the caller can view, by
+	// text, labels, properties, workspace, procedure, commit, creator, progress status, assets, or archived
+	// state.
+	// Returns a page of execution metadata without step state.
+	//
+	// Results are sorted by last update time, newest first, unless sort_options say otherwise. Archived
+	// executions are included unless the query filters on is_archived. A page holds 100 executions unless
+	// page_size is set; pass next_page_token to read the next page. Workspaces whose edition does not include
+	// procedures are not searched.
+	//
+	// Errors:
+	//   - INVALID_ARGUMENT: the query sets no variant (also inside an and or or), a progress status or assets
+	//     operator is unspecified, a RID in the query cannot be parsed, or next_page_token is invalid.
 	SearchProcedureExecutions(ctx context.Context, in *SearchProcedureExecutionsRequest, opts ...grpc.CallOption) (*SearchProcedureExecutionsResponse, error)
-	// Get a procedure execution by its RID
+	// Gets one procedure execution with its metadata and the full state of every step.
+	//
+	// With include_display_graph set, the response also holds the execution's display graph (nodes in display
+	// order). The caller needs view permission in the execution's workspace. Use
+	// BatchGetProcedureExecutionMetadata to read only metadata for several executions.
+	//
+	// Errors:
+	// - NOT_FOUND: the execution does not exist, or the caller cannot view it.
+	// - PERMISSION_DENIED: the edition of the execution's workspace does not include procedures.
+	// - INVALID_ARGUMENT: include_display_graph is set and the execution's graph contains a cycle.
 	GetProcedureExecution(ctx context.Context, in *GetProcedureExecutionRequest, opts ...grpc.CallOption) (*GetProcedureExecutionResponse, error)
-	// Archive procedure executions
+	// Marks procedure executions as archived and returns the requested RIDs.
+	//
+	// Archived executions stay in search results unless the query filters on is_archived. Reverse with
+	// BatchUnarchiveProcedureExecutions. The caller needs permission to execute procedures in the workspace of
+	// every execution.
+	//
+	// Errors:
+	//   - NOT_FOUND: any execution does not exist, the caller cannot execute procedures in its workspace, or the
+	//     edition of its workspace does not include procedures. No execution is archived.
 	BatchArchiveProcedureExecutions(ctx context.Context, in *BatchArchiveProcedureExecutionsRequest, opts ...grpc.CallOption) (*BatchArchiveProcedureExecutionsResponse, error)
-	// Unarchive procedure executions
+	// Marks procedure executions as not archived and returns the requested RIDs.
+	//
+	// The caller needs permission to execute procedures in the workspace of every execution. Reverses
+	// BatchArchiveProcedureExecutions.
+	//
+	// Errors:
+	//   - NOT_FOUND: any execution does not exist, the caller cannot execute procedures in its workspace, or the
+	//     edition of its workspace does not include procedures. No execution is unarchived.
 	BatchUnarchiveProcedureExecutions(ctx context.Context, in *BatchUnarchiveProcedureExecutionsRequest, opts ...grpc.CallOption) (*BatchUnarchiveProcedureExecutionsResponse, error)
-	// Update the metadata of a procedure execution
+	// Changes the title, description, procedure commit, labels, or properties of a procedure execution.
+	// Returns the updated metadata.
+	//
+	// Omitted fields are unchanged. Labels or properties that are set replace the stored ones. Changing
+	// commit_id does not change the step state. A change records the caller as the last updater. The caller
+	// needs permission to execute procedures in the execution's workspace.
+	//
+	// Errors:
+	// - NOT_FOUND: the execution does not exist, or the caller cannot execute procedures in its workspace.
+	// - PERMISSION_DENIED: the edition of the execution's workspace does not include procedures.
 	UpdateProcedureExecutionMetadata(ctx context.Context, in *UpdateProcedureExecutionMetadataRequest, opts ...grpc.CallOption) (*UpdateProcedureExecutionMetadataResponse, error)
-	// Heavy-handed update method for procedure execution
-	// TODO(pchen): This isn't the expected final endpoint, this is just for editing the graph while we iterate
-	// There likely be additional fine-grained methods for editing the procedure
+	// Overwrites parts of a procedure execution: title, description, procedure commit, labels, properties, the
+	// whole step state, or the abort, start, and finish times. Returns the updated execution.
+	//
+	// Omitted fields are unchanged. Labels or properties that are set replace the stored ones. Setting the
+	// state replaces every step without the transition checks and automatic follow-up steps that UpdateStep
+	// runs, and adds the assets that completed steps use to asset_rids. Setting is_aborted, started_at, or
+	// finished_at records the caller as the aborter, starter, or finisher. Prefer UpdateStep to change one
+	// step. The caller needs permission to execute procedures in the execution's workspace.
+	//
+	// Errors:
+	//   - NOT_FOUND: the execution does not exist, the caller cannot execute procedures in its workspace, or state
+	//     is set and the procedure commit of the execution no longer exists.
+	//   - PERMISSION_DENIED: the edition of the execution's workspace does not include procedures.
 	UpdateProcedureExecution(ctx context.Context, in *UpdateProcedureExecutionRequest, opts ...grpc.CallOption) (*UpdateProcedureExecutionResponse, error)
-	// Update the status of a step in a procedure execution. This can only be done if the step is NOT_STARTED,
-	// IN_PROGRESS, or SUBMITTED. Other state transitions are managed by the backend.
+	// Changes one step of a procedure execution: its content value, auto-proceed setting, or target state (in
+	// progress, submitted, skipped, or errored). Returns the whole execution.
+	//
+	// Changing the value or auto-proceed setting needs the step to be NOT_STARTED or IN_PROGRESS. A target
+	// state is applied after those changes and needs the step to be NOT_STARTED, IN_PROGRESS, or SUBMITTED.
+	// Repeating an in-progress or submitted request that already took effect succeeds without a change.
+	// Automatic follow-up transitions then run, such as starting later steps, advancing auto-proceed steps,
+	// monitoring the success condition, and running completion actions. Other transitions, such as to
+	// SUCCEEDED, happen only through the backend. The caller needs permission to execute procedures in the
+	// execution's workspace.
+	//
+	// Errors:
+	//   - NOT_FOUND: the execution does not exist, the caller cannot execute procedures in its workspace,
+	//     step_id is not a step of the execution, or the procedure commit of the execution no longer exists.
+	//   - INVALID_ARGUMENT: the step's state does not allow the change, or the transition is invalid: skipping a
+	//     required step, starting a step with unmet dependencies, or submitting a step without its required
+	//     content.
+	//   - PERMISSION_DENIED: the edition of the execution's workspace does not include procedures.
 	UpdateStep(ctx context.Context, in *UpdateStepRequest, opts ...grpc.CallOption) (*UpdateStepResponse, error)
-	// This should only be called by the backend to update the success_condition_status of a step.
-	// This can only be done if the step is SUBMITTED.
+	// Sets the success-condition status of one step of a procedure execution, then re-evaluates that step and
+	// the steps that depend on it. Returns the whole execution.
+	//
+	// The backend calls this while it monitors the step's success condition. When the step is SUBMITTED and
+	// the status is resolved, the step becomes SUCCEEDED if the condition was satisfied and ERRORED otherwise.
+	// The caller needs permission to execute procedures in the execution's workspace.
+	//
+	// Errors:
+	//   - NOT_FOUND: the execution does not exist, the caller cannot execute procedures in its workspace,
+	//     step_id is not a step of the execution, or the procedure commit of the execution no longer exists.
+	//   - PERMISSION_DENIED: the edition of the execution's workspace does not include procedures.
 	UpdateStepSuccessConditionStatus(ctx context.Context, in *UpdateStepSuccessConditionStatusRequest, opts ...grpc.CallOption) (*UpdateStepSuccessConditionStatusResponse, error)
-	// Called by the Temporal workflow to update the completion_action_statuses of a step.
+	// Replaces the completion action statuses of one step of a procedure execution (the results of actions
+	// such as creating events or runs), then re-evaluates the step. Returns the whole execution.
+	//
+	// The backend workflow calls this. The list must have as many entries as the step has now. The call
+	// changes nothing for an outdated step or a step with no completion action statuses. When every action has
+	// finished, the step continues to its outputs and later steps, or becomes ERRORED if an action failed. The
+	// caller needs permission to execute procedures in the execution's workspace.
+	//
+	// Errors:
+	//   - NOT_FOUND: the execution does not exist, the caller cannot execute procedures in its workspace,
+	//     step_id is not a step of the execution, or the procedure commit of the execution no longer exists.
+	//   - FAILED_PRECONDITION: the list has a different number of entries than the step has now.
+	//   - PERMISSION_DENIED: the edition of the execution's workspace does not include procedures.
 	UpdateStepCompletionActionStatus(ctx context.Context, in *UpdateStepCompletionActionStatusRequest, opts ...grpc.CallOption) (*UpdateStepCompletionActionStatusResponse, error)
-	// Called by the backend (channel capture executor) to merge a single channel-capture status into
-	// a step's channel_capture_statuses. Identity is (output_field_id, capture_moment); existing
-	// entries for that identity are replaced. Statuses are written incrementally as captures progress
-	// (in_progress -> terminal), so this RPC is expected to be called multiple times per capture.
+	// Merges one channel capture status into a step of a procedure execution, then re-evaluates the step.
+	// Returns the whole execution.
+	//
+	// An existing status with the same output_field_id and capture_moment is replaced; otherwise the status is
+	// added, so a capture can be updated by sending its status again. The call changes nothing for an outdated
+	// step. A failed status is stored but does not by itself make the step ERRORED. The caller needs permission
+	// to execute procedures in the execution's workspace.
+	//
+	// Errors:
+	//   - NOT_FOUND: the execution does not exist, the caller cannot execute procedures in its workspace,
+	//     step_id is not a step of the execution, or the procedure commit of the execution no longer exists.
+	//   - PERMISSION_DENIED: the edition of the execution's workspace does not include procedures.
 	UpdateStepChannelCaptureStatus(ctx context.Context, in *UpdateStepChannelCaptureStatusRequest, opts ...grpc.CallOption) (*UpdateStepChannelCaptureStatusResponse, error)
-	// Repeat a previously finished step in a procedure execution. This can only be done if the given step
-	// is in state SUCCEEDED, SKIPPED or ERRORED. Other state transitions are managed by the backend.
+	// Repeats a finished step of a procedure execution by adding a copy of the step and marking the original
+	// outdated. Returns the whole execution.
+	//
+	// The step must be SUCCEEDED, SKIPPED, or ERRORED. The copy starts NOT_STARTED with the procedure's initial
+	// value and auto-proceed setting, the same dependencies, and the same place in its section. It then takes
+	// any value, auto-proceed setting, or target state in the request, as UpdateStep applies them. Any running
+	// completion actions of the original are cancelled. The caller needs permission to execute procedures in
+	// the execution's workspace.
+	//
+	// Errors:
+	//   - NOT_FOUND: the execution does not exist, the caller cannot execute procedures in its workspace,
+	//     step_id is not a step of the execution, or the procedure commit of the execution no longer exists.
+	//   - INVALID_ARGUMENT: the step is not SUCCEEDED, SKIPPED, or ERRORED, or the request's changes to the copy
+	//     are invalid, as for UpdateStep.
+	//   - PERMISSION_DENIED: the edition of the execution's workspace does not include procedures.
 	RepeatStep(ctx context.Context, in *RepeatStepRequest, opts ...grpc.CallOption) (*RepeatStepResponse, error)
-	// Batch get procedure execution metadata
+	// Gets metadata, without step state, for several procedure executions by RID.
+	//
+	// Use GetProcedureExecution for the step state of one execution. The caller needs view permission in the
+	// workspace of every execution.
+	//
+	// Errors:
+	//   - NOT_FOUND: any execution does not exist, the caller cannot view it, or the edition of its workspace
+	//     does not include procedures. The whole batch fails.
 	BatchGetProcedureExecutionMetadata(ctx context.Context, in *BatchGetProcedureExecutionMetadataRequest, opts ...grpc.CallOption) (*BatchGetProcedureExecutionMetadataResponse, error)
 }
 
@@ -223,42 +352,171 @@ func (c *procedureExecutionsServiceClient) BatchGetProcedureExecutionMetadata(ct
 //
 // Service for creating and managing procedure executions.
 type ProcedureExecutionsServiceServer interface {
-	// Create a new procedure execution from a procedure
+	// Creates a procedure execution, one run-through of a procedure at a given commit. Returns the new
+	// execution with its step state.
+	//
+	// The server assigns the RID, sets the caller as the creator, and adds the execution to the procedure's
+	// workspace. The execution copies the procedure's labels and properties. Its step state is built from the
+	// procedure at the given commit, and the execution keeps that commit until its metadata is updated. With
+	// start_immediately set, the execution is marked started by the caller; otherwise it has no start time.
+	// The caller needs permission to execute procedures in the procedure's workspace.
+	//
+	// Errors:
+	//   - NOT_FOUND: the procedure or the commit does not exist, or the caller cannot view the procedure or
+	//     execute procedures in its workspace.
+	//   - PERMISSION_DENIED: the edition of the procedure's workspace does not include procedures.
 	CreateProcedureExecution(context.Context, *CreateProcedureExecutionRequest) (*CreateProcedureExecutionResponse, error)
-	// Search for procedure executions.
-	// The JSON transcoder ranks literal path segments above `/{...}` template captures, so the
-	// literal `/search` route wins over the `/{procedure_execution_rid}` template regardless of
-	// declaration order.
+	// Searches procedure executions (run-throughs of a procedure) in the workspaces the caller can view, by
+	// text, labels, properties, workspace, procedure, commit, creator, progress status, assets, or archived
+	// state.
+	// Returns a page of execution metadata without step state.
+	//
+	// Results are sorted by last update time, newest first, unless sort_options say otherwise. Archived
+	// executions are included unless the query filters on is_archived. A page holds 100 executions unless
+	// page_size is set; pass next_page_token to read the next page. Workspaces whose edition does not include
+	// procedures are not searched.
+	//
+	// Errors:
+	//   - INVALID_ARGUMENT: the query sets no variant (also inside an and or or), a progress status or assets
+	//     operator is unspecified, a RID in the query cannot be parsed, or next_page_token is invalid.
 	SearchProcedureExecutions(context.Context, *SearchProcedureExecutionsRequest) (*SearchProcedureExecutionsResponse, error)
-	// Get a procedure execution by its RID
+	// Gets one procedure execution with its metadata and the full state of every step.
+	//
+	// With include_display_graph set, the response also holds the execution's display graph (nodes in display
+	// order). The caller needs view permission in the execution's workspace. Use
+	// BatchGetProcedureExecutionMetadata to read only metadata for several executions.
+	//
+	// Errors:
+	// - NOT_FOUND: the execution does not exist, or the caller cannot view it.
+	// - PERMISSION_DENIED: the edition of the execution's workspace does not include procedures.
+	// - INVALID_ARGUMENT: include_display_graph is set and the execution's graph contains a cycle.
 	GetProcedureExecution(context.Context, *GetProcedureExecutionRequest) (*GetProcedureExecutionResponse, error)
-	// Archive procedure executions
+	// Marks procedure executions as archived and returns the requested RIDs.
+	//
+	// Archived executions stay in search results unless the query filters on is_archived. Reverse with
+	// BatchUnarchiveProcedureExecutions. The caller needs permission to execute procedures in the workspace of
+	// every execution.
+	//
+	// Errors:
+	//   - NOT_FOUND: any execution does not exist, the caller cannot execute procedures in its workspace, or the
+	//     edition of its workspace does not include procedures. No execution is archived.
 	BatchArchiveProcedureExecutions(context.Context, *BatchArchiveProcedureExecutionsRequest) (*BatchArchiveProcedureExecutionsResponse, error)
-	// Unarchive procedure executions
+	// Marks procedure executions as not archived and returns the requested RIDs.
+	//
+	// The caller needs permission to execute procedures in the workspace of every execution. Reverses
+	// BatchArchiveProcedureExecutions.
+	//
+	// Errors:
+	//   - NOT_FOUND: any execution does not exist, the caller cannot execute procedures in its workspace, or the
+	//     edition of its workspace does not include procedures. No execution is unarchived.
 	BatchUnarchiveProcedureExecutions(context.Context, *BatchUnarchiveProcedureExecutionsRequest) (*BatchUnarchiveProcedureExecutionsResponse, error)
-	// Update the metadata of a procedure execution
+	// Changes the title, description, procedure commit, labels, or properties of a procedure execution.
+	// Returns the updated metadata.
+	//
+	// Omitted fields are unchanged. Labels or properties that are set replace the stored ones. Changing
+	// commit_id does not change the step state. A change records the caller as the last updater. The caller
+	// needs permission to execute procedures in the execution's workspace.
+	//
+	// Errors:
+	// - NOT_FOUND: the execution does not exist, or the caller cannot execute procedures in its workspace.
+	// - PERMISSION_DENIED: the edition of the execution's workspace does not include procedures.
 	UpdateProcedureExecutionMetadata(context.Context, *UpdateProcedureExecutionMetadataRequest) (*UpdateProcedureExecutionMetadataResponse, error)
-	// Heavy-handed update method for procedure execution
-	// TODO(pchen): This isn't the expected final endpoint, this is just for editing the graph while we iterate
-	// There likely be additional fine-grained methods for editing the procedure
+	// Overwrites parts of a procedure execution: title, description, procedure commit, labels, properties, the
+	// whole step state, or the abort, start, and finish times. Returns the updated execution.
+	//
+	// Omitted fields are unchanged. Labels or properties that are set replace the stored ones. Setting the
+	// state replaces every step without the transition checks and automatic follow-up steps that UpdateStep
+	// runs, and adds the assets that completed steps use to asset_rids. Setting is_aborted, started_at, or
+	// finished_at records the caller as the aborter, starter, or finisher. Prefer UpdateStep to change one
+	// step. The caller needs permission to execute procedures in the execution's workspace.
+	//
+	// Errors:
+	//   - NOT_FOUND: the execution does not exist, the caller cannot execute procedures in its workspace, or state
+	//     is set and the procedure commit of the execution no longer exists.
+	//   - PERMISSION_DENIED: the edition of the execution's workspace does not include procedures.
 	UpdateProcedureExecution(context.Context, *UpdateProcedureExecutionRequest) (*UpdateProcedureExecutionResponse, error)
-	// Update the status of a step in a procedure execution. This can only be done if the step is NOT_STARTED,
-	// IN_PROGRESS, or SUBMITTED. Other state transitions are managed by the backend.
+	// Changes one step of a procedure execution: its content value, auto-proceed setting, or target state (in
+	// progress, submitted, skipped, or errored). Returns the whole execution.
+	//
+	// Changing the value or auto-proceed setting needs the step to be NOT_STARTED or IN_PROGRESS. A target
+	// state is applied after those changes and needs the step to be NOT_STARTED, IN_PROGRESS, or SUBMITTED.
+	// Repeating an in-progress or submitted request that already took effect succeeds without a change.
+	// Automatic follow-up transitions then run, such as starting later steps, advancing auto-proceed steps,
+	// monitoring the success condition, and running completion actions. Other transitions, such as to
+	// SUCCEEDED, happen only through the backend. The caller needs permission to execute procedures in the
+	// execution's workspace.
+	//
+	// Errors:
+	//   - NOT_FOUND: the execution does not exist, the caller cannot execute procedures in its workspace,
+	//     step_id is not a step of the execution, or the procedure commit of the execution no longer exists.
+	//   - INVALID_ARGUMENT: the step's state does not allow the change, or the transition is invalid: skipping a
+	//     required step, starting a step with unmet dependencies, or submitting a step without its required
+	//     content.
+	//   - PERMISSION_DENIED: the edition of the execution's workspace does not include procedures.
 	UpdateStep(context.Context, *UpdateStepRequest) (*UpdateStepResponse, error)
-	// This should only be called by the backend to update the success_condition_status of a step.
-	// This can only be done if the step is SUBMITTED.
+	// Sets the success-condition status of one step of a procedure execution, then re-evaluates that step and
+	// the steps that depend on it. Returns the whole execution.
+	//
+	// The backend calls this while it monitors the step's success condition. When the step is SUBMITTED and
+	// the status is resolved, the step becomes SUCCEEDED if the condition was satisfied and ERRORED otherwise.
+	// The caller needs permission to execute procedures in the execution's workspace.
+	//
+	// Errors:
+	//   - NOT_FOUND: the execution does not exist, the caller cannot execute procedures in its workspace,
+	//     step_id is not a step of the execution, or the procedure commit of the execution no longer exists.
+	//   - PERMISSION_DENIED: the edition of the execution's workspace does not include procedures.
 	UpdateStepSuccessConditionStatus(context.Context, *UpdateStepSuccessConditionStatusRequest) (*UpdateStepSuccessConditionStatusResponse, error)
-	// Called by the Temporal workflow to update the completion_action_statuses of a step.
+	// Replaces the completion action statuses of one step of a procedure execution (the results of actions
+	// such as creating events or runs), then re-evaluates the step. Returns the whole execution.
+	//
+	// The backend workflow calls this. The list must have as many entries as the step has now. The call
+	// changes nothing for an outdated step or a step with no completion action statuses. When every action has
+	// finished, the step continues to its outputs and later steps, or becomes ERRORED if an action failed. The
+	// caller needs permission to execute procedures in the execution's workspace.
+	//
+	// Errors:
+	//   - NOT_FOUND: the execution does not exist, the caller cannot execute procedures in its workspace,
+	//     step_id is not a step of the execution, or the procedure commit of the execution no longer exists.
+	//   - FAILED_PRECONDITION: the list has a different number of entries than the step has now.
+	//   - PERMISSION_DENIED: the edition of the execution's workspace does not include procedures.
 	UpdateStepCompletionActionStatus(context.Context, *UpdateStepCompletionActionStatusRequest) (*UpdateStepCompletionActionStatusResponse, error)
-	// Called by the backend (channel capture executor) to merge a single channel-capture status into
-	// a step's channel_capture_statuses. Identity is (output_field_id, capture_moment); existing
-	// entries for that identity are replaced. Statuses are written incrementally as captures progress
-	// (in_progress -> terminal), so this RPC is expected to be called multiple times per capture.
+	// Merges one channel capture status into a step of a procedure execution, then re-evaluates the step.
+	// Returns the whole execution.
+	//
+	// An existing status with the same output_field_id and capture_moment is replaced; otherwise the status is
+	// added, so a capture can be updated by sending its status again. The call changes nothing for an outdated
+	// step. A failed status is stored but does not by itself make the step ERRORED. The caller needs permission
+	// to execute procedures in the execution's workspace.
+	//
+	// Errors:
+	//   - NOT_FOUND: the execution does not exist, the caller cannot execute procedures in its workspace,
+	//     step_id is not a step of the execution, or the procedure commit of the execution no longer exists.
+	//   - PERMISSION_DENIED: the edition of the execution's workspace does not include procedures.
 	UpdateStepChannelCaptureStatus(context.Context, *UpdateStepChannelCaptureStatusRequest) (*UpdateStepChannelCaptureStatusResponse, error)
-	// Repeat a previously finished step in a procedure execution. This can only be done if the given step
-	// is in state SUCCEEDED, SKIPPED or ERRORED. Other state transitions are managed by the backend.
+	// Repeats a finished step of a procedure execution by adding a copy of the step and marking the original
+	// outdated. Returns the whole execution.
+	//
+	// The step must be SUCCEEDED, SKIPPED, or ERRORED. The copy starts NOT_STARTED with the procedure's initial
+	// value and auto-proceed setting, the same dependencies, and the same place in its section. It then takes
+	// any value, auto-proceed setting, or target state in the request, as UpdateStep applies them. Any running
+	// completion actions of the original are cancelled. The caller needs permission to execute procedures in
+	// the execution's workspace.
+	//
+	// Errors:
+	//   - NOT_FOUND: the execution does not exist, the caller cannot execute procedures in its workspace,
+	//     step_id is not a step of the execution, or the procedure commit of the execution no longer exists.
+	//   - INVALID_ARGUMENT: the step is not SUCCEEDED, SKIPPED, or ERRORED, or the request's changes to the copy
+	//     are invalid, as for UpdateStep.
+	//   - PERMISSION_DENIED: the edition of the execution's workspace does not include procedures.
 	RepeatStep(context.Context, *RepeatStepRequest) (*RepeatStepResponse, error)
-	// Batch get procedure execution metadata
+	// Gets metadata, without step state, for several procedure executions by RID.
+	//
+	// Use GetProcedureExecution for the step state of one execution. The caller needs view permission in the
+	// workspace of every execution.
+	//
+	// Errors:
+	//   - NOT_FOUND: any execution does not exist, the caller cannot view it, or the edition of its workspace
+	//     does not include procedures. The whole batch fails.
 	BatchGetProcedureExecutionMetadata(context.Context, *BatchGetProcedureExecutionMetadataRequest) (*BatchGetProcedureExecutionMetadataResponse, error)
 	mustEmbedUnimplementedProcedureExecutionsServiceServer()
 }
