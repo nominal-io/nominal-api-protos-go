@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.0](https://github.com/nominal-io/nominal-api-protos-go/compare/v0.1.0...v0.2.0) (2026-11-20)
+
+
+### Features
+
+* update API protos to 0.1536.0 ([#9](https://github.com/nominal-io/nominal-api-protos-go/issues/9)) ([9620c94](https://github.com/nominal-io/nominal-api-protos-go/commit/9620c94bda5bc2b076846157b95fee1c3846cad8))
+
 ## 0.1.0 (2026-10-27)
 
 
