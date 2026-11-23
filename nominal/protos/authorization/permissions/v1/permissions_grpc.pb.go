@@ -29,7 +29,14 @@ const (
 // The PermissionService provides an interface for checking permissions for a user, where
 // a permission is an action that is performed on a resource.
 type PermissionServiceClient interface {
-	// Checks a list of permissions for the calling user and returns results in the same order.
+	// Checks, for the calling user, whether each requested action is allowed on each named resource, such as an asset,
+	// a workbook, or a workspace. Returns one is_authorized result per check, in the same order.
+	//
+	// A resource in another organization is reported as not authorized. An action name this server does not recognize
+	// fails the whole call. The call changes nothing and needs only a valid session.
+	//
+	// Errors:
+	// - INVALID_ARGUMENT: an action name is not recognized.
 	CheckPermissions(ctx context.Context, in *CheckPermissionsRequest, opts ...grpc.CallOption) (*CheckPermissionsResponse, error)
 }
 
@@ -58,7 +65,14 @@ func (c *permissionServiceClient) CheckPermissions(ctx context.Context, in *Chec
 // The PermissionService provides an interface for checking permissions for a user, where
 // a permission is an action that is performed on a resource.
 type PermissionServiceServer interface {
-	// Checks a list of permissions for the calling user and returns results in the same order.
+	// Checks, for the calling user, whether each requested action is allowed on each named resource, such as an asset,
+	// a workbook, or a workspace. Returns one is_authorized result per check, in the same order.
+	//
+	// A resource in another organization is reported as not authorized. An action name this server does not recognize
+	// fails the whole call. The call changes nothing and needs only a valid session.
+	//
+	// Errors:
+	// - INVALID_ARGUMENT: an action name is not recognized.
 	CheckPermissions(context.Context, *CheckPermissionsRequest) (*CheckPermissionsResponse, error)
 	mustEmbedUnimplementedPermissionServiceServer()
 }

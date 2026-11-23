@@ -524,11 +524,13 @@ func (x *UpdateWorkspaceRequest) GetSettings() *WorkspaceSettings {
 	return nil
 }
 
+// A workspace: the access boundary that holds a team's assets, data sources, runs, workbooks, and users.
 type Workspace struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// A unique identifier for the workspace within the organization. The workspace ID must be lower case alphanumeric characters, optionally separated by hyphens.
-	Id            string             `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
-	Rid           string             `protobuf:"bytes,2,opt,name=rid,proto3" json:"rid,omitempty"`
+	Id  string `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
+	Rid string `protobuf:"bytes,2,opt,name=rid,proto3" json:"rid,omitempty"`
+	// RID of the org the workspace belongs to.
 	Org           string             `protobuf:"bytes,3,opt,name=org,proto3" json:"org,omitempty"`
 	DisplayName   *string            `protobuf:"bytes,4,opt,name=display_name,json=displayName,proto3,oneof" json:"display_name,omitempty"`
 	Symbol        *WorkspaceSymbol   `protobuf:"bytes,5,opt,name=symbol,proto3,oneof" json:"symbol,omitempty"`
@@ -609,6 +611,7 @@ func (x *Workspace) GetSettings() *WorkspaceSettings {
 	return nil
 }
 
+// Workspace-level preferences: preferred ref names and the procedures elevated to the workspace level.
 type WorkspaceSettings struct {
 	state         protoimpl.MessageState         `protogen:"open.v1"`
 	RefNames      *PreferredRefNameConfiguration `protobuf:"bytes,1,opt,name=ref_names,json=refNames,proto3,oneof" json:"ref_names,omitempty"`
@@ -764,9 +767,9 @@ func (*WorkspaceSymbol_Image) isWorkspaceSymbol_WorkspaceSymbol() {}
 
 type GetWorkspacesRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
-	// When unset, defaults to true.
+	// When unset, defaults to true: only workspaces of the caller's current org are returned.
 	FilterBySessionOrg *bool `protobuf:"varint,1,opt,name=filter_by_session_org,json=filterBySessionOrg,proto3,oneof" json:"filter_by_session_org,omitempty"`
-	// When unset, defaults to false.
+	// When unset, defaults to false. True also returns workspaces where the caller is a guest.
 	IncludeGuestWorkspaces *bool `protobuf:"varint,2,opt,name=include_guest_workspaces,json=includeGuestWorkspaces,proto3,oneof" json:"include_guest_workspaces,omitempty"`
 	// When unset, defaults to false. Also returns the session org's workspaces where a role binding grants the caller
 	// workspace:view.

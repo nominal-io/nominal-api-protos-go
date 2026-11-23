@@ -26,6 +26,61 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
+type TenantType int32
+
+const (
+	TenantType_TENANT_TYPE_UNSPECIFIED TenantType = 0
+	// A sales demo tenant
+	TenantType_TENANT_TYPE_DEMO TenantType = 1
+	// A formal trial tenant
+	TenantType_TENANT_TYPE_TRIAL TenantType = 2
+	// A paying customer. Orgs that do not configure a tenant type read as this.
+	TenantType_TENANT_TYPE_CUSTOMER TenantType = 3
+)
+
+// Enum value maps for TenantType.
+var (
+	TenantType_name = map[int32]string{
+		0: "TENANT_TYPE_UNSPECIFIED",
+		1: "TENANT_TYPE_DEMO",
+		2: "TENANT_TYPE_TRIAL",
+		3: "TENANT_TYPE_CUSTOMER",
+	}
+	TenantType_value = map[string]int32{
+		"TENANT_TYPE_UNSPECIFIED": 0,
+		"TENANT_TYPE_DEMO":        1,
+		"TENANT_TYPE_TRIAL":       2,
+		"TENANT_TYPE_CUSTOMER":    3,
+	}
+)
+
+func (x TenantType) Enum() *TenantType {
+	p := new(TenantType)
+	*p = x
+	return p
+}
+
+func (x TenantType) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (TenantType) Descriptor() protoreflect.EnumDescriptor {
+	return file_nominal_protos_authentication_organizations_v1_organizations_proto_enumTypes[0].Descriptor()
+}
+
+func (TenantType) Type() protoreflect.EnumType {
+	return &file_nominal_protos_authentication_organizations_v1_organizations_proto_enumTypes[0]
+}
+
+func (x TenantType) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use TenantType.Descriptor instead.
+func (TenantType) EnumDescriptor() ([]byte, []int) {
+	return file_nominal_protos_authentication_organizations_v1_organizations_proto_rawDescGZIP(), []int{0}
+}
+
 // Structural errors in a request that only the proto surface can express. Domain errors (OrgNotFound,
 // NotAuthorizedAdmin, OrgLoginActivityLimitExceeded, ...) keep their Authentication Conjure error names.
 type OrganizationError int32
@@ -67,11 +122,11 @@ func (x OrganizationError) String() string {
 }
 
 func (OrganizationError) Descriptor() protoreflect.EnumDescriptor {
-	return file_nominal_protos_authentication_organizations_v1_organizations_proto_enumTypes[0].Descriptor()
+	return file_nominal_protos_authentication_organizations_v1_organizations_proto_enumTypes[1].Descriptor()
 }
 
 func (OrganizationError) Type() protoreflect.EnumType {
-	return &file_nominal_protos_authentication_organizations_v1_organizations_proto_enumTypes[0]
+	return &file_nominal_protos_authentication_organizations_v1_organizations_proto_enumTypes[1]
 }
 
 func (x OrganizationError) Number() protoreflect.EnumNumber {
@@ -80,7 +135,7 @@ func (x OrganizationError) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use OrganizationError.Descriptor instead.
 func (OrganizationError) EnumDescriptor() ([]byte, []int) {
-	return file_nominal_protos_authentication_organizations_v1_organizations_proto_rawDescGZIP(), []int{0}
+	return file_nominal_protos_authentication_organizations_v1_organizations_proto_rawDescGZIP(), []int{1}
 }
 
 type Organization struct {
@@ -89,7 +144,9 @@ type Organization struct {
 	// The stable name the organization is configured under. Read-only.
 	Name string `protobuf:"bytes,2,opt,name=name,proto3" json:"name,omitempty"`
 	// A human-readable name shown in place of `name`. Unset when none has been chosen.
-	DisplayName   *string `protobuf:"bytes,3,opt,name=display_name,json=displayName,proto3,oneof" json:"display_name,omitempty"`
+	DisplayName *string `protobuf:"bytes,3,opt,name=display_name,json=displayName,proto3,oneof" json:"display_name,omitempty"`
+	// The commercial stage of the organization's tenant, set by the operator in the orgs config. Read-only.
+	TenantType    TenantType `protobuf:"varint,4,opt,name=tenant_type,json=tenantType,proto3,enum=nominal.authentication.organizations.v1.TenantType" json:"tenant_type,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -143,6 +200,13 @@ func (x *Organization) GetDisplayName() string {
 		return *x.DisplayName
 	}
 	return ""
+}
+
+func (x *Organization) GetTenantType() TenantType {
+	if x != nil {
+		return x.TenantType
+	}
+	return TenantType_TENANT_TYPE_UNSPECIFIED
 }
 
 type GetCurrentOrganizationRequest struct {
@@ -734,13 +798,15 @@ var File_nominal_protos_authentication_organizations_v1_organizations_proto prot
 
 const file_nominal_protos_authentication_organizations_v1_organizations_proto_rawDesc = "" +
 	"\n" +
-	"Bnominal/protos/authentication/organizations/v1/organizations.proto\x12'nominal.authentication.organizations.v1\x1a\x1bbuf/validate/validate.proto\x1a\x1cgoogle/api/annotations.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a2nominal/protos/authentication/users/v1/users.proto\x1a!nominal/protos/gen/v1/alias.proto\x1a!nominal/protos/gen/v1/error.proto\"\xa5\x01\n" +
+	"Bnominal/protos/authentication/organizations/v1/organizations.proto\x12'nominal.authentication.organizations.v1\x1a\x1bbuf/validate/validate.proto\x1a\x1cgoogle/api/annotations.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a2nominal/protos/authentication/users/v1/users.proto\x1a!nominal/protos/gen/v1/alias.proto\x1a!nominal/protos/gen/v1/error.proto\"\xfb\x01\n" +
 	"\fOrganization\x12<\n" +
 	"\x03rid\x18\x01 \x01(\tB*\x9a\xb2\x1a&\n" +
 	"$io.nominal.authentication.api.OrgRidR\x03rid\x12\x12\n" +
 	"\x04name\x18\x02 \x01(\tR\x04name\x122\n" +
 	"\fdisplay_name\x18\x03 \x01(\tB\n" +
-	"\xbaH\ar\x05\x10\x01\x18\x80\x02H\x00R\vdisplayName\x88\x01\x01B\x0f\n" +
+	"\xbaH\ar\x05\x10\x01\x18\x80\x02H\x00R\vdisplayName\x88\x01\x01\x12T\n" +
+	"\vtenant_type\x18\x04 \x01(\x0e23.nominal.authentication.organizations.v1.TenantTypeR\n" +
+	"tenantTypeB\x0f\n" +
 	"\r_display_name\"\x1f\n" +
 	"\x1dGetCurrentOrganizationRequest\"{\n" +
 	"\x1eGetCurrentOrganizationResponse\x12Y\n" +
@@ -780,7 +846,13 @@ const file_nominal_protos_authentication_organizations_v1_organizations_proto_ra
 	"_page_size\"\xa8\x01\n" +
 	"\x1bListLoginActivitiesResponse\x12a\n" +
 	"\x10login_activities\x18\x01 \x03(\v26.nominal.authentication.organizations.v1.LoginActivityR\x0floginActivities\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken*\x86\x03\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken*p\n" +
+	"\n" +
+	"TenantType\x12\x1b\n" +
+	"\x17TENANT_TYPE_UNSPECIFIED\x10\x00\x12\x14\n" +
+	"\x10TENANT_TYPE_DEMO\x10\x01\x12\x15\n" +
+	"\x11TENANT_TYPE_TRIAL\x10\x02\x12\x18\n" +
+	"\x14TENANT_TYPE_CUSTOMER\x10\x03*\x86\x03\n" +
 	"\x11OrganizationError\x12\"\n" +
 	"\x1eORGANIZATION_ERROR_UNSPECIFIED\x10\x00\x12b\n" +
 	"\"ORGANIZATION_ERROR_INVALID_ORG_RID\x10\x01\x1a:\xb2\xb2\x1a6\n" +
@@ -810,51 +882,53 @@ func file_nominal_protos_authentication_organizations_v1_organizations_proto_raw
 	return file_nominal_protos_authentication_organizations_v1_organizations_proto_rawDescData
 }
 
-var file_nominal_protos_authentication_organizations_v1_organizations_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
+var file_nominal_protos_authentication_organizations_v1_organizations_proto_enumTypes = make([]protoimpl.EnumInfo, 2)
 var file_nominal_protos_authentication_organizations_v1_organizations_proto_msgTypes = make([]protoimpl.MessageInfo, 13)
 var file_nominal_protos_authentication_organizations_v1_organizations_proto_goTypes = []any{
-	(OrganizationError)(0),                            // 0: nominal.authentication.organizations.v1.OrganizationError
-	(*Organization)(nil),                              // 1: nominal.authentication.organizations.v1.Organization
-	(*GetCurrentOrganizationRequest)(nil),             // 2: nominal.authentication.organizations.v1.GetCurrentOrganizationRequest
-	(*GetCurrentOrganizationResponse)(nil),            // 3: nominal.authentication.organizations.v1.GetCurrentOrganizationResponse
-	(*UpdateOrganizationRequest)(nil),                 // 4: nominal.authentication.organizations.v1.UpdateOrganizationRequest
-	(*UpdateOrganizationResponse)(nil),                // 5: nominal.authentication.organizations.v1.UpdateOrganizationResponse
-	(*OrganizationSettings)(nil),                      // 6: nominal.authentication.organizations.v1.OrganizationSettings
-	(*GetCurrentOrganizationSettingsRequest)(nil),     // 7: nominal.authentication.organizations.v1.GetCurrentOrganizationSettingsRequest
-	(*GetCurrentOrganizationSettingsResponse)(nil),    // 8: nominal.authentication.organizations.v1.GetCurrentOrganizationSettingsResponse
-	(*UpdateCurrentOrganizationSettingsRequest)(nil),  // 9: nominal.authentication.organizations.v1.UpdateCurrentOrganizationSettingsRequest
-	(*UpdateCurrentOrganizationSettingsResponse)(nil), // 10: nominal.authentication.organizations.v1.UpdateCurrentOrganizationSettingsResponse
-	(*LoginActivity)(nil),                             // 11: nominal.authentication.organizations.v1.LoginActivity
-	(*ListLoginActivitiesRequest)(nil),                // 12: nominal.authentication.organizations.v1.ListLoginActivitiesRequest
-	(*ListLoginActivitiesResponse)(nil),               // 13: nominal.authentication.organizations.v1.ListLoginActivitiesResponse
-	(v1.DefaultTimeRangeType)(0),                      // 14: nominal.authentication.users.v1.DefaultTimeRangeType
-	(*timestamppb.Timestamp)(nil),                     // 15: google.protobuf.Timestamp
+	(TenantType)(0),                                   // 0: nominal.authentication.organizations.v1.TenantType
+	(OrganizationError)(0),                            // 1: nominal.authentication.organizations.v1.OrganizationError
+	(*Organization)(nil),                              // 2: nominal.authentication.organizations.v1.Organization
+	(*GetCurrentOrganizationRequest)(nil),             // 3: nominal.authentication.organizations.v1.GetCurrentOrganizationRequest
+	(*GetCurrentOrganizationResponse)(nil),            // 4: nominal.authentication.organizations.v1.GetCurrentOrganizationResponse
+	(*UpdateOrganizationRequest)(nil),                 // 5: nominal.authentication.organizations.v1.UpdateOrganizationRequest
+	(*UpdateOrganizationResponse)(nil),                // 6: nominal.authentication.organizations.v1.UpdateOrganizationResponse
+	(*OrganizationSettings)(nil),                      // 7: nominal.authentication.organizations.v1.OrganizationSettings
+	(*GetCurrentOrganizationSettingsRequest)(nil),     // 8: nominal.authentication.organizations.v1.GetCurrentOrganizationSettingsRequest
+	(*GetCurrentOrganizationSettingsResponse)(nil),    // 9: nominal.authentication.organizations.v1.GetCurrentOrganizationSettingsResponse
+	(*UpdateCurrentOrganizationSettingsRequest)(nil),  // 10: nominal.authentication.organizations.v1.UpdateCurrentOrganizationSettingsRequest
+	(*UpdateCurrentOrganizationSettingsResponse)(nil), // 11: nominal.authentication.organizations.v1.UpdateCurrentOrganizationSettingsResponse
+	(*LoginActivity)(nil),                             // 12: nominal.authentication.organizations.v1.LoginActivity
+	(*ListLoginActivitiesRequest)(nil),                // 13: nominal.authentication.organizations.v1.ListLoginActivitiesRequest
+	(*ListLoginActivitiesResponse)(nil),               // 14: nominal.authentication.organizations.v1.ListLoginActivitiesResponse
+	(v1.DefaultTimeRangeType)(0),                      // 15: nominal.authentication.users.v1.DefaultTimeRangeType
+	(*timestamppb.Timestamp)(nil),                     // 16: google.protobuf.Timestamp
 }
 var file_nominal_protos_authentication_organizations_v1_organizations_proto_depIdxs = []int32{
-	1,  // 0: nominal.authentication.organizations.v1.GetCurrentOrganizationResponse.organization:type_name -> nominal.authentication.organizations.v1.Organization
-	1,  // 1: nominal.authentication.organizations.v1.UpdateOrganizationRequest.organization:type_name -> nominal.authentication.organizations.v1.Organization
-	1,  // 2: nominal.authentication.organizations.v1.UpdateOrganizationResponse.organization:type_name -> nominal.authentication.organizations.v1.Organization
-	14, // 3: nominal.authentication.organizations.v1.OrganizationSettings.default_time_range_type:type_name -> nominal.authentication.users.v1.DefaultTimeRangeType
-	6,  // 4: nominal.authentication.organizations.v1.GetCurrentOrganizationSettingsResponse.settings:type_name -> nominal.authentication.organizations.v1.OrganizationSettings
-	6,  // 5: nominal.authentication.organizations.v1.UpdateCurrentOrganizationSettingsRequest.settings:type_name -> nominal.authentication.organizations.v1.OrganizationSettings
-	6,  // 6: nominal.authentication.organizations.v1.UpdateCurrentOrganizationSettingsResponse.settings:type_name -> nominal.authentication.organizations.v1.OrganizationSettings
-	15, // 7: nominal.authentication.organizations.v1.LoginActivity.last_login_time:type_name -> google.protobuf.Timestamp
-	11, // 8: nominal.authentication.organizations.v1.ListLoginActivitiesResponse.login_activities:type_name -> nominal.authentication.organizations.v1.LoginActivity
-	2,  // 9: nominal.authentication.organizations.v1.OrganizationService.GetCurrentOrganization:input_type -> nominal.authentication.organizations.v1.GetCurrentOrganizationRequest
-	4,  // 10: nominal.authentication.organizations.v1.OrganizationService.UpdateOrganization:input_type -> nominal.authentication.organizations.v1.UpdateOrganizationRequest
-	7,  // 11: nominal.authentication.organizations.v1.OrganizationService.GetCurrentOrganizationSettings:input_type -> nominal.authentication.organizations.v1.GetCurrentOrganizationSettingsRequest
-	9,  // 12: nominal.authentication.organizations.v1.OrganizationService.UpdateCurrentOrganizationSettings:input_type -> nominal.authentication.organizations.v1.UpdateCurrentOrganizationSettingsRequest
-	12, // 13: nominal.authentication.organizations.v1.OrganizationService.ListLoginActivities:input_type -> nominal.authentication.organizations.v1.ListLoginActivitiesRequest
-	3,  // 14: nominal.authentication.organizations.v1.OrganizationService.GetCurrentOrganization:output_type -> nominal.authentication.organizations.v1.GetCurrentOrganizationResponse
-	5,  // 15: nominal.authentication.organizations.v1.OrganizationService.UpdateOrganization:output_type -> nominal.authentication.organizations.v1.UpdateOrganizationResponse
-	8,  // 16: nominal.authentication.organizations.v1.OrganizationService.GetCurrentOrganizationSettings:output_type -> nominal.authentication.organizations.v1.GetCurrentOrganizationSettingsResponse
-	10, // 17: nominal.authentication.organizations.v1.OrganizationService.UpdateCurrentOrganizationSettings:output_type -> nominal.authentication.organizations.v1.UpdateCurrentOrganizationSettingsResponse
-	13, // 18: nominal.authentication.organizations.v1.OrganizationService.ListLoginActivities:output_type -> nominal.authentication.organizations.v1.ListLoginActivitiesResponse
-	14, // [14:19] is the sub-list for method output_type
-	9,  // [9:14] is the sub-list for method input_type
-	9,  // [9:9] is the sub-list for extension type_name
-	9,  // [9:9] is the sub-list for extension extendee
-	0,  // [0:9] is the sub-list for field type_name
+	0,  // 0: nominal.authentication.organizations.v1.Organization.tenant_type:type_name -> nominal.authentication.organizations.v1.TenantType
+	2,  // 1: nominal.authentication.organizations.v1.GetCurrentOrganizationResponse.organization:type_name -> nominal.authentication.organizations.v1.Organization
+	2,  // 2: nominal.authentication.organizations.v1.UpdateOrganizationRequest.organization:type_name -> nominal.authentication.organizations.v1.Organization
+	2,  // 3: nominal.authentication.organizations.v1.UpdateOrganizationResponse.organization:type_name -> nominal.authentication.organizations.v1.Organization
+	15, // 4: nominal.authentication.organizations.v1.OrganizationSettings.default_time_range_type:type_name -> nominal.authentication.users.v1.DefaultTimeRangeType
+	7,  // 5: nominal.authentication.organizations.v1.GetCurrentOrganizationSettingsResponse.settings:type_name -> nominal.authentication.organizations.v1.OrganizationSettings
+	7,  // 6: nominal.authentication.organizations.v1.UpdateCurrentOrganizationSettingsRequest.settings:type_name -> nominal.authentication.organizations.v1.OrganizationSettings
+	7,  // 7: nominal.authentication.organizations.v1.UpdateCurrentOrganizationSettingsResponse.settings:type_name -> nominal.authentication.organizations.v1.OrganizationSettings
+	16, // 8: nominal.authentication.organizations.v1.LoginActivity.last_login_time:type_name -> google.protobuf.Timestamp
+	12, // 9: nominal.authentication.organizations.v1.ListLoginActivitiesResponse.login_activities:type_name -> nominal.authentication.organizations.v1.LoginActivity
+	3,  // 10: nominal.authentication.organizations.v1.OrganizationService.GetCurrentOrganization:input_type -> nominal.authentication.organizations.v1.GetCurrentOrganizationRequest
+	5,  // 11: nominal.authentication.organizations.v1.OrganizationService.UpdateOrganization:input_type -> nominal.authentication.organizations.v1.UpdateOrganizationRequest
+	8,  // 12: nominal.authentication.organizations.v1.OrganizationService.GetCurrentOrganizationSettings:input_type -> nominal.authentication.organizations.v1.GetCurrentOrganizationSettingsRequest
+	10, // 13: nominal.authentication.organizations.v1.OrganizationService.UpdateCurrentOrganizationSettings:input_type -> nominal.authentication.organizations.v1.UpdateCurrentOrganizationSettingsRequest
+	13, // 14: nominal.authentication.organizations.v1.OrganizationService.ListLoginActivities:input_type -> nominal.authentication.organizations.v1.ListLoginActivitiesRequest
+	4,  // 15: nominal.authentication.organizations.v1.OrganizationService.GetCurrentOrganization:output_type -> nominal.authentication.organizations.v1.GetCurrentOrganizationResponse
+	6,  // 16: nominal.authentication.organizations.v1.OrganizationService.UpdateOrganization:output_type -> nominal.authentication.organizations.v1.UpdateOrganizationResponse
+	9,  // 17: nominal.authentication.organizations.v1.OrganizationService.GetCurrentOrganizationSettings:output_type -> nominal.authentication.organizations.v1.GetCurrentOrganizationSettingsResponse
+	11, // 18: nominal.authentication.organizations.v1.OrganizationService.UpdateCurrentOrganizationSettings:output_type -> nominal.authentication.organizations.v1.UpdateCurrentOrganizationSettingsResponse
+	14, // 19: nominal.authentication.organizations.v1.OrganizationService.ListLoginActivities:output_type -> nominal.authentication.organizations.v1.ListLoginActivitiesResponse
+	15, // [15:20] is the sub-list for method output_type
+	10, // [10:15] is the sub-list for method input_type
+	10, // [10:10] is the sub-list for extension type_name
+	10, // [10:10] is the sub-list for extension extendee
+	0,  // [0:10] is the sub-list for field type_name
 }
 
 func init() { file_nominal_protos_authentication_organizations_v1_organizations_proto_init() }
@@ -870,7 +944,7 @@ func file_nominal_protos_authentication_organizations_v1_organizations_proto_ini
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_nominal_protos_authentication_organizations_v1_organizations_proto_rawDesc), len(file_nominal_protos_authentication_organizations_v1_organizations_proto_rawDesc)),
-			NumEnums:      1,
+			NumEnums:      2,
 			NumMessages:   13,
 			NumExtensions: 0,
 			NumServices:   1,

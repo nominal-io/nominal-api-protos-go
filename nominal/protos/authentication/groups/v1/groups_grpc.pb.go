@@ -35,46 +35,88 @@ const (
 //
 // Service for managing groups within an organization
 type GroupServiceClient interface {
-	// Get group within the user's organization
+	// Returns a group by RID, with the RIDs of its member users. The caller must be in the group's
+	// organization.
+	//
+	// Errors:
+	// - NOT_FOUND: the group does not exist.
+	// - PERMISSION_DENIED: the caller cannot read the group.
 	GetGroup(ctx context.Context, in *GetGroupRequest, opts ...grpc.CallOption) (*GetGroupResponse, error)
-	// Get batch of groups within the user's organization
+	// Returns groups by RID as a map keyed by RID.
+	//
+	// Groups the caller cannot read, including groups in other organizations, and RIDs that match no group
+	// are omitted from the response instead of being reported as errors.
 	GetGroups(ctx context.Context, in *GetGroupsRequest, opts ...grpc.CallOption) (*GetGroupsResponse, error)
-	// Gets a group by its ID within the user's organization
+	// Returns a group in the caller's organization by its group_id instead of its RID, with the RIDs of
+	// its member users.
+	//
+	// Errors:
+	// - NOT_FOUND: no group in the caller's organization has this group_id.
+	// - PERMISSION_DENIED: the caller cannot read the group.
 	GetGroupById(ctx context.Context, in *GetGroupByIdRequest, opts ...grpc.CallOption) (*GetGroupByIdResponse, error)
 	// buf:lint:ignore RPC_REQUEST_STANDARD_NAME
-	// Updates the metadata of a group
+	// Changes the display name, description, or symbol of a group and returns the group.
+	//
+	// Fields that are not set stay unchanged. Use CreateOrUpdateGroup to change anything else. The caller
+	// needs update permission on the group.
+	//
+	// Errors:
+	//   - PERMISSION_DENIED: the caller cannot update the group. The permission check runs before the
+	//     lookup, so a group that does not exist also returns this error.
 	UpdateGroupMetadata(ctx context.Context, in *UpdateGroupMetadataRequestWrapper, opts ...grpc.CallOption) (*UpdateGroupMetadataResponse, error)
-	// Searches all groups in the user's organization using given query
+	// Searches the groups in the caller's organization by text on group_id and display_name, or by member
+	// users, combined with and/or. Returns a page of groups, each with the RIDs of its member users.
+	//
+	// An unset query lists every group. Page size defaults to 100. Groups the caller cannot read are
+	// removed after paging, so a page can hold fewer than page_size groups.
+	//
+	// Errors:
+	//   - INVALID_ARGUMENT: a user RID in a member_users query is not a valid user RID, or the page size is
+	//     over 1,000.
 	SearchGroups(ctx context.Context, in *SearchGroupsRequest, opts ...grpc.CallOption) (*SearchGroupsResponse, error)
-	// Org-scoped upsert.
+	// Creates a group in an organization, or updates an existing group when Group.rid is set.
 	//
-	// Creates a new group if Group.rid is empty in the request (server assigns the rid).
-	// Both Group.org_rid and Group.group_id are required on create, and the new group_id
-	// must be unique within the organization.
+	// On create, the server assigns the RID and the new group has no members. Group.org_rid and
+	// Group.group_id are required, and group_id must be unique in the organization. The caller must be an
+	// administrator of that organization.
 	//
-	// Updates an existing group if Group.rid is present in the request.
-	// Group.org_rid and Group.group_id are immutable: when set on the update request they
-	// must match the existing values, but they may be omitted to leave them unchanged.
-	// Fields in the group message marked as OUTPUT_ONLY are ignored when present in the input request.
-	// All other mutable fields are fully overwritten, and will be cleared if not set in the request.
+	// On update, org_rid and group_id cannot change: omit them or send the stored values. Output-only
+	// fields, including the member list, are ignored. Display name, description, symbol, and
+	// membership_managed_manually are replaced, so a field that is not set is cleared. The caller needs
+	// update permission on the group.
 	//
-	// Throws HTTP 400 / gRPC 3 if a supplied immutable field does not match the existing group.
-	// Throws HTTP 404 / gRPC 5 if the group identified by Group.rid for an update does not exist.
-	// Throws HTTP 409 / gRPC 6 if a create would result in duplicate group_ids within the organization.
-	// Throws HTTP 403 / gRPC 7 if the caller is not authorized.
+	// Errors:
+	//   - INVALID_ARGUMENT: a create omits org_rid or group_id, or an update sends a different org_rid or
+	//     group_id.
+	//   - ALREADY_EXISTS: the organization already has a group with this group_id.
+	//   - PERMISSION_DENIED: the caller cannot create groups in the organization or update this group. An
+	//     update of a group that does not exist also returns this error.
 	CreateOrUpdateGroup(ctx context.Context, in *CreateOrUpdateGroupRequest, opts ...grpc.CallOption) (*CreateOrUpdateGroupResponse, error)
-	// Adds a member to a manually managed group. Re-adding an existing member is a no-op.
-	// Throws HTTP 400 / gRPC 3 if group_rid or member_rid is missing, or member_rid is not a supported RID type.
-	// Throws HTTP 403 / gRPC 7 if the caller is not authorized to update the group, including when the group
-	// does not exist. The permission check runs before the group lookup so unknown groups are not disclosed.
-	// Throws HTTP 400 / gRPC 3 if the target user is not in the group's organization.
-	// Throws HTTP 400 / gRPC 3 if the group's membership is not managed manually.
+	// Adds a user to a group whose membership is managed manually, and returns the membership.
+	//
+	// Adding an existing member is a no-op. Only user RIDs are accepted as members. The caller needs
+	// update permission on the group. The permission check runs before the lookup, so unknown groups are
+	// not disclosed.
+	//
+	// Errors:
+	//   - INVALID_ARGUMENT: group_rid or member_rid is missing or is not a valid RID, or member_rid is not a
+	//     user RID.
+	//   - PERMISSION_DENIED: the caller cannot update the group. A group that does not exist also returns
+	//     this error.
+	//   - INVALID_ARGUMENT: the group's membership is not managed manually.
+	//   - INVALID_ARGUMENT: the user is not in the group's organization.
 	CreateGroupMembership(ctx context.Context, in *CreateGroupMembershipRequest, opts ...grpc.CallOption) (*CreateGroupMembershipResponse, error)
-	// Removes a member from a manually managed group. Removing a non-member is a no-op.
-	// Throws HTTP 400 / gRPC 3 if group_rid or member_rid is missing, or member_rid is not a supported RID type.
-	// Throws HTTP 403 / gRPC 7 if the caller is not authorized to update the group, including when the group
-	// does not exist. The permission check runs before the group lookup so unknown groups are not disclosed.
-	// Throws HTTP 400 / gRPC 3 if the group's membership is not managed manually.
+	// Removes a user from a group whose membership is managed manually.
+	//
+	// Removing a non-member is a no-op. The caller needs update permission on the group. The permission
+	// check runs before the lookup, so unknown groups are not disclosed.
+	//
+	// Errors:
+	//   - INVALID_ARGUMENT: group_rid or member_rid is missing or is not a valid RID, or member_rid is not a
+	//     user RID.
+	//   - PERMISSION_DENIED: the caller cannot update the group. A group that does not exist also returns
+	//     this error.
+	//   - INVALID_ARGUMENT: the group's membership is not managed manually.
 	DeleteGroupMembership(ctx context.Context, in *DeleteGroupMembershipRequest, opts ...grpc.CallOption) (*DeleteGroupMembershipResponse, error)
 }
 
@@ -172,46 +214,88 @@ func (c *groupServiceClient) DeleteGroupMembership(ctx context.Context, in *Dele
 //
 // Service for managing groups within an organization
 type GroupServiceServer interface {
-	// Get group within the user's organization
+	// Returns a group by RID, with the RIDs of its member users. The caller must be in the group's
+	// organization.
+	//
+	// Errors:
+	// - NOT_FOUND: the group does not exist.
+	// - PERMISSION_DENIED: the caller cannot read the group.
 	GetGroup(context.Context, *GetGroupRequest) (*GetGroupResponse, error)
-	// Get batch of groups within the user's organization
+	// Returns groups by RID as a map keyed by RID.
+	//
+	// Groups the caller cannot read, including groups in other organizations, and RIDs that match no group
+	// are omitted from the response instead of being reported as errors.
 	GetGroups(context.Context, *GetGroupsRequest) (*GetGroupsResponse, error)
-	// Gets a group by its ID within the user's organization
+	// Returns a group in the caller's organization by its group_id instead of its RID, with the RIDs of
+	// its member users.
+	//
+	// Errors:
+	// - NOT_FOUND: no group in the caller's organization has this group_id.
+	// - PERMISSION_DENIED: the caller cannot read the group.
 	GetGroupById(context.Context, *GetGroupByIdRequest) (*GetGroupByIdResponse, error)
 	// buf:lint:ignore RPC_REQUEST_STANDARD_NAME
-	// Updates the metadata of a group
+	// Changes the display name, description, or symbol of a group and returns the group.
+	//
+	// Fields that are not set stay unchanged. Use CreateOrUpdateGroup to change anything else. The caller
+	// needs update permission on the group.
+	//
+	// Errors:
+	//   - PERMISSION_DENIED: the caller cannot update the group. The permission check runs before the
+	//     lookup, so a group that does not exist also returns this error.
 	UpdateGroupMetadata(context.Context, *UpdateGroupMetadataRequestWrapper) (*UpdateGroupMetadataResponse, error)
-	// Searches all groups in the user's organization using given query
+	// Searches the groups in the caller's organization by text on group_id and display_name, or by member
+	// users, combined with and/or. Returns a page of groups, each with the RIDs of its member users.
+	//
+	// An unset query lists every group. Page size defaults to 100. Groups the caller cannot read are
+	// removed after paging, so a page can hold fewer than page_size groups.
+	//
+	// Errors:
+	//   - INVALID_ARGUMENT: a user RID in a member_users query is not a valid user RID, or the page size is
+	//     over 1,000.
 	SearchGroups(context.Context, *SearchGroupsRequest) (*SearchGroupsResponse, error)
-	// Org-scoped upsert.
+	// Creates a group in an organization, or updates an existing group when Group.rid is set.
 	//
-	// Creates a new group if Group.rid is empty in the request (server assigns the rid).
-	// Both Group.org_rid and Group.group_id are required on create, and the new group_id
-	// must be unique within the organization.
+	// On create, the server assigns the RID and the new group has no members. Group.org_rid and
+	// Group.group_id are required, and group_id must be unique in the organization. The caller must be an
+	// administrator of that organization.
 	//
-	// Updates an existing group if Group.rid is present in the request.
-	// Group.org_rid and Group.group_id are immutable: when set on the update request they
-	// must match the existing values, but they may be omitted to leave them unchanged.
-	// Fields in the group message marked as OUTPUT_ONLY are ignored when present in the input request.
-	// All other mutable fields are fully overwritten, and will be cleared if not set in the request.
+	// On update, org_rid and group_id cannot change: omit them or send the stored values. Output-only
+	// fields, including the member list, are ignored. Display name, description, symbol, and
+	// membership_managed_manually are replaced, so a field that is not set is cleared. The caller needs
+	// update permission on the group.
 	//
-	// Throws HTTP 400 / gRPC 3 if a supplied immutable field does not match the existing group.
-	// Throws HTTP 404 / gRPC 5 if the group identified by Group.rid for an update does not exist.
-	// Throws HTTP 409 / gRPC 6 if a create would result in duplicate group_ids within the organization.
-	// Throws HTTP 403 / gRPC 7 if the caller is not authorized.
+	// Errors:
+	//   - INVALID_ARGUMENT: a create omits org_rid or group_id, or an update sends a different org_rid or
+	//     group_id.
+	//   - ALREADY_EXISTS: the organization already has a group with this group_id.
+	//   - PERMISSION_DENIED: the caller cannot create groups in the organization or update this group. An
+	//     update of a group that does not exist also returns this error.
 	CreateOrUpdateGroup(context.Context, *CreateOrUpdateGroupRequest) (*CreateOrUpdateGroupResponse, error)
-	// Adds a member to a manually managed group. Re-adding an existing member is a no-op.
-	// Throws HTTP 400 / gRPC 3 if group_rid or member_rid is missing, or member_rid is not a supported RID type.
-	// Throws HTTP 403 / gRPC 7 if the caller is not authorized to update the group, including when the group
-	// does not exist. The permission check runs before the group lookup so unknown groups are not disclosed.
-	// Throws HTTP 400 / gRPC 3 if the target user is not in the group's organization.
-	// Throws HTTP 400 / gRPC 3 if the group's membership is not managed manually.
+	// Adds a user to a group whose membership is managed manually, and returns the membership.
+	//
+	// Adding an existing member is a no-op. Only user RIDs are accepted as members. The caller needs
+	// update permission on the group. The permission check runs before the lookup, so unknown groups are
+	// not disclosed.
+	//
+	// Errors:
+	//   - INVALID_ARGUMENT: group_rid or member_rid is missing or is not a valid RID, or member_rid is not a
+	//     user RID.
+	//   - PERMISSION_DENIED: the caller cannot update the group. A group that does not exist also returns
+	//     this error.
+	//   - INVALID_ARGUMENT: the group's membership is not managed manually.
+	//   - INVALID_ARGUMENT: the user is not in the group's organization.
 	CreateGroupMembership(context.Context, *CreateGroupMembershipRequest) (*CreateGroupMembershipResponse, error)
-	// Removes a member from a manually managed group. Removing a non-member is a no-op.
-	// Throws HTTP 400 / gRPC 3 if group_rid or member_rid is missing, or member_rid is not a supported RID type.
-	// Throws HTTP 403 / gRPC 7 if the caller is not authorized to update the group, including when the group
-	// does not exist. The permission check runs before the group lookup so unknown groups are not disclosed.
-	// Throws HTTP 400 / gRPC 3 if the group's membership is not managed manually.
+	// Removes a user from a group whose membership is managed manually.
+	//
+	// Removing a non-member is a no-op. The caller needs update permission on the group. The permission
+	// check runs before the lookup, so unknown groups are not disclosed.
+	//
+	// Errors:
+	//   - INVALID_ARGUMENT: group_rid or member_rid is missing or is not a valid RID, or member_rid is not a
+	//     user RID.
+	//   - PERMISSION_DENIED: the caller cannot update the group. A group that does not exist also returns
+	//     this error.
+	//   - INVALID_ARGUMENT: the group's membership is not managed manually.
 	DeleteGroupMembership(context.Context, *DeleteGroupMembershipRequest) (*DeleteGroupMembershipResponse, error)
 	mustEmbedUnimplementedGroupServiceServer()
 }

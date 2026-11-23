@@ -57,7 +57,7 @@ type VideoServiceClient interface {
 	//   - PERMISSION_DENIED (Video:NotAuthorized): the caller cannot read the data of a data source that backs the
 	//     channel.
 	//   - ALREADY_EXISTS (Video:SegmentConflictV2): segments of the channel's series overlap in time.
-	//   - UNAVAILABLE: a source file of an MCAP-backed channel cannot be verified yet. Retry later.
+	//   - RESOURCE_EXHAUSTED: a source file of an MCAP-backed channel is still being indexed. Retry later.
 	ListChannelSegmentTimeRanges(ctx context.Context, in *ListChannelSegmentTimeRangesRequest, opts ...grpc.CallOption) (*ListChannelSegmentTimeRangesResponse, error)
 	// Returns the segment count, frame count, first and last absolute timestamps, media duration, and frame rate
 	// across the segments of a video channel, optionally limited to bounds.
@@ -72,7 +72,7 @@ type VideoServiceClient interface {
 	//   - PERMISSION_DENIED (Video:NotAuthorized): the caller cannot read the data of a data source that backs the
 	//     channel.
 	//   - ALREADY_EXISTS (Video:SegmentConflictV2): segments of the channel's series overlap in time.
-	//   - UNAVAILABLE: a source file of an MCAP-backed channel cannot be verified yet. Retry later.
+	//   - RESOURCE_EXHAUSTED: a source file of an MCAP-backed channel is still being indexed. Retry later.
 	GetChannelSegmentsMetadata(ctx context.Context, in *GetChannelSegmentsMetadataRequest, opts ...grpc.CallOption) (*GetChannelSegmentsMetadataResponse, error)
 	// Returns the segment of a video channel that contains an absolute timestamp, with its frame timestamps.
 	//
@@ -85,7 +85,7 @@ type VideoServiceClient interface {
 	//   - INVALID_ARGUMENT: the channel does not resolve to any video series.
 	//   - PERMISSION_DENIED (Video:NotAuthorized): the caller cannot read the data of a data source that backs the
 	//     channel.
-	//   - UNAVAILABLE: a source file of an MCAP-backed channel cannot be verified yet. Retry later.
+	//   - RESOURCE_EXHAUSTED: a source file of an MCAP-backed channel is still being indexed. Retry later.
 	GetChannelSegmentByTimestamp(ctx context.Context, in *GetChannelSegmentByTimestampRequest, opts ...grpc.CallOption) (*GetChannelSegmentByTimestampResponse, error)
 	// Returns the segment of a video channel that contains an absolute timestamp, or else the closest segment
 	// that starts after it.
@@ -97,7 +97,7 @@ type VideoServiceClient interface {
 	//   - INVALID_ARGUMENT: the channel does not resolve to any video series.
 	//   - PERMISSION_DENIED (Video:NotAuthorized): the caller cannot read the data of a data source that backs the
 	//     channel.
-	//   - UNAVAILABLE: a source file of an MCAP-backed channel cannot be verified yet. Retry later.
+	//   - RESOURCE_EXHAUSTED: a source file of an MCAP-backed channel is still being indexed. Retry later.
 	GetChannelSegmentAtOrAfterTimestamp(ctx context.Context, in *GetChannelSegmentAtOrAfterTimestampRequest, opts ...grpc.CallOption) (*GetChannelSegmentAtOrAfterTimestampResponse, error)
 	// Starts a live stream session on a channel and returns it with where to publish it. Idempotent while a session
 	// is active: a channel has at most one active session, and a repeated call returns it with a fresh publish
@@ -360,7 +360,7 @@ type VideoServiceServer interface {
 	//   - PERMISSION_DENIED (Video:NotAuthorized): the caller cannot read the data of a data source that backs the
 	//     channel.
 	//   - ALREADY_EXISTS (Video:SegmentConflictV2): segments of the channel's series overlap in time.
-	//   - UNAVAILABLE: a source file of an MCAP-backed channel cannot be verified yet. Retry later.
+	//   - RESOURCE_EXHAUSTED: a source file of an MCAP-backed channel is still being indexed. Retry later.
 	ListChannelSegmentTimeRanges(context.Context, *ListChannelSegmentTimeRangesRequest) (*ListChannelSegmentTimeRangesResponse, error)
 	// Returns the segment count, frame count, first and last absolute timestamps, media duration, and frame rate
 	// across the segments of a video channel, optionally limited to bounds.
@@ -375,7 +375,7 @@ type VideoServiceServer interface {
 	//   - PERMISSION_DENIED (Video:NotAuthorized): the caller cannot read the data of a data source that backs the
 	//     channel.
 	//   - ALREADY_EXISTS (Video:SegmentConflictV2): segments of the channel's series overlap in time.
-	//   - UNAVAILABLE: a source file of an MCAP-backed channel cannot be verified yet. Retry later.
+	//   - RESOURCE_EXHAUSTED: a source file of an MCAP-backed channel is still being indexed. Retry later.
 	GetChannelSegmentsMetadata(context.Context, *GetChannelSegmentsMetadataRequest) (*GetChannelSegmentsMetadataResponse, error)
 	// Returns the segment of a video channel that contains an absolute timestamp, with its frame timestamps.
 	//
@@ -388,7 +388,7 @@ type VideoServiceServer interface {
 	//   - INVALID_ARGUMENT: the channel does not resolve to any video series.
 	//   - PERMISSION_DENIED (Video:NotAuthorized): the caller cannot read the data of a data source that backs the
 	//     channel.
-	//   - UNAVAILABLE: a source file of an MCAP-backed channel cannot be verified yet. Retry later.
+	//   - RESOURCE_EXHAUSTED: a source file of an MCAP-backed channel is still being indexed. Retry later.
 	GetChannelSegmentByTimestamp(context.Context, *GetChannelSegmentByTimestampRequest) (*GetChannelSegmentByTimestampResponse, error)
 	// Returns the segment of a video channel that contains an absolute timestamp, or else the closest segment
 	// that starts after it.
@@ -400,7 +400,7 @@ type VideoServiceServer interface {
 	//   - INVALID_ARGUMENT: the channel does not resolve to any video series.
 	//   - PERMISSION_DENIED (Video:NotAuthorized): the caller cannot read the data of a data source that backs the
 	//     channel.
-	//   - UNAVAILABLE: a source file of an MCAP-backed channel cannot be verified yet. Retry later.
+	//   - RESOURCE_EXHAUSTED: a source file of an MCAP-backed channel is still being indexed. Retry later.
 	GetChannelSegmentAtOrAfterTimestamp(context.Context, *GetChannelSegmentAtOrAfterTimestampRequest) (*GetChannelSegmentAtOrAfterTimestampResponse, error)
 	// Starts a live stream session on a channel and returns it with where to publish it. Idempotent while a session
 	// is active: a channel has at most one active session, and a repeated call returns it with a fresh publish

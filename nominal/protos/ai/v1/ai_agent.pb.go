@@ -789,7 +789,7 @@ func (x CompactionNotice_Trigger) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use CompactionNotice_Trigger.Descriptor instead.
 func (CompactionNotice_Trigger) EnumDescriptor() ([]byte, []int) {
-	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{97, 0}
+	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{98, 0}
 }
 
 type CodeCellOutput_StreamName int32
@@ -838,7 +838,7 @@ func (x CodeCellOutput_StreamName) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use CodeCellOutput_StreamName.Descriptor instead.
 func (CodeCellOutput_StreamName) EnumDescriptor() ([]byte, []int) {
-	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{113, 0}
+	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{114, 0}
 }
 
 type GetCitationResponseError_Reason int32
@@ -884,7 +884,7 @@ func (x GetCitationResponseError_Reason) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use GetCitationResponseError_Reason.Descriptor instead.
 func (GetCitationResponseError_Reason) EnumDescriptor() ([]byte, []int) {
-	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{143, 0}
+	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{144, 0}
 }
 
 type SubmitMessageFeedbackRequest struct {
@@ -5183,8 +5183,11 @@ type ConversationMetadata struct {
 	ArchivedAt *timestamppb.Timestamp `protobuf:"bytes,10,opt,name=archived_at,json=archivedAt,proto3,oneof" json:"archived_at,omitempty"`
 	// Present for a subagent chat, so clients can navigate back to its parent.
 	ParentConversationRid *string `protobuf:"bytes,11,opt,name=parent_conversation_rid,json=parentConversationRid,proto3,oneof" json:"parent_conversation_rid,omitempty"`
-	unknownFields         protoimpl.UnknownFields
-	sizeCache             protoimpl.SizeCache
+	// Present when an automation run created this conversation. ListConversations omits such a
+	// conversation until its owner sends a message in it.
+	AutomationOrigin *AutomationOrigin `protobuf:"bytes,12,opt,name=automation_origin,json=automationOrigin,proto3,oneof" json:"automation_origin,omitempty"`
+	unknownFields    protoimpl.UnknownFields
+	sizeCache        protoimpl.SizeCache
 }
 
 func (x *ConversationMetadata) Reset() {
@@ -5294,6 +5297,66 @@ func (x *ConversationMetadata) GetParentConversationRid() string {
 	return ""
 }
 
+func (x *ConversationMetadata) GetAutomationOrigin() *AutomationOrigin {
+	if x != nil {
+		return x.AutomationOrigin
+	}
+	return nil
+}
+
+// The automation run that created a conversation.
+type AutomationOrigin struct {
+	state            protoimpl.MessageState `protogen:"open.v1"`
+	AutomationRid    string                 `protobuf:"bytes,1,opt,name=automation_rid,json=automationRid,proto3" json:"automation_rid,omitempty"`
+	AutomationRunRid string                 `protobuf:"bytes,2,opt,name=automation_run_rid,json=automationRunRid,proto3" json:"automation_run_rid,omitempty"`
+	unknownFields    protoimpl.UnknownFields
+	sizeCache        protoimpl.SizeCache
+}
+
+func (x *AutomationOrigin) Reset() {
+	*x = AutomationOrigin{}
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[69]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *AutomationOrigin) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*AutomationOrigin) ProtoMessage() {}
+
+func (x *AutomationOrigin) ProtoReflect() protoreflect.Message {
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[69]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use AutomationOrigin.ProtoReflect.Descriptor instead.
+func (*AutomationOrigin) Descriptor() ([]byte, []int) {
+	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{69}
+}
+
+func (x *AutomationOrigin) GetAutomationRid() string {
+	if x != nil {
+		return x.AutomationRid
+	}
+	return ""
+}
+
+func (x *AutomationOrigin) GetAutomationRunRid() string {
+	if x != nil {
+		return x.AutomationRunRid
+	}
+	return ""
+}
+
 // ListConversationsResponse is a list of conversations that can be used in a call to GetConversationRequest
 // to get a full conversation from storage. These are ordered by most recently updated.
 type ListConversationsResponse struct {
@@ -5306,7 +5369,7 @@ type ListConversationsResponse struct {
 
 func (x *ListConversationsResponse) Reset() {
 	*x = ListConversationsResponse{}
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[69]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[70]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5318,7 +5381,7 @@ func (x *ListConversationsResponse) String() string {
 func (*ListConversationsResponse) ProtoMessage() {}
 
 func (x *ListConversationsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[69]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[70]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5331,7 +5394,7 @@ func (x *ListConversationsResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListConversationsResponse.ProtoReflect.Descriptor instead.
 func (*ListConversationsResponse) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{69}
+	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{70}
 }
 
 func (x *ListConversationsResponse) GetConversations() []*ConversationMetadata {
@@ -5360,7 +5423,7 @@ type BatchGetConversationActiveRunsRequest struct {
 
 func (x *BatchGetConversationActiveRunsRequest) Reset() {
 	*x = BatchGetConversationActiveRunsRequest{}
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[70]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[71]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5372,7 +5435,7 @@ func (x *BatchGetConversationActiveRunsRequest) String() string {
 func (*BatchGetConversationActiveRunsRequest) ProtoMessage() {}
 
 func (x *BatchGetConversationActiveRunsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[70]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[71]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5385,7 +5448,7 @@ func (x *BatchGetConversationActiveRunsRequest) ProtoReflect() protoreflect.Mess
 
 // Deprecated: Use BatchGetConversationActiveRunsRequest.ProtoReflect.Descriptor instead.
 func (*BatchGetConversationActiveRunsRequest) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{70}
+	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{71}
 }
 
 func (x *BatchGetConversationActiveRunsRequest) GetWorkspaceRid() string {
@@ -5412,7 +5475,7 @@ type BatchGetConversationActiveRunsResponse struct {
 
 func (x *BatchGetConversationActiveRunsResponse) Reset() {
 	*x = BatchGetConversationActiveRunsResponse{}
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[71]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[72]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5424,7 +5487,7 @@ func (x *BatchGetConversationActiveRunsResponse) String() string {
 func (*BatchGetConversationActiveRunsResponse) ProtoMessage() {}
 
 func (x *BatchGetConversationActiveRunsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[71]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[72]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5437,7 +5500,7 @@ func (x *BatchGetConversationActiveRunsResponse) ProtoReflect() protoreflect.Mes
 
 // Deprecated: Use BatchGetConversationActiveRunsResponse.ProtoReflect.Descriptor instead.
 func (*BatchGetConversationActiveRunsResponse) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{71}
+	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{72}
 }
 
 func (x *BatchGetConversationActiveRunsResponse) GetActiveRuns() []*ConversationActiveRun {
@@ -5457,7 +5520,7 @@ type ConversationActiveRun struct {
 
 func (x *ConversationActiveRun) Reset() {
 	*x = ConversationActiveRun{}
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[72]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[73]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5469,7 +5532,7 @@ func (x *ConversationActiveRun) String() string {
 func (*ConversationActiveRun) ProtoMessage() {}
 
 func (x *ConversationActiveRun) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[72]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[73]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5482,7 +5545,7 @@ func (x *ConversationActiveRun) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ConversationActiveRun.ProtoReflect.Descriptor instead.
 func (*ConversationActiveRun) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{72}
+	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{73}
 }
 
 func (x *ConversationActiveRun) GetConversationRid() string {
@@ -5511,7 +5574,7 @@ type BatchGetConversationSandboxesRequest struct {
 
 func (x *BatchGetConversationSandboxesRequest) Reset() {
 	*x = BatchGetConversationSandboxesRequest{}
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[73]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[74]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5523,7 +5586,7 @@ func (x *BatchGetConversationSandboxesRequest) String() string {
 func (*BatchGetConversationSandboxesRequest) ProtoMessage() {}
 
 func (x *BatchGetConversationSandboxesRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[73]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[74]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5536,7 +5599,7 @@ func (x *BatchGetConversationSandboxesRequest) ProtoReflect() protoreflect.Messa
 
 // Deprecated: Use BatchGetConversationSandboxesRequest.ProtoReflect.Descriptor instead.
 func (*BatchGetConversationSandboxesRequest) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{73}
+	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{74}
 }
 
 func (x *BatchGetConversationSandboxesRequest) GetConversationRids() []string {
@@ -5563,7 +5626,7 @@ type BatchGetConversationSandboxesResponse struct {
 
 func (x *BatchGetConversationSandboxesResponse) Reset() {
 	*x = BatchGetConversationSandboxesResponse{}
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[74]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[75]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5575,7 +5638,7 @@ func (x *BatchGetConversationSandboxesResponse) String() string {
 func (*BatchGetConversationSandboxesResponse) ProtoMessage() {}
 
 func (x *BatchGetConversationSandboxesResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[74]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[75]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5588,7 +5651,7 @@ func (x *BatchGetConversationSandboxesResponse) ProtoReflect() protoreflect.Mess
 
 // Deprecated: Use BatchGetConversationSandboxesResponse.ProtoReflect.Descriptor instead.
 func (*BatchGetConversationSandboxesResponse) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{74}
+	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{75}
 }
 
 func (x *BatchGetConversationSandboxesResponse) GetConversationSandboxes() []*ConversationSandbox {
@@ -5608,7 +5671,7 @@ type ResumeConversationSandboxRequest struct {
 
 func (x *ResumeConversationSandboxRequest) Reset() {
 	*x = ResumeConversationSandboxRequest{}
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[75]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[76]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5620,7 +5683,7 @@ func (x *ResumeConversationSandboxRequest) String() string {
 func (*ResumeConversationSandboxRequest) ProtoMessage() {}
 
 func (x *ResumeConversationSandboxRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[75]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[76]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5633,7 +5696,7 @@ func (x *ResumeConversationSandboxRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ResumeConversationSandboxRequest.ProtoReflect.Descriptor instead.
 func (*ResumeConversationSandboxRequest) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{75}
+	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{76}
 }
 
 func (x *ResumeConversationSandboxRequest) GetWorkspaceRid() string {
@@ -5658,7 +5721,7 @@ type ResumeConversationSandboxResponse struct {
 
 func (x *ResumeConversationSandboxResponse) Reset() {
 	*x = ResumeConversationSandboxResponse{}
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[76]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[77]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5670,7 +5733,7 @@ func (x *ResumeConversationSandboxResponse) String() string {
 func (*ResumeConversationSandboxResponse) ProtoMessage() {}
 
 func (x *ResumeConversationSandboxResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[76]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[77]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5683,7 +5746,7 @@ func (x *ResumeConversationSandboxResponse) ProtoReflect() protoreflect.Message 
 
 // Deprecated: Use ResumeConversationSandboxResponse.ProtoReflect.Descriptor instead.
 func (*ResumeConversationSandboxResponse) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{76}
+	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{77}
 }
 
 type ConversationSandbox struct {
@@ -5696,7 +5759,7 @@ type ConversationSandbox struct {
 
 func (x *ConversationSandbox) Reset() {
 	*x = ConversationSandbox{}
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[77]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[78]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5708,7 +5771,7 @@ func (x *ConversationSandbox) String() string {
 func (*ConversationSandbox) ProtoMessage() {}
 
 func (x *ConversationSandbox) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[77]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[78]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5721,7 +5784,7 @@ func (x *ConversationSandbox) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ConversationSandbox.ProtoReflect.Descriptor instead.
 func (*ConversationSandbox) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{77}
+	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{78}
 }
 
 func (x *ConversationSandbox) GetConversationRid() string {
@@ -5748,7 +5811,7 @@ type Timestamp struct {
 
 func (x *Timestamp) Reset() {
 	*x = Timestamp{}
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[78]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[79]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5760,7 +5823,7 @@ func (x *Timestamp) String() string {
 func (*Timestamp) ProtoMessage() {}
 
 func (x *Timestamp) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[78]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[79]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5773,7 +5836,7 @@ func (x *Timestamp) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Timestamp.ProtoReflect.Descriptor instead.
 func (*Timestamp) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{78}
+	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{79}
 }
 
 func (x *Timestamp) GetSeconds() int32 {
@@ -5805,7 +5868,7 @@ type ModelMessage struct {
 
 func (x *ModelMessage) Reset() {
 	*x = ModelMessage{}
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[79]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[80]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5817,7 +5880,7 @@ func (x *ModelMessage) String() string {
 func (*ModelMessage) ProtoMessage() {}
 
 func (x *ModelMessage) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[79]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[80]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5830,7 +5893,7 @@ func (x *ModelMessage) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ModelMessage.ProtoReflect.Descriptor instead.
 func (*ModelMessage) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{79}
+	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{80}
 }
 
 func (x *ModelMessage) GetKind() isModelMessage_Kind {
@@ -5884,7 +5947,7 @@ type UserModelMessage struct {
 
 func (x *UserModelMessage) Reset() {
 	*x = UserModelMessage{}
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[80]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[81]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5896,7 +5959,7 @@ func (x *UserModelMessage) String() string {
 func (*UserModelMessage) ProtoMessage() {}
 
 func (x *UserModelMessage) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[80]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[81]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5909,7 +5972,7 @@ func (x *UserModelMessage) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UserModelMessage.ProtoReflect.Descriptor instead.
 func (*UserModelMessage) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{80}
+	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{81}
 }
 
 func (x *UserModelMessage) GetText() []*UserContentPart {
@@ -5929,7 +5992,7 @@ type AssistantModelMessage struct {
 
 func (x *AssistantModelMessage) Reset() {
 	*x = AssistantModelMessage{}
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[81]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[82]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5941,7 +6004,7 @@ func (x *AssistantModelMessage) String() string {
 func (*AssistantModelMessage) ProtoMessage() {}
 
 func (x *AssistantModelMessage) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[81]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[82]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5954,7 +6017,7 @@ func (x *AssistantModelMessage) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use AssistantModelMessage.ProtoReflect.Descriptor instead.
 func (*AssistantModelMessage) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{81}
+	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{82}
 }
 
 func (x *AssistantModelMessage) GetContentParts() []*AssistantContentPart {
@@ -5979,7 +6042,7 @@ type UserContentPart struct {
 
 func (x *UserContentPart) Reset() {
 	*x = UserContentPart{}
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[82]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[83]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5991,7 +6054,7 @@ func (x *UserContentPart) String() string {
 func (*UserContentPart) ProtoMessage() {}
 
 func (x *UserContentPart) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[82]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[83]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -6004,7 +6067,7 @@ func (x *UserContentPart) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UserContentPart.ProtoReflect.Descriptor instead.
 func (*UserContentPart) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{82}
+	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{83}
 }
 
 func (x *UserContentPart) GetPart() isUserContentPart_Part {
@@ -6092,7 +6155,7 @@ type AssistantContentPart struct {
 
 func (x *AssistantContentPart) Reset() {
 	*x = AssistantContentPart{}
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[83]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[84]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -6104,7 +6167,7 @@ func (x *AssistantContentPart) String() string {
 func (*AssistantContentPart) ProtoMessage() {}
 
 func (x *AssistantContentPart) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[83]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[84]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -6117,7 +6180,7 @@ func (x *AssistantContentPart) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use AssistantContentPart.ProtoReflect.Descriptor instead.
 func (*AssistantContentPart) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{83}
+	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{84}
 }
 
 func (x *AssistantContentPart) GetPart() isAssistantContentPart_Part {
@@ -6171,7 +6234,7 @@ type TextPart struct {
 
 func (x *TextPart) Reset() {
 	*x = TextPart{}
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[84]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[85]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -6183,7 +6246,7 @@ func (x *TextPart) String() string {
 func (*TextPart) ProtoMessage() {}
 
 func (x *TextPart) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[84]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[85]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -6196,7 +6259,7 @@ func (x *TextPart) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use TextPart.ProtoReflect.Descriptor instead.
 func (*TextPart) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{84}
+	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{85}
 }
 
 func (x *TextPart) GetText() string {
@@ -6221,7 +6284,7 @@ type ImagePart struct {
 
 func (x *ImagePart) Reset() {
 	*x = ImagePart{}
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[85]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[86]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -6233,7 +6296,7 @@ func (x *ImagePart) String() string {
 func (*ImagePart) ProtoMessage() {}
 
 func (x *ImagePart) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[85]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[86]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -6246,7 +6309,7 @@ func (x *ImagePart) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ImagePart.ProtoReflect.Descriptor instead.
 func (*ImagePart) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{85}
+	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{86}
 }
 
 func (x *ImagePart) GetMediaType() string {
@@ -6283,7 +6346,7 @@ type AttachmentPart struct {
 
 func (x *AttachmentPart) Reset() {
 	*x = AttachmentPart{}
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[86]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[87]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -6295,7 +6358,7 @@ func (x *AttachmentPart) String() string {
 func (*AttachmentPart) ProtoMessage() {}
 
 func (x *AttachmentPart) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[86]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[87]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -6308,7 +6371,7 @@ func (x *AttachmentPart) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use AttachmentPart.ProtoReflect.Descriptor instead.
 func (*AttachmentPart) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{86}
+	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{87}
 }
 
 func (x *AttachmentPart) GetAttachmentRid() string {
@@ -6340,7 +6403,7 @@ type FilePart struct {
 
 func (x *FilePart) Reset() {
 	*x = FilePart{}
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[87]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[88]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -6352,7 +6415,7 @@ func (x *FilePart) String() string {
 func (*FilePart) ProtoMessage() {}
 
 func (x *FilePart) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[87]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[88]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -6365,7 +6428,7 @@ func (x *FilePart) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use FilePart.ProtoReflect.Descriptor instead.
 func (*FilePart) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{87}
+	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{88}
 }
 
 func (x *FilePart) GetFile() isFilePart_File {
@@ -6423,7 +6486,7 @@ type NewFile struct {
 
 func (x *NewFile) Reset() {
 	*x = NewFile{}
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[88]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[89]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -6435,7 +6498,7 @@ func (x *NewFile) String() string {
 func (*NewFile) ProtoMessage() {}
 
 func (x *NewFile) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[88]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[89]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -6448,7 +6511,7 @@ func (x *NewFile) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use NewFile.ProtoReflect.Descriptor instead.
 func (*NewFile) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{88}
+	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{89}
 }
 
 func (x *NewFile) GetObject() *v1.UploadedObjectRef {
@@ -6477,7 +6540,7 @@ type ReasoningPart struct {
 
 func (x *ReasoningPart) Reset() {
 	*x = ReasoningPart{}
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[89]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[90]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -6489,7 +6552,7 @@ func (x *ReasoningPart) String() string {
 func (*ReasoningPart) ProtoMessage() {}
 
 func (x *ReasoningPart) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[89]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[90]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -6502,7 +6565,7 @@ func (x *ReasoningPart) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ReasoningPart.ProtoReflect.Descriptor instead.
 func (*ReasoningPart) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{89}
+	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{90}
 }
 
 func (x *ReasoningPart) GetReasoning() string {
@@ -6557,7 +6620,7 @@ type StreamChatResponse struct {
 
 func (x *StreamChatResponse) Reset() {
 	*x = StreamChatResponse{}
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[90]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[91]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -6569,7 +6632,7 @@ func (x *StreamChatResponse) String() string {
 func (*StreamChatResponse) ProtoMessage() {}
 
 func (x *StreamChatResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[90]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[91]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -6582,7 +6645,7 @@ func (x *StreamChatResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use StreamChatResponse.ProtoReflect.Descriptor instead.
 func (*StreamChatResponse) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{90}
+	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{91}
 }
 
 func (x *StreamChatResponse) GetResponse() isStreamChatResponse_Response {
@@ -6894,7 +6957,7 @@ type ToolCallProgress struct {
 
 func (x *ToolCallProgress) Reset() {
 	*x = ToolCallProgress{}
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[91]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[92]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -6906,7 +6969,7 @@ func (x *ToolCallProgress) String() string {
 func (*ToolCallProgress) ProtoMessage() {}
 
 func (x *ToolCallProgress) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[91]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[92]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -6919,7 +6982,7 @@ func (x *ToolCallProgress) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ToolCallProgress.ProtoReflect.Descriptor instead.
 func (*ToolCallProgress) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{91}
+	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{92}
 }
 
 func (x *ToolCallProgress) GetToolCallId() string {
@@ -6948,7 +7011,7 @@ type SteeringMessage struct {
 
 func (x *SteeringMessage) Reset() {
 	*x = SteeringMessage{}
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[92]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[93]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -6960,7 +7023,7 @@ func (x *SteeringMessage) String() string {
 func (*SteeringMessage) ProtoMessage() {}
 
 func (x *SteeringMessage) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[92]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[93]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -6973,7 +7036,7 @@ func (x *SteeringMessage) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SteeringMessage.ProtoReflect.Descriptor instead.
 func (*SteeringMessage) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{92}
+	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{93}
 }
 
 func (x *SteeringMessage) GetClientMessageId() string {
@@ -7010,7 +7073,7 @@ type ShouldKnowOffer struct {
 
 func (x *ShouldKnowOffer) Reset() {
 	*x = ShouldKnowOffer{}
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[93]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[94]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -7022,7 +7085,7 @@ func (x *ShouldKnowOffer) String() string {
 func (*ShouldKnowOffer) ProtoMessage() {}
 
 func (x *ShouldKnowOffer) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[93]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[94]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -7035,7 +7098,7 @@ func (x *ShouldKnowOffer) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ShouldKnowOffer.ProtoReflect.Descriptor instead.
 func (*ShouldKnowOffer) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{93}
+	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{94}
 }
 
 func (x *ShouldKnowOffer) GetId() string {
@@ -7080,7 +7143,7 @@ type StreamReset struct {
 
 func (x *StreamReset) Reset() {
 	*x = StreamReset{}
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[94]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[95]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -7092,7 +7155,7 @@ func (x *StreamReset) String() string {
 func (*StreamReset) ProtoMessage() {}
 
 func (x *StreamReset) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[94]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[95]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -7105,7 +7168,7 @@ func (x *StreamReset) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use StreamReset.ProtoReflect.Descriptor instead.
 func (*StreamReset) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{94}
+	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{95}
 }
 
 // Indicates that a model request within the agent run is starting: emitted when the
@@ -7121,7 +7184,7 @@ type StepStart struct {
 
 func (x *StepStart) Reset() {
 	*x = StepStart{}
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[95]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[96]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -7133,7 +7196,7 @@ func (x *StepStart) String() string {
 func (*StepStart) ProtoMessage() {}
 
 func (x *StepStart) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[95]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[96]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -7146,7 +7209,7 @@ func (x *StepStart) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use StepStart.ProtoReflect.Descriptor instead.
 func (*StepStart) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{95}
+	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{96}
 }
 
 // Closes the model-response portion of a step: emitted when handling of the step's
@@ -7161,7 +7224,7 @@ type StepEnd struct {
 
 func (x *StepEnd) Reset() {
 	*x = StepEnd{}
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[96]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[97]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -7173,7 +7236,7 @@ func (x *StepEnd) String() string {
 func (*StepEnd) ProtoMessage() {}
 
 func (x *StepEnd) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[96]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[97]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -7186,7 +7249,7 @@ func (x *StepEnd) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use StepEnd.ProtoReflect.Descriptor instead.
 func (*StepEnd) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{96}
+	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{97}
 }
 
 // Emitted once whenever StreamChat automatically compacted the conversation (pre-turn or
@@ -7204,7 +7267,7 @@ type CompactionNotice struct {
 
 func (x *CompactionNotice) Reset() {
 	*x = CompactionNotice{}
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[97]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[98]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -7216,7 +7279,7 @@ func (x *CompactionNotice) String() string {
 func (*CompactionNotice) ProtoMessage() {}
 
 func (x *CompactionNotice) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[97]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[98]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -7229,7 +7292,7 @@ func (x *CompactionNotice) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CompactionNotice.ProtoReflect.Descriptor instead.
 func (*CompactionNotice) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{97}
+	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{98}
 }
 
 func (x *CompactionNotice) GetTokensBefore() int32 {
@@ -7267,7 +7330,7 @@ type ToolCallDescription struct {
 
 func (x *ToolCallDescription) Reset() {
 	*x = ToolCallDescription{}
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[98]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[99]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -7279,7 +7342,7 @@ func (x *ToolCallDescription) String() string {
 func (*ToolCallDescription) ProtoMessage() {}
 
 func (x *ToolCallDescription) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[98]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[99]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -7292,7 +7355,7 @@ func (x *ToolCallDescription) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ToolCallDescription.ProtoReflect.Descriptor instead.
 func (*ToolCallDescription) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{98}
+	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{99}
 }
 
 func (x *ToolCallDescription) GetToolCallId() string {
@@ -7336,7 +7399,7 @@ type UserQuestionCall struct {
 
 func (x *UserQuestionCall) Reset() {
 	*x = UserQuestionCall{}
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[99]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[100]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -7348,7 +7411,7 @@ func (x *UserQuestionCall) String() string {
 func (*UserQuestionCall) ProtoMessage() {}
 
 func (x *UserQuestionCall) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[99]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[100]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -7361,7 +7424,7 @@ func (x *UserQuestionCall) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UserQuestionCall.ProtoReflect.Descriptor instead.
 func (*UserQuestionCall) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{99}
+	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{100}
 }
 
 func (x *UserQuestionCall) GetToolCall() *ToolCallDescription {
@@ -7423,7 +7486,7 @@ type Finish struct {
 
 func (x *Finish) Reset() {
 	*x = Finish{}
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[100]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[101]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -7435,7 +7498,7 @@ func (x *Finish) String() string {
 func (*Finish) ProtoMessage() {}
 
 func (x *Finish) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[100]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[101]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -7448,7 +7511,7 @@ func (x *Finish) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Finish.ProtoReflect.Descriptor instead.
 func (*Finish) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{100}
+	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{101}
 }
 
 func (x *Finish) GetOrderedMessageIds() []string {
@@ -7510,7 +7573,7 @@ type Error struct {
 
 func (x *Error) Reset() {
 	*x = Error{}
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[101]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[102]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -7522,7 +7585,7 @@ func (x *Error) String() string {
 func (*Error) ProtoMessage() {}
 
 func (x *Error) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[101]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[102]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -7535,7 +7598,7 @@ func (x *Error) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Error.ProtoReflect.Descriptor instead.
 func (*Error) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{101}
+	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{102}
 }
 
 func (x *Error) GetMessage() string {
@@ -7557,7 +7620,7 @@ type TextStart struct {
 
 func (x *TextStart) Reset() {
 	*x = TextStart{}
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[102]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[103]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -7569,7 +7632,7 @@ func (x *TextStart) String() string {
 func (*TextStart) ProtoMessage() {}
 
 func (x *TextStart) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[102]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[103]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -7582,7 +7645,7 @@ func (x *TextStart) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use TextStart.ProtoReflect.Descriptor instead.
 func (*TextStart) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{102}
+	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{103}
 }
 
 func (x *TextStart) GetId() string {
@@ -7604,7 +7667,7 @@ type TextDelta struct {
 
 func (x *TextDelta) Reset() {
 	*x = TextDelta{}
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[103]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[104]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -7616,7 +7679,7 @@ func (x *TextDelta) String() string {
 func (*TextDelta) ProtoMessage() {}
 
 func (x *TextDelta) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[103]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[104]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -7629,7 +7692,7 @@ func (x *TextDelta) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use TextDelta.ProtoReflect.Descriptor instead.
 func (*TextDelta) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{103}
+	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{104}
 }
 
 func (x *TextDelta) GetId() string {
@@ -7656,7 +7719,7 @@ type TextEnd struct {
 
 func (x *TextEnd) Reset() {
 	*x = TextEnd{}
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[104]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[105]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -7668,7 +7731,7 @@ func (x *TextEnd) String() string {
 func (*TextEnd) ProtoMessage() {}
 
 func (x *TextEnd) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[104]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[105]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -7681,7 +7744,7 @@ func (x *TextEnd) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use TextEnd.ProtoReflect.Descriptor instead.
 func (*TextEnd) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{104}
+	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{105}
 }
 
 func (x *TextEnd) GetId() string {
@@ -7701,7 +7764,7 @@ type ReasoningStart struct {
 
 func (x *ReasoningStart) Reset() {
 	*x = ReasoningStart{}
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[105]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[106]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -7713,7 +7776,7 @@ func (x *ReasoningStart) String() string {
 func (*ReasoningStart) ProtoMessage() {}
 
 func (x *ReasoningStart) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[105]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[106]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -7726,7 +7789,7 @@ func (x *ReasoningStart) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ReasoningStart.ProtoReflect.Descriptor instead.
 func (*ReasoningStart) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{105}
+	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{106}
 }
 
 func (x *ReasoningStart) GetId() string {
@@ -7748,7 +7811,7 @@ type ReasoningDelta struct {
 
 func (x *ReasoningDelta) Reset() {
 	*x = ReasoningDelta{}
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[106]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[107]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -7760,7 +7823,7 @@ func (x *ReasoningDelta) String() string {
 func (*ReasoningDelta) ProtoMessage() {}
 
 func (x *ReasoningDelta) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[106]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[107]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -7773,7 +7836,7 @@ func (x *ReasoningDelta) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ReasoningDelta.ProtoReflect.Descriptor instead.
 func (*ReasoningDelta) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{106}
+	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{107}
 }
 
 func (x *ReasoningDelta) GetId() string {
@@ -7802,7 +7865,7 @@ type ReasoningEnd struct {
 
 func (x *ReasoningEnd) Reset() {
 	*x = ReasoningEnd{}
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[107]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[108]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -7814,7 +7877,7 @@ func (x *ReasoningEnd) String() string {
 func (*ReasoningEnd) ProtoMessage() {}
 
 func (x *ReasoningEnd) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[107]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[108]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -7827,7 +7890,7 @@ func (x *ReasoningEnd) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ReasoningEnd.ProtoReflect.Descriptor instead.
 func (*ReasoningEnd) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{107}
+	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{108}
 }
 
 func (x *ReasoningEnd) GetId() string {
@@ -7869,7 +7932,7 @@ type ToolAction struct {
 
 func (x *ToolAction) Reset() {
 	*x = ToolAction{}
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[108]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[109]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -7881,7 +7944,7 @@ func (x *ToolAction) String() string {
 func (*ToolAction) ProtoMessage() {}
 
 func (x *ToolAction) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[108]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[109]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -7894,7 +7957,7 @@ func (x *ToolAction) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ToolAction.ProtoReflect.Descriptor instead.
 func (*ToolAction) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{108}
+	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{109}
 }
 
 func (x *ToolAction) GetToolActionVerb() string {
@@ -7953,7 +8016,7 @@ type ToolActionConfirmation struct {
 
 func (x *ToolActionConfirmation) Reset() {
 	*x = ToolActionConfirmation{}
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[109]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[110]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -7965,7 +8028,7 @@ func (x *ToolActionConfirmation) String() string {
 func (*ToolActionConfirmation) ProtoMessage() {}
 
 func (x *ToolActionConfirmation) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[109]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[110]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -7978,7 +8041,7 @@ func (x *ToolActionConfirmation) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ToolActionConfirmation.ProtoReflect.Descriptor instead.
 func (*ToolActionConfirmation) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{109}
+	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{110}
 }
 
 func (x *ToolActionConfirmation) GetId() string {
@@ -8047,7 +8110,7 @@ type ToolActionSuccess struct {
 
 func (x *ToolActionSuccess) Reset() {
 	*x = ToolActionSuccess{}
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[110]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[111]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -8059,7 +8122,7 @@ func (x *ToolActionSuccess) String() string {
 func (*ToolActionSuccess) ProtoMessage() {}
 
 func (x *ToolActionSuccess) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[110]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[111]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -8072,7 +8135,7 @@ func (x *ToolActionSuccess) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ToolActionSuccess.ProtoReflect.Descriptor instead.
 func (*ToolActionSuccess) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{110}
+	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{111}
 }
 
 func (x *ToolActionSuccess) GetToolSuccessMessage() string {
@@ -8102,7 +8165,7 @@ type CodeCellOutputs struct {
 
 func (x *CodeCellOutputs) Reset() {
 	*x = CodeCellOutputs{}
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[111]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[112]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -8114,7 +8177,7 @@ func (x *CodeCellOutputs) String() string {
 func (*CodeCellOutputs) ProtoMessage() {}
 
 func (x *CodeCellOutputs) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[111]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[112]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -8127,7 +8190,7 @@ func (x *CodeCellOutputs) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CodeCellOutputs.ProtoReflect.Descriptor instead.
 func (*CodeCellOutputs) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{111}
+	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{112}
 }
 
 func (x *CodeCellOutputs) GetOutputs() []*CodeCellOutput {
@@ -8165,7 +8228,7 @@ type CodeCellFile struct {
 
 func (x *CodeCellFile) Reset() {
 	*x = CodeCellFile{}
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[112]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[113]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -8177,7 +8240,7 @@ func (x *CodeCellFile) String() string {
 func (*CodeCellFile) ProtoMessage() {}
 
 func (x *CodeCellFile) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[112]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[113]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -8190,7 +8253,7 @@ func (x *CodeCellFile) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CodeCellFile.ProtoReflect.Descriptor instead.
 func (*CodeCellFile) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{112}
+	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{113}
 }
 
 func (x *CodeCellFile) GetAttachmentRid() string {
@@ -8236,7 +8299,7 @@ type CodeCellOutput struct {
 
 func (x *CodeCellOutput) Reset() {
 	*x = CodeCellOutput{}
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[113]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[114]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -8248,7 +8311,7 @@ func (x *CodeCellOutput) String() string {
 func (*CodeCellOutput) ProtoMessage() {}
 
 func (x *CodeCellOutput) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[113]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[114]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -8261,7 +8324,7 @@ func (x *CodeCellOutput) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CodeCellOutput.ProtoReflect.Descriptor instead.
 func (*CodeCellOutput) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{113}
+	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{114}
 }
 
 func (x *CodeCellOutput) GetOutput() isCodeCellOutput_Output {
@@ -8329,7 +8392,7 @@ type ToolActionFailure struct {
 
 func (x *ToolActionFailure) Reset() {
 	*x = ToolActionFailure{}
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[114]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[115]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -8341,7 +8404,7 @@ func (x *ToolActionFailure) String() string {
 func (*ToolActionFailure) ProtoMessage() {}
 
 func (x *ToolActionFailure) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[114]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[115]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -8354,7 +8417,7 @@ func (x *ToolActionFailure) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ToolActionFailure.ProtoReflect.Descriptor instead.
 func (*ToolActionFailure) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{114}
+	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{115}
 }
 
 func (x *ToolActionFailure) GetToolErrorMessage() string {
@@ -8384,7 +8447,7 @@ type ClientDirective struct {
 
 func (x *ClientDirective) Reset() {
 	*x = ClientDirective{}
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[115]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[116]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -8396,7 +8459,7 @@ func (x *ClientDirective) String() string {
 func (*ClientDirective) ProtoMessage() {}
 
 func (x *ClientDirective) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[115]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[116]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -8409,7 +8472,7 @@ func (x *ClientDirective) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ClientDirective.ProtoReflect.Descriptor instead.
 func (*ClientDirective) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{115}
+	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{116}
 }
 
 func (x *ClientDirective) GetVersion() isClientDirective_Version {
@@ -8455,7 +8518,7 @@ type ClientDirectiveV1 struct {
 
 func (x *ClientDirectiveV1) Reset() {
 	*x = ClientDirectiveV1{}
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[116]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[117]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -8467,7 +8530,7 @@ func (x *ClientDirectiveV1) String() string {
 func (*ClientDirectiveV1) ProtoMessage() {}
 
 func (x *ClientDirectiveV1) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[116]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[117]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -8480,7 +8543,7 @@ func (x *ClientDirectiveV1) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ClientDirectiveV1.ProtoReflect.Descriptor instead.
 func (*ClientDirectiveV1) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{116}
+	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{117}
 }
 
 func (x *ClientDirectiveV1) GetId() string {
@@ -8572,7 +8635,7 @@ type SandboxStatusDirective struct {
 
 func (x *SandboxStatusDirective) Reset() {
 	*x = SandboxStatusDirective{}
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[117]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[118]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -8584,7 +8647,7 @@ func (x *SandboxStatusDirective) String() string {
 func (*SandboxStatusDirective) ProtoMessage() {}
 
 func (x *SandboxStatusDirective) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[117]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[118]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -8597,7 +8660,7 @@ func (x *SandboxStatusDirective) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SandboxStatusDirective.ProtoReflect.Descriptor instead.
 func (*SandboxStatusDirective) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{117}
+	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{118}
 }
 
 func (x *SandboxStatusDirective) GetConversationRid() string {
@@ -8631,7 +8694,7 @@ type ResourceEditedDirective struct {
 
 func (x *ResourceEditedDirective) Reset() {
 	*x = ResourceEditedDirective{}
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[118]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[119]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -8643,7 +8706,7 @@ func (x *ResourceEditedDirective) String() string {
 func (*ResourceEditedDirective) ProtoMessage() {}
 
 func (x *ResourceEditedDirective) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[118]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[119]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -8656,7 +8719,7 @@ func (x *ResourceEditedDirective) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ResourceEditedDirective.ProtoReflect.Descriptor instead.
 func (*ResourceEditedDirective) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{118}
+	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{119}
 }
 
 func (x *ResourceEditedDirective) GetResource() isResourceEditedDirective_Resource {
@@ -8731,7 +8794,7 @@ type ChecklistEdited struct {
 
 func (x *ChecklistEdited) Reset() {
 	*x = ChecklistEdited{}
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[119]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[120]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -8743,7 +8806,7 @@ func (x *ChecklistEdited) String() string {
 func (*ChecklistEdited) ProtoMessage() {}
 
 func (x *ChecklistEdited) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[119]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[120]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -8756,7 +8819,7 @@ func (x *ChecklistEdited) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ChecklistEdited.ProtoReflect.Descriptor instead.
 func (*ChecklistEdited) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{119}
+	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{120}
 }
 
 func (x *ChecklistEdited) GetChecklistRid() string {
@@ -8807,7 +8870,7 @@ type TemplateEdited struct {
 
 func (x *TemplateEdited) Reset() {
 	*x = TemplateEdited{}
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[120]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[121]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -8819,7 +8882,7 @@ func (x *TemplateEdited) String() string {
 func (*TemplateEdited) ProtoMessage() {}
 
 func (x *TemplateEdited) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[120]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[121]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -8832,7 +8895,7 @@ func (x *TemplateEdited) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use TemplateEdited.ProtoReflect.Descriptor instead.
 func (*TemplateEdited) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{120}
+	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{121}
 }
 
 func (x *TemplateEdited) GetTemplateRid() string {
@@ -8875,7 +8938,7 @@ type WorkbookEdited struct {
 
 func (x *WorkbookEdited) Reset() {
 	*x = WorkbookEdited{}
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[121]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[122]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -8887,7 +8950,7 @@ func (x *WorkbookEdited) String() string {
 func (*WorkbookEdited) ProtoMessage() {}
 
 func (x *WorkbookEdited) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[121]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[122]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -8900,7 +8963,7 @@ func (x *WorkbookEdited) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use WorkbookEdited.ProtoReflect.Descriptor instead.
 func (*WorkbookEdited) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{121}
+	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{122}
 }
 
 func (x *WorkbookEdited) GetWorkbookRid() string {
@@ -8932,7 +8995,7 @@ type ResourceChangedDirective struct {
 
 func (x *ResourceChangedDirective) Reset() {
 	*x = ResourceChangedDirective{}
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[122]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[123]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -8944,7 +9007,7 @@ func (x *ResourceChangedDirective) String() string {
 func (*ResourceChangedDirective) ProtoMessage() {}
 
 func (x *ResourceChangedDirective) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[122]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[123]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -8957,7 +9020,7 @@ func (x *ResourceChangedDirective) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ResourceChangedDirective.ProtoReflect.Descriptor instead.
 func (*ResourceChangedDirective) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{122}
+	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{123}
 }
 
 func (x *ResourceChangedDirective) GetResourceRid() string {
@@ -9010,7 +9073,7 @@ type SetTimeRangeDirective struct {
 
 func (x *SetTimeRangeDirective) Reset() {
 	*x = SetTimeRangeDirective{}
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[123]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[124]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -9022,7 +9085,7 @@ func (x *SetTimeRangeDirective) String() string {
 func (*SetTimeRangeDirective) ProtoMessage() {}
 
 func (x *SetTimeRangeDirective) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[123]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[124]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -9035,7 +9098,7 @@ func (x *SetTimeRangeDirective) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SetTimeRangeDirective.ProtoReflect.Descriptor instead.
 func (*SetTimeRangeDirective) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{123}
+	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{124}
 }
 
 func (x *SetTimeRangeDirective) GetWorkbookRid() string {
@@ -9084,7 +9147,7 @@ type ResourceMarkup struct {
 
 func (x *ResourceMarkup) Reset() {
 	*x = ResourceMarkup{}
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[124]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[125]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -9096,7 +9159,7 @@ func (x *ResourceMarkup) String() string {
 func (*ResourceMarkup) ProtoMessage() {}
 
 func (x *ResourceMarkup) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[124]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[125]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -9109,7 +9172,7 @@ func (x *ResourceMarkup) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ResourceMarkup.ProtoReflect.Descriptor instead.
 func (*ResourceMarkup) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{124}
+	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{125}
 }
 
 func (x *ResourceMarkup) GetKind() isResourceMarkup_Kind {
@@ -9166,7 +9229,7 @@ type RidResourceMarkup struct {
 
 func (x *RidResourceMarkup) Reset() {
 	*x = RidResourceMarkup{}
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[125]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[126]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -9178,7 +9241,7 @@ func (x *RidResourceMarkup) String() string {
 func (*RidResourceMarkup) ProtoMessage() {}
 
 func (x *RidResourceMarkup) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[125]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[126]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -9191,7 +9254,7 @@ func (x *RidResourceMarkup) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use RidResourceMarkup.ProtoReflect.Descriptor instead.
 func (*RidResourceMarkup) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{125}
+	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{126}
 }
 
 func (x *RidResourceMarkup) GetRid() string {
@@ -9219,7 +9282,7 @@ type RidListResourceMarkup struct {
 
 func (x *RidListResourceMarkup) Reset() {
 	*x = RidListResourceMarkup{}
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[126]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[127]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -9231,7 +9294,7 @@ func (x *RidListResourceMarkup) String() string {
 func (*RidListResourceMarkup) ProtoMessage() {}
 
 func (x *RidListResourceMarkup) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[126]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[127]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -9244,7 +9307,7 @@ func (x *RidListResourceMarkup) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use RidListResourceMarkup.ProtoReflect.Descriptor instead.
 func (*RidListResourceMarkup) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{126}
+	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{127}
 }
 
 func (x *RidListResourceMarkup) GetRids() []string {
@@ -9274,7 +9337,7 @@ type ContextStatus struct {
 
 func (x *ContextStatus) Reset() {
 	*x = ContextStatus{}
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[127]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[128]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -9286,7 +9349,7 @@ func (x *ContextStatus) String() string {
 func (*ContextStatus) ProtoMessage() {}
 
 func (x *ContextStatus) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[127]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[128]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -9299,7 +9362,7 @@ func (x *ContextStatus) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ContextStatus.ProtoReflect.Descriptor instead.
 func (*ContextStatus) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{127}
+	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{128}
 }
 
 func (x *ContextStatus) GetCurrTokenCount() int32 {
@@ -9335,7 +9398,7 @@ type ComputeProvenanceV1 struct {
 
 func (x *ComputeProvenanceV1) Reset() {
 	*x = ComputeProvenanceV1{}
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[128]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[129]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -9347,7 +9410,7 @@ func (x *ComputeProvenanceV1) String() string {
 func (*ComputeProvenanceV1) ProtoMessage() {}
 
 func (x *ComputeProvenanceV1) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[128]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[129]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -9360,7 +9423,7 @@ func (x *ComputeProvenanceV1) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ComputeProvenanceV1.ProtoReflect.Descriptor instead.
 func (*ComputeProvenanceV1) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{128}
+	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{129}
 }
 
 func (x *ComputeProvenanceV1) GetComputeRequestJson() string {
@@ -9405,7 +9468,7 @@ type ComputeProvenanceListV1 struct {
 
 func (x *ComputeProvenanceListV1) Reset() {
 	*x = ComputeProvenanceListV1{}
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[129]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[130]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -9417,7 +9480,7 @@ func (x *ComputeProvenanceListV1) String() string {
 func (*ComputeProvenanceListV1) ProtoMessage() {}
 
 func (x *ComputeProvenanceListV1) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[129]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[130]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -9430,7 +9493,7 @@ func (x *ComputeProvenanceListV1) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ComputeProvenanceListV1.ProtoReflect.Descriptor instead.
 func (*ComputeProvenanceListV1) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{129}
+	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{130}
 }
 
 func (x *ComputeProvenanceListV1) GetEntries() []*ComputeProvenanceEntryV1 {
@@ -9452,7 +9515,7 @@ type ComputeProvenanceEntryV1 struct {
 
 func (x *ComputeProvenanceEntryV1) Reset() {
 	*x = ComputeProvenanceEntryV1{}
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[130]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[131]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -9464,7 +9527,7 @@ func (x *ComputeProvenanceEntryV1) String() string {
 func (*ComputeProvenanceEntryV1) ProtoMessage() {}
 
 func (x *ComputeProvenanceEntryV1) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[130]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[131]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -9477,7 +9540,7 @@ func (x *ComputeProvenanceEntryV1) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ComputeProvenanceEntryV1.ProtoReflect.Descriptor instead.
 func (*ComputeProvenanceEntryV1) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{130}
+	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{131}
 }
 
 func (x *ComputeProvenanceEntryV1) GetPointers() []string {
@@ -9521,7 +9584,7 @@ type Citation struct {
 
 func (x *Citation) Reset() {
 	*x = Citation{}
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[131]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[132]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -9533,7 +9596,7 @@ func (x *Citation) String() string {
 func (*Citation) ProtoMessage() {}
 
 func (x *Citation) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[131]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[132]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -9546,7 +9609,7 @@ func (x *Citation) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Citation.ProtoReflect.Descriptor instead.
 func (*Citation) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{131}
+	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{132}
 }
 
 func (x *Citation) GetRef() string {
@@ -9659,7 +9722,7 @@ type UserMessageCitation struct {
 
 func (x *UserMessageCitation) Reset() {
 	*x = UserMessageCitation{}
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[132]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[133]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -9671,7 +9734,7 @@ func (x *UserMessageCitation) String() string {
 func (*UserMessageCitation) ProtoMessage() {}
 
 func (x *UserMessageCitation) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[132]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[133]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -9684,7 +9747,7 @@ func (x *UserMessageCitation) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UserMessageCitation.ProtoReflect.Descriptor instead.
 func (*UserMessageCitation) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{132}
+	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{133}
 }
 
 func (x *UserMessageCitation) GetMessageId() string {
@@ -9713,7 +9776,7 @@ type CodeExecutionCitation struct {
 
 func (x *CodeExecutionCitation) Reset() {
 	*x = CodeExecutionCitation{}
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[133]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[134]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -9725,7 +9788,7 @@ func (x *CodeExecutionCitation) String() string {
 func (*CodeExecutionCitation) ProtoMessage() {}
 
 func (x *CodeExecutionCitation) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[133]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[134]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -9738,7 +9801,7 @@ func (x *CodeExecutionCitation) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CodeExecutionCitation.ProtoReflect.Descriptor instead.
 func (*CodeExecutionCitation) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{133}
+	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{134}
 }
 
 func (x *CodeExecutionCitation) GetCode() string {
@@ -9796,7 +9859,7 @@ type CodeExecutionCall struct {
 
 func (x *CodeExecutionCall) Reset() {
 	*x = CodeExecutionCall{}
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[134]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[135]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -9808,7 +9871,7 @@ func (x *CodeExecutionCall) String() string {
 func (*CodeExecutionCall) ProtoMessage() {}
 
 func (x *CodeExecutionCall) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[134]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[135]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -9821,7 +9884,7 @@ func (x *CodeExecutionCall) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CodeExecutionCall.ProtoReflect.Descriptor instead.
 func (*CodeExecutionCall) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{134}
+	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{135}
 }
 
 func (x *CodeExecutionCall) GetMethod() string {
@@ -9875,7 +9938,7 @@ type CodeExecutionSource struct {
 
 func (x *CodeExecutionSource) Reset() {
 	*x = CodeExecutionSource{}
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[135]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[136]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -9887,7 +9950,7 @@ func (x *CodeExecutionSource) String() string {
 func (*CodeExecutionSource) ProtoMessage() {}
 
 func (x *CodeExecutionSource) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[135]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[136]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -9900,7 +9963,7 @@ func (x *CodeExecutionSource) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CodeExecutionSource.ProtoReflect.Descriptor instead.
 func (*CodeExecutionSource) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{135}
+	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{136}
 }
 
 func (x *CodeExecutionSource) GetLabel() string {
@@ -9964,7 +10027,7 @@ type TelemetryCitation struct {
 
 func (x *TelemetryCitation) Reset() {
 	*x = TelemetryCitation{}
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[136]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[137]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -9976,7 +10039,7 @@ func (x *TelemetryCitation) String() string {
 func (*TelemetryCitation) ProtoMessage() {}
 
 func (x *TelemetryCitation) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[136]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[137]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -9989,7 +10052,7 @@ func (x *TelemetryCitation) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use TelemetryCitation.ProtoReflect.Descriptor instead.
 func (*TelemetryCitation) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{136}
+	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{137}
 }
 
 func (x *TelemetryCitation) GetVersion() isTelemetryCitation_Version {
@@ -10040,7 +10103,7 @@ type DriveFileCitation struct {
 
 func (x *DriveFileCitation) Reset() {
 	*x = DriveFileCitation{}
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[137]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[138]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -10052,7 +10115,7 @@ func (x *DriveFileCitation) String() string {
 func (*DriveFileCitation) ProtoMessage() {}
 
 func (x *DriveFileCitation) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[137]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[138]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -10065,7 +10128,7 @@ func (x *DriveFileCitation) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DriveFileCitation.ProtoReflect.Descriptor instead.
 func (*DriveFileCitation) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{137}
+	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{138}
 }
 
 func (x *DriveFileCitation) GetFileRevisionRid() string {
@@ -10148,7 +10211,7 @@ type TextFileCitation struct {
 
 func (x *TextFileCitation) Reset() {
 	*x = TextFileCitation{}
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[138]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[139]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -10160,7 +10223,7 @@ func (x *TextFileCitation) String() string {
 func (*TextFileCitation) ProtoMessage() {}
 
 func (x *TextFileCitation) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[138]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[139]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -10173,7 +10236,7 @@ func (x *TextFileCitation) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use TextFileCitation.ProtoReflect.Descriptor instead.
 func (*TextFileCitation) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{138}
+	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{139}
 }
 
 func (x *TextFileCitation) GetByteRange() *ByteRange {
@@ -10198,7 +10261,7 @@ type PdfFileCitation struct {
 
 func (x *PdfFileCitation) Reset() {
 	*x = PdfFileCitation{}
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[139]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[140]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -10210,7 +10273,7 @@ func (x *PdfFileCitation) String() string {
 func (*PdfFileCitation) ProtoMessage() {}
 
 func (x *PdfFileCitation) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[139]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[140]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -10223,7 +10286,7 @@ func (x *PdfFileCitation) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use PdfFileCitation.ProtoReflect.Descriptor instead.
 func (*PdfFileCitation) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{139}
+	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{140}
 }
 
 func (x *PdfFileCitation) GetFirstPage() uint32 {
@@ -10258,7 +10321,7 @@ type ByteRange struct {
 
 func (x *ByteRange) Reset() {
 	*x = ByteRange{}
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[140]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[141]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -10270,7 +10333,7 @@ func (x *ByteRange) String() string {
 func (*ByteRange) ProtoMessage() {}
 
 func (x *ByteRange) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[140]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[141]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -10283,7 +10346,7 @@ func (x *ByteRange) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ByteRange.ProtoReflect.Descriptor instead.
 func (*ByteRange) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{140}
+	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{141}
 }
 
 func (x *ByteRange) GetOffset() uint64 {
@@ -10311,7 +10374,7 @@ type BatchGetCitationsRequest struct {
 
 func (x *BatchGetCitationsRequest) Reset() {
 	*x = BatchGetCitationsRequest{}
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[141]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[142]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -10323,7 +10386,7 @@ func (x *BatchGetCitationsRequest) String() string {
 func (*BatchGetCitationsRequest) ProtoMessage() {}
 
 func (x *BatchGetCitationsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[141]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[142]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -10336,7 +10399,7 @@ func (x *BatchGetCitationsRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use BatchGetCitationsRequest.ProtoReflect.Descriptor instead.
 func (*BatchGetCitationsRequest) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{141}
+	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{142}
 }
 
 func (x *BatchGetCitationsRequest) GetConversationRid() string {
@@ -10365,7 +10428,7 @@ type BatchGetCitationsResponse struct {
 
 func (x *BatchGetCitationsResponse) Reset() {
 	*x = BatchGetCitationsResponse{}
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[142]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[143]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -10377,7 +10440,7 @@ func (x *BatchGetCitationsResponse) String() string {
 func (*BatchGetCitationsResponse) ProtoMessage() {}
 
 func (x *BatchGetCitationsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[142]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[143]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -10390,7 +10453,7 @@ func (x *BatchGetCitationsResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use BatchGetCitationsResponse.ProtoReflect.Descriptor instead.
 func (*BatchGetCitationsResponse) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{142}
+	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{143}
 }
 
 func (x *BatchGetCitationsResponse) GetCitations() []*Citation {
@@ -10419,7 +10482,7 @@ type GetCitationResponseError struct {
 
 func (x *GetCitationResponseError) Reset() {
 	*x = GetCitationResponseError{}
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[143]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[144]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -10431,7 +10494,7 @@ func (x *GetCitationResponseError) String() string {
 func (*GetCitationResponseError) ProtoMessage() {}
 
 func (x *GetCitationResponseError) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[143]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[144]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -10444,7 +10507,7 @@ func (x *GetCitationResponseError) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetCitationResponseError.ProtoReflect.Descriptor instead.
 func (*GetCitationResponseError) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{143}
+	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{144}
 }
 
 func (x *GetCitationResponseError) GetRef() string {
@@ -10471,7 +10534,7 @@ type CodeCellOutput_Stream struct {
 
 func (x *CodeCellOutput_Stream) Reset() {
 	*x = CodeCellOutput_Stream{}
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[145]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[146]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -10483,7 +10546,7 @@ func (x *CodeCellOutput_Stream) String() string {
 func (*CodeCellOutput_Stream) ProtoMessage() {}
 
 func (x *CodeCellOutput_Stream) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[145]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[146]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -10496,7 +10559,7 @@ func (x *CodeCellOutput_Stream) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CodeCellOutput_Stream.ProtoReflect.Descriptor instead.
 func (*CodeCellOutput_Stream) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{113, 0}
+	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{114, 0}
 }
 
 func (x *CodeCellOutput_Stream) GetName() CodeCellOutput_StreamName {
@@ -10523,7 +10586,7 @@ type CodeCellOutput_Data struct {
 
 func (x *CodeCellOutput_Data) Reset() {
 	*x = CodeCellOutput_Data{}
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[146]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[147]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -10535,7 +10598,7 @@ func (x *CodeCellOutput_Data) String() string {
 func (*CodeCellOutput_Data) ProtoMessage() {}
 
 func (x *CodeCellOutput_Data) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[146]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[147]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -10548,7 +10611,7 @@ func (x *CodeCellOutput_Data) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CodeCellOutput_Data.ProtoReflect.Descriptor instead.
 func (*CodeCellOutput_Data) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{113, 1}
+	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{114, 1}
 }
 
 func (x *CodeCellOutput_Data) GetTextPlain() string {
@@ -10569,7 +10632,7 @@ type CodeCellOutput_Error struct {
 
 func (x *CodeCellOutput_Error) Reset() {
 	*x = CodeCellOutput_Error{}
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[147]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[148]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -10581,7 +10644,7 @@ func (x *CodeCellOutput_Error) String() string {
 func (*CodeCellOutput_Error) ProtoMessage() {}
 
 func (x *CodeCellOutput_Error) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[147]
+	mi := &file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[148]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -10594,7 +10657,7 @@ func (x *CodeCellOutput_Error) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CodeCellOutput_Error.ProtoReflect.Descriptor instead.
 func (*CodeCellOutput_Error) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{113, 2}
+	return file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP(), []int{114, 2}
 }
 
 func (x *CodeCellOutput_Error) GetEname() string {
@@ -10990,7 +11053,7 @@ const file_nominal_protos_ai_v1_ai_agent_proto_rawDesc = "" +
 	"\"com.palantir.ri.ResourceIdentifierR\n" +
 	"removeRids\"h\n" +
 	"#UpdateConversationResourcesResponse\x12A\n" +
-	"\tresources\x18\x01 \x03(\v2#.nominal.ai.v1.ConversationResourceR\tresources\"\xe9\x06\n" +
+	"\tresources\x18\x01 \x03(\v2#.nominal.ai.v1.ConversationResourceR\tresources\"\xd2\a\n" +
 	"\x14ConversationMetadata\x12V\n" +
 	"\x10conversation_rid\x18\x01 \x01(\tB+\x9a\xb2\x1a'\n" +
 	"%io.nominal.api.rids.AiConversationRidR\x0fconversationRid\x12\x14\n" +
@@ -11009,11 +11072,18 @@ const file_nominal_protos_ai_v1_ai_agent_proto_rawDesc = "" +
 	" \x01(\v2\x1a.google.protobuf.TimestampH\x02R\n" +
 	"archivedAt\x88\x01\x01\x12h\n" +
 	"\x17parent_conversation_rid\x18\v \x01(\tB+\x9a\xb2\x1a'\n" +
-	"%io.nominal.api.rids.AiConversationRidH\x03R\x15parentConversationRid\x88\x01\x01B\x17\n" +
+	"%io.nominal.api.rids.AiConversationRidH\x03R\x15parentConversationRid\x88\x01\x01\x12Q\n" +
+	"\x11automation_origin\x18\f \x01(\v2\x1f.nominal.ai.v1.AutomationOriginH\x04R\x10automationOrigin\x88\x01\x01B\x17\n" +
 	"\x15_backing_workbook_ridB\r\n" +
 	"\v_active_runB\x0e\n" +
 	"\f_archived_atB\x1a\n" +
-	"\x18_parent_conversation_rid\"\xa7\x01\n" +
+	"\x18_parent_conversation_ridB\x14\n" +
+	"\x12_automation_origin\"\xca\x01\n" +
+	"\x10AutomationOrigin\x12U\n" +
+	"\x0eautomation_rid\x18\x01 \x01(\tB.\x9a\xb2\x1a*\n" +
+	"(io.nominal.api.rids.AnalystAutomationRidR\rautomationRid\x12_\n" +
+	"\x12automation_run_rid\x18\x02 \x01(\tB1\x9a\xb2\x1a-\n" +
+	"+io.nominal.api.rids.AnalystAutomationRunRidR\x10automationRunRid\"\xa7\x01\n" +
 	"\x19ListConversationsResponse\x12I\n" +
 	"\rconversations\x18\x01 \x03(\v2#.nominal.ai.v1.ConversationMetadataR\rconversations\x12+\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tH\x00R\rnextPageToken\x88\x01\x01B\x12\n" +
@@ -11054,9 +11124,9 @@ const file_nominal_protos_ai_v1_ai_agent_proto_rawDesc = "" +
 	"\fModelMessage\x125\n" +
 	"\x04user\x18\x01 \x01(\v2\x1f.nominal.ai.v1.UserModelMessageH\x00R\x04user\x12D\n" +
 	"\tassistant\x18\x02 \x01(\v2$.nominal.ai.v1.AssistantModelMessageH\x00R\tassistantB\x06\n" +
-	"\x04kind\"F\n" +
-	"\x10UserModelMessage\x122\n" +
-	"\x04text\x18\x01 \x03(\v2\x1e.nominal.ai.v1.UserContentPartR\x04text\"a\n" +
+	"\x04kind\"P\n" +
+	"\x10UserModelMessage\x12<\n" +
+	"\x04text\x18\x01 \x03(\v2\x1e.nominal.ai.v1.UserContentPartB\b\xbaH\x05\x92\x01\x02\x10dR\x04text\"a\n" +
 	"\x15AssistantModelMessage\x12H\n" +
 	"\rcontent_parts\x18\x01 \x03(\v2#.nominal.ai.v1.AssistantContentPartR\fcontentParts\"\xea\x01\n" +
 	"\x0fUserContentPart\x12-\n" +
@@ -11552,7 +11622,7 @@ func file_nominal_protos_ai_v1_ai_agent_proto_rawDescGZIP() []byte {
 }
 
 var file_nominal_protos_ai_v1_ai_agent_proto_enumTypes = make([]protoimpl.EnumInfo, 15)
-var file_nominal_protos_ai_v1_ai_agent_proto_msgTypes = make([]protoimpl.MessageInfo, 148)
+var file_nominal_protos_ai_v1_ai_agent_proto_msgTypes = make([]protoimpl.MessageInfo, 149)
 var file_nominal_protos_ai_v1_ai_agent_proto_goTypes = []any{
 	(FeedbackVote)(0),                              // 0: nominal.ai.v1.FeedbackVote
 	(ShouldKnowAnswer)(0),                          // 1: nominal.ai.v1.ShouldKnowAnswer
@@ -11638,106 +11708,107 @@ var file_nominal_protos_ai_v1_ai_agent_proto_goTypes = []any{
 	(*UpdateConversationResourcesRequest)(nil),     // 81: nominal.ai.v1.UpdateConversationResourcesRequest
 	(*UpdateConversationResourcesResponse)(nil),    // 82: nominal.ai.v1.UpdateConversationResourcesResponse
 	(*ConversationMetadata)(nil),                   // 83: nominal.ai.v1.ConversationMetadata
-	(*ListConversationsResponse)(nil),              // 84: nominal.ai.v1.ListConversationsResponse
-	(*BatchGetConversationActiveRunsRequest)(nil),  // 85: nominal.ai.v1.BatchGetConversationActiveRunsRequest
-	(*BatchGetConversationActiveRunsResponse)(nil), // 86: nominal.ai.v1.BatchGetConversationActiveRunsResponse
-	(*ConversationActiveRun)(nil),                  // 87: nominal.ai.v1.ConversationActiveRun
-	(*BatchGetConversationSandboxesRequest)(nil),   // 88: nominal.ai.v1.BatchGetConversationSandboxesRequest
-	(*BatchGetConversationSandboxesResponse)(nil),  // 89: nominal.ai.v1.BatchGetConversationSandboxesResponse
-	(*ResumeConversationSandboxRequest)(nil),       // 90: nominal.ai.v1.ResumeConversationSandboxRequest
-	(*ResumeConversationSandboxResponse)(nil),      // 91: nominal.ai.v1.ResumeConversationSandboxResponse
-	(*ConversationSandbox)(nil),                    // 92: nominal.ai.v1.ConversationSandbox
-	(*Timestamp)(nil),                              // 93: nominal.ai.v1.Timestamp
-	(*ModelMessage)(nil),                           // 94: nominal.ai.v1.ModelMessage
-	(*UserModelMessage)(nil),                       // 95: nominal.ai.v1.UserModelMessage
-	(*AssistantModelMessage)(nil),                  // 96: nominal.ai.v1.AssistantModelMessage
-	(*UserContentPart)(nil),                        // 97: nominal.ai.v1.UserContentPart
-	(*AssistantContentPart)(nil),                   // 98: nominal.ai.v1.AssistantContentPart
-	(*TextPart)(nil),                               // 99: nominal.ai.v1.TextPart
-	(*ImagePart)(nil),                              // 100: nominal.ai.v1.ImagePart
-	(*AttachmentPart)(nil),                         // 101: nominal.ai.v1.AttachmentPart
-	(*FilePart)(nil),                               // 102: nominal.ai.v1.FilePart
-	(*NewFile)(nil),                                // 103: nominal.ai.v1.NewFile
-	(*ReasoningPart)(nil),                          // 104: nominal.ai.v1.ReasoningPart
-	(*StreamChatResponse)(nil),                     // 105: nominal.ai.v1.StreamChatResponse
-	(*ToolCallProgress)(nil),                       // 106: nominal.ai.v1.ToolCallProgress
-	(*SteeringMessage)(nil),                        // 107: nominal.ai.v1.SteeringMessage
-	(*ShouldKnowOffer)(nil),                        // 108: nominal.ai.v1.ShouldKnowOffer
-	(*StreamReset)(nil),                            // 109: nominal.ai.v1.StreamReset
-	(*StepStart)(nil),                              // 110: nominal.ai.v1.StepStart
-	(*StepEnd)(nil),                                // 111: nominal.ai.v1.StepEnd
-	(*CompactionNotice)(nil),                       // 112: nominal.ai.v1.CompactionNotice
-	(*ToolCallDescription)(nil),                    // 113: nominal.ai.v1.ToolCallDescription
-	(*UserQuestionCall)(nil),                       // 114: nominal.ai.v1.UserQuestionCall
-	(*Finish)(nil),                                 // 115: nominal.ai.v1.Finish
-	(*Error)(nil),                                  // 116: nominal.ai.v1.Error
-	(*TextStart)(nil),                              // 117: nominal.ai.v1.TextStart
-	(*TextDelta)(nil),                              // 118: nominal.ai.v1.TextDelta
-	(*TextEnd)(nil),                                // 119: nominal.ai.v1.TextEnd
-	(*ReasoningStart)(nil),                         // 120: nominal.ai.v1.ReasoningStart
-	(*ReasoningDelta)(nil),                         // 121: nominal.ai.v1.ReasoningDelta
-	(*ReasoningEnd)(nil),                           // 122: nominal.ai.v1.ReasoningEnd
-	(*ToolAction)(nil),                             // 123: nominal.ai.v1.ToolAction
-	(*ToolActionConfirmation)(nil),                 // 124: nominal.ai.v1.ToolActionConfirmation
-	(*ToolActionSuccess)(nil),                      // 125: nominal.ai.v1.ToolActionSuccess
-	(*CodeCellOutputs)(nil),                        // 126: nominal.ai.v1.CodeCellOutputs
-	(*CodeCellFile)(nil),                           // 127: nominal.ai.v1.CodeCellFile
-	(*CodeCellOutput)(nil),                         // 128: nominal.ai.v1.CodeCellOutput
-	(*ToolActionFailure)(nil),                      // 129: nominal.ai.v1.ToolActionFailure
-	(*ClientDirective)(nil),                        // 130: nominal.ai.v1.ClientDirective
-	(*ClientDirectiveV1)(nil),                      // 131: nominal.ai.v1.ClientDirectiveV1
-	(*SandboxStatusDirective)(nil),                 // 132: nominal.ai.v1.SandboxStatusDirective
-	(*ResourceEditedDirective)(nil),                // 133: nominal.ai.v1.ResourceEditedDirective
-	(*ChecklistEdited)(nil),                        // 134: nominal.ai.v1.ChecklistEdited
-	(*TemplateEdited)(nil),                         // 135: nominal.ai.v1.TemplateEdited
-	(*WorkbookEdited)(nil),                         // 136: nominal.ai.v1.WorkbookEdited
-	(*ResourceChangedDirective)(nil),               // 137: nominal.ai.v1.ResourceChangedDirective
-	(*SetTimeRangeDirective)(nil),                  // 138: nominal.ai.v1.SetTimeRangeDirective
-	(*ResourceMarkup)(nil),                         // 139: nominal.ai.v1.ResourceMarkup
-	(*RidResourceMarkup)(nil),                      // 140: nominal.ai.v1.RidResourceMarkup
-	(*RidListResourceMarkup)(nil),                  // 141: nominal.ai.v1.RidListResourceMarkup
-	(*ContextStatus)(nil),                          // 142: nominal.ai.v1.ContextStatus
-	(*ComputeProvenanceV1)(nil),                    // 143: nominal.ai.v1.ComputeProvenanceV1
-	(*ComputeProvenanceListV1)(nil),                // 144: nominal.ai.v1.ComputeProvenanceListV1
-	(*ComputeProvenanceEntryV1)(nil),               // 145: nominal.ai.v1.ComputeProvenanceEntryV1
-	(*Citation)(nil),                               // 146: nominal.ai.v1.Citation
-	(*UserMessageCitation)(nil),                    // 147: nominal.ai.v1.UserMessageCitation
-	(*CodeExecutionCitation)(nil),                  // 148: nominal.ai.v1.CodeExecutionCitation
-	(*CodeExecutionCall)(nil),                      // 149: nominal.ai.v1.CodeExecutionCall
-	(*CodeExecutionSource)(nil),                    // 150: nominal.ai.v1.CodeExecutionSource
-	(*TelemetryCitation)(nil),                      // 151: nominal.ai.v1.TelemetryCitation
-	(*DriveFileCitation)(nil),                      // 152: nominal.ai.v1.DriveFileCitation
-	(*TextFileCitation)(nil),                       // 153: nominal.ai.v1.TextFileCitation
-	(*PdfFileCitation)(nil),                        // 154: nominal.ai.v1.PdfFileCitation
-	(*ByteRange)(nil),                              // 155: nominal.ai.v1.ByteRange
-	(*BatchGetCitationsRequest)(nil),               // 156: nominal.ai.v1.BatchGetCitationsRequest
-	(*BatchGetCitationsResponse)(nil),              // 157: nominal.ai.v1.BatchGetCitationsResponse
-	(*GetCitationResponseError)(nil),               // 158: nominal.ai.v1.GetCitationResponseError
-	nil,                                            // 159: nominal.ai.v1.ExperimentEvent.PropertiesEntry
-	(*CodeCellOutput_Stream)(nil),                  // 160: nominal.ai.v1.CodeCellOutput.Stream
-	(*CodeCellOutput_Data)(nil),                    // 161: nominal.ai.v1.CodeCellOutput.Data
-	(*CodeCellOutput_Error)(nil),                   // 162: nominal.ai.v1.CodeCellOutput.Error
-	(*timestamppb.Timestamp)(nil),                  // 163: google.protobuf.Timestamp
-	(*v1.UploadedObjectRef)(nil),                   // 164: nominal.file_store.v1.UploadedObjectRef
-	(*v1.LogicalFileIdentity)(nil),                 // 165: nominal.file_store.v1.LogicalFileIdentity
+	(*AutomationOrigin)(nil),                       // 84: nominal.ai.v1.AutomationOrigin
+	(*ListConversationsResponse)(nil),              // 85: nominal.ai.v1.ListConversationsResponse
+	(*BatchGetConversationActiveRunsRequest)(nil),  // 86: nominal.ai.v1.BatchGetConversationActiveRunsRequest
+	(*BatchGetConversationActiveRunsResponse)(nil), // 87: nominal.ai.v1.BatchGetConversationActiveRunsResponse
+	(*ConversationActiveRun)(nil),                  // 88: nominal.ai.v1.ConversationActiveRun
+	(*BatchGetConversationSandboxesRequest)(nil),   // 89: nominal.ai.v1.BatchGetConversationSandboxesRequest
+	(*BatchGetConversationSandboxesResponse)(nil),  // 90: nominal.ai.v1.BatchGetConversationSandboxesResponse
+	(*ResumeConversationSandboxRequest)(nil),       // 91: nominal.ai.v1.ResumeConversationSandboxRequest
+	(*ResumeConversationSandboxResponse)(nil),      // 92: nominal.ai.v1.ResumeConversationSandboxResponse
+	(*ConversationSandbox)(nil),                    // 93: nominal.ai.v1.ConversationSandbox
+	(*Timestamp)(nil),                              // 94: nominal.ai.v1.Timestamp
+	(*ModelMessage)(nil),                           // 95: nominal.ai.v1.ModelMessage
+	(*UserModelMessage)(nil),                       // 96: nominal.ai.v1.UserModelMessage
+	(*AssistantModelMessage)(nil),                  // 97: nominal.ai.v1.AssistantModelMessage
+	(*UserContentPart)(nil),                        // 98: nominal.ai.v1.UserContentPart
+	(*AssistantContentPart)(nil),                   // 99: nominal.ai.v1.AssistantContentPart
+	(*TextPart)(nil),                               // 100: nominal.ai.v1.TextPart
+	(*ImagePart)(nil),                              // 101: nominal.ai.v1.ImagePart
+	(*AttachmentPart)(nil),                         // 102: nominal.ai.v1.AttachmentPart
+	(*FilePart)(nil),                               // 103: nominal.ai.v1.FilePart
+	(*NewFile)(nil),                                // 104: nominal.ai.v1.NewFile
+	(*ReasoningPart)(nil),                          // 105: nominal.ai.v1.ReasoningPart
+	(*StreamChatResponse)(nil),                     // 106: nominal.ai.v1.StreamChatResponse
+	(*ToolCallProgress)(nil),                       // 107: nominal.ai.v1.ToolCallProgress
+	(*SteeringMessage)(nil),                        // 108: nominal.ai.v1.SteeringMessage
+	(*ShouldKnowOffer)(nil),                        // 109: nominal.ai.v1.ShouldKnowOffer
+	(*StreamReset)(nil),                            // 110: nominal.ai.v1.StreamReset
+	(*StepStart)(nil),                              // 111: nominal.ai.v1.StepStart
+	(*StepEnd)(nil),                                // 112: nominal.ai.v1.StepEnd
+	(*CompactionNotice)(nil),                       // 113: nominal.ai.v1.CompactionNotice
+	(*ToolCallDescription)(nil),                    // 114: nominal.ai.v1.ToolCallDescription
+	(*UserQuestionCall)(nil),                       // 115: nominal.ai.v1.UserQuestionCall
+	(*Finish)(nil),                                 // 116: nominal.ai.v1.Finish
+	(*Error)(nil),                                  // 117: nominal.ai.v1.Error
+	(*TextStart)(nil),                              // 118: nominal.ai.v1.TextStart
+	(*TextDelta)(nil),                              // 119: nominal.ai.v1.TextDelta
+	(*TextEnd)(nil),                                // 120: nominal.ai.v1.TextEnd
+	(*ReasoningStart)(nil),                         // 121: nominal.ai.v1.ReasoningStart
+	(*ReasoningDelta)(nil),                         // 122: nominal.ai.v1.ReasoningDelta
+	(*ReasoningEnd)(nil),                           // 123: nominal.ai.v1.ReasoningEnd
+	(*ToolAction)(nil),                             // 124: nominal.ai.v1.ToolAction
+	(*ToolActionConfirmation)(nil),                 // 125: nominal.ai.v1.ToolActionConfirmation
+	(*ToolActionSuccess)(nil),                      // 126: nominal.ai.v1.ToolActionSuccess
+	(*CodeCellOutputs)(nil),                        // 127: nominal.ai.v1.CodeCellOutputs
+	(*CodeCellFile)(nil),                           // 128: nominal.ai.v1.CodeCellFile
+	(*CodeCellOutput)(nil),                         // 129: nominal.ai.v1.CodeCellOutput
+	(*ToolActionFailure)(nil),                      // 130: nominal.ai.v1.ToolActionFailure
+	(*ClientDirective)(nil),                        // 131: nominal.ai.v1.ClientDirective
+	(*ClientDirectiveV1)(nil),                      // 132: nominal.ai.v1.ClientDirectiveV1
+	(*SandboxStatusDirective)(nil),                 // 133: nominal.ai.v1.SandboxStatusDirective
+	(*ResourceEditedDirective)(nil),                // 134: nominal.ai.v1.ResourceEditedDirective
+	(*ChecklistEdited)(nil),                        // 135: nominal.ai.v1.ChecklistEdited
+	(*TemplateEdited)(nil),                         // 136: nominal.ai.v1.TemplateEdited
+	(*WorkbookEdited)(nil),                         // 137: nominal.ai.v1.WorkbookEdited
+	(*ResourceChangedDirective)(nil),               // 138: nominal.ai.v1.ResourceChangedDirective
+	(*SetTimeRangeDirective)(nil),                  // 139: nominal.ai.v1.SetTimeRangeDirective
+	(*ResourceMarkup)(nil),                         // 140: nominal.ai.v1.ResourceMarkup
+	(*RidResourceMarkup)(nil),                      // 141: nominal.ai.v1.RidResourceMarkup
+	(*RidListResourceMarkup)(nil),                  // 142: nominal.ai.v1.RidListResourceMarkup
+	(*ContextStatus)(nil),                          // 143: nominal.ai.v1.ContextStatus
+	(*ComputeProvenanceV1)(nil),                    // 144: nominal.ai.v1.ComputeProvenanceV1
+	(*ComputeProvenanceListV1)(nil),                // 145: nominal.ai.v1.ComputeProvenanceListV1
+	(*ComputeProvenanceEntryV1)(nil),               // 146: nominal.ai.v1.ComputeProvenanceEntryV1
+	(*Citation)(nil),                               // 147: nominal.ai.v1.Citation
+	(*UserMessageCitation)(nil),                    // 148: nominal.ai.v1.UserMessageCitation
+	(*CodeExecutionCitation)(nil),                  // 149: nominal.ai.v1.CodeExecutionCitation
+	(*CodeExecutionCall)(nil),                      // 150: nominal.ai.v1.CodeExecutionCall
+	(*CodeExecutionSource)(nil),                    // 151: nominal.ai.v1.CodeExecutionSource
+	(*TelemetryCitation)(nil),                      // 152: nominal.ai.v1.TelemetryCitation
+	(*DriveFileCitation)(nil),                      // 153: nominal.ai.v1.DriveFileCitation
+	(*TextFileCitation)(nil),                       // 154: nominal.ai.v1.TextFileCitation
+	(*PdfFileCitation)(nil),                        // 155: nominal.ai.v1.PdfFileCitation
+	(*ByteRange)(nil),                              // 156: nominal.ai.v1.ByteRange
+	(*BatchGetCitationsRequest)(nil),               // 157: nominal.ai.v1.BatchGetCitationsRequest
+	(*BatchGetCitationsResponse)(nil),              // 158: nominal.ai.v1.BatchGetCitationsResponse
+	(*GetCitationResponseError)(nil),               // 159: nominal.ai.v1.GetCitationResponseError
+	nil,                                            // 160: nominal.ai.v1.ExperimentEvent.PropertiesEntry
+	(*CodeCellOutput_Stream)(nil),                  // 161: nominal.ai.v1.CodeCellOutput.Stream
+	(*CodeCellOutput_Data)(nil),                    // 162: nominal.ai.v1.CodeCellOutput.Data
+	(*CodeCellOutput_Error)(nil),                   // 163: nominal.ai.v1.CodeCellOutput.Error
+	(*timestamppb.Timestamp)(nil),                  // 164: google.protobuf.Timestamp
+	(*v1.UploadedObjectRef)(nil),                   // 165: nominal.file_store.v1.UploadedObjectRef
+	(*v1.LogicalFileIdentity)(nil),                 // 166: nominal.file_store.v1.LogicalFileIdentity
 }
 var file_nominal_protos_ai_v1_ai_agent_proto_depIdxs = []int32{
 	0,   // 0: nominal.ai.v1.SubmitMessageFeedbackRequest.vote:type_name -> nominal.ai.v1.FeedbackVote
 	1,   // 1: nominal.ai.v1.AnswerShouldKnowOfferRequest.answer:type_name -> nominal.ai.v1.ShouldKnowAnswer
-	159, // 2: nominal.ai.v1.ExperimentEvent.properties:type_name -> nominal.ai.v1.ExperimentEvent.PropertiesEntry
+	160, // 2: nominal.ai.v1.ExperimentEvent.properties:type_name -> nominal.ai.v1.ExperimentEvent.PropertiesEntry
 	23,  // 3: nominal.ai.v1.CreateExperimentEventRequest.experiment_event:type_name -> nominal.ai.v1.ExperimentEvent
 	23,  // 4: nominal.ai.v1.CreateExperimentEventResponse.experiment_event:type_name -> nominal.ai.v1.ExperimentEvent
 	29,  // 5: nominal.ai.v1.ConversationMode.read_only:type_name -> nominal.ai.v1.ReadOnlyMode
 	30,  // 6: nominal.ai.v1.ConversationMode.edit:type_name -> nominal.ai.v1.EditMode
 	33,  // 7: nominal.ai.v1.ToolApprovalResult.approved:type_name -> nominal.ai.v1.ToolApprovedResponse
 	34,  // 8: nominal.ai.v1.ToolApprovalResult.denied:type_name -> nominal.ai.v1.ToolDeniedResponse
-	95,  // 9: nominal.ai.v1.UserPromptRequest.message:type_name -> nominal.ai.v1.UserModelMessage
-	100, // 10: nominal.ai.v1.UserPromptRequest.images:type_name -> nominal.ai.v1.ImagePart
+	96,  // 9: nominal.ai.v1.UserPromptRequest.message:type_name -> nominal.ai.v1.UserModelMessage
+	101, // 10: nominal.ai.v1.UserPromptRequest.images:type_name -> nominal.ai.v1.ImagePart
 	32,  // 11: nominal.ai.v1.ToolApprovalRequest.tool_approvals:type_name -> nominal.ai.v1.ToolApprovalResult
 	38,  // 12: nominal.ai.v1.UserQuestionResponseRequest.answered:type_name -> nominal.ai.v1.UserQuestionAnswer
 	39,  // 13: nominal.ai.v1.UserQuestionResponseRequest.declined:type_name -> nominal.ai.v1.UserQuestionDeclined
-	95,  // 14: nominal.ai.v1.StreamChatRequest.message:type_name -> nominal.ai.v1.UserModelMessage
-	100, // 15: nominal.ai.v1.StreamChatRequest.images:type_name -> nominal.ai.v1.ImagePart
+	96,  // 14: nominal.ai.v1.StreamChatRequest.message:type_name -> nominal.ai.v1.UserModelMessage
+	101, // 15: nominal.ai.v1.StreamChatRequest.images:type_name -> nominal.ai.v1.ImagePart
 	32,  // 16: nominal.ai.v1.StreamChatRequest.tool_approvals:type_name -> nominal.ai.v1.ToolApprovalResult
 	35,  // 17: nominal.ai.v1.StreamChatRequest.retry:type_name -> nominal.ai.v1.RetryRequest
 	36,  // 18: nominal.ai.v1.StreamChatRequest.user_prompt:type_name -> nominal.ai.v1.UserPromptRequest
@@ -11745,8 +11816,8 @@ var file_nominal_protos_ai_v1_ai_agent_proto_depIdxs = []int32{
 	40,  // 20: nominal.ai.v1.StreamChatRequest.user_question_response:type_name -> nominal.ai.v1.UserQuestionResponseRequest
 	47,  // 21: nominal.ai.v1.StreamChatRequest.model_selection:type_name -> nominal.ai.v1.ModelSelection
 	46,  // 22: nominal.ai.v1.StreamChatRequest.page_context:type_name -> nominal.ai.v1.PageContext
-	163, // 23: nominal.ai.v1.WorkbookViewContext.visible_start:type_name -> google.protobuf.Timestamp
-	163, // 24: nominal.ai.v1.WorkbookViewContext.visible_end:type_name -> google.protobuf.Timestamp
+	164, // 23: nominal.ai.v1.WorkbookViewContext.visible_start:type_name -> google.protobuf.Timestamp
+	164, // 24: nominal.ai.v1.WorkbookViewContext.visible_end:type_name -> google.protobuf.Timestamp
 	9,   // 25: nominal.ai.v1.WorkbookViewContext.time_range_type:type_name -> nominal.ai.v1.TimeRangeType
 	42,  // 26: nominal.ai.v1.PageContext.compute_function_editor:type_name -> nominal.ai.v1.ComputeFunctionEditorContext
 	43,  // 27: nominal.ai.v1.PageContext.sql_editor:type_name -> nominal.ai.v1.SqlEditorContext
@@ -11759,183 +11830,184 @@ var file_nominal_protos_ai_v1_ai_agent_proto_depIdxs = []int32{
 	31,  // 34: nominal.ai.v1.UpdateConversationMetadataRequest.conversation_mode:type_name -> nominal.ai.v1.ConversationMode
 	83,  // 35: nominal.ai.v1.ArchiveConversationResponse.conversation:type_name -> nominal.ai.v1.ConversationMetadata
 	83,  // 36: nominal.ai.v1.UnarchiveConversationResponse.conversation:type_name -> nominal.ai.v1.ConversationMetadata
-	142, // 37: nominal.ai.v1.CompactConversationResponse.context:type_name -> nominal.ai.v1.ContextStatus
-	94,  // 38: nominal.ai.v1.ModelMessageWithId.message:type_name -> nominal.ai.v1.ModelMessage
-	123, // 39: nominal.ai.v1.ModelMessageWithId.tool_action:type_name -> nominal.ai.v1.ToolAction
-	124, // 40: nominal.ai.v1.ModelMessageWithId.tool_action_confirmation:type_name -> nominal.ai.v1.ToolActionConfirmation
-	113, // 41: nominal.ai.v1.ModelMessageWithId.tool_approval_requests:type_name -> nominal.ai.v1.ToolCallDescription
-	114, // 42: nominal.ai.v1.ModelMessageWithId.user_question_calls:type_name -> nominal.ai.v1.UserQuestionCall
-	163, // 43: nominal.ai.v1.ModelMessageWithId.created_at:type_name -> google.protobuf.Timestamp
+	143, // 37: nominal.ai.v1.CompactConversationResponse.context:type_name -> nominal.ai.v1.ContextStatus
+	95,  // 38: nominal.ai.v1.ModelMessageWithId.message:type_name -> nominal.ai.v1.ModelMessage
+	124, // 39: nominal.ai.v1.ModelMessageWithId.tool_action:type_name -> nominal.ai.v1.ToolAction
+	125, // 40: nominal.ai.v1.ModelMessageWithId.tool_action_confirmation:type_name -> nominal.ai.v1.ToolActionConfirmation
+	114, // 41: nominal.ai.v1.ModelMessageWithId.tool_approval_requests:type_name -> nominal.ai.v1.ToolCallDescription
+	115, // 42: nominal.ai.v1.ModelMessageWithId.user_question_calls:type_name -> nominal.ai.v1.UserQuestionCall
+	164, // 43: nominal.ai.v1.ModelMessageWithId.created_at:type_name -> google.protobuf.Timestamp
 	65,  // 44: nominal.ai.v1.GetConversationResponse.ordered_messages:type_name -> nominal.ai.v1.ModelMessageWithId
 	83,  // 45: nominal.ai.v1.GetConversationResponse.conversation_metadata:type_name -> nominal.ai.v1.ConversationMetadata
 	83,  // 46: nominal.ai.v1.GetConversationMetadataResponse.conversation_metadata:type_name -> nominal.ai.v1.ConversationMetadata
 	71,  // 47: nominal.ai.v1.GetConversationMetadataResponse.active_run:type_name -> nominal.ai.v1.ActiveAgentRun
-	163, // 48: nominal.ai.v1.ActiveAgentRun.started_at:type_name -> google.protobuf.Timestamp
+	164, // 48: nominal.ai.v1.ActiveAgentRun.started_at:type_name -> google.protobuf.Timestamp
 	2,   // 49: nominal.ai.v1.ActiveAgentRun.execution_mode:type_name -> nominal.ai.v1.AgentRunExecutionMode
 	65,  // 50: nominal.ai.v1.GetConversationMessagesResponse.ordered_messages:type_name -> nominal.ai.v1.ModelMessageWithId
 	3,   // 51: nominal.ai.v1.Subagent.status:type_name -> nominal.ai.v1.SubagentStatus
-	163, // 52: nominal.ai.v1.Subagent.created_at:type_name -> google.protobuf.Timestamp
-	163, // 53: nominal.ai.v1.Subagent.conversation_updated_at:type_name -> google.protobuf.Timestamp
+	164, // 52: nominal.ai.v1.Subagent.created_at:type_name -> google.protobuf.Timestamp
+	164, // 53: nominal.ai.v1.Subagent.conversation_updated_at:type_name -> google.protobuf.Timestamp
 	75,  // 54: nominal.ai.v1.ListSubagentsResponse.subagents:type_name -> nominal.ai.v1.Subagent
 	75,  // 55: nominal.ai.v1.GetSubagentResponse.subagent:type_name -> nominal.ai.v1.Subagent
 	80,  // 56: nominal.ai.v1.UpdateConversationResourcesResponse.resources:type_name -> nominal.ai.v1.ConversationResource
-	163, // 57: nominal.ai.v1.ConversationMetadata.created_at:type_name -> google.protobuf.Timestamp
-	163, // 58: nominal.ai.v1.ConversationMetadata.last_updated_at:type_name -> google.protobuf.Timestamp
+	164, // 57: nominal.ai.v1.ConversationMetadata.created_at:type_name -> google.protobuf.Timestamp
+	164, // 58: nominal.ai.v1.ConversationMetadata.last_updated_at:type_name -> google.protobuf.Timestamp
 	31,  // 59: nominal.ai.v1.ConversationMetadata.mode:type_name -> nominal.ai.v1.ConversationMode
-	142, // 60: nominal.ai.v1.ConversationMetadata.current_context:type_name -> nominal.ai.v1.ContextStatus
+	143, // 60: nominal.ai.v1.ConversationMetadata.current_context:type_name -> nominal.ai.v1.ContextStatus
 	80,  // 61: nominal.ai.v1.ConversationMetadata.resources:type_name -> nominal.ai.v1.ConversationResource
 	71,  // 62: nominal.ai.v1.ConversationMetadata.active_run:type_name -> nominal.ai.v1.ActiveAgentRun
-	163, // 63: nominal.ai.v1.ConversationMetadata.archived_at:type_name -> google.protobuf.Timestamp
-	83,  // 64: nominal.ai.v1.ListConversationsResponse.conversations:type_name -> nominal.ai.v1.ConversationMetadata
-	87,  // 65: nominal.ai.v1.BatchGetConversationActiveRunsResponse.active_runs:type_name -> nominal.ai.v1.ConversationActiveRun
-	71,  // 66: nominal.ai.v1.ConversationActiveRun.active_run:type_name -> nominal.ai.v1.ActiveAgentRun
-	92,  // 67: nominal.ai.v1.BatchGetConversationSandboxesResponse.conversation_sandboxes:type_name -> nominal.ai.v1.ConversationSandbox
-	4,   // 68: nominal.ai.v1.ConversationSandbox.status:type_name -> nominal.ai.v1.ConversationSandboxStatus
-	95,  // 69: nominal.ai.v1.ModelMessage.user:type_name -> nominal.ai.v1.UserModelMessage
-	96,  // 70: nominal.ai.v1.ModelMessage.assistant:type_name -> nominal.ai.v1.AssistantModelMessage
-	97,  // 71: nominal.ai.v1.UserModelMessage.text:type_name -> nominal.ai.v1.UserContentPart
-	98,  // 72: nominal.ai.v1.AssistantModelMessage.content_parts:type_name -> nominal.ai.v1.AssistantContentPart
-	99,  // 73: nominal.ai.v1.UserContentPart.text:type_name -> nominal.ai.v1.TextPart
-	100, // 74: nominal.ai.v1.UserContentPart.image:type_name -> nominal.ai.v1.ImagePart
-	101, // 75: nominal.ai.v1.UserContentPart.attachment:type_name -> nominal.ai.v1.AttachmentPart
-	102, // 76: nominal.ai.v1.UserContentPart.file:type_name -> nominal.ai.v1.FilePart
-	99,  // 77: nominal.ai.v1.AssistantContentPart.text:type_name -> nominal.ai.v1.TextPart
-	104, // 78: nominal.ai.v1.AssistantContentPart.reasoning:type_name -> nominal.ai.v1.ReasoningPart
-	103, // 79: nominal.ai.v1.FilePart.new_file:type_name -> nominal.ai.v1.NewFile
-	164, // 80: nominal.ai.v1.NewFile.object:type_name -> nominal.file_store.v1.UploadedObjectRef
-	115, // 81: nominal.ai.v1.StreamChatResponse.finish:type_name -> nominal.ai.v1.Finish
-	116, // 82: nominal.ai.v1.StreamChatResponse.error:type_name -> nominal.ai.v1.Error
-	117, // 83: nominal.ai.v1.StreamChatResponse.text_start:type_name -> nominal.ai.v1.TextStart
-	118, // 84: nominal.ai.v1.StreamChatResponse.text_delta:type_name -> nominal.ai.v1.TextDelta
-	119, // 85: nominal.ai.v1.StreamChatResponse.text_end:type_name -> nominal.ai.v1.TextEnd
-	120, // 86: nominal.ai.v1.StreamChatResponse.reasoning_start:type_name -> nominal.ai.v1.ReasoningStart
-	121, // 87: nominal.ai.v1.StreamChatResponse.reasoning_delta:type_name -> nominal.ai.v1.ReasoningDelta
-	122, // 88: nominal.ai.v1.StreamChatResponse.reasoning_end:type_name -> nominal.ai.v1.ReasoningEnd
-	123, // 89: nominal.ai.v1.StreamChatResponse.tool_action:type_name -> nominal.ai.v1.ToolAction
-	124, // 90: nominal.ai.v1.StreamChatResponse.tool_action_confirmation:type_name -> nominal.ai.v1.ToolActionConfirmation
-	110, // 91: nominal.ai.v1.StreamChatResponse.step_start:type_name -> nominal.ai.v1.StepStart
-	111, // 92: nominal.ai.v1.StreamChatResponse.step_end:type_name -> nominal.ai.v1.StepEnd
-	130, // 93: nominal.ai.v1.StreamChatResponse.client_directive:type_name -> nominal.ai.v1.ClientDirective
-	112, // 94: nominal.ai.v1.StreamChatResponse.compaction_notice:type_name -> nominal.ai.v1.CompactionNotice
-	109, // 95: nominal.ai.v1.StreamChatResponse.stream_reset:type_name -> nominal.ai.v1.StreamReset
-	107, // 96: nominal.ai.v1.StreamChatResponse.steering_message:type_name -> nominal.ai.v1.SteeringMessage
-	108, // 97: nominal.ai.v1.StreamChatResponse.should_know_offer:type_name -> nominal.ai.v1.ShouldKnowOffer
-	106, // 98: nominal.ai.v1.StreamChatResponse.tool_call_progress:type_name -> nominal.ai.v1.ToolCallProgress
-	5,   // 99: nominal.ai.v1.ShouldKnowOffer.tag:type_name -> nominal.ai.v1.ShouldKnowTag
-	12,  // 100: nominal.ai.v1.CompactionNotice.trigger:type_name -> nominal.ai.v1.CompactionNotice.Trigger
-	6,   // 101: nominal.ai.v1.ToolCallDescription.status:type_name -> nominal.ai.v1.ToolCallStatus
-	113, // 102: nominal.ai.v1.UserQuestionCall.tool_call:type_name -> nominal.ai.v1.ToolCallDescription
-	38,  // 103: nominal.ai.v1.UserQuestionCall.answers:type_name -> nominal.ai.v1.UserQuestionAnswer
-	7,   // 104: nominal.ai.v1.UserQuestionCall.state:type_name -> nominal.ai.v1.UserQuestionState
-	113, // 105: nominal.ai.v1.Finish.tool_approval_requests:type_name -> nominal.ai.v1.ToolCallDescription
-	142, // 106: nominal.ai.v1.Finish.updated_context:type_name -> nominal.ai.v1.ContextStatus
-	114, // 107: nominal.ai.v1.Finish.user_question_calls:type_name -> nominal.ai.v1.UserQuestionCall
-	113, // 108: nominal.ai.v1.ToolAction.tool_call_description:type_name -> nominal.ai.v1.ToolCallDescription
-	125, // 109: nominal.ai.v1.ToolActionConfirmation.success:type_name -> nominal.ai.v1.ToolActionSuccess
-	129, // 110: nominal.ai.v1.ToolActionConfirmation.failure:type_name -> nominal.ai.v1.ToolActionFailure
-	126, // 111: nominal.ai.v1.ToolActionSuccess.code_cell:type_name -> nominal.ai.v1.CodeCellOutputs
-	128, // 112: nominal.ai.v1.CodeCellOutputs.outputs:type_name -> nominal.ai.v1.CodeCellOutput
-	127, // 113: nominal.ai.v1.CodeCellOutputs.files:type_name -> nominal.ai.v1.CodeCellFile
-	160, // 114: nominal.ai.v1.CodeCellOutput.stream:type_name -> nominal.ai.v1.CodeCellOutput.Stream
-	161, // 115: nominal.ai.v1.CodeCellOutput.data:type_name -> nominal.ai.v1.CodeCellOutput.Data
-	162, // 116: nominal.ai.v1.CodeCellOutput.error:type_name -> nominal.ai.v1.CodeCellOutput.Error
-	131, // 117: nominal.ai.v1.ClientDirective.v1:type_name -> nominal.ai.v1.ClientDirectiveV1
-	133, // 118: nominal.ai.v1.ClientDirectiveV1.resource_edited:type_name -> nominal.ai.v1.ResourceEditedDirective
-	138, // 119: nominal.ai.v1.ClientDirectiveV1.set_time_range:type_name -> nominal.ai.v1.SetTimeRangeDirective
-	137, // 120: nominal.ai.v1.ClientDirectiveV1.resource_changed:type_name -> nominal.ai.v1.ResourceChangedDirective
-	132, // 121: nominal.ai.v1.ClientDirectiveV1.sandbox_status:type_name -> nominal.ai.v1.SandboxStatusDirective
-	4,   // 122: nominal.ai.v1.SandboxStatusDirective.status:type_name -> nominal.ai.v1.ConversationSandboxStatus
-	134, // 123: nominal.ai.v1.ResourceEditedDirective.checklist:type_name -> nominal.ai.v1.ChecklistEdited
-	135, // 124: nominal.ai.v1.ResourceEditedDirective.template:type_name -> nominal.ai.v1.TemplateEdited
-	136, // 125: nominal.ai.v1.ResourceEditedDirective.workbook:type_name -> nominal.ai.v1.WorkbookEdited
-	163, // 126: nominal.ai.v1.ChecklistEdited.committed_at:type_name -> google.protobuf.Timestamp
-	163, // 127: nominal.ai.v1.TemplateEdited.committed_at:type_name -> google.protobuf.Timestamp
-	8,   // 128: nominal.ai.v1.ResourceChangedDirective.change:type_name -> nominal.ai.v1.ResourceChangeType
-	163, // 129: nominal.ai.v1.SetTimeRangeDirective.start:type_name -> google.protobuf.Timestamp
-	163, // 130: nominal.ai.v1.SetTimeRangeDirective.end:type_name -> google.protobuf.Timestamp
-	9,   // 131: nominal.ai.v1.SetTimeRangeDirective.time_range_type:type_name -> nominal.ai.v1.TimeRangeType
-	140, // 132: nominal.ai.v1.ResourceMarkup.rid:type_name -> nominal.ai.v1.RidResourceMarkup
-	141, // 133: nominal.ai.v1.ResourceMarkup.rid_list:type_name -> nominal.ai.v1.RidListResourceMarkup
-	10,  // 134: nominal.ai.v1.ComputeProvenanceV1.output_type:type_name -> nominal.ai.v1.ComputeOutputType
-	145, // 135: nominal.ai.v1.ComputeProvenanceListV1.entries:type_name -> nominal.ai.v1.ComputeProvenanceEntryV1
-	143, // 136: nominal.ai.v1.ComputeProvenanceEntryV1.provenance:type_name -> nominal.ai.v1.ComputeProvenanceV1
-	163, // 137: nominal.ai.v1.Citation.retrieved_at:type_name -> google.protobuf.Timestamp
-	151, // 138: nominal.ai.v1.Citation.telemetry:type_name -> nominal.ai.v1.TelemetryCitation
-	152, // 139: nominal.ai.v1.Citation.file:type_name -> nominal.ai.v1.DriveFileCitation
-	148, // 140: nominal.ai.v1.Citation.code_execution:type_name -> nominal.ai.v1.CodeExecutionCitation
-	147, // 141: nominal.ai.v1.Citation.user_message:type_name -> nominal.ai.v1.UserMessageCitation
-	149, // 142: nominal.ai.v1.CodeExecutionCitation.calls:type_name -> nominal.ai.v1.CodeExecutionCall
-	11,  // 143: nominal.ai.v1.CodeExecutionCall.outcome:type_name -> nominal.ai.v1.CodeExecutionCallOutcome
-	150, // 144: nominal.ai.v1.CodeExecutionCall.sources:type_name -> nominal.ai.v1.CodeExecutionSource
-	151, // 145: nominal.ai.v1.CodeExecutionSource.telemetry:type_name -> nominal.ai.v1.TelemetryCitation
-	152, // 146: nominal.ai.v1.CodeExecutionSource.file:type_name -> nominal.ai.v1.DriveFileCitation
-	143, // 147: nominal.ai.v1.TelemetryCitation.v1:type_name -> nominal.ai.v1.ComputeProvenanceV1
-	165, // 148: nominal.ai.v1.DriveFileCitation.file_identity:type_name -> nominal.file_store.v1.LogicalFileIdentity
-	153, // 149: nominal.ai.v1.DriveFileCitation.text:type_name -> nominal.ai.v1.TextFileCitation
-	154, // 150: nominal.ai.v1.DriveFileCitation.pdf:type_name -> nominal.ai.v1.PdfFileCitation
-	155, // 151: nominal.ai.v1.TextFileCitation.byte_range:type_name -> nominal.ai.v1.ByteRange
-	146, // 152: nominal.ai.v1.BatchGetCitationsResponse.citations:type_name -> nominal.ai.v1.Citation
-	158, // 153: nominal.ai.v1.BatchGetCitationsResponse.errors:type_name -> nominal.ai.v1.GetCitationResponseError
-	14,  // 154: nominal.ai.v1.GetCitationResponseError.reason:type_name -> nominal.ai.v1.GetCitationResponseError.Reason
-	24,  // 155: nominal.ai.v1.ExperimentEvent.PropertiesEntry.value:type_name -> nominal.ai.v1.ExperimentEventValue
-	13,  // 156: nominal.ai.v1.CodeCellOutput.Stream.name:type_name -> nominal.ai.v1.CodeCellOutput.StreamName
-	50,  // 157: nominal.ai.v1.AIAgentService.ListModels:input_type -> nominal.ai.v1.ListModelsRequest
-	41,  // 158: nominal.ai.v1.AIAgentService.StreamChat:input_type -> nominal.ai.v1.StreamChatRequest
-	62,  // 159: nominal.ai.v1.AIAgentService.GetConversation:input_type -> nominal.ai.v1.GetConversationRequest
-	67,  // 160: nominal.ai.v1.AIAgentService.GetConversationMetadata:input_type -> nominal.ai.v1.GetConversationMetadataRequest
-	69,  // 161: nominal.ai.v1.AIAgentService.GetConversationDrive:input_type -> nominal.ai.v1.GetConversationDriveRequest
-	72,  // 162: nominal.ai.v1.AIAgentService.GetConversationMessages:input_type -> nominal.ai.v1.GetConversationMessagesRequest
-	74,  // 163: nominal.ai.v1.AIAgentService.ListConversations:input_type -> nominal.ai.v1.ListConversationsRequest
-	76,  // 164: nominal.ai.v1.AIAgentService.ListSubagents:input_type -> nominal.ai.v1.ListSubagentsRequest
-	78,  // 165: nominal.ai.v1.AIAgentService.GetSubagent:input_type -> nominal.ai.v1.GetSubagentRequest
-	85,  // 166: nominal.ai.v1.AIAgentService.BatchGetConversationActiveRuns:input_type -> nominal.ai.v1.BatchGetConversationActiveRunsRequest
-	88,  // 167: nominal.ai.v1.AIAgentService.BatchGetConversationSandboxes:input_type -> nominal.ai.v1.BatchGetConversationSandboxesRequest
-	90,  // 168: nominal.ai.v1.AIAgentService.ResumeConversationSandbox:input_type -> nominal.ai.v1.ResumeConversationSandboxRequest
-	52,  // 169: nominal.ai.v1.AIAgentService.CreateConversation:input_type -> nominal.ai.v1.CreateConversationRequest
-	54,  // 170: nominal.ai.v1.AIAgentService.UpdateConversationMetadata:input_type -> nominal.ai.v1.UpdateConversationMetadataRequest
-	56,  // 171: nominal.ai.v1.AIAgentService.DeleteConversation:input_type -> nominal.ai.v1.DeleteConversationRequest
-	58,  // 172: nominal.ai.v1.AIAgentService.ArchiveConversation:input_type -> nominal.ai.v1.ArchiveConversationRequest
-	60,  // 173: nominal.ai.v1.AIAgentService.UnarchiveConversation:input_type -> nominal.ai.v1.UnarchiveConversationRequest
-	27,  // 174: nominal.ai.v1.AIAgentService.GetSnapshotRidByUserMessageId:input_type -> nominal.ai.v1.GetSnapshotRidByUserMessageIdRequest
-	63,  // 175: nominal.ai.v1.AIAgentService.CompactConversation:input_type -> nominal.ai.v1.CompactConversationRequest
-	15,  // 176: nominal.ai.v1.AIAgentService.SubmitMessageFeedback:input_type -> nominal.ai.v1.SubmitMessageFeedbackRequest
-	81,  // 177: nominal.ai.v1.AIAgentService.UpdateConversationResources:input_type -> nominal.ai.v1.UpdateConversationResourcesRequest
-	17,  // 178: nominal.ai.v1.AIAgentService.CancelAgentRun:input_type -> nominal.ai.v1.CancelAgentRunRequest
-	19,  // 179: nominal.ai.v1.AIAgentService.SteerAgentRun:input_type -> nominal.ai.v1.SteerAgentRunRequest
-	156, // 180: nominal.ai.v1.AIAgentService.BatchGetCitations:input_type -> nominal.ai.v1.BatchGetCitationsRequest
-	21,  // 181: nominal.ai.v1.AIAgentService.AnswerShouldKnowOffer:input_type -> nominal.ai.v1.AnswerShouldKnowOfferRequest
-	25,  // 182: nominal.ai.v1.AIAgentService.CreateExperimentEvent:input_type -> nominal.ai.v1.CreateExperimentEventRequest
-	51,  // 183: nominal.ai.v1.AIAgentService.ListModels:output_type -> nominal.ai.v1.ListModelsResponse
-	105, // 184: nominal.ai.v1.AIAgentService.StreamChat:output_type -> nominal.ai.v1.StreamChatResponse
-	66,  // 185: nominal.ai.v1.AIAgentService.GetConversation:output_type -> nominal.ai.v1.GetConversationResponse
-	68,  // 186: nominal.ai.v1.AIAgentService.GetConversationMetadata:output_type -> nominal.ai.v1.GetConversationMetadataResponse
-	70,  // 187: nominal.ai.v1.AIAgentService.GetConversationDrive:output_type -> nominal.ai.v1.GetConversationDriveResponse
-	73,  // 188: nominal.ai.v1.AIAgentService.GetConversationMessages:output_type -> nominal.ai.v1.GetConversationMessagesResponse
-	84,  // 189: nominal.ai.v1.AIAgentService.ListConversations:output_type -> nominal.ai.v1.ListConversationsResponse
-	77,  // 190: nominal.ai.v1.AIAgentService.ListSubagents:output_type -> nominal.ai.v1.ListSubagentsResponse
-	79,  // 191: nominal.ai.v1.AIAgentService.GetSubagent:output_type -> nominal.ai.v1.GetSubagentResponse
-	86,  // 192: nominal.ai.v1.AIAgentService.BatchGetConversationActiveRuns:output_type -> nominal.ai.v1.BatchGetConversationActiveRunsResponse
-	89,  // 193: nominal.ai.v1.AIAgentService.BatchGetConversationSandboxes:output_type -> nominal.ai.v1.BatchGetConversationSandboxesResponse
-	91,  // 194: nominal.ai.v1.AIAgentService.ResumeConversationSandbox:output_type -> nominal.ai.v1.ResumeConversationSandboxResponse
-	53,  // 195: nominal.ai.v1.AIAgentService.CreateConversation:output_type -> nominal.ai.v1.CreateConversationResponse
-	55,  // 196: nominal.ai.v1.AIAgentService.UpdateConversationMetadata:output_type -> nominal.ai.v1.UpdateConversationMetadataResponse
-	57,  // 197: nominal.ai.v1.AIAgentService.DeleteConversation:output_type -> nominal.ai.v1.DeleteConversationResponse
-	59,  // 198: nominal.ai.v1.AIAgentService.ArchiveConversation:output_type -> nominal.ai.v1.ArchiveConversationResponse
-	61,  // 199: nominal.ai.v1.AIAgentService.UnarchiveConversation:output_type -> nominal.ai.v1.UnarchiveConversationResponse
-	28,  // 200: nominal.ai.v1.AIAgentService.GetSnapshotRidByUserMessageId:output_type -> nominal.ai.v1.GetSnapshotRidByUserMessageIdResponse
-	64,  // 201: nominal.ai.v1.AIAgentService.CompactConversation:output_type -> nominal.ai.v1.CompactConversationResponse
-	16,  // 202: nominal.ai.v1.AIAgentService.SubmitMessageFeedback:output_type -> nominal.ai.v1.SubmitMessageFeedbackResponse
-	82,  // 203: nominal.ai.v1.AIAgentService.UpdateConversationResources:output_type -> nominal.ai.v1.UpdateConversationResourcesResponse
-	18,  // 204: nominal.ai.v1.AIAgentService.CancelAgentRun:output_type -> nominal.ai.v1.CancelAgentRunResponse
-	20,  // 205: nominal.ai.v1.AIAgentService.SteerAgentRun:output_type -> nominal.ai.v1.SteerAgentRunResponse
-	157, // 206: nominal.ai.v1.AIAgentService.BatchGetCitations:output_type -> nominal.ai.v1.BatchGetCitationsResponse
-	22,  // 207: nominal.ai.v1.AIAgentService.AnswerShouldKnowOffer:output_type -> nominal.ai.v1.AnswerShouldKnowOfferResponse
-	26,  // 208: nominal.ai.v1.AIAgentService.CreateExperimentEvent:output_type -> nominal.ai.v1.CreateExperimentEventResponse
-	183, // [183:209] is the sub-list for method output_type
-	157, // [157:183] is the sub-list for method input_type
-	157, // [157:157] is the sub-list for extension type_name
-	157, // [157:157] is the sub-list for extension extendee
-	0,   // [0:157] is the sub-list for field type_name
+	164, // 63: nominal.ai.v1.ConversationMetadata.archived_at:type_name -> google.protobuf.Timestamp
+	84,  // 64: nominal.ai.v1.ConversationMetadata.automation_origin:type_name -> nominal.ai.v1.AutomationOrigin
+	83,  // 65: nominal.ai.v1.ListConversationsResponse.conversations:type_name -> nominal.ai.v1.ConversationMetadata
+	88,  // 66: nominal.ai.v1.BatchGetConversationActiveRunsResponse.active_runs:type_name -> nominal.ai.v1.ConversationActiveRun
+	71,  // 67: nominal.ai.v1.ConversationActiveRun.active_run:type_name -> nominal.ai.v1.ActiveAgentRun
+	93,  // 68: nominal.ai.v1.BatchGetConversationSandboxesResponse.conversation_sandboxes:type_name -> nominal.ai.v1.ConversationSandbox
+	4,   // 69: nominal.ai.v1.ConversationSandbox.status:type_name -> nominal.ai.v1.ConversationSandboxStatus
+	96,  // 70: nominal.ai.v1.ModelMessage.user:type_name -> nominal.ai.v1.UserModelMessage
+	97,  // 71: nominal.ai.v1.ModelMessage.assistant:type_name -> nominal.ai.v1.AssistantModelMessage
+	98,  // 72: nominal.ai.v1.UserModelMessage.text:type_name -> nominal.ai.v1.UserContentPart
+	99,  // 73: nominal.ai.v1.AssistantModelMessage.content_parts:type_name -> nominal.ai.v1.AssistantContentPart
+	100, // 74: nominal.ai.v1.UserContentPart.text:type_name -> nominal.ai.v1.TextPart
+	101, // 75: nominal.ai.v1.UserContentPart.image:type_name -> nominal.ai.v1.ImagePart
+	102, // 76: nominal.ai.v1.UserContentPart.attachment:type_name -> nominal.ai.v1.AttachmentPart
+	103, // 77: nominal.ai.v1.UserContentPart.file:type_name -> nominal.ai.v1.FilePart
+	100, // 78: nominal.ai.v1.AssistantContentPart.text:type_name -> nominal.ai.v1.TextPart
+	105, // 79: nominal.ai.v1.AssistantContentPart.reasoning:type_name -> nominal.ai.v1.ReasoningPart
+	104, // 80: nominal.ai.v1.FilePart.new_file:type_name -> nominal.ai.v1.NewFile
+	165, // 81: nominal.ai.v1.NewFile.object:type_name -> nominal.file_store.v1.UploadedObjectRef
+	116, // 82: nominal.ai.v1.StreamChatResponse.finish:type_name -> nominal.ai.v1.Finish
+	117, // 83: nominal.ai.v1.StreamChatResponse.error:type_name -> nominal.ai.v1.Error
+	118, // 84: nominal.ai.v1.StreamChatResponse.text_start:type_name -> nominal.ai.v1.TextStart
+	119, // 85: nominal.ai.v1.StreamChatResponse.text_delta:type_name -> nominal.ai.v1.TextDelta
+	120, // 86: nominal.ai.v1.StreamChatResponse.text_end:type_name -> nominal.ai.v1.TextEnd
+	121, // 87: nominal.ai.v1.StreamChatResponse.reasoning_start:type_name -> nominal.ai.v1.ReasoningStart
+	122, // 88: nominal.ai.v1.StreamChatResponse.reasoning_delta:type_name -> nominal.ai.v1.ReasoningDelta
+	123, // 89: nominal.ai.v1.StreamChatResponse.reasoning_end:type_name -> nominal.ai.v1.ReasoningEnd
+	124, // 90: nominal.ai.v1.StreamChatResponse.tool_action:type_name -> nominal.ai.v1.ToolAction
+	125, // 91: nominal.ai.v1.StreamChatResponse.tool_action_confirmation:type_name -> nominal.ai.v1.ToolActionConfirmation
+	111, // 92: nominal.ai.v1.StreamChatResponse.step_start:type_name -> nominal.ai.v1.StepStart
+	112, // 93: nominal.ai.v1.StreamChatResponse.step_end:type_name -> nominal.ai.v1.StepEnd
+	131, // 94: nominal.ai.v1.StreamChatResponse.client_directive:type_name -> nominal.ai.v1.ClientDirective
+	113, // 95: nominal.ai.v1.StreamChatResponse.compaction_notice:type_name -> nominal.ai.v1.CompactionNotice
+	110, // 96: nominal.ai.v1.StreamChatResponse.stream_reset:type_name -> nominal.ai.v1.StreamReset
+	108, // 97: nominal.ai.v1.StreamChatResponse.steering_message:type_name -> nominal.ai.v1.SteeringMessage
+	109, // 98: nominal.ai.v1.StreamChatResponse.should_know_offer:type_name -> nominal.ai.v1.ShouldKnowOffer
+	107, // 99: nominal.ai.v1.StreamChatResponse.tool_call_progress:type_name -> nominal.ai.v1.ToolCallProgress
+	5,   // 100: nominal.ai.v1.ShouldKnowOffer.tag:type_name -> nominal.ai.v1.ShouldKnowTag
+	12,  // 101: nominal.ai.v1.CompactionNotice.trigger:type_name -> nominal.ai.v1.CompactionNotice.Trigger
+	6,   // 102: nominal.ai.v1.ToolCallDescription.status:type_name -> nominal.ai.v1.ToolCallStatus
+	114, // 103: nominal.ai.v1.UserQuestionCall.tool_call:type_name -> nominal.ai.v1.ToolCallDescription
+	38,  // 104: nominal.ai.v1.UserQuestionCall.answers:type_name -> nominal.ai.v1.UserQuestionAnswer
+	7,   // 105: nominal.ai.v1.UserQuestionCall.state:type_name -> nominal.ai.v1.UserQuestionState
+	114, // 106: nominal.ai.v1.Finish.tool_approval_requests:type_name -> nominal.ai.v1.ToolCallDescription
+	143, // 107: nominal.ai.v1.Finish.updated_context:type_name -> nominal.ai.v1.ContextStatus
+	115, // 108: nominal.ai.v1.Finish.user_question_calls:type_name -> nominal.ai.v1.UserQuestionCall
+	114, // 109: nominal.ai.v1.ToolAction.tool_call_description:type_name -> nominal.ai.v1.ToolCallDescription
+	126, // 110: nominal.ai.v1.ToolActionConfirmation.success:type_name -> nominal.ai.v1.ToolActionSuccess
+	130, // 111: nominal.ai.v1.ToolActionConfirmation.failure:type_name -> nominal.ai.v1.ToolActionFailure
+	127, // 112: nominal.ai.v1.ToolActionSuccess.code_cell:type_name -> nominal.ai.v1.CodeCellOutputs
+	129, // 113: nominal.ai.v1.CodeCellOutputs.outputs:type_name -> nominal.ai.v1.CodeCellOutput
+	128, // 114: nominal.ai.v1.CodeCellOutputs.files:type_name -> nominal.ai.v1.CodeCellFile
+	161, // 115: nominal.ai.v1.CodeCellOutput.stream:type_name -> nominal.ai.v1.CodeCellOutput.Stream
+	162, // 116: nominal.ai.v1.CodeCellOutput.data:type_name -> nominal.ai.v1.CodeCellOutput.Data
+	163, // 117: nominal.ai.v1.CodeCellOutput.error:type_name -> nominal.ai.v1.CodeCellOutput.Error
+	132, // 118: nominal.ai.v1.ClientDirective.v1:type_name -> nominal.ai.v1.ClientDirectiveV1
+	134, // 119: nominal.ai.v1.ClientDirectiveV1.resource_edited:type_name -> nominal.ai.v1.ResourceEditedDirective
+	139, // 120: nominal.ai.v1.ClientDirectiveV1.set_time_range:type_name -> nominal.ai.v1.SetTimeRangeDirective
+	138, // 121: nominal.ai.v1.ClientDirectiveV1.resource_changed:type_name -> nominal.ai.v1.ResourceChangedDirective
+	133, // 122: nominal.ai.v1.ClientDirectiveV1.sandbox_status:type_name -> nominal.ai.v1.SandboxStatusDirective
+	4,   // 123: nominal.ai.v1.SandboxStatusDirective.status:type_name -> nominal.ai.v1.ConversationSandboxStatus
+	135, // 124: nominal.ai.v1.ResourceEditedDirective.checklist:type_name -> nominal.ai.v1.ChecklistEdited
+	136, // 125: nominal.ai.v1.ResourceEditedDirective.template:type_name -> nominal.ai.v1.TemplateEdited
+	137, // 126: nominal.ai.v1.ResourceEditedDirective.workbook:type_name -> nominal.ai.v1.WorkbookEdited
+	164, // 127: nominal.ai.v1.ChecklistEdited.committed_at:type_name -> google.protobuf.Timestamp
+	164, // 128: nominal.ai.v1.TemplateEdited.committed_at:type_name -> google.protobuf.Timestamp
+	8,   // 129: nominal.ai.v1.ResourceChangedDirective.change:type_name -> nominal.ai.v1.ResourceChangeType
+	164, // 130: nominal.ai.v1.SetTimeRangeDirective.start:type_name -> google.protobuf.Timestamp
+	164, // 131: nominal.ai.v1.SetTimeRangeDirective.end:type_name -> google.protobuf.Timestamp
+	9,   // 132: nominal.ai.v1.SetTimeRangeDirective.time_range_type:type_name -> nominal.ai.v1.TimeRangeType
+	141, // 133: nominal.ai.v1.ResourceMarkup.rid:type_name -> nominal.ai.v1.RidResourceMarkup
+	142, // 134: nominal.ai.v1.ResourceMarkup.rid_list:type_name -> nominal.ai.v1.RidListResourceMarkup
+	10,  // 135: nominal.ai.v1.ComputeProvenanceV1.output_type:type_name -> nominal.ai.v1.ComputeOutputType
+	146, // 136: nominal.ai.v1.ComputeProvenanceListV1.entries:type_name -> nominal.ai.v1.ComputeProvenanceEntryV1
+	144, // 137: nominal.ai.v1.ComputeProvenanceEntryV1.provenance:type_name -> nominal.ai.v1.ComputeProvenanceV1
+	164, // 138: nominal.ai.v1.Citation.retrieved_at:type_name -> google.protobuf.Timestamp
+	152, // 139: nominal.ai.v1.Citation.telemetry:type_name -> nominal.ai.v1.TelemetryCitation
+	153, // 140: nominal.ai.v1.Citation.file:type_name -> nominal.ai.v1.DriveFileCitation
+	149, // 141: nominal.ai.v1.Citation.code_execution:type_name -> nominal.ai.v1.CodeExecutionCitation
+	148, // 142: nominal.ai.v1.Citation.user_message:type_name -> nominal.ai.v1.UserMessageCitation
+	150, // 143: nominal.ai.v1.CodeExecutionCitation.calls:type_name -> nominal.ai.v1.CodeExecutionCall
+	11,  // 144: nominal.ai.v1.CodeExecutionCall.outcome:type_name -> nominal.ai.v1.CodeExecutionCallOutcome
+	151, // 145: nominal.ai.v1.CodeExecutionCall.sources:type_name -> nominal.ai.v1.CodeExecutionSource
+	152, // 146: nominal.ai.v1.CodeExecutionSource.telemetry:type_name -> nominal.ai.v1.TelemetryCitation
+	153, // 147: nominal.ai.v1.CodeExecutionSource.file:type_name -> nominal.ai.v1.DriveFileCitation
+	144, // 148: nominal.ai.v1.TelemetryCitation.v1:type_name -> nominal.ai.v1.ComputeProvenanceV1
+	166, // 149: nominal.ai.v1.DriveFileCitation.file_identity:type_name -> nominal.file_store.v1.LogicalFileIdentity
+	154, // 150: nominal.ai.v1.DriveFileCitation.text:type_name -> nominal.ai.v1.TextFileCitation
+	155, // 151: nominal.ai.v1.DriveFileCitation.pdf:type_name -> nominal.ai.v1.PdfFileCitation
+	156, // 152: nominal.ai.v1.TextFileCitation.byte_range:type_name -> nominal.ai.v1.ByteRange
+	147, // 153: nominal.ai.v1.BatchGetCitationsResponse.citations:type_name -> nominal.ai.v1.Citation
+	159, // 154: nominal.ai.v1.BatchGetCitationsResponse.errors:type_name -> nominal.ai.v1.GetCitationResponseError
+	14,  // 155: nominal.ai.v1.GetCitationResponseError.reason:type_name -> nominal.ai.v1.GetCitationResponseError.Reason
+	24,  // 156: nominal.ai.v1.ExperimentEvent.PropertiesEntry.value:type_name -> nominal.ai.v1.ExperimentEventValue
+	13,  // 157: nominal.ai.v1.CodeCellOutput.Stream.name:type_name -> nominal.ai.v1.CodeCellOutput.StreamName
+	50,  // 158: nominal.ai.v1.AIAgentService.ListModels:input_type -> nominal.ai.v1.ListModelsRequest
+	41,  // 159: nominal.ai.v1.AIAgentService.StreamChat:input_type -> nominal.ai.v1.StreamChatRequest
+	62,  // 160: nominal.ai.v1.AIAgentService.GetConversation:input_type -> nominal.ai.v1.GetConversationRequest
+	67,  // 161: nominal.ai.v1.AIAgentService.GetConversationMetadata:input_type -> nominal.ai.v1.GetConversationMetadataRequest
+	69,  // 162: nominal.ai.v1.AIAgentService.GetConversationDrive:input_type -> nominal.ai.v1.GetConversationDriveRequest
+	72,  // 163: nominal.ai.v1.AIAgentService.GetConversationMessages:input_type -> nominal.ai.v1.GetConversationMessagesRequest
+	74,  // 164: nominal.ai.v1.AIAgentService.ListConversations:input_type -> nominal.ai.v1.ListConversationsRequest
+	76,  // 165: nominal.ai.v1.AIAgentService.ListSubagents:input_type -> nominal.ai.v1.ListSubagentsRequest
+	78,  // 166: nominal.ai.v1.AIAgentService.GetSubagent:input_type -> nominal.ai.v1.GetSubagentRequest
+	86,  // 167: nominal.ai.v1.AIAgentService.BatchGetConversationActiveRuns:input_type -> nominal.ai.v1.BatchGetConversationActiveRunsRequest
+	89,  // 168: nominal.ai.v1.AIAgentService.BatchGetConversationSandboxes:input_type -> nominal.ai.v1.BatchGetConversationSandboxesRequest
+	91,  // 169: nominal.ai.v1.AIAgentService.ResumeConversationSandbox:input_type -> nominal.ai.v1.ResumeConversationSandboxRequest
+	52,  // 170: nominal.ai.v1.AIAgentService.CreateConversation:input_type -> nominal.ai.v1.CreateConversationRequest
+	54,  // 171: nominal.ai.v1.AIAgentService.UpdateConversationMetadata:input_type -> nominal.ai.v1.UpdateConversationMetadataRequest
+	56,  // 172: nominal.ai.v1.AIAgentService.DeleteConversation:input_type -> nominal.ai.v1.DeleteConversationRequest
+	58,  // 173: nominal.ai.v1.AIAgentService.ArchiveConversation:input_type -> nominal.ai.v1.ArchiveConversationRequest
+	60,  // 174: nominal.ai.v1.AIAgentService.UnarchiveConversation:input_type -> nominal.ai.v1.UnarchiveConversationRequest
+	27,  // 175: nominal.ai.v1.AIAgentService.GetSnapshotRidByUserMessageId:input_type -> nominal.ai.v1.GetSnapshotRidByUserMessageIdRequest
+	63,  // 176: nominal.ai.v1.AIAgentService.CompactConversation:input_type -> nominal.ai.v1.CompactConversationRequest
+	15,  // 177: nominal.ai.v1.AIAgentService.SubmitMessageFeedback:input_type -> nominal.ai.v1.SubmitMessageFeedbackRequest
+	81,  // 178: nominal.ai.v1.AIAgentService.UpdateConversationResources:input_type -> nominal.ai.v1.UpdateConversationResourcesRequest
+	17,  // 179: nominal.ai.v1.AIAgentService.CancelAgentRun:input_type -> nominal.ai.v1.CancelAgentRunRequest
+	19,  // 180: nominal.ai.v1.AIAgentService.SteerAgentRun:input_type -> nominal.ai.v1.SteerAgentRunRequest
+	157, // 181: nominal.ai.v1.AIAgentService.BatchGetCitations:input_type -> nominal.ai.v1.BatchGetCitationsRequest
+	21,  // 182: nominal.ai.v1.AIAgentService.AnswerShouldKnowOffer:input_type -> nominal.ai.v1.AnswerShouldKnowOfferRequest
+	25,  // 183: nominal.ai.v1.AIAgentService.CreateExperimentEvent:input_type -> nominal.ai.v1.CreateExperimentEventRequest
+	51,  // 184: nominal.ai.v1.AIAgentService.ListModels:output_type -> nominal.ai.v1.ListModelsResponse
+	106, // 185: nominal.ai.v1.AIAgentService.StreamChat:output_type -> nominal.ai.v1.StreamChatResponse
+	66,  // 186: nominal.ai.v1.AIAgentService.GetConversation:output_type -> nominal.ai.v1.GetConversationResponse
+	68,  // 187: nominal.ai.v1.AIAgentService.GetConversationMetadata:output_type -> nominal.ai.v1.GetConversationMetadataResponse
+	70,  // 188: nominal.ai.v1.AIAgentService.GetConversationDrive:output_type -> nominal.ai.v1.GetConversationDriveResponse
+	73,  // 189: nominal.ai.v1.AIAgentService.GetConversationMessages:output_type -> nominal.ai.v1.GetConversationMessagesResponse
+	85,  // 190: nominal.ai.v1.AIAgentService.ListConversations:output_type -> nominal.ai.v1.ListConversationsResponse
+	77,  // 191: nominal.ai.v1.AIAgentService.ListSubagents:output_type -> nominal.ai.v1.ListSubagentsResponse
+	79,  // 192: nominal.ai.v1.AIAgentService.GetSubagent:output_type -> nominal.ai.v1.GetSubagentResponse
+	87,  // 193: nominal.ai.v1.AIAgentService.BatchGetConversationActiveRuns:output_type -> nominal.ai.v1.BatchGetConversationActiveRunsResponse
+	90,  // 194: nominal.ai.v1.AIAgentService.BatchGetConversationSandboxes:output_type -> nominal.ai.v1.BatchGetConversationSandboxesResponse
+	92,  // 195: nominal.ai.v1.AIAgentService.ResumeConversationSandbox:output_type -> nominal.ai.v1.ResumeConversationSandboxResponse
+	53,  // 196: nominal.ai.v1.AIAgentService.CreateConversation:output_type -> nominal.ai.v1.CreateConversationResponse
+	55,  // 197: nominal.ai.v1.AIAgentService.UpdateConversationMetadata:output_type -> nominal.ai.v1.UpdateConversationMetadataResponse
+	57,  // 198: nominal.ai.v1.AIAgentService.DeleteConversation:output_type -> nominal.ai.v1.DeleteConversationResponse
+	59,  // 199: nominal.ai.v1.AIAgentService.ArchiveConversation:output_type -> nominal.ai.v1.ArchiveConversationResponse
+	61,  // 200: nominal.ai.v1.AIAgentService.UnarchiveConversation:output_type -> nominal.ai.v1.UnarchiveConversationResponse
+	28,  // 201: nominal.ai.v1.AIAgentService.GetSnapshotRidByUserMessageId:output_type -> nominal.ai.v1.GetSnapshotRidByUserMessageIdResponse
+	64,  // 202: nominal.ai.v1.AIAgentService.CompactConversation:output_type -> nominal.ai.v1.CompactConversationResponse
+	16,  // 203: nominal.ai.v1.AIAgentService.SubmitMessageFeedback:output_type -> nominal.ai.v1.SubmitMessageFeedbackResponse
+	82,  // 204: nominal.ai.v1.AIAgentService.UpdateConversationResources:output_type -> nominal.ai.v1.UpdateConversationResourcesResponse
+	18,  // 205: nominal.ai.v1.AIAgentService.CancelAgentRun:output_type -> nominal.ai.v1.CancelAgentRunResponse
+	20,  // 206: nominal.ai.v1.AIAgentService.SteerAgentRun:output_type -> nominal.ai.v1.SteerAgentRunResponse
+	158, // 207: nominal.ai.v1.AIAgentService.BatchGetCitations:output_type -> nominal.ai.v1.BatchGetCitationsResponse
+	22,  // 208: nominal.ai.v1.AIAgentService.AnswerShouldKnowOffer:output_type -> nominal.ai.v1.AnswerShouldKnowOfferResponse
+	26,  // 209: nominal.ai.v1.AIAgentService.CreateExperimentEvent:output_type -> nominal.ai.v1.CreateExperimentEventResponse
+	184, // [184:210] is the sub-list for method output_type
+	158, // [158:184] is the sub-list for method input_type
+	158, // [158:158] is the sub-list for extension type_name
+	158, // [158:158] is the sub-list for extension extendee
+	0,   // [0:158] is the sub-list for field type_name
 }
 
 func init() { file_nominal_protos_ai_v1_ai_agent_proto_init() }
@@ -11999,27 +12071,27 @@ func file_nominal_protos_ai_v1_ai_agent_proto_init() {
 		(*GetSubagentRequest_ConversationRid)(nil),
 	}
 	file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[68].OneofWrappers = []any{}
-	file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[69].OneofWrappers = []any{}
-	file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[79].OneofWrappers = []any{
+	file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[70].OneofWrappers = []any{}
+	file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[80].OneofWrappers = []any{
 		(*ModelMessage_User)(nil),
 		(*ModelMessage_Assistant)(nil),
 	}
-	file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[82].OneofWrappers = []any{
+	file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[83].OneofWrappers = []any{
 		(*UserContentPart_Text)(nil),
 		(*UserContentPart_Image)(nil),
 		(*UserContentPart_Attachment)(nil),
 		(*UserContentPart_File)(nil),
 	}
-	file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[83].OneofWrappers = []any{
+	file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[84].OneofWrappers = []any{
 		(*AssistantContentPart_Text)(nil),
 		(*AssistantContentPart_Reasoning)(nil),
 	}
-	file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[87].OneofWrappers = []any{
+	file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[88].OneofWrappers = []any{
 		(*FilePart_FileRevisionRid)(nil),
 		(*FilePart_NewFile)(nil),
 	}
-	file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[89].OneofWrappers = []any{}
-	file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[90].OneofWrappers = []any{
+	file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[90].OneofWrappers = []any{}
+	file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[91].OneofWrappers = []any{
 		(*StreamChatResponse_Finish)(nil),
 		(*StreamChatResponse_Error)(nil),
 		(*StreamChatResponse_TextStart)(nil),
@@ -12039,69 +12111,69 @@ func file_nominal_protos_ai_v1_ai_agent_proto_init() {
 		(*StreamChatResponse_ShouldKnowOffer)(nil),
 		(*StreamChatResponse_ToolCallProgress)(nil),
 	}
-	file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[100].OneofWrappers = []any{}
-	file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[108].OneofWrappers = []any{}
-	file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[109].OneofWrappers = []any{
+	file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[101].OneofWrappers = []any{}
+	file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[109].OneofWrappers = []any{}
+	file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[110].OneofWrappers = []any{
 		(*ToolActionConfirmation_Success)(nil),
 		(*ToolActionConfirmation_Failure)(nil),
 	}
-	file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[110].OneofWrappers = []any{}
-	file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[113].OneofWrappers = []any{
+	file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[111].OneofWrappers = []any{}
+	file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[114].OneofWrappers = []any{
 		(*CodeCellOutput_Stream_)(nil),
 		(*CodeCellOutput_Data_)(nil),
 		(*CodeCellOutput_Error_)(nil),
 	}
-	file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[115].OneofWrappers = []any{
+	file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[116].OneofWrappers = []any{
 		(*ClientDirective_V1)(nil),
 	}
-	file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[116].OneofWrappers = []any{
+	file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[117].OneofWrappers = []any{
 		(*ClientDirectiveV1_ResourceEdited)(nil),
 		(*ClientDirectiveV1_SetTimeRange)(nil),
 		(*ClientDirectiveV1_ResourceChanged)(nil),
 		(*ClientDirectiveV1_SandboxStatus)(nil),
 	}
-	file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[118].OneofWrappers = []any{
+	file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[119].OneofWrappers = []any{
 		(*ResourceEditedDirective_Checklist)(nil),
 		(*ResourceEditedDirective_Template)(nil),
 		(*ResourceEditedDirective_Workbook)(nil),
 	}
-	file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[119].OneofWrappers = []any{}
 	file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[120].OneofWrappers = []any{}
-	file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[122].OneofWrappers = []any{}
-	file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[124].OneofWrappers = []any{
+	file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[121].OneofWrappers = []any{}
+	file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[123].OneofWrappers = []any{}
+	file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[125].OneofWrappers = []any{
 		(*ResourceMarkup_Rid)(nil),
 		(*ResourceMarkup_RidList)(nil),
 	}
-	file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[125].OneofWrappers = []any{}
 	file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[126].OneofWrappers = []any{}
-	file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[128].OneofWrappers = []any{}
-	file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[131].OneofWrappers = []any{
+	file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[127].OneofWrappers = []any{}
+	file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[129].OneofWrappers = []any{}
+	file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[132].OneofWrappers = []any{
 		(*Citation_Telemetry)(nil),
 		(*Citation_File)(nil),
 		(*Citation_CodeExecution)(nil),
 		(*Citation_UserMessage)(nil),
 	}
-	file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[133].OneofWrappers = []any{}
 	file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[134].OneofWrappers = []any{}
-	file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[135].OneofWrappers = []any{
+	file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[135].OneofWrappers = []any{}
+	file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[136].OneofWrappers = []any{
 		(*CodeExecutionSource_Telemetry)(nil),
 		(*CodeExecutionSource_File)(nil),
 	}
-	file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[136].OneofWrappers = []any{
+	file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[137].OneofWrappers = []any{
 		(*TelemetryCitation_V1)(nil),
 	}
-	file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[137].OneofWrappers = []any{
+	file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[138].OneofWrappers = []any{
 		(*DriveFileCitation_Text)(nil),
 		(*DriveFileCitation_Pdf)(nil),
 	}
-	file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[138].OneofWrappers = []any{}
+	file_nominal_protos_ai_v1_ai_agent_proto_msgTypes[139].OneofWrappers = []any{}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_nominal_protos_ai_v1_ai_agent_proto_rawDesc), len(file_nominal_protos_ai_v1_ai_agent_proto_rawDesc)),
 			NumEnums:      15,
-			NumMessages:   148,
+			NumMessages:   149,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

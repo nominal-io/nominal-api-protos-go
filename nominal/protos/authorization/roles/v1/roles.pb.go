@@ -225,7 +225,8 @@ type RoleAssignmentResponse_UserRid struct {
 func (*RoleAssignmentResponse_UserRid) isRoleAssignmentResponse_Assignee() {}
 
 type UpdateResourceRolesRequest struct {
-	state               protoimpl.MessageState   `protogen:"open.v1"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// RID of the data source (such as a dataset) whose role assignments change.
 	Resource            string                   `protobuf:"bytes,1,opt,name=resource,proto3" json:"resource,omitempty"`
 	AssignmentsToAdd    []*RoleAssignmentRequest `protobuf:"bytes,2,rep,name=assignments_to_add,json=assignmentsToAdd,proto3" json:"assignments_to_add,omitempty"`
 	AssignmentsToRemove []*RoleAssignmentRequest `protobuf:"bytes,3,rep,name=assignments_to_remove,json=assignmentsToRemove,proto3" json:"assignments_to_remove,omitempty"`
@@ -321,8 +322,9 @@ func (*UpdateResourceRolesResponse) Descriptor() ([]byte, []int) {
 }
 
 type GetResourceRolesRequest struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Resource      string                 `protobuf:"bytes,1,opt,name=resource,proto3" json:"resource,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// RID of the data source (such as a dataset) whose role assignments are returned.
+	Resource      string `protobuf:"bytes,1,opt,name=resource,proto3" json:"resource,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -409,8 +411,9 @@ func (x *GetResourceRolesResponse) GetRoleAssignments() []*RoleAssignmentRespons
 }
 
 type BatchGetResourceRolesRequest struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Resources     []string               `protobuf:"bytes,1,rep,name=resources,proto3" json:"resources,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// RIDs of data sources (such as datasets) whose role assignments are returned.
+	Resources     []string `protobuf:"bytes,1,rep,name=resources,proto3" json:"resources,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -565,9 +568,9 @@ const file_nominal_protos_authorization_roles_v1_roles_proto_rawDesc = "" +
 	"\bresource\x18\x01 \x01(\tB(\x9a\xb2\x1a$\n" +
 	"\"com.palantir.ri.ResourceIdentifierR\bresource\"}\n" +
 	"\x18GetResourceRolesResponse\x12a\n" +
-	"\x10role_assignments\x18\x01 \x03(\v26.nominal.authorization.roles.v1.RoleAssignmentResponseR\x0froleAssignments\"f\n" +
-	"\x1cBatchGetResourceRolesRequest\x12F\n" +
-	"\tresources\x18\x01 \x03(\tB(\x9a\xb2\x1a$\n" +
+	"\x10role_assignments\x18\x01 \x03(\v26.nominal.authorization.roles.v1.RoleAssignmentResponseR\x0froleAssignments\"o\n" +
+	"\x1cBatchGetResourceRolesRequest\x12O\n" +
+	"\tresources\x18\x01 \x03(\tB1\xbaH\x06\x92\x01\x03\x10\xe8\a\x9a\xb2\x1a$\n" +
 	"\"com.palantir.ri.ResourceIdentifierR\tresources\"\x89\x04\n" +
 	"\x1dBatchGetResourceRolesResponse\x12\xc7\x01\n" +
 	"\x1crole_assignments_by_resource\x18\x01 \x03(\v2\\.nominal.authorization.roles.v1.BatchGetResourceRolesResponse.RoleAssignmentsByResourceEntryB(\x9a\xb2\x1a$\x12\"com.palantir.ri.ResourceIdentifierR\x19roleAssignmentsByResource\x1a\xa1\x01\n" +

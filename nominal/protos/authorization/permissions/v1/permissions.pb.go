@@ -27,9 +27,11 @@ const (
 
 // A permission is the declaration of an action that can be performed on a resource.
 type CheckPermissionRequest struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Action        string                 `protobuf:"bytes,1,opt,name=action,proto3" json:"action,omitempty"`
-	Resource      string                 `protobuf:"bytes,2,opt,name=resource,proto3" json:"resource,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// An action name of the form resource_type:action, such as workspace:edit_events.
+	Action string `protobuf:"bytes,1,opt,name=action,proto3" json:"action,omitempty"`
+	// The RID of the resource, such as an asset, a workbook, or a workspace, that the action applies to.
+	Resource      string `protobuf:"bytes,2,opt,name=resource,proto3" json:"resource,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -123,8 +125,10 @@ func (x *CheckPermissionsRequest) GetRequests() []*CheckPermissionRequest {
 }
 
 type CheckPermissionResponse struct {
-	state               protoimpl.MessageState  `protogen:"open.v1"`
-	IsAuthorized        bool                    `protobuf:"varint,1,opt,name=is_authorized,json=isAuthorized,proto3" json:"is_authorized,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// True when the calling user may perform the action on the resource.
+	IsAuthorized bool `protobuf:"varint,1,opt,name=is_authorized,json=isAuthorized,proto3" json:"is_authorized,omitempty"`
+	// The check that this result answers.
 	RequestedPermission *CheckPermissionRequest `protobuf:"bytes,2,opt,name=requested_permission,json=requestedPermission,proto3" json:"requested_permission,omitempty"`
 	unknownFields       protoimpl.UnknownFields
 	sizeCache           protoimpl.SizeCache

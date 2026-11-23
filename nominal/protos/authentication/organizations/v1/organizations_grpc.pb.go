@@ -32,15 +32,29 @@ const (
 //
 // Organizations: their display names and settings, and their members' login activity.
 type OrganizationServiceClient interface {
-	// Gets the caller's organization.
+	// Returns the caller's organization: its RID, stable name, and display name.
 	GetCurrentOrganization(ctx context.Context, in *GetCurrentOrganizationRequest, opts ...grpc.CallOption) (*GetCurrentOrganizationResponse, error)
-	// Updates an organization. The caller must be an admin of the organization. `name` is read-only and ignored in
-	// the request; an unset `display_name` clears the stored display name.
+	// Updates the display name of an organization and returns the organization.
+	//
+	// The caller must be an admin of the organization. Only `display_name` is read from the request's organization:
+	// `name` and `tenant_type` are read-only and ignored, and the organization is identified by `rid`. An unset
+	// `display_name` clears the stored display name.
+	//
+	// Errors:
+	// - INVALID_ARGUMENT: `rid` is not an organization RID.
+	// - PERMISSION_DENIED (Authentication:NotAuthorizedAdmin): the caller is not an admin of the organization.
+	// - NOT_FOUND (Authentication:OrgNotFound): the organization does not exist.
 	UpdateOrganization(ctx context.Context, in *UpdateOrganizationRequest, opts ...grpc.CallOption) (*UpdateOrganizationResponse, error)
-	// Gets the settings of the caller's organization.
+	// Returns the settings of the caller's organization: the default time range type and whether new workbooks are
+	// visible in search by default.
 	GetCurrentOrganizationSettings(ctx context.Context, in *GetCurrentOrganizationSettingsRequest, opts ...grpc.CallOption) (*GetCurrentOrganizationSettingsResponse, error)
-	// Replaces the settings of the caller's organization. The caller must be an admin of their organization. An unset
-	// field is reset to its default.
+	// Replaces the settings of the caller's organization and returns the stored settings.
+	//
+	// The caller must be an admin of their organization. An unset field is reset to its default.
+	//
+	// Errors:
+	// - INVALID_ARGUMENT: `default_time_range_type` holds a value the server does not recognize.
+	// - PERMISSION_DENIED (Authentication:NotAuthorizedAdmin): the caller is not an admin of their organization.
 	UpdateCurrentOrganizationSettings(ctx context.Context, in *UpdateCurrentOrganizationSettingsRequest, opts ...grpc.CallOption) (*UpdateCurrentOrganizationSettingsResponse, error)
 	// Lists the members of one or more organizations with their most recent login into each. The caller must
 	// be an admin of every organization listed.
@@ -111,15 +125,29 @@ func (c *organizationServiceClient) ListLoginActivities(ctx context.Context, in 
 //
 // Organizations: their display names and settings, and their members' login activity.
 type OrganizationServiceServer interface {
-	// Gets the caller's organization.
+	// Returns the caller's organization: its RID, stable name, and display name.
 	GetCurrentOrganization(context.Context, *GetCurrentOrganizationRequest) (*GetCurrentOrganizationResponse, error)
-	// Updates an organization. The caller must be an admin of the organization. `name` is read-only and ignored in
-	// the request; an unset `display_name` clears the stored display name.
+	// Updates the display name of an organization and returns the organization.
+	//
+	// The caller must be an admin of the organization. Only `display_name` is read from the request's organization:
+	// `name` and `tenant_type` are read-only and ignored, and the organization is identified by `rid`. An unset
+	// `display_name` clears the stored display name.
+	//
+	// Errors:
+	// - INVALID_ARGUMENT: `rid` is not an organization RID.
+	// - PERMISSION_DENIED (Authentication:NotAuthorizedAdmin): the caller is not an admin of the organization.
+	// - NOT_FOUND (Authentication:OrgNotFound): the organization does not exist.
 	UpdateOrganization(context.Context, *UpdateOrganizationRequest) (*UpdateOrganizationResponse, error)
-	// Gets the settings of the caller's organization.
+	// Returns the settings of the caller's organization: the default time range type and whether new workbooks are
+	// visible in search by default.
 	GetCurrentOrganizationSettings(context.Context, *GetCurrentOrganizationSettingsRequest) (*GetCurrentOrganizationSettingsResponse, error)
-	// Replaces the settings of the caller's organization. The caller must be an admin of their organization. An unset
-	// field is reset to its default.
+	// Replaces the settings of the caller's organization and returns the stored settings.
+	//
+	// The caller must be an admin of their organization. An unset field is reset to its default.
+	//
+	// Errors:
+	// - INVALID_ARGUMENT: `default_time_range_type` holds a value the server does not recognize.
+	// - PERMISSION_DENIED (Authentication:NotAuthorizedAdmin): the caller is not an admin of their organization.
 	UpdateCurrentOrganizationSettings(context.Context, *UpdateCurrentOrganizationSettingsRequest) (*UpdateCurrentOrganizationSettingsResponse, error)
 	// Lists the members of one or more organizations with their most recent login into each. The caller must
 	// be an admin of every organization listed.

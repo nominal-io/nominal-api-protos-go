@@ -31,15 +31,15 @@ const (
 //
 // Manages role assignments to subjects within a scope.
 type RoleBindingServiceClient interface {
-	// Idempotent: an existing key retains its original grant metadata.
-	// Requires manage-access on the workspace; output-only grant metadata in the request is ignored.
-	// Returns ROLE_BINDING_ERRORS_ROLE_NOT_FOUND for an unknown role_id.
-	// Returns NOT_FOUND for a scope or subject not visible to the caller's organization.
+	// Idempotent: an existing key retains its original grant metadata. Requires manage-access on the
+	// workspace; output-only grant metadata in the request is ignored. Returns
+	// ROLE_BINDING_ERRORS_ROLE_NOT_FOUND for an unknown role_id. Returns NOT_FOUND for a scope or
+	// subject not visible to the caller's organization.
+	//
 	// Returns INVALID_ARGUMENT when the scope type is outside the role's bindable_scope_types.
 	CreateRoleBinding(ctx context.Context, in *CreateRoleBindingRequest, opts ...grpc.CallOption) (*CreateRoleBindingResponse, error)
-	// Returns one binding per requested key, in request order.
-	// Returns ROLE_BINDING_ERRORS_ROLE_BINDING_NOT_FOUND if any key has no binding.
-	// Requires read access on every requested workspace.
+	// Returns the requested role bindings, in no particular order; match them to the request by key. Omits keys
+	// with no binding and keys whose workspace does not exist or that the caller cannot view.
 	BatchGetRoleBindings(ctx context.Context, in *BatchGetRoleBindingsRequest, opts ...grpc.CallOption) (*BatchGetRoleBindingsResponse, error)
 	// Returns stored role bindings; requires read access on every requested workspace.
 	// Returns INVALID_ARGUMENT if no scopes are provided.
@@ -104,15 +104,15 @@ func (c *roleBindingServiceClient) DeleteRoleBinding(ctx context.Context, in *De
 //
 // Manages role assignments to subjects within a scope.
 type RoleBindingServiceServer interface {
-	// Idempotent: an existing key retains its original grant metadata.
-	// Requires manage-access on the workspace; output-only grant metadata in the request is ignored.
-	// Returns ROLE_BINDING_ERRORS_ROLE_NOT_FOUND for an unknown role_id.
-	// Returns NOT_FOUND for a scope or subject not visible to the caller's organization.
+	// Idempotent: an existing key retains its original grant metadata. Requires manage-access on the
+	// workspace; output-only grant metadata in the request is ignored. Returns
+	// ROLE_BINDING_ERRORS_ROLE_NOT_FOUND for an unknown role_id. Returns NOT_FOUND for a scope or
+	// subject not visible to the caller's organization.
+	//
 	// Returns INVALID_ARGUMENT when the scope type is outside the role's bindable_scope_types.
 	CreateRoleBinding(context.Context, *CreateRoleBindingRequest) (*CreateRoleBindingResponse, error)
-	// Returns one binding per requested key, in request order.
-	// Returns ROLE_BINDING_ERRORS_ROLE_BINDING_NOT_FOUND if any key has no binding.
-	// Requires read access on every requested workspace.
+	// Returns the requested role bindings, in no particular order; match them to the request by key. Omits keys
+	// with no binding and keys whose workspace does not exist or that the caller cannot view.
 	BatchGetRoleBindings(context.Context, *BatchGetRoleBindingsRequest) (*BatchGetRoleBindingsResponse, error)
 	// Returns stored role bindings; requires read access on every requested workspace.
 	// Returns INVALID_ARGUMENT if no scopes are provided.

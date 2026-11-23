@@ -51,6 +51,9 @@ type DrivesServiceClient interface {
 	//
 	// Errors: FileStoreCommonError (PERMISSION_DENIED), DriveAdminError (DRIVE_ID_ALREADY_EXISTS,
 	// INVALID_VIRTUAL_DRIVE_CONFIGURATION), VirtualDriveUpstreamError (from the probe).
+	//
+	// Creating a virtual drive binds a caller-supplied secret to an outbound endpoint, so it requires
+	// workspace:attach_secret rather than the managed-drive create action.
 	CreateVirtualDrive(ctx context.Context, in *CreateVirtualDriveRequest, opts ...grpc.CallOption) (*CreateVirtualDriveResponse, error)
 	// Gets one drive (a workspace-scoped namespace for files) by RID, including an archived one. A drive the caller
 	// cannot read is reported as not found.
@@ -128,6 +131,8 @@ type DrivesServiceClient interface {
 	// Errors: FileStoreCommonError (DRIVE_NOT_FOUND, PERMISSION_DENIED), DriveAdminError
 	// (VIRTUAL_DRIVE_NOT_FOUND, INVALID_VIRTUAL_DRIVE_CONFIGURATION), VirtualDriveUpstreamError
 	// (from the probe).
+	//
+	// workspace:attach_secret is checked on the drive's workspace, which the handler resolves from the drive.
 	UpdateVirtualDrive(ctx context.Context, in *UpdateVirtualDriveRequest, opts ...grpc.CallOption) (*UpdateVirtualDriveResponse, error)
 	// Currently admin-only: updates a drive's mutable details (its id and description).
 	//
@@ -311,6 +316,9 @@ type DrivesServiceServer interface {
 	//
 	// Errors: FileStoreCommonError (PERMISSION_DENIED), DriveAdminError (DRIVE_ID_ALREADY_EXISTS,
 	// INVALID_VIRTUAL_DRIVE_CONFIGURATION), VirtualDriveUpstreamError (from the probe).
+	//
+	// Creating a virtual drive binds a caller-supplied secret to an outbound endpoint, so it requires
+	// workspace:attach_secret rather than the managed-drive create action.
 	CreateVirtualDrive(context.Context, *CreateVirtualDriveRequest) (*CreateVirtualDriveResponse, error)
 	// Gets one drive (a workspace-scoped namespace for files) by RID, including an archived one. A drive the caller
 	// cannot read is reported as not found.
@@ -388,6 +396,8 @@ type DrivesServiceServer interface {
 	// Errors: FileStoreCommonError (DRIVE_NOT_FOUND, PERMISSION_DENIED), DriveAdminError
 	// (VIRTUAL_DRIVE_NOT_FOUND, INVALID_VIRTUAL_DRIVE_CONFIGURATION), VirtualDriveUpstreamError
 	// (from the probe).
+	//
+	// workspace:attach_secret is checked on the drive's workspace, which the handler resolves from the drive.
 	UpdateVirtualDrive(context.Context, *UpdateVirtualDriveRequest) (*UpdateVirtualDriveResponse, error)
 	// Currently admin-only: updates a drive's mutable details (its id and description).
 	//

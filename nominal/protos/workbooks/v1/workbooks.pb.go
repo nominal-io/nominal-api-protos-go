@@ -12,6 +12,7 @@ import (
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
+	fieldmaskpb "google.golang.org/protobuf/types/known/fieldmaskpb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
 	reflect "reflect"
 	sync "sync"
@@ -37,6 +38,19 @@ const (
 	WorkbookError_WORKBOOK_ERROR_WORKBOOK_NOT_FOUND WorkbookError = 1
 	// Workbooks do not exist or the caller cannot view them. Metadata: notebookRids, comma-separated.
 	WorkbookError_WORKBOOK_ERROR_WORKBOOKS_NOT_FOUND WorkbookError = 2
+	// The request names more workbooks than one call accepts. Metadata: requestedCount, allowedCount.
+	WorkbookError_WORKBOOK_ERROR_TOO_MANY_WORKBOOKS_REQUESTED WorkbookError = 3
+	// The workbook holds a channel variable whose data source references cannot be read. Metadata: notebookRid.
+	WorkbookError_WORKBOOK_ERROR_CANNOT_READ_REF_NAMES WorkbookError = 4
+	// A demo workbook stays locked. Metadata: notebookRid.
+	WorkbookError_WORKBOOK_ERROR_DEMO_WORKBOOK_CANNOT_BE_UNLOCKED WorkbookError = 5
+	// A demo workbook stays published. Metadata: notebookRid.
+	WorkbookError_WORKBOOK_ERROR_DEMO_WORKBOOK_CANNOT_BE_UNPUBLISHED WorkbookError = 6
+	// The workbook is locked against edits. Metadata: notebookRid.
+	WorkbookError_WORKBOOK_ERROR_WORKBOOK_LOCKED WorkbookError = 7
+	// Another snapshot of the workbook was saved concurrently; retry against the latest snapshot.
+	// Metadata: notebookRid, otherSnapshotRid, otherSnapshotAuthorRid.
+	WorkbookError_WORKBOOK_ERROR_SAVE_CONFLICT WorkbookError = 8
 )
 
 // Enum value maps for WorkbookError.
@@ -45,11 +59,23 @@ var (
 		0: "WORKBOOK_ERROR_INVALID_REQUEST",
 		1: "WORKBOOK_ERROR_WORKBOOK_NOT_FOUND",
 		2: "WORKBOOK_ERROR_WORKBOOKS_NOT_FOUND",
+		3: "WORKBOOK_ERROR_TOO_MANY_WORKBOOKS_REQUESTED",
+		4: "WORKBOOK_ERROR_CANNOT_READ_REF_NAMES",
+		5: "WORKBOOK_ERROR_DEMO_WORKBOOK_CANNOT_BE_UNLOCKED",
+		6: "WORKBOOK_ERROR_DEMO_WORKBOOK_CANNOT_BE_UNPUBLISHED",
+		7: "WORKBOOK_ERROR_WORKBOOK_LOCKED",
+		8: "WORKBOOK_ERROR_SAVE_CONFLICT",
 	}
 	WorkbookError_value = map[string]int32{
-		"WORKBOOK_ERROR_INVALID_REQUEST":     0,
-		"WORKBOOK_ERROR_WORKBOOK_NOT_FOUND":  1,
-		"WORKBOOK_ERROR_WORKBOOKS_NOT_FOUND": 2,
+		"WORKBOOK_ERROR_INVALID_REQUEST":                     0,
+		"WORKBOOK_ERROR_WORKBOOK_NOT_FOUND":                  1,
+		"WORKBOOK_ERROR_WORKBOOKS_NOT_FOUND":                 2,
+		"WORKBOOK_ERROR_TOO_MANY_WORKBOOKS_REQUESTED":        3,
+		"WORKBOOK_ERROR_CANNOT_READ_REF_NAMES":               4,
+		"WORKBOOK_ERROR_DEMO_WORKBOOK_CANNOT_BE_UNLOCKED":    5,
+		"WORKBOOK_ERROR_DEMO_WORKBOOK_CANNOT_BE_UNPUBLISHED": 6,
+		"WORKBOOK_ERROR_WORKBOOK_LOCKED":                     7,
+		"WORKBOOK_ERROR_SAVE_CONFLICT":                       8,
 	}
 )
 
@@ -90,7 +116,8 @@ type Workbook struct {
 	// The runs or assets whose data the workbook reads.
 	DataScope *WorkbookDataScope `protobuf:"bytes,5,opt,name=data_scope,json=dataScope,proto3" json:"data_scope,omitempty"`
 	// Whether the workbook is an unpublished draft. Set when the workbook is created; publishing it is an
-	// UpdateWorkbook that sets this to false, and setting it back to true unpublishes it.
+	// UpdateWorkbook that sets this to false, and setting it back to true unpublishes it. An Analyst workbook cannot
+	// be published.
 	IsDraft    bool                   `protobuf:"varint,6,opt,name=is_draft,json=isDraft,proto3" json:"is_draft,omitempty"`
 	IsArchived bool                   `protobuf:"varint,7,opt,name=is_archived,json=isArchived,proto3" json:"is_archived,omitempty"`
 	Lock       *WorkbookLock          `protobuf:"bytes,8,opt,name=lock,proto3" json:"lock,omitempty"`
@@ -842,6 +869,653 @@ func (x *ListWorkbookSnapshotsResponse) GetNextPageToken() string {
 	return ""
 }
 
+type DeleteWorkbookRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	WorkbookRid   string                 `protobuf:"bytes,1,opt,name=workbook_rid,json=workbookRid,proto3" json:"workbook_rid,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *DeleteWorkbookRequest) Reset() {
+	*x = DeleteWorkbookRequest{}
+	mi := &file_nominal_protos_workbooks_v1_workbooks_proto_msgTypes[11]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *DeleteWorkbookRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*DeleteWorkbookRequest) ProtoMessage() {}
+
+func (x *DeleteWorkbookRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_nominal_protos_workbooks_v1_workbooks_proto_msgTypes[11]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use DeleteWorkbookRequest.ProtoReflect.Descriptor instead.
+func (*DeleteWorkbookRequest) Descriptor() ([]byte, []int) {
+	return file_nominal_protos_workbooks_v1_workbooks_proto_rawDescGZIP(), []int{11}
+}
+
+func (x *DeleteWorkbookRequest) GetWorkbookRid() string {
+	if x != nil {
+		return x.WorkbookRid
+	}
+	return ""
+}
+
+type DeleteWorkbookResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *DeleteWorkbookResponse) Reset() {
+	*x = DeleteWorkbookResponse{}
+	mi := &file_nominal_protos_workbooks_v1_workbooks_proto_msgTypes[12]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *DeleteWorkbookResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*DeleteWorkbookResponse) ProtoMessage() {}
+
+func (x *DeleteWorkbookResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_nominal_protos_workbooks_v1_workbooks_proto_msgTypes[12]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use DeleteWorkbookResponse.ProtoReflect.Descriptor instead.
+func (*DeleteWorkbookResponse) Descriptor() ([]byte, []int) {
+	return file_nominal_protos_workbooks_v1_workbooks_proto_rawDescGZIP(), []int{12}
+}
+
+type BatchArchiveWorkbooksRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	WorkbookRids  []string               `protobuf:"bytes,1,rep,name=workbook_rids,json=workbookRids,proto3" json:"workbook_rids,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *BatchArchiveWorkbooksRequest) Reset() {
+	*x = BatchArchiveWorkbooksRequest{}
+	mi := &file_nominal_protos_workbooks_v1_workbooks_proto_msgTypes[13]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *BatchArchiveWorkbooksRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*BatchArchiveWorkbooksRequest) ProtoMessage() {}
+
+func (x *BatchArchiveWorkbooksRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_nominal_protos_workbooks_v1_workbooks_proto_msgTypes[13]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use BatchArchiveWorkbooksRequest.ProtoReflect.Descriptor instead.
+func (*BatchArchiveWorkbooksRequest) Descriptor() ([]byte, []int) {
+	return file_nominal_protos_workbooks_v1_workbooks_proto_rawDescGZIP(), []int{13}
+}
+
+func (x *BatchArchiveWorkbooksRequest) GetWorkbookRids() []string {
+	if x != nil {
+		return x.WorkbookRids
+	}
+	return nil
+}
+
+type BatchArchiveWorkbooksResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *BatchArchiveWorkbooksResponse) Reset() {
+	*x = BatchArchiveWorkbooksResponse{}
+	mi := &file_nominal_protos_workbooks_v1_workbooks_proto_msgTypes[14]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *BatchArchiveWorkbooksResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*BatchArchiveWorkbooksResponse) ProtoMessage() {}
+
+func (x *BatchArchiveWorkbooksResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_nominal_protos_workbooks_v1_workbooks_proto_msgTypes[14]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use BatchArchiveWorkbooksResponse.ProtoReflect.Descriptor instead.
+func (*BatchArchiveWorkbooksResponse) Descriptor() ([]byte, []int) {
+	return file_nominal_protos_workbooks_v1_workbooks_proto_rawDescGZIP(), []int{14}
+}
+
+type BatchUnarchiveWorkbooksRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	WorkbookRids  []string               `protobuf:"bytes,1,rep,name=workbook_rids,json=workbookRids,proto3" json:"workbook_rids,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *BatchUnarchiveWorkbooksRequest) Reset() {
+	*x = BatchUnarchiveWorkbooksRequest{}
+	mi := &file_nominal_protos_workbooks_v1_workbooks_proto_msgTypes[15]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *BatchUnarchiveWorkbooksRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*BatchUnarchiveWorkbooksRequest) ProtoMessage() {}
+
+func (x *BatchUnarchiveWorkbooksRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_nominal_protos_workbooks_v1_workbooks_proto_msgTypes[15]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use BatchUnarchiveWorkbooksRequest.ProtoReflect.Descriptor instead.
+func (*BatchUnarchiveWorkbooksRequest) Descriptor() ([]byte, []int) {
+	return file_nominal_protos_workbooks_v1_workbooks_proto_rawDescGZIP(), []int{15}
+}
+
+func (x *BatchUnarchiveWorkbooksRequest) GetWorkbookRids() []string {
+	if x != nil {
+		return x.WorkbookRids
+	}
+	return nil
+}
+
+type BatchUnarchiveWorkbooksResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *BatchUnarchiveWorkbooksResponse) Reset() {
+	*x = BatchUnarchiveWorkbooksResponse{}
+	mi := &file_nominal_protos_workbooks_v1_workbooks_proto_msgTypes[16]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *BatchUnarchiveWorkbooksResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*BatchUnarchiveWorkbooksResponse) ProtoMessage() {}
+
+func (x *BatchUnarchiveWorkbooksResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_nominal_protos_workbooks_v1_workbooks_proto_msgTypes[16]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use BatchUnarchiveWorkbooksResponse.ProtoReflect.Descriptor instead.
+func (*BatchUnarchiveWorkbooksResponse) Descriptor() ([]byte, []int) {
+	return file_nominal_protos_workbooks_v1_workbooks_proto_rawDescGZIP(), []int{16}
+}
+
+type GetWorkbookDataSourceRefNamesRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	WorkbookRid   string                 `protobuf:"bytes,1,opt,name=workbook_rid,json=workbookRid,proto3" json:"workbook_rid,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GetWorkbookDataSourceRefNamesRequest) Reset() {
+	*x = GetWorkbookDataSourceRefNamesRequest{}
+	mi := &file_nominal_protos_workbooks_v1_workbooks_proto_msgTypes[17]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetWorkbookDataSourceRefNamesRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetWorkbookDataSourceRefNamesRequest) ProtoMessage() {}
+
+func (x *GetWorkbookDataSourceRefNamesRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_nominal_protos_workbooks_v1_workbooks_proto_msgTypes[17]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetWorkbookDataSourceRefNamesRequest.ProtoReflect.Descriptor instead.
+func (*GetWorkbookDataSourceRefNamesRequest) Descriptor() ([]byte, []int) {
+	return file_nominal_protos_workbooks_v1_workbooks_proto_rawDescGZIP(), []int{17}
+}
+
+func (x *GetWorkbookDataSourceRefNamesRequest) GetWorkbookRid() string {
+	if x != nil {
+		return x.WorkbookRid
+	}
+	return ""
+}
+
+type GetWorkbookDataSourceRefNamesResponse struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Distinct, sorted lexicographically.
+	DataSourceRefNames []string `protobuf:"bytes,1,rep,name=data_source_ref_names,json=dataSourceRefNames,proto3" json:"data_source_ref_names,omitempty"`
+	unknownFields      protoimpl.UnknownFields
+	sizeCache          protoimpl.SizeCache
+}
+
+func (x *GetWorkbookDataSourceRefNamesResponse) Reset() {
+	*x = GetWorkbookDataSourceRefNamesResponse{}
+	mi := &file_nominal_protos_workbooks_v1_workbooks_proto_msgTypes[18]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetWorkbookDataSourceRefNamesResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetWorkbookDataSourceRefNamesResponse) ProtoMessage() {}
+
+func (x *GetWorkbookDataSourceRefNamesResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_nominal_protos_workbooks_v1_workbooks_proto_msgTypes[18]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetWorkbookDataSourceRefNamesResponse.ProtoReflect.Descriptor instead.
+func (*GetWorkbookDataSourceRefNamesResponse) Descriptor() ([]byte, []int) {
+	return file_nominal_protos_workbooks_v1_workbooks_proto_rawDescGZIP(), []int{18}
+}
+
+func (x *GetWorkbookDataSourceRefNamesResponse) GetDataSourceRefNames() []string {
+	if x != nil {
+		return x.DataSourceRefNames
+	}
+	return nil
+}
+
+type ListWorkbookPropertiesAndLabelsRequest struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Empty means every workspace the caller can fully view.
+	WorkspaceRids []string `protobuf:"bytes,1,rep,name=workspace_rids,json=workspaceRids,proto3" json:"workspace_rids,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ListWorkbookPropertiesAndLabelsRequest) Reset() {
+	*x = ListWorkbookPropertiesAndLabelsRequest{}
+	mi := &file_nominal_protos_workbooks_v1_workbooks_proto_msgTypes[19]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ListWorkbookPropertiesAndLabelsRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ListWorkbookPropertiesAndLabelsRequest) ProtoMessage() {}
+
+func (x *ListWorkbookPropertiesAndLabelsRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_nominal_protos_workbooks_v1_workbooks_proto_msgTypes[19]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ListWorkbookPropertiesAndLabelsRequest.ProtoReflect.Descriptor instead.
+func (*ListWorkbookPropertiesAndLabelsRequest) Descriptor() ([]byte, []int) {
+	return file_nominal_protos_workbooks_v1_workbooks_proto_rawDescGZIP(), []int{19}
+}
+
+func (x *ListWorkbookPropertiesAndLabelsRequest) GetWorkspaceRids() []string {
+	if x != nil {
+		return x.WorkspaceRids
+	}
+	return nil
+}
+
+type ListWorkbookPropertiesAndLabelsResponse struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Each property name used by a workbook in the resolved workspaces, with its distinct values; the first 1000 names in
+	// sorted order. Archived, draft, and Analyst conversation workbooks are included.
+	Properties map[string]*ListWorkbookPropertiesAndLabelsResponse_PropertyValues `protobuf:"bytes,1,rep,name=properties,proto3" json:"properties,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
+	// Every distinct label used by a workbook in the resolved workspaces, sorted; the first 1000.
+	Labels []string `protobuf:"bytes,2,rep,name=labels,proto3" json:"labels,omitempty"`
+	// True when property names, labels or any property's values exceeded the cap and were cut.
+	IsTruncated   bool `protobuf:"varint,3,opt,name=is_truncated,json=isTruncated,proto3" json:"is_truncated,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ListWorkbookPropertiesAndLabelsResponse) Reset() {
+	*x = ListWorkbookPropertiesAndLabelsResponse{}
+	mi := &file_nominal_protos_workbooks_v1_workbooks_proto_msgTypes[20]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ListWorkbookPropertiesAndLabelsResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ListWorkbookPropertiesAndLabelsResponse) ProtoMessage() {}
+
+func (x *ListWorkbookPropertiesAndLabelsResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_nominal_protos_workbooks_v1_workbooks_proto_msgTypes[20]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ListWorkbookPropertiesAndLabelsResponse.ProtoReflect.Descriptor instead.
+func (*ListWorkbookPropertiesAndLabelsResponse) Descriptor() ([]byte, []int) {
+	return file_nominal_protos_workbooks_v1_workbooks_proto_rawDescGZIP(), []int{20}
+}
+
+func (x *ListWorkbookPropertiesAndLabelsResponse) GetProperties() map[string]*ListWorkbookPropertiesAndLabelsResponse_PropertyValues {
+	if x != nil {
+		return x.Properties
+	}
+	return nil
+}
+
+func (x *ListWorkbookPropertiesAndLabelsResponse) GetLabels() []string {
+	if x != nil {
+		return x.Labels
+	}
+	return nil
+}
+
+func (x *ListWorkbookPropertiesAndLabelsResponse) GetIsTruncated() bool {
+	if x != nil {
+		return x.IsTruncated
+	}
+	return false
+}
+
+type UpdateWorkbookRequest struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// The workbook to update; rid names it and the fields in update_mask carry the new values.
+	Workbook *Workbook `protobuf:"bytes,1,opt,name=workbook,proto3" json:"workbook,omitempty"`
+	// A listed field that is empty in `workbook` is written as empty: an empty `title` or `description` is stored
+	// empty, and empty `labels` or `properties` clear them. `data_scope` and `preview_image` must be set when listed;
+	// a preview image cannot be cleared.
+	UpdateMask    *fieldmaskpb.FieldMask `protobuf:"bytes,2,opt,name=update_mask,json=updateMask,proto3" json:"update_mask,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *UpdateWorkbookRequest) Reset() {
+	*x = UpdateWorkbookRequest{}
+	mi := &file_nominal_protos_workbooks_v1_workbooks_proto_msgTypes[21]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *UpdateWorkbookRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*UpdateWorkbookRequest) ProtoMessage() {}
+
+func (x *UpdateWorkbookRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_nominal_protos_workbooks_v1_workbooks_proto_msgTypes[21]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use UpdateWorkbookRequest.ProtoReflect.Descriptor instead.
+func (*UpdateWorkbookRequest) Descriptor() ([]byte, []int) {
+	return file_nominal_protos_workbooks_v1_workbooks_proto_rawDescGZIP(), []int{21}
+}
+
+func (x *UpdateWorkbookRequest) GetWorkbook() *Workbook {
+	if x != nil {
+		return x.Workbook
+	}
+	return nil
+}
+
+func (x *UpdateWorkbookRequest) GetUpdateMask() *fieldmaskpb.FieldMask {
+	if x != nil {
+		return x.UpdateMask
+	}
+	return nil
+}
+
+type UpdateWorkbookResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Workbook      *Workbook              `protobuf:"bytes,1,opt,name=workbook,proto3" json:"workbook,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *UpdateWorkbookResponse) Reset() {
+	*x = UpdateWorkbookResponse{}
+	mi := &file_nominal_protos_workbooks_v1_workbooks_proto_msgTypes[22]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *UpdateWorkbookResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*UpdateWorkbookResponse) ProtoMessage() {}
+
+func (x *UpdateWorkbookResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_nominal_protos_workbooks_v1_workbooks_proto_msgTypes[22]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use UpdateWorkbookResponse.ProtoReflect.Descriptor instead.
+func (*UpdateWorkbookResponse) Descriptor() ([]byte, []int) {
+	return file_nominal_protos_workbooks_v1_workbooks_proto_rawDescGZIP(), []int{22}
+}
+
+func (x *UpdateWorkbookResponse) GetWorkbook() *Workbook {
+	if x != nil {
+		return x.Workbook
+	}
+	return nil
+}
+
+type RenameWorkbookDataSourceRefNamesRequest struct {
+	state       protoimpl.MessageState `protogen:"open.v1"`
+	WorkbookRid string                 `protobuf:"bytes,1,opt,name=workbook_rid,json=workbookRid,proto3" json:"workbook_rid,omitempty"`
+	// Each current ref name to its new name. Renames apply in one pass over each channel variable's refs, so
+	// `{a: b, b: a}` swaps the two names rather than chaining them. A name the workbook does not use is ignored, and
+	// renaming onto a name already in use makes both channel variables read that one data source.
+	DataSourceRefRenames map[string]string `protobuf:"bytes,2,rep,name=data_source_ref_renames,json=dataSourceRefRenames,proto3" json:"data_source_ref_renames,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
+	unknownFields        protoimpl.UnknownFields
+	sizeCache            protoimpl.SizeCache
+}
+
+func (x *RenameWorkbookDataSourceRefNamesRequest) Reset() {
+	*x = RenameWorkbookDataSourceRefNamesRequest{}
+	mi := &file_nominal_protos_workbooks_v1_workbooks_proto_msgTypes[23]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *RenameWorkbookDataSourceRefNamesRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*RenameWorkbookDataSourceRefNamesRequest) ProtoMessage() {}
+
+func (x *RenameWorkbookDataSourceRefNamesRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_nominal_protos_workbooks_v1_workbooks_proto_msgTypes[23]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use RenameWorkbookDataSourceRefNamesRequest.ProtoReflect.Descriptor instead.
+func (*RenameWorkbookDataSourceRefNamesRequest) Descriptor() ([]byte, []int) {
+	return file_nominal_protos_workbooks_v1_workbooks_proto_rawDescGZIP(), []int{23}
+}
+
+func (x *RenameWorkbookDataSourceRefNamesRequest) GetWorkbookRid() string {
+	if x != nil {
+		return x.WorkbookRid
+	}
+	return ""
+}
+
+func (x *RenameWorkbookDataSourceRefNamesRequest) GetDataSourceRefRenames() map[string]string {
+	if x != nil {
+		return x.DataSourceRefRenames
+	}
+	return nil
+}
+
+type RenameWorkbookDataSourceRefNamesResponse struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// The workbook's metadata after the save.
+	Workbook *Workbook `protobuf:"bytes,1,opt,name=workbook,proto3" json:"workbook,omitempty"`
+	// The snapshot the save created, which holds the renamed content.
+	WorkbookSnapshot *WorkbookSnapshot `protobuf:"bytes,2,opt,name=workbook_snapshot,json=workbookSnapshot,proto3" json:"workbook_snapshot,omitempty"`
+	unknownFields    protoimpl.UnknownFields
+	sizeCache        protoimpl.SizeCache
+}
+
+func (x *RenameWorkbookDataSourceRefNamesResponse) Reset() {
+	*x = RenameWorkbookDataSourceRefNamesResponse{}
+	mi := &file_nominal_protos_workbooks_v1_workbooks_proto_msgTypes[24]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *RenameWorkbookDataSourceRefNamesResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*RenameWorkbookDataSourceRefNamesResponse) ProtoMessage() {}
+
+func (x *RenameWorkbookDataSourceRefNamesResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_nominal_protos_workbooks_v1_workbooks_proto_msgTypes[24]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use RenameWorkbookDataSourceRefNamesResponse.ProtoReflect.Descriptor instead.
+func (*RenameWorkbookDataSourceRefNamesResponse) Descriptor() ([]byte, []int) {
+	return file_nominal_protos_workbooks_v1_workbooks_proto_rawDescGZIP(), []int{24}
+}
+
+func (x *RenameWorkbookDataSourceRefNamesResponse) GetWorkbook() *Workbook {
+	if x != nil {
+		return x.Workbook
+	}
+	return nil
+}
+
+func (x *RenameWorkbookDataSourceRefNamesResponse) GetWorkbookSnapshot() *WorkbookSnapshot {
+	if x != nil {
+		return x.WorkbookSnapshot
+	}
+	return nil
+}
+
 type WorkbookDataScope_RunRids struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	RunRids       []string               `protobuf:"bytes,1,rep,name=run_rids,json=runRids,proto3" json:"run_rids,omitempty"`
@@ -851,7 +1525,7 @@ type WorkbookDataScope_RunRids struct {
 
 func (x *WorkbookDataScope_RunRids) Reset() {
 	*x = WorkbookDataScope_RunRids{}
-	mi := &file_nominal_protos_workbooks_v1_workbooks_proto_msgTypes[12]
+	mi := &file_nominal_protos_workbooks_v1_workbooks_proto_msgTypes[26]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -863,7 +1537,7 @@ func (x *WorkbookDataScope_RunRids) String() string {
 func (*WorkbookDataScope_RunRids) ProtoMessage() {}
 
 func (x *WorkbookDataScope_RunRids) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_workbooks_v1_workbooks_proto_msgTypes[12]
+	mi := &file_nominal_protos_workbooks_v1_workbooks_proto_msgTypes[26]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -895,7 +1569,7 @@ type WorkbookDataScope_AssetRids struct {
 
 func (x *WorkbookDataScope_AssetRids) Reset() {
 	*x = WorkbookDataScope_AssetRids{}
-	mi := &file_nominal_protos_workbooks_v1_workbooks_proto_msgTypes[13]
+	mi := &file_nominal_protos_workbooks_v1_workbooks_proto_msgTypes[27]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -907,7 +1581,7 @@ func (x *WorkbookDataScope_AssetRids) String() string {
 func (*WorkbookDataScope_AssetRids) ProtoMessage() {}
 
 func (x *WorkbookDataScope_AssetRids) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_workbooks_v1_workbooks_proto_msgTypes[13]
+	mi := &file_nominal_protos_workbooks_v1_workbooks_proto_msgTypes[27]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -930,11 +1604,56 @@ func (x *WorkbookDataScope_AssetRids) GetAssetRids() []string {
 	return nil
 }
 
+// The distinct values one property takes, sorted; the first 1000.
+type ListWorkbookPropertiesAndLabelsResponse_PropertyValues struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Values        []string               `protobuf:"bytes,1,rep,name=values,proto3" json:"values,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ListWorkbookPropertiesAndLabelsResponse_PropertyValues) Reset() {
+	*x = ListWorkbookPropertiesAndLabelsResponse_PropertyValues{}
+	mi := &file_nominal_protos_workbooks_v1_workbooks_proto_msgTypes[28]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ListWorkbookPropertiesAndLabelsResponse_PropertyValues) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ListWorkbookPropertiesAndLabelsResponse_PropertyValues) ProtoMessage() {}
+
+func (x *ListWorkbookPropertiesAndLabelsResponse_PropertyValues) ProtoReflect() protoreflect.Message {
+	mi := &file_nominal_protos_workbooks_v1_workbooks_proto_msgTypes[28]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ListWorkbookPropertiesAndLabelsResponse_PropertyValues.ProtoReflect.Descriptor instead.
+func (*ListWorkbookPropertiesAndLabelsResponse_PropertyValues) Descriptor() ([]byte, []int) {
+	return file_nominal_protos_workbooks_v1_workbooks_proto_rawDescGZIP(), []int{20, 0}
+}
+
+func (x *ListWorkbookPropertiesAndLabelsResponse_PropertyValues) GetValues() []string {
+	if x != nil {
+		return x.Values
+	}
+	return nil
+}
+
 var File_nominal_protos_workbooks_v1_workbooks_proto protoreflect.FileDescriptor
 
 const file_nominal_protos_workbooks_v1_workbooks_proto_rawDesc = "" +
 	"\n" +
-	"+nominal/protos/workbooks/v1/workbooks.proto\x12\x14nominal.workbooks.v1\x1a\x1bbuf/validate/validate.proto\x1a\x1cgoogle/api/annotations.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a!nominal/protos/gen/v1/alias.proto\x1a!nominal/protos/gen/v1/error.proto\x1a(nominal/protos/workbooks/v1/search.proto\"\xb0\a\n" +
+	"+nominal/protos/workbooks/v1/workbooks.proto\x12\x14nominal.workbooks.v1\x1a\x1bbuf/validate/validate.proto\x1a\x1cgoogle/api/annotations.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a!nominal/protos/gen/v1/alias.proto\x1a!nominal/protos/gen/v1/error.proto\x1a(nominal/protos/workbooks/v1/search.proto\"\xb0\a\n" +
 	"\bWorkbook\x12=\n" +
 	"\x03rid\x18\x01 \x01(\tB+\x9a\xb2\x1a'\n" +
 	"%io.nominal.scout.rids.api.NotebookRidR\x03rid\x12\x1e\n" +
@@ -988,11 +1707,11 @@ const file_nominal_protos_workbooks_v1_workbooks_proto_rawDesc = "" +
 	"\x0eupdated_by_rid\x18\x03 \x01(\tB'\x9a\xb2\x1a#\n" +
 	"!io.nominal.scout.rids.api.UserRidH\x01R\fupdatedByRid\x88\x01\x01B\x0e\n" +
 	"\f_update_timeB\x11\n" +
-	"\x0f_updated_by_rid\"\xca\x01\n" +
-	"\x14WorkbookPreviewImage\x12Y\n" +
-	"\x14light_attachment_rid\x18\x01 \x01(\tB'\x9a\xb2\x1a#\n" +
-	"!io.nominal.api.rids.AttachmentRidR\x12lightAttachmentRid\x12W\n" +
-	"\x13dark_attachment_rid\x18\x02 \x01(\tB'\x9a\xb2\x1a#\n" +
+	"\x0f_updated_by_rid\"\xda\x01\n" +
+	"\x14WorkbookPreviewImage\x12a\n" +
+	"\x14light_attachment_rid\x18\x01 \x01(\tB/\xbaH\x05r\x03\x18\x80\x02\x9a\xb2\x1a#\n" +
+	"!io.nominal.api.rids.AttachmentRidR\x12lightAttachmentRid\x12_\n" +
+	"\x13dark_attachment_rid\x18\x02 \x01(\tB/\xbaH\x05r\x03\x18\x80\x02\x9a\xb2\x1a#\n" +
 	"!io.nominal.api.rids.AttachmentRidR\x11darkAttachmentRid\"\xeb\x02\n" +
 	"\x10WorkbookSnapshot\x12=\n" +
 	"\x03rid\x18\x01 \x01(\tB+\x9a\xb2\x1a'\n" +
@@ -1031,18 +1750,90 @@ const file_nominal_protos_workbooks_v1_workbooks_proto_rawDesc = "" +
 	"page_token\x18\x03 \x01(\tB\b\xbaH\x05r\x03\x18\x80 R\tpageToken\"\x9e\x01\n" +
 	"\x1dListWorkbookSnapshotsResponse\x12U\n" +
 	"\x12workbook_snapshots\x18\x01 \x03(\v2&.nominal.workbooks.v1.WorkbookSnapshotR\x11workbookSnapshots\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken*\xf9\x01\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"q\n" +
+	"\x15DeleteWorkbookRequest\x12X\n" +
+	"\fworkbook_rid\x18\x01 \x01(\tB5\xbaH\ar\x05\x10\x01\x18\x80\x02\x9a\xb2\x1a'\n" +
+	"%io.nominal.scout.rids.api.NotebookRidR\vworkbookRid\"\x18\n" +
+	"\x16DeleteWorkbookResponse\"\x84\x01\n" +
+	"\x1cBatchArchiveWorkbooksRequest\x12d\n" +
+	"\rworkbook_rids\x18\x01 \x03(\tB?\xbaH\x11\x92\x01\x0e\b\x01\x10\xe8\a\x18\x01\"\x05r\x03\x18\x80\x02\x9a\xb2\x1a'\n" +
+	"%io.nominal.scout.rids.api.NotebookRidR\fworkbookRids\"\x1f\n" +
+	"\x1dBatchArchiveWorkbooksResponse\"\x86\x01\n" +
+	"\x1eBatchUnarchiveWorkbooksRequest\x12d\n" +
+	"\rworkbook_rids\x18\x01 \x03(\tB?\xbaH\x11\x92\x01\x0e\b\x01\x10\xe8\a\x18\x01\"\x05r\x03\x18\x80\x02\x9a\xb2\x1a'\n" +
+	"%io.nominal.scout.rids.api.NotebookRidR\fworkbookRids\"!\n" +
+	"\x1fBatchUnarchiveWorkbooksResponse\"\x80\x01\n" +
+	"$GetWorkbookDataSourceRefNamesRequest\x12X\n" +
+	"\fworkbook_rid\x18\x01 \x01(\tB5\xbaH\ar\x05\x10\x01\x18\x80\x02\x9a\xb2\x1a'\n" +
+	"%io.nominal.scout.rids.api.NotebookRidR\vworkbookRid\"\x88\x01\n" +
+	"%GetWorkbookDataSourceRefNamesResponse\x12_\n" +
+	"\x15data_source_ref_names\x18\x01 \x03(\tB,\x9a\xb2\x1a(\n" +
+	"&io.nominal.scout.api.DataSourceRefNameR\x12dataSourceRefNames\"\x89\x01\n" +
+	"&ListWorkbookPropertiesAndLabelsRequest\x12_\n" +
+	"\x0eworkspace_rids\x18\x01 \x03(\tB8\xbaH\x0f\x92\x01\f\x10\xe8\a\x18\x01\"\x05r\x03\x18\x80\x02\x9a\xb2\x1a\"\n" +
+	" io.nominal.api.rids.WorkspaceRidR\rworkspaceRids\"\xef\x03\n" +
+	"'ListWorkbookPropertiesAndLabelsResponse\x12\x90\x01\n" +
+	"\n" +
+	"properties\x18\x01 \x03(\v2M.nominal.workbooks.v1.ListWorkbookPropertiesAndLabelsResponse.PropertiesEntryB!\x9a\xb2\x1a\x1d\x12\x1bio.nominal.api.PropertyNameR\n" +
+	"properties\x122\n" +
+	"\x06labels\x18\x02 \x03(\tB\x1a\x9a\xb2\x1a\x16\n" +
+	"\x14io.nominal.api.LabelR\x06labels\x12!\n" +
+	"\fis_truncated\x18\x03 \x01(\bR\visTruncated\x1aL\n" +
+	"\x0ePropertyValues\x12:\n" +
+	"\x06values\x18\x01 \x03(\tB\"\x9a\xb2\x1a\x1e\n" +
+	"\x1cio.nominal.api.PropertyValueR\x06values\x1a\x8b\x01\n" +
+	"\x0fPropertiesEntry\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\tR\x03key\x12b\n" +
+	"\x05value\x18\x02 \x01(\v2L.nominal.workbooks.v1.ListWorkbookPropertiesAndLabelsResponse.PropertyValuesR\x05value:\x028\x01\"\x84\x05\n" +
+	"\x15UpdateWorkbookRequest\x12\xb3\x01\n" +
+	"\bworkbook\x18\x01 \x01(\v2\x1e.nominal.workbooks.v1.WorkbookBw\xbaHt\xba\x01n\n" +
+	"\x13workbook.rid.length\x12(workbook.rid must be 1 to 256 characters\x1a-this.rid.size() > 0 && this.rid.size() <= 256\xc8\x01\x01R\bworkbook\x12\xb4\x03\n" +
+	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\xf6\x02\xbaH\xf2\x02\xba\x01N\n" +
+	"\x15update_mask.non_empty\x12\x1emust contain at least one path\x1a\x15this.paths.size() > 0\xba\x01\x9a\x02\n" +
+	"\x1bupdate_mask.supported_paths\x12npaths must be title, description, labels, properties, data_scope, is_draft, is_archived, preview_image or lock\x1a\x8a\x01this.paths.all(p, p in ['title', 'description', 'labels', 'properties', 'data_scope', 'is_draft', 'is_archived', 'preview_image', 'lock'])\xc8\x01\x01R\n" +
+	"updateMask\"T\n" +
+	"\x16UpdateWorkbookResponse\x12:\n" +
+	"\bworkbook\x18\x01 \x01(\v2\x1e.nominal.workbooks.v1.WorkbookR\bworkbook\"\xd0\x03\n" +
+	"'RenameWorkbookDataSourceRefNamesRequest\x12X\n" +
+	"\fworkbook_rid\x18\x01 \x01(\tB5\xbaH\ar\x05\x10\x01\x18\x80\x02\x9a\xb2\x1a'\n" +
+	"%io.nominal.scout.rids.api.NotebookRidR\vworkbookRid\x12\x81\x02\n" +
+	"\x17data_source_ref_renames\x18\x02 \x03(\v2W.nominal.workbooks.v1.RenameWorkbookDataSourceRefNamesRequest.DataSourceRefRenamesEntryBq\xbaH\x1a\x9a\x01\x17\b\x01\x10\xe8\a\"\ar\x05\x10\x01\x18\x80\b*\ar\x05\x10\x01\x18\x80\b\x9a\xb2\x1aP\x12&io.nominal.scout.api.DataSourceRefName\x1a&io.nominal.scout.api.DataSourceRefNameR\x14dataSourceRefRenames\x1aG\n" +
+	"\x19DataSourceRefRenamesEntry\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
+	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"\xbb\x01\n" +
+	"(RenameWorkbookDataSourceRefNamesResponse\x12:\n" +
+	"\bworkbook\x18\x01 \x01(\v2\x1e.nominal.workbooks.v1.WorkbookR\bworkbook\x12S\n" +
+	"\x11workbook_snapshot\x18\x02 \x01(\v2&.nominal.workbooks.v1.WorkbookSnapshotR\x10workbookSnapshot*\xb6\x06\n" +
 	"\rWorkbookError\x12R\n" +
 	"\x1eWORKBOOK_ERROR_INVALID_REQUEST\x10\x00\x1a.\xb2\xb2\x1a*\n" +
 	"\x10INVALID_ARGUMENT\x12\x16InvalidWorkbookRequest\x12H\n" +
 	"!WORKBOOK_ERROR_WORKBOOK_NOT_FOUND\x10\x01\x1a!\xb2\xb2\x1a\x1d\n" +
 	"\tNOT_FOUND\x12\x10WorkbookNotFound\x12J\n" +
 	"\"WORKBOOK_ERROR_WORKBOOKS_NOT_FOUND\x10\x02\x1a\"\xb2\xb2\x1a\x1e\n" +
-	"\tNOT_FOUND\x12\x11WorkbooksNotFound2\x8f\x04\n" +
+	"\tNOT_FOUND\x12\x11WorkbooksNotFound\x12b\n" +
+	"+WORKBOOK_ERROR_TOO_MANY_WORKBOOKS_REQUESTED\x10\x03\x1a1\xb2\xb2\x1a-\n" +
+	"\x10INVALID_ARGUMENT\x12\x19TooManyWorkbooksRequested\x12_\n" +
+	"$WORKBOOK_ERROR_CANNOT_READ_REF_NAMES\x10\x04\x1a5\xb2\xb2\x1a1\n" +
+	"\x13FAILED_PRECONDITION\x12\x1aCannotReadWorkbookRefNames\x12l\n" +
+	"/WORKBOOK_ERROR_DEMO_WORKBOOK_CANNOT_BE_UNLOCKED\x10\x05\x1a7\xb2\xb2\x1a3\n" +
+	"\x13FAILED_PRECONDITION\x12\x1cDemoWorkbookCannotBeUnlocked\x12r\n" +
+	"2WORKBOOK_ERROR_DEMO_WORKBOOK_CANNOT_BE_UNPUBLISHED\x10\x06\x1a:\xb2\xb2\x1a6\n" +
+	"\x13FAILED_PRECONDITION\x12\x1fDemoWorkbookCannotBeUnpublished\x12M\n" +
+	"\x1eWORKBOOK_ERROR_WORKBOOK_LOCKED\x10\a\x1a)\xb2\xb2\x1a%\n" +
+	"\x13FAILED_PRECONDITION\x12\x0eWorkbookLocked\x12E\n" +
+	"\x1cWORKBOOK_ERROR_SAVE_CONFLICT\x10\b\x1a#\xb2\xb2\x1a\x1f\n" +
+	"\aABORTED\x12\x14WorkbookSaveConflict2\xf0\x0e\n" +
 	"\x0fWorkbookService\x12\xa2\x01\n" +
 	"\x11BatchGetWorkbooks\x12..nominal.workbooks.v1.BatchGetWorkbooksRequest\x1a/.nominal.workbooks.v1.BatchGetWorkbooksResponse\",\x82\xd3\xe4\x93\x02&:\x01*\"!/workbooks/v1/workbooks/batch-get\x12\x99\x01\n" +
 	"\x0fSearchWorkbooks\x12,.nominal.workbooks.v1.SearchWorkbooksRequest\x1a-.nominal.workbooks.v1.SearchWorkbooksResponse\")\x82\xd3\xe4\x93\x02#:\x01*\"\x1e/workbooks/v1/workbooks/search\x12\xba\x01\n" +
-	"\x15ListWorkbookSnapshots\x122.nominal.workbooks.v1.ListWorkbookSnapshotsRequest\x1a3.nominal.workbooks.v1.ListWorkbookSnapshotsResponse\"8\x82\xd3\xe4\x93\x022\x120/workbooks/v1/workbooks/{workbook_rid}/snapshotsB\xf1\x01\n" +
+	"\x15ListWorkbookSnapshots\x122.nominal.workbooks.v1.ListWorkbookSnapshotsRequest\x1a3.nominal.workbooks.v1.ListWorkbookSnapshotsResponse\"8\x82\xd3\xe4\x93\x022\x120/workbooks/v1/workbooks/{workbook_rid}/snapshots\x12\xde\x01\n" +
+	"\x1dGetWorkbookDataSourceRefNames\x12:.nominal.workbooks.v1.GetWorkbookDataSourceRefNamesRequest\x1a;.nominal.workbooks.v1.GetWorkbookDataSourceRefNamesResponse\"D\x82\xd3\xe4\x93\x02>\x12</workbooks/v1/workbooks/{workbook_rid}/data-source-ref-names\x12\xd8\x01\n" +
+	"\x1fListWorkbookPropertiesAndLabels\x12<.nominal.workbooks.v1.ListWorkbookPropertiesAndLabelsRequest\x1a=.nominal.workbooks.v1.ListWorkbookPropertiesAndLabelsResponse\"8\x82\xd3\xe4\x93\x022:\x01*\"-/workbooks/v1/workbooks/properties-and-labels\x12\x9e\x01\n" +
+	"\x0eUpdateWorkbook\x12+.nominal.workbooks.v1.UpdateWorkbookRequest\x1a,.nominal.workbooks.v1.UpdateWorkbookResponse\"1\x82\xd3\xe4\x93\x02+:\x01*\x1a&/workbooks/v1/workbooks/{workbook.rid}\x12\xf1\x01\n" +
+	" RenameWorkbookDataSourceRefNames\x12=.nominal.workbooks.v1.RenameWorkbookDataSourceRefNamesRequest\x1a>.nominal.workbooks.v1.RenameWorkbookDataSourceRefNamesResponse\"N\x82\xd3\xe4\x93\x02H:\x01*\"C/workbooks/v1/workbooks/{workbook_rid}/rename-data-source-ref-names\x12\xb2\x01\n" +
+	"\x15BatchArchiveWorkbooks\x122.nominal.workbooks.v1.BatchArchiveWorkbooksRequest\x1a3.nominal.workbooks.v1.BatchArchiveWorkbooksResponse\"0\x82\xd3\xe4\x93\x02*:\x01*\"%/workbooks/v1/workbooks/batch-archive\x12\xba\x01\n" +
+	"\x17BatchUnarchiveWorkbooks\x124.nominal.workbooks.v1.BatchUnarchiveWorkbooksRequest\x1a5.nominal.workbooks.v1.BatchUnarchiveWorkbooksResponse\"2\x82\xd3\xe4\x93\x02,:\x01*\"'/workbooks/v1/workbooks/batch-unarchive\x12\x9b\x01\n" +
+	"\x0eDeleteWorkbook\x12+.nominal.workbooks.v1.DeleteWorkbookRequest\x1a,.nominal.workbooks.v1.DeleteWorkbookResponse\".\x82\xd3\xe4\x93\x02(*&/workbooks/v1/workbooks/{workbook_rid}B\xf1\x01\n" +
 	"\x18com.nominal.workbooks.v1B\x0eWorkbooksProtoP\x01ZSgithub.com/nominal-io/nominal-api-protos-go/nominal/protos/workbooks/v1;workbooksv1\xa2\x02\x03NWX\xaa\x02\x14Nominal.Workbooks.V1\xca\x02\x14Nominal\\Workbooks\\V1\xe2\x02 Nominal\\Workbooks\\V1\\GPBMetadata\xea\x02\x16Nominal::Workbooks::V1b\x06proto3"
 
 var (
@@ -1058,56 +1849,96 @@ func file_nominal_protos_workbooks_v1_workbooks_proto_rawDescGZIP() []byte {
 }
 
 var file_nominal_protos_workbooks_v1_workbooks_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
-var file_nominal_protos_workbooks_v1_workbooks_proto_msgTypes = make([]protoimpl.MessageInfo, 14)
+var file_nominal_protos_workbooks_v1_workbooks_proto_msgTypes = make([]protoimpl.MessageInfo, 31)
 var file_nominal_protos_workbooks_v1_workbooks_proto_goTypes = []any{
-	(WorkbookError)(0),                    // 0: nominal.workbooks.v1.WorkbookError
-	(*Workbook)(nil),                      // 1: nominal.workbooks.v1.Workbook
-	(*WorkbookDataScope)(nil),             // 2: nominal.workbooks.v1.WorkbookDataScope
-	(*WorkbookLock)(nil),                  // 3: nominal.workbooks.v1.WorkbookLock
-	(*WorkbookPreviewImage)(nil),          // 4: nominal.workbooks.v1.WorkbookPreviewImage
-	(*WorkbookSnapshot)(nil),              // 5: nominal.workbooks.v1.WorkbookSnapshot
-	(*BatchGetWorkbooksRequest)(nil),      // 6: nominal.workbooks.v1.BatchGetWorkbooksRequest
-	(*BatchGetWorkbooksResponse)(nil),     // 7: nominal.workbooks.v1.BatchGetWorkbooksResponse
-	(*SearchWorkbooksRequest)(nil),        // 8: nominal.workbooks.v1.SearchWorkbooksRequest
-	(*SearchWorkbooksResponse)(nil),       // 9: nominal.workbooks.v1.SearchWorkbooksResponse
-	(*ListWorkbookSnapshotsRequest)(nil),  // 10: nominal.workbooks.v1.ListWorkbookSnapshotsRequest
-	(*ListWorkbookSnapshotsResponse)(nil), // 11: nominal.workbooks.v1.ListWorkbookSnapshotsResponse
-	nil,                                   // 12: nominal.workbooks.v1.Workbook.PropertiesEntry
-	(*WorkbookDataScope_RunRids)(nil),     // 13: nominal.workbooks.v1.WorkbookDataScope.RunRids
-	(*WorkbookDataScope_AssetRids)(nil),   // 14: nominal.workbooks.v1.WorkbookDataScope.AssetRids
-	(WorkbookType)(0),                     // 15: nominal.workbooks.v1.WorkbookType
-	(*timestamppb.Timestamp)(nil),         // 16: google.protobuf.Timestamp
-	(*WorkbookSearchQuery)(nil),           // 17: nominal.workbooks.v1.WorkbookSearchQuery
-	(*WorkbookSortOptions)(nil),           // 18: nominal.workbooks.v1.WorkbookSortOptions
+	(WorkbookError)(0),                               // 0: nominal.workbooks.v1.WorkbookError
+	(*Workbook)(nil),                                 // 1: nominal.workbooks.v1.Workbook
+	(*WorkbookDataScope)(nil),                        // 2: nominal.workbooks.v1.WorkbookDataScope
+	(*WorkbookLock)(nil),                             // 3: nominal.workbooks.v1.WorkbookLock
+	(*WorkbookPreviewImage)(nil),                     // 4: nominal.workbooks.v1.WorkbookPreviewImage
+	(*WorkbookSnapshot)(nil),                         // 5: nominal.workbooks.v1.WorkbookSnapshot
+	(*BatchGetWorkbooksRequest)(nil),                 // 6: nominal.workbooks.v1.BatchGetWorkbooksRequest
+	(*BatchGetWorkbooksResponse)(nil),                // 7: nominal.workbooks.v1.BatchGetWorkbooksResponse
+	(*SearchWorkbooksRequest)(nil),                   // 8: nominal.workbooks.v1.SearchWorkbooksRequest
+	(*SearchWorkbooksResponse)(nil),                  // 9: nominal.workbooks.v1.SearchWorkbooksResponse
+	(*ListWorkbookSnapshotsRequest)(nil),             // 10: nominal.workbooks.v1.ListWorkbookSnapshotsRequest
+	(*ListWorkbookSnapshotsResponse)(nil),            // 11: nominal.workbooks.v1.ListWorkbookSnapshotsResponse
+	(*DeleteWorkbookRequest)(nil),                    // 12: nominal.workbooks.v1.DeleteWorkbookRequest
+	(*DeleteWorkbookResponse)(nil),                   // 13: nominal.workbooks.v1.DeleteWorkbookResponse
+	(*BatchArchiveWorkbooksRequest)(nil),             // 14: nominal.workbooks.v1.BatchArchiveWorkbooksRequest
+	(*BatchArchiveWorkbooksResponse)(nil),            // 15: nominal.workbooks.v1.BatchArchiveWorkbooksResponse
+	(*BatchUnarchiveWorkbooksRequest)(nil),           // 16: nominal.workbooks.v1.BatchUnarchiveWorkbooksRequest
+	(*BatchUnarchiveWorkbooksResponse)(nil),          // 17: nominal.workbooks.v1.BatchUnarchiveWorkbooksResponse
+	(*GetWorkbookDataSourceRefNamesRequest)(nil),     // 18: nominal.workbooks.v1.GetWorkbookDataSourceRefNamesRequest
+	(*GetWorkbookDataSourceRefNamesResponse)(nil),    // 19: nominal.workbooks.v1.GetWorkbookDataSourceRefNamesResponse
+	(*ListWorkbookPropertiesAndLabelsRequest)(nil),   // 20: nominal.workbooks.v1.ListWorkbookPropertiesAndLabelsRequest
+	(*ListWorkbookPropertiesAndLabelsResponse)(nil),  // 21: nominal.workbooks.v1.ListWorkbookPropertiesAndLabelsResponse
+	(*UpdateWorkbookRequest)(nil),                    // 22: nominal.workbooks.v1.UpdateWorkbookRequest
+	(*UpdateWorkbookResponse)(nil),                   // 23: nominal.workbooks.v1.UpdateWorkbookResponse
+	(*RenameWorkbookDataSourceRefNamesRequest)(nil),  // 24: nominal.workbooks.v1.RenameWorkbookDataSourceRefNamesRequest
+	(*RenameWorkbookDataSourceRefNamesResponse)(nil), // 25: nominal.workbooks.v1.RenameWorkbookDataSourceRefNamesResponse
+	nil,                                 // 26: nominal.workbooks.v1.Workbook.PropertiesEntry
+	(*WorkbookDataScope_RunRids)(nil),   // 27: nominal.workbooks.v1.WorkbookDataScope.RunRids
+	(*WorkbookDataScope_AssetRids)(nil), // 28: nominal.workbooks.v1.WorkbookDataScope.AssetRids
+	(*ListWorkbookPropertiesAndLabelsResponse_PropertyValues)(nil), // 29: nominal.workbooks.v1.ListWorkbookPropertiesAndLabelsResponse.PropertyValues
+	nil,                           // 30: nominal.workbooks.v1.ListWorkbookPropertiesAndLabelsResponse.PropertiesEntry
+	nil,                           // 31: nominal.workbooks.v1.RenameWorkbookDataSourceRefNamesRequest.DataSourceRefRenamesEntry
+	(WorkbookType)(0),             // 32: nominal.workbooks.v1.WorkbookType
+	(*timestamppb.Timestamp)(nil), // 33: google.protobuf.Timestamp
+	(*WorkbookSearchQuery)(nil),   // 34: nominal.workbooks.v1.WorkbookSearchQuery
+	(*WorkbookSortOptions)(nil),   // 35: nominal.workbooks.v1.WorkbookSortOptions
+	(*fieldmaskpb.FieldMask)(nil), // 36: google.protobuf.FieldMask
 }
 var file_nominal_protos_workbooks_v1_workbooks_proto_depIdxs = []int32{
-	15, // 0: nominal.workbooks.v1.Workbook.workbook_type:type_name -> nominal.workbooks.v1.WorkbookType
+	32, // 0: nominal.workbooks.v1.Workbook.workbook_type:type_name -> nominal.workbooks.v1.WorkbookType
 	2,  // 1: nominal.workbooks.v1.Workbook.data_scope:type_name -> nominal.workbooks.v1.WorkbookDataScope
 	3,  // 2: nominal.workbooks.v1.Workbook.lock:type_name -> nominal.workbooks.v1.WorkbookLock
-	16, // 3: nominal.workbooks.v1.Workbook.create_time:type_name -> google.protobuf.Timestamp
-	16, // 4: nominal.workbooks.v1.Workbook.update_time:type_name -> google.protobuf.Timestamp
-	12, // 5: nominal.workbooks.v1.Workbook.properties:type_name -> nominal.workbooks.v1.Workbook.PropertiesEntry
+	33, // 3: nominal.workbooks.v1.Workbook.create_time:type_name -> google.protobuf.Timestamp
+	33, // 4: nominal.workbooks.v1.Workbook.update_time:type_name -> google.protobuf.Timestamp
+	26, // 5: nominal.workbooks.v1.Workbook.properties:type_name -> nominal.workbooks.v1.Workbook.PropertiesEntry
 	4,  // 6: nominal.workbooks.v1.Workbook.preview_image:type_name -> nominal.workbooks.v1.WorkbookPreviewImage
-	13, // 7: nominal.workbooks.v1.WorkbookDataScope.run_rids:type_name -> nominal.workbooks.v1.WorkbookDataScope.RunRids
-	14, // 8: nominal.workbooks.v1.WorkbookDataScope.asset_rids:type_name -> nominal.workbooks.v1.WorkbookDataScope.AssetRids
-	16, // 9: nominal.workbooks.v1.WorkbookLock.update_time:type_name -> google.protobuf.Timestamp
-	16, // 10: nominal.workbooks.v1.WorkbookSnapshot.create_time:type_name -> google.protobuf.Timestamp
+	27, // 7: nominal.workbooks.v1.WorkbookDataScope.run_rids:type_name -> nominal.workbooks.v1.WorkbookDataScope.RunRids
+	28, // 8: nominal.workbooks.v1.WorkbookDataScope.asset_rids:type_name -> nominal.workbooks.v1.WorkbookDataScope.AssetRids
+	33, // 9: nominal.workbooks.v1.WorkbookLock.update_time:type_name -> google.protobuf.Timestamp
+	33, // 10: nominal.workbooks.v1.WorkbookSnapshot.create_time:type_name -> google.protobuf.Timestamp
 	1,  // 11: nominal.workbooks.v1.BatchGetWorkbooksResponse.workbooks:type_name -> nominal.workbooks.v1.Workbook
-	17, // 12: nominal.workbooks.v1.SearchWorkbooksRequest.query:type_name -> nominal.workbooks.v1.WorkbookSearchQuery
-	18, // 13: nominal.workbooks.v1.SearchWorkbooksRequest.sort:type_name -> nominal.workbooks.v1.WorkbookSortOptions
+	34, // 12: nominal.workbooks.v1.SearchWorkbooksRequest.query:type_name -> nominal.workbooks.v1.WorkbookSearchQuery
+	35, // 13: nominal.workbooks.v1.SearchWorkbooksRequest.sort:type_name -> nominal.workbooks.v1.WorkbookSortOptions
 	1,  // 14: nominal.workbooks.v1.SearchWorkbooksResponse.workbooks:type_name -> nominal.workbooks.v1.Workbook
 	5,  // 15: nominal.workbooks.v1.ListWorkbookSnapshotsResponse.workbook_snapshots:type_name -> nominal.workbooks.v1.WorkbookSnapshot
-	6,  // 16: nominal.workbooks.v1.WorkbookService.BatchGetWorkbooks:input_type -> nominal.workbooks.v1.BatchGetWorkbooksRequest
-	8,  // 17: nominal.workbooks.v1.WorkbookService.SearchWorkbooks:input_type -> nominal.workbooks.v1.SearchWorkbooksRequest
-	10, // 18: nominal.workbooks.v1.WorkbookService.ListWorkbookSnapshots:input_type -> nominal.workbooks.v1.ListWorkbookSnapshotsRequest
-	7,  // 19: nominal.workbooks.v1.WorkbookService.BatchGetWorkbooks:output_type -> nominal.workbooks.v1.BatchGetWorkbooksResponse
-	9,  // 20: nominal.workbooks.v1.WorkbookService.SearchWorkbooks:output_type -> nominal.workbooks.v1.SearchWorkbooksResponse
-	11, // 21: nominal.workbooks.v1.WorkbookService.ListWorkbookSnapshots:output_type -> nominal.workbooks.v1.ListWorkbookSnapshotsResponse
-	19, // [19:22] is the sub-list for method output_type
-	16, // [16:19] is the sub-list for method input_type
-	16, // [16:16] is the sub-list for extension type_name
-	16, // [16:16] is the sub-list for extension extendee
-	0,  // [0:16] is the sub-list for field type_name
+	30, // 16: nominal.workbooks.v1.ListWorkbookPropertiesAndLabelsResponse.properties:type_name -> nominal.workbooks.v1.ListWorkbookPropertiesAndLabelsResponse.PropertiesEntry
+	1,  // 17: nominal.workbooks.v1.UpdateWorkbookRequest.workbook:type_name -> nominal.workbooks.v1.Workbook
+	36, // 18: nominal.workbooks.v1.UpdateWorkbookRequest.update_mask:type_name -> google.protobuf.FieldMask
+	1,  // 19: nominal.workbooks.v1.UpdateWorkbookResponse.workbook:type_name -> nominal.workbooks.v1.Workbook
+	31, // 20: nominal.workbooks.v1.RenameWorkbookDataSourceRefNamesRequest.data_source_ref_renames:type_name -> nominal.workbooks.v1.RenameWorkbookDataSourceRefNamesRequest.DataSourceRefRenamesEntry
+	1,  // 21: nominal.workbooks.v1.RenameWorkbookDataSourceRefNamesResponse.workbook:type_name -> nominal.workbooks.v1.Workbook
+	5,  // 22: nominal.workbooks.v1.RenameWorkbookDataSourceRefNamesResponse.workbook_snapshot:type_name -> nominal.workbooks.v1.WorkbookSnapshot
+	29, // 23: nominal.workbooks.v1.ListWorkbookPropertiesAndLabelsResponse.PropertiesEntry.value:type_name -> nominal.workbooks.v1.ListWorkbookPropertiesAndLabelsResponse.PropertyValues
+	6,  // 24: nominal.workbooks.v1.WorkbookService.BatchGetWorkbooks:input_type -> nominal.workbooks.v1.BatchGetWorkbooksRequest
+	8,  // 25: nominal.workbooks.v1.WorkbookService.SearchWorkbooks:input_type -> nominal.workbooks.v1.SearchWorkbooksRequest
+	10, // 26: nominal.workbooks.v1.WorkbookService.ListWorkbookSnapshots:input_type -> nominal.workbooks.v1.ListWorkbookSnapshotsRequest
+	18, // 27: nominal.workbooks.v1.WorkbookService.GetWorkbookDataSourceRefNames:input_type -> nominal.workbooks.v1.GetWorkbookDataSourceRefNamesRequest
+	20, // 28: nominal.workbooks.v1.WorkbookService.ListWorkbookPropertiesAndLabels:input_type -> nominal.workbooks.v1.ListWorkbookPropertiesAndLabelsRequest
+	22, // 29: nominal.workbooks.v1.WorkbookService.UpdateWorkbook:input_type -> nominal.workbooks.v1.UpdateWorkbookRequest
+	24, // 30: nominal.workbooks.v1.WorkbookService.RenameWorkbookDataSourceRefNames:input_type -> nominal.workbooks.v1.RenameWorkbookDataSourceRefNamesRequest
+	14, // 31: nominal.workbooks.v1.WorkbookService.BatchArchiveWorkbooks:input_type -> nominal.workbooks.v1.BatchArchiveWorkbooksRequest
+	16, // 32: nominal.workbooks.v1.WorkbookService.BatchUnarchiveWorkbooks:input_type -> nominal.workbooks.v1.BatchUnarchiveWorkbooksRequest
+	12, // 33: nominal.workbooks.v1.WorkbookService.DeleteWorkbook:input_type -> nominal.workbooks.v1.DeleteWorkbookRequest
+	7,  // 34: nominal.workbooks.v1.WorkbookService.BatchGetWorkbooks:output_type -> nominal.workbooks.v1.BatchGetWorkbooksResponse
+	9,  // 35: nominal.workbooks.v1.WorkbookService.SearchWorkbooks:output_type -> nominal.workbooks.v1.SearchWorkbooksResponse
+	11, // 36: nominal.workbooks.v1.WorkbookService.ListWorkbookSnapshots:output_type -> nominal.workbooks.v1.ListWorkbookSnapshotsResponse
+	19, // 37: nominal.workbooks.v1.WorkbookService.GetWorkbookDataSourceRefNames:output_type -> nominal.workbooks.v1.GetWorkbookDataSourceRefNamesResponse
+	21, // 38: nominal.workbooks.v1.WorkbookService.ListWorkbookPropertiesAndLabels:output_type -> nominal.workbooks.v1.ListWorkbookPropertiesAndLabelsResponse
+	23, // 39: nominal.workbooks.v1.WorkbookService.UpdateWorkbook:output_type -> nominal.workbooks.v1.UpdateWorkbookResponse
+	25, // 40: nominal.workbooks.v1.WorkbookService.RenameWorkbookDataSourceRefNames:output_type -> nominal.workbooks.v1.RenameWorkbookDataSourceRefNamesResponse
+	15, // 41: nominal.workbooks.v1.WorkbookService.BatchArchiveWorkbooks:output_type -> nominal.workbooks.v1.BatchArchiveWorkbooksResponse
+	17, // 42: nominal.workbooks.v1.WorkbookService.BatchUnarchiveWorkbooks:output_type -> nominal.workbooks.v1.BatchUnarchiveWorkbooksResponse
+	13, // 43: nominal.workbooks.v1.WorkbookService.DeleteWorkbook:output_type -> nominal.workbooks.v1.DeleteWorkbookResponse
+	34, // [34:44] is the sub-list for method output_type
+	24, // [24:34] is the sub-list for method input_type
+	24, // [24:24] is the sub-list for extension type_name
+	24, // [24:24] is the sub-list for extension extendee
+	0,  // [0:24] is the sub-list for field type_name
 }
 
 func init() { file_nominal_protos_workbooks_v1_workbooks_proto_init() }
@@ -1130,7 +1961,7 @@ func file_nominal_protos_workbooks_v1_workbooks_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_nominal_protos_workbooks_v1_workbooks_proto_rawDesc), len(file_nominal_protos_workbooks_v1_workbooks_proto_rawDesc)),
 			NumEnums:      1,
-			NumMessages:   14,
+			NumMessages:   31,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

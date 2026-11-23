@@ -19,7 +19,8 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	NominalChannelWriterService_Write_FullMethodName = "/nominal.channel_writer.v2.NominalChannelWriterService/Write"
+	NominalChannelWriterService_Write_FullMethodName       = "/nominal.channel_writer.v2.NominalChannelWriterService/Write"
+	NominalChannelWriterService_WriteStream_FullMethodName = "/nominal.channel_writer.v2.NominalChannelWriterService/WriteStream"
 )
 
 // NominalChannelWriterServiceClient is the client API for NominalChannelWriterService service.
@@ -30,11 +31,23 @@ const (
 // over any field limit is rejected with INVALID_ARGUMENT. Each request is also bounded by the service's
 // 50 MiB inbound message limit.
 type NominalChannelWriterServiceClient interface {
-	// Writes batches of points and logs to one dataset, and returns once they are accepted into
-	// the queue. Each batch is one series (a channel and tag set) or one log channel, carried as parallel
+	// Writes batches of points and logs to one dataset, and returns once they are accepted into the
+	// queue. Each batch is one series (a channel and tag set) or one log channel, carried as parallel
 	// columns. Acceptance does not mean downstream consumers have processed the data.
-	// Not yet served: returns UNIMPLEMENTED. It has no HTTP mapping until a handler exists.
+	//
+	// A point channel's domain is inferred from its axes when created and is immutable across tag sets.
+	// Batches for the same channel must agree on domain and match any existing channel. Domain conflicts
+	// fail with DOMAIN_MISMATCH before any writes are submitted.
 	Write(ctx context.Context, in *WriteRequest, opts ...grpc.CallOption) (*WriteResponse, error)
+	// Streams points and logs to datasets. Each request either declares schemas or writes a chunk whose
+	// columns reference declared schema IDs, so dataset and channel metadata is sent once per stream.
+	//
+	// Each request carries a sequence_number that increases with every request on the stream, and is
+	// answered with Accepted or Rejected for that number. Wait for a declaration to be accepted before
+	// referencing its schema IDs. Delivery is at least once: after a reconnect,
+	// re-declare schemas and replay unanswered requests. A chunk whose point axes conflict with a
+	// channel's domain is rejected with DOMAIN_MISMATCH.
+	WriteStream(ctx context.Context, opts ...grpc.CallOption) (grpc.BidiStreamingClient[WriteStreamRequest, WriteStreamResponse], error)
 }
 
 type nominalChannelWriterServiceClient struct {
@@ -55,6 +68,19 @@ func (c *nominalChannelWriterServiceClient) Write(ctx context.Context, in *Write
 	return out, nil
 }
 
+func (c *nominalChannelWriterServiceClient) WriteStream(ctx context.Context, opts ...grpc.CallOption) (grpc.BidiStreamingClient[WriteStreamRequest, WriteStreamResponse], error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	stream, err := c.cc.NewStream(ctx, &NominalChannelWriterService_ServiceDesc.Streams[0], NominalChannelWriterService_WriteStream_FullMethodName, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	x := &grpc.GenericClientStream[WriteStreamRequest, WriteStreamResponse]{ClientStream: stream}
+	return x, nil
+}
+
+// This type alias is provided for backwards compatibility with existing code that references the prior non-generic stream type by name.
+type NominalChannelWriterService_WriteStreamClient = grpc.BidiStreamingClient[WriteStreamRequest, WriteStreamResponse]
+
 // NominalChannelWriterServiceServer is the server API for NominalChannelWriterService service.
 // All implementations must embed UnimplementedNominalChannelWriterServiceServer
 // for forward compatibility.
@@ -63,11 +89,23 @@ func (c *nominalChannelWriterServiceClient) Write(ctx context.Context, in *Write
 // over any field limit is rejected with INVALID_ARGUMENT. Each request is also bounded by the service's
 // 50 MiB inbound message limit.
 type NominalChannelWriterServiceServer interface {
-	// Writes batches of points and logs to one dataset, and returns once they are accepted into
-	// the queue. Each batch is one series (a channel and tag set) or one log channel, carried as parallel
+	// Writes batches of points and logs to one dataset, and returns once they are accepted into the
+	// queue. Each batch is one series (a channel and tag set) or one log channel, carried as parallel
 	// columns. Acceptance does not mean downstream consumers have processed the data.
-	// Not yet served: returns UNIMPLEMENTED. It has no HTTP mapping until a handler exists.
+	//
+	// A point channel's domain is inferred from its axes when created and is immutable across tag sets.
+	// Batches for the same channel must agree on domain and match any existing channel. Domain conflicts
+	// fail with DOMAIN_MISMATCH before any writes are submitted.
 	Write(context.Context, *WriteRequest) (*WriteResponse, error)
+	// Streams points and logs to datasets. Each request either declares schemas or writes a chunk whose
+	// columns reference declared schema IDs, so dataset and channel metadata is sent once per stream.
+	//
+	// Each request carries a sequence_number that increases with every request on the stream, and is
+	// answered with Accepted or Rejected for that number. Wait for a declaration to be accepted before
+	// referencing its schema IDs. Delivery is at least once: after a reconnect,
+	// re-declare schemas and replay unanswered requests. A chunk whose point axes conflict with a
+	// channel's domain is rejected with DOMAIN_MISMATCH.
+	WriteStream(grpc.BidiStreamingServer[WriteStreamRequest, WriteStreamResponse]) error
 	mustEmbedUnimplementedNominalChannelWriterServiceServer()
 }
 
@@ -80,6 +118,9 @@ type UnimplementedNominalChannelWriterServiceServer struct{}
 
 func (UnimplementedNominalChannelWriterServiceServer) Write(context.Context, *WriteRequest) (*WriteResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method Write not implemented")
+}
+func (UnimplementedNominalChannelWriterServiceServer) WriteStream(grpc.BidiStreamingServer[WriteStreamRequest, WriteStreamResponse]) error {
+	return status.Error(codes.Unimplemented, "method WriteStream not implemented")
 }
 func (UnimplementedNominalChannelWriterServiceServer) mustEmbedUnimplementedNominalChannelWriterServiceServer() {
 }
@@ -121,6 +162,13 @@ func _NominalChannelWriterService_Write_Handler(srv interface{}, ctx context.Con
 	return interceptor(ctx, in, info, handler)
 }
 
+func _NominalChannelWriterService_WriteStream_Handler(srv interface{}, stream grpc.ServerStream) error {
+	return srv.(NominalChannelWriterServiceServer).WriteStream(&grpc.GenericServerStream[WriteStreamRequest, WriteStreamResponse]{ServerStream: stream})
+}
+
+// This type alias is provided for backwards compatibility with existing code that references the prior non-generic stream type by name.
+type NominalChannelWriterService_WriteStreamServer = grpc.BidiStreamingServer[WriteStreamRequest, WriteStreamResponse]
+
 // NominalChannelWriterService_ServiceDesc is the grpc.ServiceDesc for NominalChannelWriterService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -133,6 +181,13 @@ var NominalChannelWriterService_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _NominalChannelWriterService_Write_Handler,
 		},
 	},
-	Streams:  []grpc.StreamDesc{},
+	Streams: []grpc.StreamDesc{
+		{
+			StreamName:    "WriteStream",
+			Handler:       _NominalChannelWriterService_WriteStream_Handler,
+			ServerStreams: true,
+			ClientStreams: true,
+		},
+	},
 	Metadata: "nominal/protos/channel_writer/v2/nominal_channel_writer.proto",
 }

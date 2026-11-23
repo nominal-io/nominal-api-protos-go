@@ -19,17 +19,19 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	UserService_GetUser_FullMethodName                      = "/nominal.authentication.users.v1.UserService/GetUser"
-	UserService_BatchGetUsers_FullMethodName                = "/nominal.authentication.users.v1.UserService/BatchGetUsers"
-	UserService_SearchUsers_FullMethodName                  = "/nominal.authentication.users.v1.UserService/SearchUsers"
-	UserService_GetCurrentUser_FullMethodName               = "/nominal.authentication.users.v1.UserService/GetCurrentUser"
-	UserService_UpdateCurrentUser_FullMethodName            = "/nominal.authentication.users.v1.UserService/UpdateCurrentUser"
-	UserService_GetCurrentUserSettings_FullMethodName       = "/nominal.authentication.users.v1.UserService/GetCurrentUserSettings"
-	UserService_UpdateCurrentUserSettings_FullMethodName    = "/nominal.authentication.users.v1.UserService/UpdateCurrentUserSettings"
-	UserService_PreregisterUsers_FullMethodName             = "/nominal.authentication.users.v1.UserService/PreregisterUsers"
-	UserService_IsEmailAllowedInOrganization_FullMethodName = "/nominal.authentication.users.v1.UserService/IsEmailAllowedInOrganization"
-	UserService_DeactivateUser_FullMethodName               = "/nominal.authentication.users.v1.UserService/DeactivateUser"
-	UserService_ReactivateUser_FullMethodName               = "/nominal.authentication.users.v1.UserService/ReactivateUser"
+	UserService_GetUser_FullMethodName                          = "/nominal.authentication.users.v1.UserService/GetUser"
+	UserService_BatchGetUsers_FullMethodName                    = "/nominal.authentication.users.v1.UserService/BatchGetUsers"
+	UserService_SearchUsers_FullMethodName                      = "/nominal.authentication.users.v1.UserService/SearchUsers"
+	UserService_GetCurrentUser_FullMethodName                   = "/nominal.authentication.users.v1.UserService/GetCurrentUser"
+	UserService_UpdateCurrentUser_FullMethodName                = "/nominal.authentication.users.v1.UserService/UpdateCurrentUser"
+	UserService_GetCurrentUserSettings_FullMethodName           = "/nominal.authentication.users.v1.UserService/GetCurrentUserSettings"
+	UserService_UpdateCurrentUserSettings_FullMethodName        = "/nominal.authentication.users.v1.UserService/UpdateCurrentUserSettings"
+	UserService_GetCurrentUserTermsAcceptance_FullMethodName    = "/nominal.authentication.users.v1.UserService/GetCurrentUserTermsAcceptance"
+	UserService_CreateCurrentUserTermsAcceptance_FullMethodName = "/nominal.authentication.users.v1.UserService/CreateCurrentUserTermsAcceptance"
+	UserService_PreregisterUsers_FullMethodName                 = "/nominal.authentication.users.v1.UserService/PreregisterUsers"
+	UserService_IsEmailAllowedInOrganization_FullMethodName     = "/nominal.authentication.users.v1.UserService/IsEmailAllowedInOrganization"
+	UserService_DeactivateUser_FullMethodName                   = "/nominal.authentication.users.v1.UserService/DeactivateUser"
+	UserService_ReactivateUser_FullMethodName                   = "/nominal.authentication.users.v1.UserService/ReactivateUser"
 )
 
 // UserServiceClient is the client API for UserService service.
@@ -38,25 +40,75 @@ const (
 //
 // Users of the caller's organization, and the calling user's own profile and settings.
 type UserServiceClient interface {
-	// Gets a user by RID. Fails with UserNotFound unless the user is a member or guest of the caller's
-	// organization.
+	// Gets one user of the caller's organization, with email, display name, and avatar. The user must be a member or
+	// guest of the caller's organization. The returned user's rid is the requested RID as sent.
+	//
+	// Errors:
+	// - INVALID_ARGUMENT: the RID is malformed, or no user has this RID.
+	// - NOT_FOUND: the user is not a member or guest of the caller's organization.
 	GetUser(ctx context.Context, in *GetUserRequest, opts ...grpc.CallOption) (*GetUserResponse, error)
-	// Gets users by RID. Returns the requested users that are members or guests of the caller's
-	// organization; any other RID is omitted from the response.
+	// Gets users by RID. Returns the requested users that are members or guests of the caller's organization.
+	//
+	// Any other RID is omitted from the response without an error. Each returned user's rid is a requested RID as
+	// sent, so callers can match by exact RID: a repeated RID returns its user once, and a user requested under two
+	// spellings of its RID (another instance, or a differently cased UUID) is returned once under each. An empty list
+	// returns no users. The order of the users is not guaranteed.
+	//
+	// Errors:
+	// - INVALID_ARGUMENT: a RID is malformed, or the request holds more than 1000 RIDs.
 	BatchGetUsers(ctx context.Context, in *BatchGetUsersRequest, opts ...grpc.CallOption) (*BatchGetUsersResponse, error)
-	// Searches the caller's organization for users by email, display name, workspace membership, or group membership. A
-	// query that names a workspace requires `workspace:view` on it, and otherwise throws WorkspaceNotFound. A query that
-	// names a group outside the caller's organization matches nobody.
+	// Searches the members of the caller's organization for users by email, display name, workspace membership, or
+	// group membership. Returns a page of users.
+	//
+	// Results are sorted by display name, ascending, unless sort is set. A query that names a workspace requires
+	// `workspace:view` on it, and otherwise fails as if the workspace did not exist. A query that names a group outside
+	// the caller's organization matches nobody. A query may hold at most 1000 nodes, 32 nested levels, and 10 workspace
+	// or group queries.
+	//
+	// Errors:
+	//   - INVALID_ARGUMENT: the query or one of its nested queries has no variant set, sort is set without a known field,
+	//     a RID in the query is malformed, the query is over the limits, page_size is above 1000, or page_token is not a
+	//     token from a previous response.
+	//   - NOT_FOUND: a workspace named in the query does not exist or the caller cannot view it.
 	SearchUsers(ctx context.Context, in *SearchUsersRequest, opts ...grpc.CallOption) (*SearchUsersResponse, error)
-	// Gets the calling user.
+	// Gets the calling user's own profile: RID, organization, email, display name, avatar, and creation time.
 	GetCurrentUser(ctx context.Context, in *GetCurrentUserRequest, opts ...grpc.CallOption) (*GetCurrentUserResponse, error)
-	// Updates the calling user's profile. Only `display_name` is writable; every other field of `user` is
-	// ignored.
+	// Updates the display name of the calling user. Returns the updated profile.
+	//
+	// Only `display_name` is writable; every other field of `user` is ignored. The display name is replaced, so a
+	// request without `display_name` sets it to an empty string.
+	//
+	// Errors:
+	// - NOT_FOUND: the calling user does not exist.
 	UpdateCurrentUser(ctx context.Context, in *UpdateCurrentUserRequest, opts ...grpc.CallOption) (*UpdateCurrentUserResponse, error)
-	// Gets the calling user's settings.
+	// Gets the calling user's app settings, such as default time range, appearance, timezone, chart tooltip, and number
+	// format.
 	GetCurrentUserSettings(ctx context.Context, in *GetCurrentUserSettingsRequest, opts ...grpc.CallOption) (*GetCurrentUserSettingsResponse, error)
-	// Replaces the calling user's settings. An unset field is reset to its default.
+	// Replaces the calling user's app settings, such as appearance, timezone, and chart tooltip. Returns the stored
+	// settings.
+	//
+	// The whole settings object is replaced, so send the full settings. A setting that is not set resets to its default,
+	// and an unset `data_number_format` is cleared.
+	//
+	// Errors:
+	//   - INVALID_ARGUMENT: an enum field holds an unrecognized value, `data_number_format` sets `display_option` to
+	//     UNSPECIFIED, or `decimal_places` has neither `fixed` nor `max` set.
 	UpdateCurrentUserSettings(ctx context.Context, in *UpdateCurrentUserSettingsRequest, opts ...grpc.CallOption) (*UpdateCurrentUserSettingsResponse, error)
+	// Gets whether the calling user has accepted the click-to-accept terms shown to trial and demo organizations, for
+	// their membership in their current organization.
+	//
+	// Show the terms when `required` is true. The terms version is not recorded. Guests never accept the terms: skip
+	// this call when the session is a guest's.
+	//
+	// Errors:
+	// - FAILED_PRECONDITION: the caller is not a member of their current organization, for example a guest.
+	GetCurrentUserTermsAcceptance(ctx context.Context, in *GetCurrentUserTermsAcceptanceRequest, opts ...grpc.CallOption) (*GetCurrentUserTermsAcceptanceResponse, error)
+	// Records that the calling user accepted the click-to-accept terms shown to trial and demo organizations, for their
+	// membership in their current organization. Returns the acceptance.
+	//
+	// Errors:
+	// - FAILED_PRECONDITION: the caller is not a member of their current organization, for example a guest.
+	CreateCurrentUserTermsAcceptance(ctx context.Context, in *CreateCurrentUserTermsAcceptanceRequest, opts ...grpc.CallOption) (*CreateCurrentUserTermsAcceptanceResponse, error)
 	// Preregisters users in the caller's organization by email, so they can be referenced before they first
 	// log in. Emails that already belong to a user are skipped. Requires organization admin.
 	PreregisterUsers(ctx context.Context, in *PreregisterUsersRequest, opts ...grpc.CallOption) (*PreregisterUsersResponse, error)
@@ -151,6 +203,26 @@ func (c *userServiceClient) UpdateCurrentUserSettings(ctx context.Context, in *U
 	return out, nil
 }
 
+func (c *userServiceClient) GetCurrentUserTermsAcceptance(ctx context.Context, in *GetCurrentUserTermsAcceptanceRequest, opts ...grpc.CallOption) (*GetCurrentUserTermsAcceptanceResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(GetCurrentUserTermsAcceptanceResponse)
+	err := c.cc.Invoke(ctx, UserService_GetCurrentUserTermsAcceptance_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *userServiceClient) CreateCurrentUserTermsAcceptance(ctx context.Context, in *CreateCurrentUserTermsAcceptanceRequest, opts ...grpc.CallOption) (*CreateCurrentUserTermsAcceptanceResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(CreateCurrentUserTermsAcceptanceResponse)
+	err := c.cc.Invoke(ctx, UserService_CreateCurrentUserTermsAcceptance_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *userServiceClient) PreregisterUsers(ctx context.Context, in *PreregisterUsersRequest, opts ...grpc.CallOption) (*PreregisterUsersResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(PreregisterUsersResponse)
@@ -197,25 +269,75 @@ func (c *userServiceClient) ReactivateUser(ctx context.Context, in *ReactivateUs
 //
 // Users of the caller's organization, and the calling user's own profile and settings.
 type UserServiceServer interface {
-	// Gets a user by RID. Fails with UserNotFound unless the user is a member or guest of the caller's
-	// organization.
+	// Gets one user of the caller's organization, with email, display name, and avatar. The user must be a member or
+	// guest of the caller's organization. The returned user's rid is the requested RID as sent.
+	//
+	// Errors:
+	// - INVALID_ARGUMENT: the RID is malformed, or no user has this RID.
+	// - NOT_FOUND: the user is not a member or guest of the caller's organization.
 	GetUser(context.Context, *GetUserRequest) (*GetUserResponse, error)
-	// Gets users by RID. Returns the requested users that are members or guests of the caller's
-	// organization; any other RID is omitted from the response.
+	// Gets users by RID. Returns the requested users that are members or guests of the caller's organization.
+	//
+	// Any other RID is omitted from the response without an error. Each returned user's rid is a requested RID as
+	// sent, so callers can match by exact RID: a repeated RID returns its user once, and a user requested under two
+	// spellings of its RID (another instance, or a differently cased UUID) is returned once under each. An empty list
+	// returns no users. The order of the users is not guaranteed.
+	//
+	// Errors:
+	// - INVALID_ARGUMENT: a RID is malformed, or the request holds more than 1000 RIDs.
 	BatchGetUsers(context.Context, *BatchGetUsersRequest) (*BatchGetUsersResponse, error)
-	// Searches the caller's organization for users by email, display name, workspace membership, or group membership. A
-	// query that names a workspace requires `workspace:view` on it, and otherwise throws WorkspaceNotFound. A query that
-	// names a group outside the caller's organization matches nobody.
+	// Searches the members of the caller's organization for users by email, display name, workspace membership, or
+	// group membership. Returns a page of users.
+	//
+	// Results are sorted by display name, ascending, unless sort is set. A query that names a workspace requires
+	// `workspace:view` on it, and otherwise fails as if the workspace did not exist. A query that names a group outside
+	// the caller's organization matches nobody. A query may hold at most 1000 nodes, 32 nested levels, and 10 workspace
+	// or group queries.
+	//
+	// Errors:
+	//   - INVALID_ARGUMENT: the query or one of its nested queries has no variant set, sort is set without a known field,
+	//     a RID in the query is malformed, the query is over the limits, page_size is above 1000, or page_token is not a
+	//     token from a previous response.
+	//   - NOT_FOUND: a workspace named in the query does not exist or the caller cannot view it.
 	SearchUsers(context.Context, *SearchUsersRequest) (*SearchUsersResponse, error)
-	// Gets the calling user.
+	// Gets the calling user's own profile: RID, organization, email, display name, avatar, and creation time.
 	GetCurrentUser(context.Context, *GetCurrentUserRequest) (*GetCurrentUserResponse, error)
-	// Updates the calling user's profile. Only `display_name` is writable; every other field of `user` is
-	// ignored.
+	// Updates the display name of the calling user. Returns the updated profile.
+	//
+	// Only `display_name` is writable; every other field of `user` is ignored. The display name is replaced, so a
+	// request without `display_name` sets it to an empty string.
+	//
+	// Errors:
+	// - NOT_FOUND: the calling user does not exist.
 	UpdateCurrentUser(context.Context, *UpdateCurrentUserRequest) (*UpdateCurrentUserResponse, error)
-	// Gets the calling user's settings.
+	// Gets the calling user's app settings, such as default time range, appearance, timezone, chart tooltip, and number
+	// format.
 	GetCurrentUserSettings(context.Context, *GetCurrentUserSettingsRequest) (*GetCurrentUserSettingsResponse, error)
-	// Replaces the calling user's settings. An unset field is reset to its default.
+	// Replaces the calling user's app settings, such as appearance, timezone, and chart tooltip. Returns the stored
+	// settings.
+	//
+	// The whole settings object is replaced, so send the full settings. A setting that is not set resets to its default,
+	// and an unset `data_number_format` is cleared.
+	//
+	// Errors:
+	//   - INVALID_ARGUMENT: an enum field holds an unrecognized value, `data_number_format` sets `display_option` to
+	//     UNSPECIFIED, or `decimal_places` has neither `fixed` nor `max` set.
 	UpdateCurrentUserSettings(context.Context, *UpdateCurrentUserSettingsRequest) (*UpdateCurrentUserSettingsResponse, error)
+	// Gets whether the calling user has accepted the click-to-accept terms shown to trial and demo organizations, for
+	// their membership in their current organization.
+	//
+	// Show the terms when `required` is true. The terms version is not recorded. Guests never accept the terms: skip
+	// this call when the session is a guest's.
+	//
+	// Errors:
+	// - FAILED_PRECONDITION: the caller is not a member of their current organization, for example a guest.
+	GetCurrentUserTermsAcceptance(context.Context, *GetCurrentUserTermsAcceptanceRequest) (*GetCurrentUserTermsAcceptanceResponse, error)
+	// Records that the calling user accepted the click-to-accept terms shown to trial and demo organizations, for their
+	// membership in their current organization. Returns the acceptance.
+	//
+	// Errors:
+	// - FAILED_PRECONDITION: the caller is not a member of their current organization, for example a guest.
+	CreateCurrentUserTermsAcceptance(context.Context, *CreateCurrentUserTermsAcceptanceRequest) (*CreateCurrentUserTermsAcceptanceResponse, error)
 	// Preregisters users in the caller's organization by email, so they can be referenced before they first
 	// log in. Emails that already belong to a user are skipped. Requires organization admin.
 	PreregisterUsers(context.Context, *PreregisterUsersRequest) (*PreregisterUsersResponse, error)
@@ -260,6 +382,12 @@ func (UnimplementedUserServiceServer) GetCurrentUserSettings(context.Context, *G
 }
 func (UnimplementedUserServiceServer) UpdateCurrentUserSettings(context.Context, *UpdateCurrentUserSettingsRequest) (*UpdateCurrentUserSettingsResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method UpdateCurrentUserSettings not implemented")
+}
+func (UnimplementedUserServiceServer) GetCurrentUserTermsAcceptance(context.Context, *GetCurrentUserTermsAcceptanceRequest) (*GetCurrentUserTermsAcceptanceResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method GetCurrentUserTermsAcceptance not implemented")
+}
+func (UnimplementedUserServiceServer) CreateCurrentUserTermsAcceptance(context.Context, *CreateCurrentUserTermsAcceptanceRequest) (*CreateCurrentUserTermsAcceptanceResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method CreateCurrentUserTermsAcceptance not implemented")
 }
 func (UnimplementedUserServiceServer) PreregisterUsers(context.Context, *PreregisterUsersRequest) (*PreregisterUsersResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method PreregisterUsers not implemented")
@@ -420,6 +548,42 @@ func _UserService_UpdateCurrentUserSettings_Handler(srv interface{}, ctx context
 	return interceptor(ctx, in, info, handler)
 }
 
+func _UserService_GetCurrentUserTermsAcceptance_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetCurrentUserTermsAcceptanceRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServiceServer).GetCurrentUserTermsAcceptance(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: UserService_GetCurrentUserTermsAcceptance_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServiceServer).GetCurrentUserTermsAcceptance(ctx, req.(*GetCurrentUserTermsAcceptanceRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _UserService_CreateCurrentUserTermsAcceptance_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CreateCurrentUserTermsAcceptanceRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServiceServer).CreateCurrentUserTermsAcceptance(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: UserService_CreateCurrentUserTermsAcceptance_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServiceServer).CreateCurrentUserTermsAcceptance(ctx, req.(*CreateCurrentUserTermsAcceptanceRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _UserService_PreregisterUsers_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(PreregisterUsersRequest)
 	if err := dec(in); err != nil {
@@ -526,6 +690,14 @@ var UserService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "UpdateCurrentUserSettings",
 			Handler:    _UserService_UpdateCurrentUserSettings_Handler,
+		},
+		{
+			MethodName: "GetCurrentUserTermsAcceptance",
+			Handler:    _UserService_GetCurrentUserTermsAcceptance_Handler,
+		},
+		{
+			MethodName: "CreateCurrentUserTermsAcceptance",
+			Handler:    _UserService_CreateCurrentUserTermsAcceptance_Handler,
 		},
 		{
 			MethodName: "PreregisterUsers",

@@ -77,7 +77,7 @@ type ResourceShareKey struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// RID of the workbook being shared. Only workbook RIDs are currently supported.
 	ResourceRid string `protobuf:"bytes,1,opt,name=resource_rid,json=resourceRid,proto3" json:"resource_rid,omitempty"`
-	// Required. Must be a declared role other than RESOURCE_SHARE_ROLE_UNSPECIFIED.
+	// The role that the share grants to its subjects.
 	Role          ResourceShareRole `protobuf:"varint,2,opt,name=role,proto3,enum=nominal.authorization.resources.v1.ResourceShareRole" json:"role,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -430,7 +430,7 @@ func (x *CreateResourceShareResponse) GetResourceShare() *ResourceShare {
 
 type BatchGetResourceSharesRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
-	// Resource-share keys to get, up to 1000.
+	// The workbook and role of each share to get.
 	Keys          []*ResourceShareKey `protobuf:"bytes,1,rep,name=keys,proto3" json:"keys,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache

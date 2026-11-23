@@ -13,6 +13,7 @@ import (
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
+	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
 	reflect "reflect"
 	sync "sync"
 	unsafe "unsafe"
@@ -25,12 +26,66 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
+type EntitlementStatus int32
+
+const (
+	EntitlementStatus_ENTITLEMENT_STATUS_UNSPECIFIED EntitlementStatus = 0
+	EntitlementStatus_ENTITLEMENT_STATUS_ACTIVE      EntitlementStatus = 1
+	// The assignment is past its expiration time.
+	EntitlementStatus_ENTITLEMENT_STATUS_EXPIRED    EntitlementStatus = 2
+	EntitlementStatus_ENTITLEMENT_STATUS_UNASSIGNED EntitlementStatus = 3
+)
+
+// Enum value maps for EntitlementStatus.
+var (
+	EntitlementStatus_name = map[int32]string{
+		0: "ENTITLEMENT_STATUS_UNSPECIFIED",
+		1: "ENTITLEMENT_STATUS_ACTIVE",
+		2: "ENTITLEMENT_STATUS_EXPIRED",
+		3: "ENTITLEMENT_STATUS_UNASSIGNED",
+	}
+	EntitlementStatus_value = map[string]int32{
+		"ENTITLEMENT_STATUS_UNSPECIFIED": 0,
+		"ENTITLEMENT_STATUS_ACTIVE":      1,
+		"ENTITLEMENT_STATUS_EXPIRED":     2,
+		"ENTITLEMENT_STATUS_UNASSIGNED":  3,
+	}
+)
+
+func (x EntitlementStatus) Enum() *EntitlementStatus {
+	p := new(EntitlementStatus)
+	*p = x
+	return p
+}
+
+func (x EntitlementStatus) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (EntitlementStatus) Descriptor() protoreflect.EnumDescriptor {
+	return file_nominal_protos_entitlements_v1_entitlements_proto_enumTypes[0].Descriptor()
+}
+
+func (EntitlementStatus) Type() protoreflect.EnumType {
+	return &file_nominal_protos_entitlements_v1_entitlements_proto_enumTypes[0]
+}
+
+func (x EntitlementStatus) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use EntitlementStatus.Descriptor instead.
+func (EntitlementStatus) EnumDescriptor() ([]byte, []int) {
+	return file_nominal_protos_entitlements_v1_entitlements_proto_rawDescGZIP(), []int{0}
+}
+
 type EditionType int32
 
 const (
 	EditionType_EDITION_TYPE_UNSPECIFIED EditionType = 0
 	EditionType_EDITION_TYPE_ESSENTIAL   EditionType = 1
 	EditionType_EDITION_TYPE_STANDARD    EditionType = 2
+	EditionType_EDITION_TYPE_ENTERPRISE  EditionType = 3
 )
 
 // Enum value maps for EditionType.
@@ -39,11 +94,13 @@ var (
 		0: "EDITION_TYPE_UNSPECIFIED",
 		1: "EDITION_TYPE_ESSENTIAL",
 		2: "EDITION_TYPE_STANDARD",
+		3: "EDITION_TYPE_ENTERPRISE",
 	}
 	EditionType_value = map[string]int32{
 		"EDITION_TYPE_UNSPECIFIED": 0,
 		"EDITION_TYPE_ESSENTIAL":   1,
 		"EDITION_TYPE_STANDARD":    2,
+		"EDITION_TYPE_ENTERPRISE":  3,
 	}
 )
 
@@ -58,11 +115,11 @@ func (x EditionType) String() string {
 }
 
 func (EditionType) Descriptor() protoreflect.EnumDescriptor {
-	return file_nominal_protos_entitlements_v1_entitlements_proto_enumTypes[0].Descriptor()
+	return file_nominal_protos_entitlements_v1_entitlements_proto_enumTypes[1].Descriptor()
 }
 
 func (EditionType) Type() protoreflect.EnumType {
-	return &file_nominal_protos_entitlements_v1_entitlements_proto_enumTypes[0]
+	return &file_nominal_protos_entitlements_v1_entitlements_proto_enumTypes[1]
 }
 
 func (x EditionType) Number() protoreflect.EnumNumber {
@@ -71,7 +128,7 @@ func (x EditionType) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use EditionType.Descriptor instead.
 func (EditionType) EnumDescriptor() ([]byte, []int) {
-	return file_nominal_protos_entitlements_v1_entitlements_proto_rawDescGZIP(), []int{0}
+	return file_nominal_protos_entitlements_v1_entitlements_proto_rawDescGZIP(), []int{1}
 }
 
 type Capability int32
@@ -101,6 +158,7 @@ const (
 	Capability_CAPABILITY_APPS_PLANS      Capability = 18
 	Capability_CAPABILITY_APPS_ANALYST    Capability = 19
 	Capability_CAPABILITY_APPS_REPORTS    Capability = 20
+	Capability_CAPABILITY_CLUSTER         Capability = 21
 )
 
 // Enum value maps for Capability.
@@ -127,6 +185,7 @@ var (
 		18: "CAPABILITY_APPS_PLANS",
 		19: "CAPABILITY_APPS_ANALYST",
 		20: "CAPABILITY_APPS_REPORTS",
+		21: "CAPABILITY_CLUSTER",
 	}
 	Capability_value = map[string]int32{
 		"CAPABILITY_UNSPECIFIED":         0,
@@ -150,6 +209,7 @@ var (
 		"CAPABILITY_APPS_PLANS":          18,
 		"CAPABILITY_APPS_ANALYST":        19,
 		"CAPABILITY_APPS_REPORTS":        20,
+		"CAPABILITY_CLUSTER":             21,
 	}
 )
 
@@ -164,11 +224,11 @@ func (x Capability) String() string {
 }
 
 func (Capability) Descriptor() protoreflect.EnumDescriptor {
-	return file_nominal_protos_entitlements_v1_entitlements_proto_enumTypes[1].Descriptor()
+	return file_nominal_protos_entitlements_v1_entitlements_proto_enumTypes[2].Descriptor()
 }
 
 func (Capability) Type() protoreflect.EnumType {
-	return &file_nominal_protos_entitlements_v1_entitlements_proto_enumTypes[1]
+	return &file_nominal_protos_entitlements_v1_entitlements_proto_enumTypes[2]
 }
 
 func (x Capability) Number() protoreflect.EnumNumber {
@@ -177,7 +237,7 @@ func (x Capability) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use Capability.Descriptor instead.
 func (Capability) EnumDescriptor() ([]byte, []int) {
-	return file_nominal_protos_entitlements_v1_entitlements_proto_rawDescGZIP(), []int{1}
+	return file_nominal_protos_entitlements_v1_entitlements_proto_rawDescGZIP(), []int{2}
 }
 
 type EntitlementsError int32
@@ -212,11 +272,11 @@ func (x EntitlementsError) String() string {
 }
 
 func (EntitlementsError) Descriptor() protoreflect.EnumDescriptor {
-	return file_nominal_protos_entitlements_v1_entitlements_proto_enumTypes[2].Descriptor()
+	return file_nominal_protos_entitlements_v1_entitlements_proto_enumTypes[3].Descriptor()
 }
 
 func (EntitlementsError) Type() protoreflect.EnumType {
-	return &file_nominal_protos_entitlements_v1_entitlements_proto_enumTypes[2]
+	return &file_nominal_protos_entitlements_v1_entitlements_proto_enumTypes[3]
 }
 
 func (x EntitlementsError) Number() protoreflect.EnumNumber {
@@ -225,7 +285,7 @@ func (x EntitlementsError) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use EntitlementsError.Descriptor instead.
 func (EntitlementsError) EnumDescriptor() ([]byte, []int) {
-	return file_nominal_protos_entitlements_v1_entitlements_proto_rawDescGZIP(), []int{2}
+	return file_nominal_protos_entitlements_v1_entitlements_proto_rawDescGZIP(), []int{3}
 }
 
 type GetEntitlementsRequest struct {
@@ -505,9 +565,12 @@ func (x *ListEditionsResponse) GetEditions() []*EditionDefinition {
 }
 
 type EditionDefinition struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Edition       *Edition               `protobuf:"bytes,1,opt,name=edition,proto3" json:"edition,omitempty"`
-	Capabilities  []Capability           `protobuf:"varint,2,rep,packed,name=capabilities,proto3,enum=nominal.entitlements.v1.Capability" json:"capabilities,omitempty"`
+	state        protoimpl.MessageState `protogen:"open.v1"`
+	Edition      *Edition               `protobuf:"bytes,1,opt,name=edition,proto3" json:"edition,omitempty"`
+	Capabilities []Capability           `protobuf:"varint,2,rep,packed,name=capabilities,proto3,enum=nominal.entitlements.v1.Capability" json:"capabilities,omitempty"`
+	// The edition's rank, starting at 1. Higher tiers grant more capabilities.
+	Tier          int32  `protobuf:"varint,3,opt,name=tier,proto3" json:"tier,omitempty"`
+	DisplayName   string `protobuf:"bytes,4,opt,name=display_name,json=displayName,proto3" json:"display_name,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -556,12 +619,29 @@ func (x *EditionDefinition) GetCapabilities() []Capability {
 	return nil
 }
 
+func (x *EditionDefinition) GetTier() int32 {
+	if x != nil {
+		return x.Tier
+	}
+	return 0
+}
+
+func (x *EditionDefinition) GetDisplayName() string {
+	if x != nil {
+		return x.DisplayName
+	}
+	return ""
+}
+
 type Entitlements struct {
 	state        protoimpl.MessageState `protogen:"open.v1"`
 	WorkspaceRid string                 `protobuf:"bytes,1,opt,name=workspace_rid,json=workspaceRid,proto3" json:"workspace_rid,omitempty"`
 	Edition      *Edition               `protobuf:"bytes,2,opt,name=edition,proto3" json:"edition,omitempty"`
 	// Allowlist of the capabilities the workspace has.
-	Capabilities  []Capability `protobuf:"varint,3,rep,packed,name=capabilities,proto3,enum=nominal.entitlements.v1.Capability" json:"capabilities,omitempty"`
+	Capabilities  []Capability           `protobuf:"varint,3,rep,packed,name=capabilities,proto3,enum=nominal.entitlements.v1.Capability" json:"capabilities,omitempty"`
+	EffectiveAt   *timestamppb.Timestamp `protobuf:"bytes,4,opt,name=effective_at,json=effectiveAt,proto3" json:"effective_at,omitempty"`
+	ExpiresAt     *timestamppb.Timestamp `protobuf:"bytes,5,opt,name=expires_at,json=expiresAt,proto3,oneof" json:"expires_at,omitempty"`
+	Status        EntitlementStatus      `protobuf:"varint,6,opt,name=status,proto3,enum=nominal.entitlements.v1.EntitlementStatus" json:"status,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -615,6 +695,27 @@ func (x *Entitlements) GetCapabilities() []Capability {
 		return x.Capabilities
 	}
 	return nil
+}
+
+func (x *Entitlements) GetEffectiveAt() *timestamppb.Timestamp {
+	if x != nil {
+		return x.EffectiveAt
+	}
+	return nil
+}
+
+func (x *Entitlements) GetExpiresAt() *timestamppb.Timestamp {
+	if x != nil {
+		return x.ExpiresAt
+	}
+	return nil
+}
+
+func (x *Entitlements) GetStatus() EntitlementStatus {
+	if x != nil {
+		return x.Status
+	}
+	return EntitlementStatus_ENTITLEMENT_STATUS_UNSPECIFIED
 }
 
 type Edition struct {
@@ -673,7 +774,7 @@ var File_nominal_protos_entitlements_v1_entitlements_proto protoreflect.FileDesc
 
 const file_nominal_protos_entitlements_v1_entitlements_proto_rawDesc = "" +
 	"\n" +
-	"1nominal/protos/entitlements/v1/entitlements.proto\x12\x17nominal.entitlements.v1\x1a\x1bbuf/validate/validate.proto\x1a\x1cgoogle/api/annotations.proto\x1a)nominal/protos/authz/v1/annotations.proto\x1a!nominal/protos/gen/v1/alias.proto\x1a!nominal/protos/gen/v1/error.proto\"k\n" +
+	"1nominal/protos/entitlements/v1/entitlements.proto\x12\x17nominal.entitlements.v1\x1a\x1bbuf/validate/validate.proto\x1a\x1cgoogle/api/annotations.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a)nominal/protos/authz/v1/annotations.proto\x1a!nominal/protos/gen/v1/alias.proto\x1a!nominal/protos/gen/v1/error.proto\"k\n" +
 	"\x16GetEntitlementsRequest\x12Q\n" +
 	"\rworkspace_rid\x18\x01 \x01(\tB,\xbaH\x03\xc8\x01\x01\x9a\xb2\x1a\"\n" +
 	" io.nominal.api.rids.WorkspaceRidR\fworkspaceRid\"d\n" +
@@ -693,22 +794,35 @@ const file_nominal_protos_entitlements_v1_entitlements_proto_rawDesc = "" +
 	"\x10_next_page_token\"\x15\n" +
 	"\x13ListEditionsRequest\"^\n" +
 	"\x14ListEditionsResponse\x12F\n" +
-	"\beditions\x18\x01 \x03(\v2*.nominal.entitlements.v1.EditionDefinitionR\beditions\"\x98\x01\n" +
+	"\beditions\x18\x01 \x03(\v2*.nominal.entitlements.v1.EditionDefinitionR\beditions\"\xcf\x01\n" +
 	"\x11EditionDefinition\x12:\n" +
 	"\aedition\x18\x01 \x01(\v2 .nominal.entitlements.v1.EditionR\aedition\x12G\n" +
-	"\fcapabilities\x18\x02 \x03(\x0e2#.nominal.entitlements.v1.CapabilityR\fcapabilities\"\xe0\x01\n" +
+	"\fcapabilities\x18\x02 \x03(\x0e2#.nominal.entitlements.v1.CapabilityR\fcapabilities\x12\x12\n" +
+	"\x04tier\x18\x03 \x01(\x05R\x04tier\x12!\n" +
+	"\fdisplay_name\x18\x04 \x01(\tR\vdisplayName\"\xb2\x03\n" +
 	"\fEntitlements\x12K\n" +
 	"\rworkspace_rid\x18\x01 \x01(\tB&\x9a\xb2\x1a\"\n" +
 	" io.nominal.api.rids.WorkspaceRidR\fworkspaceRid\x12:\n" +
 	"\aedition\x18\x02 \x01(\v2 .nominal.entitlements.v1.EditionR\aedition\x12G\n" +
-	"\fcapabilities\x18\x03 \x03(\x0e2#.nominal.entitlements.v1.CapabilityR\fcapabilities\"]\n" +
+	"\fcapabilities\x18\x03 \x03(\x0e2#.nominal.entitlements.v1.CapabilityR\fcapabilities\x12=\n" +
+	"\feffective_at\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampR\veffectiveAt\x12>\n" +
+	"\n" +
+	"expires_at\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampH\x00R\texpiresAt\x88\x01\x01\x12B\n" +
+	"\x06status\x18\x06 \x01(\x0e2*.nominal.entitlements.v1.EntitlementStatusR\x06statusB\r\n" +
+	"\v_expires_at\"]\n" +
 	"\aEdition\x128\n" +
 	"\x04name\x18\x01 \x01(\x0e2$.nominal.entitlements.v1.EditionTypeR\x04name\x12\x18\n" +
-	"\aversion\x18\x02 \x01(\tR\aversion*b\n" +
+	"\aversion\x18\x02 \x01(\tR\aversion*\x99\x01\n" +
+	"\x11EntitlementStatus\x12\"\n" +
+	"\x1eENTITLEMENT_STATUS_UNSPECIFIED\x10\x00\x12\x1d\n" +
+	"\x19ENTITLEMENT_STATUS_ACTIVE\x10\x01\x12\x1e\n" +
+	"\x1aENTITLEMENT_STATUS_EXPIRED\x10\x02\x12!\n" +
+	"\x1dENTITLEMENT_STATUS_UNASSIGNED\x10\x03*\x7f\n" +
 	"\vEditionType\x12\x1c\n" +
 	"\x18EDITION_TYPE_UNSPECIFIED\x10\x00\x12\x1a\n" +
 	"\x16EDITION_TYPE_ESSENTIAL\x10\x01\x12\x19\n" +
-	"\x15EDITION_TYPE_STANDARD\x10\x02*\x8b\x05\n" +
+	"\x15EDITION_TYPE_STANDARD\x10\x02\x12\x1b\n" +
+	"\x17EDITION_TYPE_ENTERPRISE\x10\x03*\xa3\x05\n" +
 	"\n" +
 	"Capability\x12\x1a\n" +
 	"\x16CAPABILITY_UNSPECIFIED\x10\x00\x12\x1c\n" +
@@ -732,7 +846,8 @@ const file_nominal_protos_entitlements_v1_entitlements_proto_rawDesc = "" +
 	"\x1aCAPABILITY_APPS_PROCEDURES\x10\x11\x12\x19\n" +
 	"\x15CAPABILITY_APPS_PLANS\x10\x12\x12\x1b\n" +
 	"\x17CAPABILITY_APPS_ANALYST\x10\x13\x12\x1b\n" +
-	"\x17CAPABILITY_APPS_REPORTS\x10\x14*\xcf\x01\n" +
+	"\x17CAPABILITY_APPS_REPORTS\x10\x14\x12\x16\n" +
+	"\x12CAPABILITY_CLUSTER\x10\x15*\xcf\x01\n" +
 	"\x11EntitlementsError\x12\"\n" +
 	"\x1eENTITLEMENTS_ERROR_UNSPECIFIED\x10\x00\x12\x95\x01\n" +
 	")ENTITLEMENTS_ERROR_CAPABILITY_NOT_GRANTED\x10\x01\x1af\xb2\xb2\x1ab\n" +
@@ -757,42 +872,47 @@ func file_nominal_protos_entitlements_v1_entitlements_proto_rawDescGZIP() []byte
 	return file_nominal_protos_entitlements_v1_entitlements_proto_rawDescData
 }
 
-var file_nominal_protos_entitlements_v1_entitlements_proto_enumTypes = make([]protoimpl.EnumInfo, 3)
+var file_nominal_protos_entitlements_v1_entitlements_proto_enumTypes = make([]protoimpl.EnumInfo, 4)
 var file_nominal_protos_entitlements_v1_entitlements_proto_msgTypes = make([]protoimpl.MessageInfo, 9)
 var file_nominal_protos_entitlements_v1_entitlements_proto_goTypes = []any{
-	(EditionType)(0),                 // 0: nominal.entitlements.v1.EditionType
-	(Capability)(0),                  // 1: nominal.entitlements.v1.Capability
-	(EntitlementsError)(0),           // 2: nominal.entitlements.v1.EntitlementsError
-	(*GetEntitlementsRequest)(nil),   // 3: nominal.entitlements.v1.GetEntitlementsRequest
-	(*GetEntitlementsResponse)(nil),  // 4: nominal.entitlements.v1.GetEntitlementsResponse
-	(*ListEntitlementsRequest)(nil),  // 5: nominal.entitlements.v1.ListEntitlementsRequest
-	(*ListEntitlementsResponse)(nil), // 6: nominal.entitlements.v1.ListEntitlementsResponse
-	(*ListEditionsRequest)(nil),      // 7: nominal.entitlements.v1.ListEditionsRequest
-	(*ListEditionsResponse)(nil),     // 8: nominal.entitlements.v1.ListEditionsResponse
-	(*EditionDefinition)(nil),        // 9: nominal.entitlements.v1.EditionDefinition
-	(*Entitlements)(nil),             // 10: nominal.entitlements.v1.Entitlements
-	(*Edition)(nil),                  // 11: nominal.entitlements.v1.Edition
+	(EntitlementStatus)(0),           // 0: nominal.entitlements.v1.EntitlementStatus
+	(EditionType)(0),                 // 1: nominal.entitlements.v1.EditionType
+	(Capability)(0),                  // 2: nominal.entitlements.v1.Capability
+	(EntitlementsError)(0),           // 3: nominal.entitlements.v1.EntitlementsError
+	(*GetEntitlementsRequest)(nil),   // 4: nominal.entitlements.v1.GetEntitlementsRequest
+	(*GetEntitlementsResponse)(nil),  // 5: nominal.entitlements.v1.GetEntitlementsResponse
+	(*ListEntitlementsRequest)(nil),  // 6: nominal.entitlements.v1.ListEntitlementsRequest
+	(*ListEntitlementsResponse)(nil), // 7: nominal.entitlements.v1.ListEntitlementsResponse
+	(*ListEditionsRequest)(nil),      // 8: nominal.entitlements.v1.ListEditionsRequest
+	(*ListEditionsResponse)(nil),     // 9: nominal.entitlements.v1.ListEditionsResponse
+	(*EditionDefinition)(nil),        // 10: nominal.entitlements.v1.EditionDefinition
+	(*Entitlements)(nil),             // 11: nominal.entitlements.v1.Entitlements
+	(*Edition)(nil),                  // 12: nominal.entitlements.v1.Edition
+	(*timestamppb.Timestamp)(nil),    // 13: google.protobuf.Timestamp
 }
 var file_nominal_protos_entitlements_v1_entitlements_proto_depIdxs = []int32{
-	10, // 0: nominal.entitlements.v1.GetEntitlementsResponse.entitlements:type_name -> nominal.entitlements.v1.Entitlements
-	10, // 1: nominal.entitlements.v1.ListEntitlementsResponse.entitlements:type_name -> nominal.entitlements.v1.Entitlements
-	9,  // 2: nominal.entitlements.v1.ListEditionsResponse.editions:type_name -> nominal.entitlements.v1.EditionDefinition
-	11, // 3: nominal.entitlements.v1.EditionDefinition.edition:type_name -> nominal.entitlements.v1.Edition
-	1,  // 4: nominal.entitlements.v1.EditionDefinition.capabilities:type_name -> nominal.entitlements.v1.Capability
-	11, // 5: nominal.entitlements.v1.Entitlements.edition:type_name -> nominal.entitlements.v1.Edition
-	1,  // 6: nominal.entitlements.v1.Entitlements.capabilities:type_name -> nominal.entitlements.v1.Capability
-	0,  // 7: nominal.entitlements.v1.Edition.name:type_name -> nominal.entitlements.v1.EditionType
-	3,  // 8: nominal.entitlements.v1.EntitlementsService.GetEntitlements:input_type -> nominal.entitlements.v1.GetEntitlementsRequest
-	5,  // 9: nominal.entitlements.v1.EntitlementsService.ListEntitlements:input_type -> nominal.entitlements.v1.ListEntitlementsRequest
-	7,  // 10: nominal.entitlements.v1.EntitlementsService.ListEditions:input_type -> nominal.entitlements.v1.ListEditionsRequest
-	4,  // 11: nominal.entitlements.v1.EntitlementsService.GetEntitlements:output_type -> nominal.entitlements.v1.GetEntitlementsResponse
-	6,  // 12: nominal.entitlements.v1.EntitlementsService.ListEntitlements:output_type -> nominal.entitlements.v1.ListEntitlementsResponse
-	8,  // 13: nominal.entitlements.v1.EntitlementsService.ListEditions:output_type -> nominal.entitlements.v1.ListEditionsResponse
-	11, // [11:14] is the sub-list for method output_type
-	8,  // [8:11] is the sub-list for method input_type
-	8,  // [8:8] is the sub-list for extension type_name
-	8,  // [8:8] is the sub-list for extension extendee
-	0,  // [0:8] is the sub-list for field type_name
+	11, // 0: nominal.entitlements.v1.GetEntitlementsResponse.entitlements:type_name -> nominal.entitlements.v1.Entitlements
+	11, // 1: nominal.entitlements.v1.ListEntitlementsResponse.entitlements:type_name -> nominal.entitlements.v1.Entitlements
+	10, // 2: nominal.entitlements.v1.ListEditionsResponse.editions:type_name -> nominal.entitlements.v1.EditionDefinition
+	12, // 3: nominal.entitlements.v1.EditionDefinition.edition:type_name -> nominal.entitlements.v1.Edition
+	2,  // 4: nominal.entitlements.v1.EditionDefinition.capabilities:type_name -> nominal.entitlements.v1.Capability
+	12, // 5: nominal.entitlements.v1.Entitlements.edition:type_name -> nominal.entitlements.v1.Edition
+	2,  // 6: nominal.entitlements.v1.Entitlements.capabilities:type_name -> nominal.entitlements.v1.Capability
+	13, // 7: nominal.entitlements.v1.Entitlements.effective_at:type_name -> google.protobuf.Timestamp
+	13, // 8: nominal.entitlements.v1.Entitlements.expires_at:type_name -> google.protobuf.Timestamp
+	0,  // 9: nominal.entitlements.v1.Entitlements.status:type_name -> nominal.entitlements.v1.EntitlementStatus
+	1,  // 10: nominal.entitlements.v1.Edition.name:type_name -> nominal.entitlements.v1.EditionType
+	4,  // 11: nominal.entitlements.v1.EntitlementsService.GetEntitlements:input_type -> nominal.entitlements.v1.GetEntitlementsRequest
+	6,  // 12: nominal.entitlements.v1.EntitlementsService.ListEntitlements:input_type -> nominal.entitlements.v1.ListEntitlementsRequest
+	8,  // 13: nominal.entitlements.v1.EntitlementsService.ListEditions:input_type -> nominal.entitlements.v1.ListEditionsRequest
+	5,  // 14: nominal.entitlements.v1.EntitlementsService.GetEntitlements:output_type -> nominal.entitlements.v1.GetEntitlementsResponse
+	7,  // 15: nominal.entitlements.v1.EntitlementsService.ListEntitlements:output_type -> nominal.entitlements.v1.ListEntitlementsResponse
+	9,  // 16: nominal.entitlements.v1.EntitlementsService.ListEditions:output_type -> nominal.entitlements.v1.ListEditionsResponse
+	14, // [14:17] is the sub-list for method output_type
+	11, // [11:14] is the sub-list for method input_type
+	11, // [11:11] is the sub-list for extension type_name
+	11, // [11:11] is the sub-list for extension extendee
+	0,  // [0:11] is the sub-list for field type_name
 }
 
 func init() { file_nominal_protos_entitlements_v1_entitlements_proto_init() }
@@ -802,12 +922,13 @@ func file_nominal_protos_entitlements_v1_entitlements_proto_init() {
 	}
 	file_nominal_protos_entitlements_v1_entitlements_proto_msgTypes[2].OneofWrappers = []any{}
 	file_nominal_protos_entitlements_v1_entitlements_proto_msgTypes[3].OneofWrappers = []any{}
+	file_nominal_protos_entitlements_v1_entitlements_proto_msgTypes[7].OneofWrappers = []any{}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_nominal_protos_entitlements_v1_entitlements_proto_rawDesc), len(file_nominal_protos_entitlements_v1_entitlements_proto_rawDesc)),
-			NumEnums:      3,
+			NumEnums:      4,
 			NumMessages:   9,
 			NumExtensions: 0,
 			NumServices:   1,

@@ -9,6 +9,7 @@ package seriesmetadatav1
 import (
 	_ "buf.build/gen/go/bufbuild/protovalidate/protocolbuffers/go/buf/validate"
 	_ "github.com/nominal-io/nominal-api-protos-go/nominal/protos/authz/v1"
+	v1 "github.com/nominal-io/nominal-api-protos-go/nominal/protos/domains/v1"
 	_ "github.com/nominal-io/nominal-api-protos-go/nominal/protos/gen/v1"
 	series "github.com/nominal-io/nominal-api-protos-go/nominal/protos/types/series"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
@@ -571,7 +572,9 @@ type SeriesMetadata struct {
 	// Derived from the locator template.
 	SeriesDataType *series.SeriesDataType `protobuf:"varint,8,opt,name=series_data_type,json=seriesDataType,proto3,enum=nominal.types.series.SeriesDataType,oneof" json:"series_data_type,omitempty"`
 	// Omitted values should be treated as CHANNEL_KIND_STANDARD.
-	ChannelKind   *series.ChannelKind `protobuf:"varint,9,opt,name=channel_kind,json=channelKind,proto3,enum=nominal.types.series.ChannelKind,oneof" json:"channel_kind,omitempty"`
+	ChannelKind *series.ChannelKind `protobuf:"varint,9,opt,name=channel_kind,json=channelKind,proto3,enum=nominal.types.series.ChannelKind,oneof" json:"channel_kind,omitempty"`
+	// Immutable coordinate domain. Omitted values should be treated as TIME.
+	Domain        *v1.DomainKey `protobuf:"varint,10,opt,name=domain,proto3,enum=nominal.domains.v1.DomainKey,oneof" json:"domain,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -660,6 +663,13 @@ func (x *SeriesMetadata) GetChannelKind() series.ChannelKind {
 		return *x.ChannelKind
 	}
 	return series.ChannelKind(0)
+}
+
+func (x *SeriesMetadata) GetDomain() v1.DomainKey {
+	if x != nil && x.Domain != nil {
+		return *x.Domain
+	}
+	return v1.DomainKey(0)
 }
 
 // Where a channel's points are stored and how they are typed. Combined with a series' tags, it resolves to the
@@ -1507,7 +1517,9 @@ type CreateSeriesMetadataRequest struct {
 	// Omitted values default to CHANNEL_KIND_STANDARD. Applies only when this request creates the series metadata.
 	ChannelKind *series.ChannelKind `protobuf:"varint,6,opt,name=channel_kind,json=channelKind,proto3,enum=nominal.types.series.ChannelKind,oneof" json:"channel_kind,omitempty"`
 	// What to do when the data source already has series metadata for the channel.
-	IfExists      IfSeriesMetadataExists `protobuf:"varint,7,opt,name=if_exists,json=ifExists,proto3,enum=nominal.seriesmetadata.v1.IfSeriesMetadataExists" json:"if_exists,omitempty"`
+	IfExists IfSeriesMetadataExists `protobuf:"varint,7,opt,name=if_exists,json=ifExists,proto3,enum=nominal.seriesmetadata.v1.IfSeriesMetadataExists" json:"if_exists,omitempty"`
+	// Defaults to TIME when omitted. Existing channels must retain their domain.
+	Domain        *v1.DomainKey `protobuf:"varint,8,opt,name=domain,proto3,enum=nominal.domains.v1.DomainKey,oneof" json:"domain,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -1589,6 +1601,13 @@ func (x *CreateSeriesMetadataRequest) GetIfExists() IfSeriesMetadataExists {
 		return x.IfExists
 	}
 	return IfSeriesMetadataExists_IF_SERIES_METADATA_EXISTS_UNSPECIFIED
+}
+
+func (x *CreateSeriesMetadataRequest) GetDomain() v1.DomainKey {
+	if x != nil && x.Domain != nil {
+		return *x.Domain
+	}
+	return v1.DomainKey(0)
 }
 
 type CreateSeriesMetadataResponse struct {
@@ -2445,7 +2464,7 @@ var File_nominal_protos_seriesmetadata_v1_series_metadata_proto protoreflect.Fil
 
 const file_nominal_protos_seriesmetadata_v1_series_metadata_proto_rawDesc = "" +
 	"\n" +
-	"6nominal/protos/seriesmetadata/v1/series_metadata.proto\x12\x19nominal.seriesmetadata.v1\x1a\x1bbuf/validate/validate.proto\x1a\x1cgoogle/api/annotations.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a)nominal/protos/authz/v1/annotations.proto\x1a!nominal/protos/gen/v1/alias.proto\x1a!nominal/protos/gen/v1/error.proto\x1a(nominal/protos/types/series/series.proto\"\xa5\x05\n" +
+	"6nominal/protos/seriesmetadata/v1/series_metadata.proto\x12\x19nominal.seriesmetadata.v1\x1a\x1bbuf/validate/validate.proto\x1a\x1cgoogle/api/annotations.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a)nominal/protos/authz/v1/annotations.proto\x1a'nominal/protos/domains/v1/domains.proto\x1a!nominal/protos/gen/v1/alias.proto\x1a!nominal/protos/gen/v1/error.proto\x1a(nominal/protos/types/series/series.proto\"\xf6\x05\n" +
 	"\x0eSeriesMetadata\x12@\n" +
 	"\x03rid\x18\x01 \x01(\tB.\xbaH\x05r\x03\x18\x80\b\x9a\xb2\x1a\"\n" +
 	" io.nominal.api.SeriesMetadataRidR\x03rid\x12>\n" +
@@ -2458,11 +2477,14 @@ const file_nominal_protos_seriesmetadata_v1_series_metadata_proto_rawDesc = "" +
 	"\x13io.nominal.api.UnitH\x00R\x04unit\x88\x01\x01\x120\n" +
 	"\vdescription\x18\x06 \x01(\tB\t\xbaH\x06r\x04\x18\x80\x80\x04H\x01R\vdescription\x88\x01\x01\x12S\n" +
 	"\x10series_data_type\x18\b \x01(\x0e2$.nominal.types.series.SeriesDataTypeH\x02R\x0eseriesDataType\x88\x01\x01\x12S\n" +
-	"\fchannel_kind\x18\t \x01(\x0e2!.nominal.types.series.ChannelKindB\b\xbaH\x05\x82\x01\x02\x10\x01H\x03R\vchannelKind\x88\x01\x01B\a\n" +
+	"\fchannel_kind\x18\t \x01(\x0e2!.nominal.types.series.ChannelKindB\b\xbaH\x05\x82\x01\x02\x10\x01H\x03R\vchannelKind\x88\x01\x01\x12D\n" +
+	"\x06domain\x18\n" +
+	" \x01(\x0e2\x1d.nominal.domains.v1.DomainKeyB\b\xbaH\x05\x82\x01\x02\x10\x01H\x04R\x06domain\x88\x01\x01B\a\n" +
 	"\x05_unitB\x0e\n" +
 	"\f_descriptionB\x13\n" +
 	"\x11_series_data_typeB\x0f\n" +
-	"\r_channel_kindJ\x04\b\a\x10\bR\x04tags\"\xe0\x06\n" +
+	"\r_channel_kindB\t\n" +
+	"\a_domainJ\x04\b\a\x10\bR\x04tags\"\xe0\x06\n" +
 	"\x0fLocatorTemplate\x12Z\n" +
 	"\ftimescale_db\x18\x01 \x01(\v25.nominal.seriesmetadata.v1.TimescaleDbLocatorTemplateH\x00R\vtimescaleDb\x12M\n" +
 	"\ainflux2\x18\x02 \x01(\v21.nominal.seriesmetadata.v1.Influx2LocatorTemplateH\x00R\ainflux2\x12M\n" +
@@ -2578,7 +2600,7 @@ const file_nominal_protos_seriesmetadata_v1_series_metadata_proto_rawDesc = "" +
 	"\x16io.nominal.api.ChannelR\achannel\"X\n" +
 	"\x16SpatialLocatorTemplate\x12>\n" +
 	"\achannel\x18\x01 \x01(\tB$\xbaH\x05r\x03\x18\x80 \x9a\xb2\x1a\x18\n" +
-	"\x16io.nominal.api.ChannelR\achannel\"\xe2\x04\n" +
+	"\x16io.nominal.api.ChannelR\achannel\"\xb3\x05\n" +
 	"\x1bCreateSeriesMetadataRequest\x12@\n" +
 	"\achannel\x18\x01 \x01(\tB&\xbaH\ar\x05\x10\x01\x18\x80 \x9a\xb2\x1a\x18\n" +
 	"\x16io.nominal.api.ChannelR\achannel\x12W\n" +
@@ -2591,10 +2613,12 @@ const file_nominal_protos_seriesmetadata_v1_series_metadata_proto_rawDesc = "" +
 	"\fchannel_kind\x18\x06 \x01(\x0e2!.nominal.types.series.ChannelKindB\n" +
 	"\xbaH\a\x82\x01\x04\x10\x01 \x00H\x02R\vchannelKind\x88\x01\x01\x12Z\n" +
 	"\tif_exists\x18\a \x01(\x0e21.nominal.seriesmetadata.v1.IfSeriesMetadataExistsB\n" +
-	"\xbaH\a\x82\x01\x04\x10\x01 \x00R\bifExistsB\a\n" +
+	"\xbaH\a\x82\x01\x04\x10\x01 \x00R\bifExists\x12D\n" +
+	"\x06domain\x18\b \x01(\x0e2\x1d.nominal.domains.v1.DomainKeyB\b\xbaH\x05\x82\x01\x02\x10\x01H\x03R\x06domain\x88\x01\x01B\a\n" +
 	"\x05_unitB\x0e\n" +
 	"\f_descriptionB\x0f\n" +
-	"\r_channel_kind\"\x8c\x01\n" +
+	"\r_channel_kindB\t\n" +
+	"\a_domain\"\x8c\x01\n" +
 	"\x1cCreateSeriesMetadataResponse\x12R\n" +
 	"\x0fseries_metadata\x18\x01 \x01(\v2).nominal.seriesmetadata.v1.SeriesMetadataR\x0eseriesMetadata\x12\x18\n" +
 	"\acreated\x18\x02 \x01(\bR\acreated\"\x83\x01\n" +
@@ -2776,72 +2800,75 @@ var file_nominal_protos_seriesmetadata_v1_series_metadata_proto_goTypes = []any{
 	nil,                                         // 39: nominal.seriesmetadata.v1.CreateVideoSeriesRequest.TagsEntry
 	(series.SeriesDataType)(0),                  // 40: nominal.types.series.SeriesDataType
 	(series.ChannelKind)(0),                     // 41: nominal.types.series.ChannelKind
-	(*fieldmaskpb.FieldMask)(nil),               // 42: google.protobuf.FieldMask
-	(*timestamppb.Timestamp)(nil),               // 43: google.protobuf.Timestamp
+	(v1.DomainKey)(0),                           // 42: nominal.domains.v1.DomainKey
+	(*fieldmaskpb.FieldMask)(nil),               // 43: google.protobuf.FieldMask
+	(*timestamppb.Timestamp)(nil),               // 44: google.protobuf.Timestamp
 }
 var file_nominal_protos_seriesmetadata_v1_series_metadata_proto_depIdxs = []int32{
 	11, // 0: nominal.seriesmetadata.v1.SeriesMetadata.locator_template:type_name -> nominal.seriesmetadata.v1.LocatorTemplate
 	40, // 1: nominal.seriesmetadata.v1.SeriesMetadata.series_data_type:type_name -> nominal.types.series.SeriesDataType
 	41, // 2: nominal.seriesmetadata.v1.SeriesMetadata.channel_kind:type_name -> nominal.types.series.ChannelKind
-	13, // 3: nominal.seriesmetadata.v1.LocatorTemplate.timescale_db:type_name -> nominal.seriesmetadata.v1.TimescaleDbLocatorTemplate
-	14, // 4: nominal.seriesmetadata.v1.LocatorTemplate.influx2:type_name -> nominal.seriesmetadata.v1.Influx2LocatorTemplate
-	15, // 5: nominal.seriesmetadata.v1.LocatorTemplate.influx1:type_name -> nominal.seriesmetadata.v1.Influx1LocatorTemplate
-	12, // 6: nominal.seriesmetadata.v1.LocatorTemplate.nominal:type_name -> nominal.seriesmetadata.v1.NominalLocatorTemplate
-	16, // 7: nominal.seriesmetadata.v1.LocatorTemplate.timestream:type_name -> nominal.seriesmetadata.v1.TimestreamLocatorTemplate
-	17, // 8: nominal.seriesmetadata.v1.LocatorTemplate.visual_crossing:type_name -> nominal.seriesmetadata.v1.VisualCrossingLocatorTemplate
-	18, // 9: nominal.seriesmetadata.v1.LocatorTemplate.big_query:type_name -> nominal.seriesmetadata.v1.BigQueryLocatorTemplate
-	19, // 10: nominal.seriesmetadata.v1.LocatorTemplate.api:type_name -> nominal.seriesmetadata.v1.ApiLocatorTemplate
-	20, // 11: nominal.seriesmetadata.v1.LocatorTemplate.video:type_name -> nominal.seriesmetadata.v1.VideoLocatorTemplate
-	21, // 12: nominal.seriesmetadata.v1.LocatorTemplate.spatial:type_name -> nominal.seriesmetadata.v1.SpatialLocatorTemplate
-	0,  // 13: nominal.seriesmetadata.v1.NominalLocatorTemplate.data_type:type_name -> nominal.seriesmetadata.v1.NominalDataType
-	4,  // 14: nominal.seriesmetadata.v1.TimescaleDbLocatorTemplate.data_type:type_name -> nominal.seriesmetadata.v1.TimescaleDbLocatorTemplate.DataType
-	1,  // 15: nominal.seriesmetadata.v1.Influx2LocatorTemplate.data_type:type_name -> nominal.seriesmetadata.v1.InfluxDataType
-	1,  // 16: nominal.seriesmetadata.v1.Influx1LocatorTemplate.data_type:type_name -> nominal.seriesmetadata.v1.InfluxDataType
-	5,  // 17: nominal.seriesmetadata.v1.TimestreamLocatorTemplate.data_type:type_name -> nominal.seriesmetadata.v1.TimestreamLocatorTemplate.DataType
-	6,  // 18: nominal.seriesmetadata.v1.VisualCrossingLocatorTemplate.endpoint:type_name -> nominal.seriesmetadata.v1.VisualCrossingLocatorTemplate.Endpoint
-	7,  // 19: nominal.seriesmetadata.v1.VisualCrossingLocatorTemplate.data_type:type_name -> nominal.seriesmetadata.v1.VisualCrossingLocatorTemplate.DataType
-	8,  // 20: nominal.seriesmetadata.v1.BigQueryLocatorTemplate.data_type:type_name -> nominal.seriesmetadata.v1.BigQueryLocatorTemplate.DataType
-	9,  // 21: nominal.seriesmetadata.v1.ApiLocatorTemplate.data_type:type_name -> nominal.seriesmetadata.v1.ApiLocatorTemplate.DataType
-	11, // 22: nominal.seriesmetadata.v1.CreateSeriesMetadataRequest.locator_template:type_name -> nominal.seriesmetadata.v1.LocatorTemplate
-	41, // 23: nominal.seriesmetadata.v1.CreateSeriesMetadataRequest.channel_kind:type_name -> nominal.types.series.ChannelKind
-	2,  // 24: nominal.seriesmetadata.v1.CreateSeriesMetadataRequest.if_exists:type_name -> nominal.seriesmetadata.v1.IfSeriesMetadataExists
-	10, // 25: nominal.seriesmetadata.v1.CreateSeriesMetadataResponse.series_metadata:type_name -> nominal.seriesmetadata.v1.SeriesMetadata
-	22, // 26: nominal.seriesmetadata.v1.BatchCreateSeriesMetadataRequest.requests:type_name -> nominal.seriesmetadata.v1.CreateSeriesMetadataRequest
-	23, // 27: nominal.seriesmetadata.v1.BatchCreateSeriesMetadataResponse.responses:type_name -> nominal.seriesmetadata.v1.CreateSeriesMetadataResponse
-	10, // 28: nominal.seriesmetadata.v1.SearchSeriesMetadataResponse.series_metadata:type_name -> nominal.seriesmetadata.v1.SeriesMetadata
-	10, // 29: nominal.seriesmetadata.v1.GetSeriesMetadataResponse.series_metadata:type_name -> nominal.seriesmetadata.v1.SeriesMetadata
-	10, // 30: nominal.seriesmetadata.v1.UpdateSeriesMetadataRequest.series_metadata:type_name -> nominal.seriesmetadata.v1.SeriesMetadata
-	42, // 31: nominal.seriesmetadata.v1.UpdateSeriesMetadataRequest.update_mask:type_name -> google.protobuf.FieldMask
-	10, // 32: nominal.seriesmetadata.v1.UpdateSeriesMetadataResponse.series_metadata:type_name -> nominal.seriesmetadata.v1.SeriesMetadata
-	0,  // 33: nominal.seriesmetadata.v1.ChangeDataTypeRequest.expected_current_type:type_name -> nominal.seriesmetadata.v1.NominalDataType
-	0,  // 34: nominal.seriesmetadata.v1.ChangeDataTypeRequest.new_type:type_name -> nominal.seriesmetadata.v1.NominalDataType
-	0,  // 35: nominal.seriesmetadata.v1.ChangeDataTypeResponse.old_type:type_name -> nominal.seriesmetadata.v1.NominalDataType
-	0,  // 36: nominal.seriesmetadata.v1.ChangeDataTypeResponse.new_type:type_name -> nominal.seriesmetadata.v1.NominalDataType
-	39, // 37: nominal.seriesmetadata.v1.CreateVideoSeriesRequest.tags:type_name -> nominal.seriesmetadata.v1.CreateVideoSeriesRequest.TagsEntry
-	35, // 38: nominal.seriesmetadata.v1.CreateVideoSeriesRequest.time_bounds:type_name -> nominal.seriesmetadata.v1.TimeBounds
-	43, // 39: nominal.seriesmetadata.v1.TimeBounds.start:type_name -> google.protobuf.Timestamp
-	43, // 40: nominal.seriesmetadata.v1.TimeBounds.end:type_name -> google.protobuf.Timestamp
-	34, // 41: nominal.seriesmetadata.v1.BatchCreateVideoSeriesRequest.requests:type_name -> nominal.seriesmetadata.v1.CreateVideoSeriesRequest
-	36, // 42: nominal.seriesmetadata.v1.BatchCreateVideoSeriesResponse.responses:type_name -> nominal.seriesmetadata.v1.CreateVideoSeriesResponse
-	26, // 43: nominal.seriesmetadata.v1.SeriesMetadataService.SearchSeriesMetadata:input_type -> nominal.seriesmetadata.v1.SearchSeriesMetadataRequest
-	22, // 44: nominal.seriesmetadata.v1.SeriesMetadataService.CreateSeriesMetadata:input_type -> nominal.seriesmetadata.v1.CreateSeriesMetadataRequest
-	24, // 45: nominal.seriesmetadata.v1.SeriesMetadataService.BatchCreateSeriesMetadata:input_type -> nominal.seriesmetadata.v1.BatchCreateSeriesMetadataRequest
-	28, // 46: nominal.seriesmetadata.v1.SeriesMetadataService.GetSeriesMetadata:input_type -> nominal.seriesmetadata.v1.GetSeriesMetadataRequest
-	30, // 47: nominal.seriesmetadata.v1.SeriesMetadataService.UpdateSeriesMetadata:input_type -> nominal.seriesmetadata.v1.UpdateSeriesMetadataRequest
-	32, // 48: nominal.seriesmetadata.v1.SeriesMetadataService.ChangeDataType:input_type -> nominal.seriesmetadata.v1.ChangeDataTypeRequest
-	37, // 49: nominal.seriesmetadata.v1.SeriesMetadataService.BatchCreateVideoSeries:input_type -> nominal.seriesmetadata.v1.BatchCreateVideoSeriesRequest
-	27, // 50: nominal.seriesmetadata.v1.SeriesMetadataService.SearchSeriesMetadata:output_type -> nominal.seriesmetadata.v1.SearchSeriesMetadataResponse
-	23, // 51: nominal.seriesmetadata.v1.SeriesMetadataService.CreateSeriesMetadata:output_type -> nominal.seriesmetadata.v1.CreateSeriesMetadataResponse
-	25, // 52: nominal.seriesmetadata.v1.SeriesMetadataService.BatchCreateSeriesMetadata:output_type -> nominal.seriesmetadata.v1.BatchCreateSeriesMetadataResponse
-	29, // 53: nominal.seriesmetadata.v1.SeriesMetadataService.GetSeriesMetadata:output_type -> nominal.seriesmetadata.v1.GetSeriesMetadataResponse
-	31, // 54: nominal.seriesmetadata.v1.SeriesMetadataService.UpdateSeriesMetadata:output_type -> nominal.seriesmetadata.v1.UpdateSeriesMetadataResponse
-	33, // 55: nominal.seriesmetadata.v1.SeriesMetadataService.ChangeDataType:output_type -> nominal.seriesmetadata.v1.ChangeDataTypeResponse
-	38, // 56: nominal.seriesmetadata.v1.SeriesMetadataService.BatchCreateVideoSeries:output_type -> nominal.seriesmetadata.v1.BatchCreateVideoSeriesResponse
-	50, // [50:57] is the sub-list for method output_type
-	43, // [43:50] is the sub-list for method input_type
-	43, // [43:43] is the sub-list for extension type_name
-	43, // [43:43] is the sub-list for extension extendee
-	0,  // [0:43] is the sub-list for field type_name
+	42, // 3: nominal.seriesmetadata.v1.SeriesMetadata.domain:type_name -> nominal.domains.v1.DomainKey
+	13, // 4: nominal.seriesmetadata.v1.LocatorTemplate.timescale_db:type_name -> nominal.seriesmetadata.v1.TimescaleDbLocatorTemplate
+	14, // 5: nominal.seriesmetadata.v1.LocatorTemplate.influx2:type_name -> nominal.seriesmetadata.v1.Influx2LocatorTemplate
+	15, // 6: nominal.seriesmetadata.v1.LocatorTemplate.influx1:type_name -> nominal.seriesmetadata.v1.Influx1LocatorTemplate
+	12, // 7: nominal.seriesmetadata.v1.LocatorTemplate.nominal:type_name -> nominal.seriesmetadata.v1.NominalLocatorTemplate
+	16, // 8: nominal.seriesmetadata.v1.LocatorTemplate.timestream:type_name -> nominal.seriesmetadata.v1.TimestreamLocatorTemplate
+	17, // 9: nominal.seriesmetadata.v1.LocatorTemplate.visual_crossing:type_name -> nominal.seriesmetadata.v1.VisualCrossingLocatorTemplate
+	18, // 10: nominal.seriesmetadata.v1.LocatorTemplate.big_query:type_name -> nominal.seriesmetadata.v1.BigQueryLocatorTemplate
+	19, // 11: nominal.seriesmetadata.v1.LocatorTemplate.api:type_name -> nominal.seriesmetadata.v1.ApiLocatorTemplate
+	20, // 12: nominal.seriesmetadata.v1.LocatorTemplate.video:type_name -> nominal.seriesmetadata.v1.VideoLocatorTemplate
+	21, // 13: nominal.seriesmetadata.v1.LocatorTemplate.spatial:type_name -> nominal.seriesmetadata.v1.SpatialLocatorTemplate
+	0,  // 14: nominal.seriesmetadata.v1.NominalLocatorTemplate.data_type:type_name -> nominal.seriesmetadata.v1.NominalDataType
+	4,  // 15: nominal.seriesmetadata.v1.TimescaleDbLocatorTemplate.data_type:type_name -> nominal.seriesmetadata.v1.TimescaleDbLocatorTemplate.DataType
+	1,  // 16: nominal.seriesmetadata.v1.Influx2LocatorTemplate.data_type:type_name -> nominal.seriesmetadata.v1.InfluxDataType
+	1,  // 17: nominal.seriesmetadata.v1.Influx1LocatorTemplate.data_type:type_name -> nominal.seriesmetadata.v1.InfluxDataType
+	5,  // 18: nominal.seriesmetadata.v1.TimestreamLocatorTemplate.data_type:type_name -> nominal.seriesmetadata.v1.TimestreamLocatorTemplate.DataType
+	6,  // 19: nominal.seriesmetadata.v1.VisualCrossingLocatorTemplate.endpoint:type_name -> nominal.seriesmetadata.v1.VisualCrossingLocatorTemplate.Endpoint
+	7,  // 20: nominal.seriesmetadata.v1.VisualCrossingLocatorTemplate.data_type:type_name -> nominal.seriesmetadata.v1.VisualCrossingLocatorTemplate.DataType
+	8,  // 21: nominal.seriesmetadata.v1.BigQueryLocatorTemplate.data_type:type_name -> nominal.seriesmetadata.v1.BigQueryLocatorTemplate.DataType
+	9,  // 22: nominal.seriesmetadata.v1.ApiLocatorTemplate.data_type:type_name -> nominal.seriesmetadata.v1.ApiLocatorTemplate.DataType
+	11, // 23: nominal.seriesmetadata.v1.CreateSeriesMetadataRequest.locator_template:type_name -> nominal.seriesmetadata.v1.LocatorTemplate
+	41, // 24: nominal.seriesmetadata.v1.CreateSeriesMetadataRequest.channel_kind:type_name -> nominal.types.series.ChannelKind
+	2,  // 25: nominal.seriesmetadata.v1.CreateSeriesMetadataRequest.if_exists:type_name -> nominal.seriesmetadata.v1.IfSeriesMetadataExists
+	42, // 26: nominal.seriesmetadata.v1.CreateSeriesMetadataRequest.domain:type_name -> nominal.domains.v1.DomainKey
+	10, // 27: nominal.seriesmetadata.v1.CreateSeriesMetadataResponse.series_metadata:type_name -> nominal.seriesmetadata.v1.SeriesMetadata
+	22, // 28: nominal.seriesmetadata.v1.BatchCreateSeriesMetadataRequest.requests:type_name -> nominal.seriesmetadata.v1.CreateSeriesMetadataRequest
+	23, // 29: nominal.seriesmetadata.v1.BatchCreateSeriesMetadataResponse.responses:type_name -> nominal.seriesmetadata.v1.CreateSeriesMetadataResponse
+	10, // 30: nominal.seriesmetadata.v1.SearchSeriesMetadataResponse.series_metadata:type_name -> nominal.seriesmetadata.v1.SeriesMetadata
+	10, // 31: nominal.seriesmetadata.v1.GetSeriesMetadataResponse.series_metadata:type_name -> nominal.seriesmetadata.v1.SeriesMetadata
+	10, // 32: nominal.seriesmetadata.v1.UpdateSeriesMetadataRequest.series_metadata:type_name -> nominal.seriesmetadata.v1.SeriesMetadata
+	43, // 33: nominal.seriesmetadata.v1.UpdateSeriesMetadataRequest.update_mask:type_name -> google.protobuf.FieldMask
+	10, // 34: nominal.seriesmetadata.v1.UpdateSeriesMetadataResponse.series_metadata:type_name -> nominal.seriesmetadata.v1.SeriesMetadata
+	0,  // 35: nominal.seriesmetadata.v1.ChangeDataTypeRequest.expected_current_type:type_name -> nominal.seriesmetadata.v1.NominalDataType
+	0,  // 36: nominal.seriesmetadata.v1.ChangeDataTypeRequest.new_type:type_name -> nominal.seriesmetadata.v1.NominalDataType
+	0,  // 37: nominal.seriesmetadata.v1.ChangeDataTypeResponse.old_type:type_name -> nominal.seriesmetadata.v1.NominalDataType
+	0,  // 38: nominal.seriesmetadata.v1.ChangeDataTypeResponse.new_type:type_name -> nominal.seriesmetadata.v1.NominalDataType
+	39, // 39: nominal.seriesmetadata.v1.CreateVideoSeriesRequest.tags:type_name -> nominal.seriesmetadata.v1.CreateVideoSeriesRequest.TagsEntry
+	35, // 40: nominal.seriesmetadata.v1.CreateVideoSeriesRequest.time_bounds:type_name -> nominal.seriesmetadata.v1.TimeBounds
+	44, // 41: nominal.seriesmetadata.v1.TimeBounds.start:type_name -> google.protobuf.Timestamp
+	44, // 42: nominal.seriesmetadata.v1.TimeBounds.end:type_name -> google.protobuf.Timestamp
+	34, // 43: nominal.seriesmetadata.v1.BatchCreateVideoSeriesRequest.requests:type_name -> nominal.seriesmetadata.v1.CreateVideoSeriesRequest
+	36, // 44: nominal.seriesmetadata.v1.BatchCreateVideoSeriesResponse.responses:type_name -> nominal.seriesmetadata.v1.CreateVideoSeriesResponse
+	26, // 45: nominal.seriesmetadata.v1.SeriesMetadataService.SearchSeriesMetadata:input_type -> nominal.seriesmetadata.v1.SearchSeriesMetadataRequest
+	22, // 46: nominal.seriesmetadata.v1.SeriesMetadataService.CreateSeriesMetadata:input_type -> nominal.seriesmetadata.v1.CreateSeriesMetadataRequest
+	24, // 47: nominal.seriesmetadata.v1.SeriesMetadataService.BatchCreateSeriesMetadata:input_type -> nominal.seriesmetadata.v1.BatchCreateSeriesMetadataRequest
+	28, // 48: nominal.seriesmetadata.v1.SeriesMetadataService.GetSeriesMetadata:input_type -> nominal.seriesmetadata.v1.GetSeriesMetadataRequest
+	30, // 49: nominal.seriesmetadata.v1.SeriesMetadataService.UpdateSeriesMetadata:input_type -> nominal.seriesmetadata.v1.UpdateSeriesMetadataRequest
+	32, // 50: nominal.seriesmetadata.v1.SeriesMetadataService.ChangeDataType:input_type -> nominal.seriesmetadata.v1.ChangeDataTypeRequest
+	37, // 51: nominal.seriesmetadata.v1.SeriesMetadataService.BatchCreateVideoSeries:input_type -> nominal.seriesmetadata.v1.BatchCreateVideoSeriesRequest
+	27, // 52: nominal.seriesmetadata.v1.SeriesMetadataService.SearchSeriesMetadata:output_type -> nominal.seriesmetadata.v1.SearchSeriesMetadataResponse
+	23, // 53: nominal.seriesmetadata.v1.SeriesMetadataService.CreateSeriesMetadata:output_type -> nominal.seriesmetadata.v1.CreateSeriesMetadataResponse
+	25, // 54: nominal.seriesmetadata.v1.SeriesMetadataService.BatchCreateSeriesMetadata:output_type -> nominal.seriesmetadata.v1.BatchCreateSeriesMetadataResponse
+	29, // 55: nominal.seriesmetadata.v1.SeriesMetadataService.GetSeriesMetadata:output_type -> nominal.seriesmetadata.v1.GetSeriesMetadataResponse
+	31, // 56: nominal.seriesmetadata.v1.SeriesMetadataService.UpdateSeriesMetadata:output_type -> nominal.seriesmetadata.v1.UpdateSeriesMetadataResponse
+	33, // 57: nominal.seriesmetadata.v1.SeriesMetadataService.ChangeDataType:output_type -> nominal.seriesmetadata.v1.ChangeDataTypeResponse
+	38, // 58: nominal.seriesmetadata.v1.SeriesMetadataService.BatchCreateVideoSeries:output_type -> nominal.seriesmetadata.v1.BatchCreateVideoSeriesResponse
+	52, // [52:59] is the sub-list for method output_type
+	45, // [45:52] is the sub-list for method input_type
+	45, // [45:45] is the sub-list for extension type_name
+	45, // [45:45] is the sub-list for extension extendee
+	0,  // [0:45] is the sub-list for field type_name
 }
 
 func init() { file_nominal_protos_seriesmetadata_v1_series_metadata_proto_init() }

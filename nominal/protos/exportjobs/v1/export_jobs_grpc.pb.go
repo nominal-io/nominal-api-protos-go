@@ -32,6 +32,17 @@ const (
 // FAILED or CANCELLED.
 type ExportJobServiceClient interface {
 	// Validates and authorizes the request, then starts the export. Includes file metadata if it has already completed.
+	//
+	// A zip export needs workspace view and read access to every dataset it names.
+	//
+	// Errors:
+	//   - FAILED_PRECONDITION: the deployment has no export storage.
+	//   - INVALID_ARGUMENT: a zip source names more file ids in total than one export may, a selection query nests too
+	//     deeply, or a zip request sets `settings`.
+	//   - NOT_FOUND (Security:WorkspaceNotFound): for a zip source, the workspace rid is malformed or the caller cannot
+	//     view the workspace.
+	//   - NOT_FOUND (EXPORT_JOB_ERROR_DATASET_FILES_NOT_FOUND): a zip source names a dataset or file that is missing,
+	//     outside the workspace, deleted, or unreadable by the caller.
 	CreateExportJob(ctx context.Context, in *CreateExportJobRequest, opts ...grpc.CallOption) (*CreateExportJobResponse, error)
 	// Returns one export, with a fresh download URL for each file once it is COMPLETED.
 	GetExportJob(ctx context.Context, in *GetExportJobRequest, opts ...grpc.CallOption) (*GetExportJobResponse, error)
@@ -85,6 +96,17 @@ func (c *exportJobServiceClient) ListExportJobs(ctx context.Context, in *ListExp
 // FAILED or CANCELLED.
 type ExportJobServiceServer interface {
 	// Validates and authorizes the request, then starts the export. Includes file metadata if it has already completed.
+	//
+	// A zip export needs workspace view and read access to every dataset it names.
+	//
+	// Errors:
+	//   - FAILED_PRECONDITION: the deployment has no export storage.
+	//   - INVALID_ARGUMENT: a zip source names more file ids in total than one export may, a selection query nests too
+	//     deeply, or a zip request sets `settings`.
+	//   - NOT_FOUND (Security:WorkspaceNotFound): for a zip source, the workspace rid is malformed or the caller cannot
+	//     view the workspace.
+	//   - NOT_FOUND (EXPORT_JOB_ERROR_DATASET_FILES_NOT_FOUND): a zip source names a dataset or file that is missing,
+	//     outside the workspace, deleted, or unreadable by the caller.
 	CreateExportJob(context.Context, *CreateExportJobRequest) (*CreateExportJobResponse, error)
 	// Returns one export, with a fresh download URL for each file once it is COMPLETED.
 	GetExportJob(context.Context, *GetExportJobRequest) (*GetExportJobResponse, error)

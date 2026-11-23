@@ -29,7 +29,10 @@ const (
 //
 // Provides read-only access to the predefined role catalog for any authenticated user.
 type RoleServiceClient interface {
-	// Retrieves roles by ID.
+	// Returns the predefined roles with the given IDs, with the actions each role grants.
+	//
+	// The roles come back in the order of the requested IDs. An ID that matches no role is left out
+	// instead of causing an error. Any authenticated user can call this.
 	BatchGetRoles(ctx context.Context, in *BatchGetRolesRequest, opts ...grpc.CallOption) (*BatchGetRolesResponse, error)
 	// Lists available roles matching the supplied filters.
 	ListRoles(ctx context.Context, in *ListRolesRequest, opts ...grpc.CallOption) (*ListRolesResponse, error)
@@ -69,7 +72,10 @@ func (c *roleServiceClient) ListRoles(ctx context.Context, in *ListRolesRequest,
 //
 // Provides read-only access to the predefined role catalog for any authenticated user.
 type RoleServiceServer interface {
-	// Retrieves roles by ID.
+	// Returns the predefined roles with the given IDs, with the actions each role grants.
+	//
+	// The roles come back in the order of the requested IDs. An ID that matches no role is left out
+	// instead of causing an error. Any authenticated user can call this.
 	BatchGetRoles(context.Context, *BatchGetRolesRequest) (*BatchGetRolesResponse, error)
 	// Lists available roles matching the supplied filters.
 	ListRoles(context.Context, *ListRolesRequest) (*ListRolesResponse, error)

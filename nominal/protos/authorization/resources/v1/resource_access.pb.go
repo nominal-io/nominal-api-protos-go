@@ -74,9 +74,10 @@ func (ResourceAccessError) EnumDescriptor() ([]byte, []int) {
 }
 
 type ResourceAccessDecision struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	ResourceRid   string                 `protobuf:"bytes,1,opt,name=resource_rid,json=resourceRid,proto3" json:"resource_rid,omitempty"`
-	IsAuthorized  bool                   `protobuf:"varint,2,opt,name=is_authorized,json=isAuthorized,proto3" json:"is_authorized,omitempty"`
+	state       protoimpl.MessageState `protogen:"open.v1"`
+	ResourceRid string                 `protobuf:"bytes,1,opt,name=resource_rid,json=resourceRid,proto3" json:"resource_rid,omitempty"`
+	// True if the caller can access the resource.
+	IsAuthorized  bool `protobuf:"varint,2,opt,name=is_authorized,json=isAuthorized,proto3" json:"is_authorized,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -125,6 +126,7 @@ func (x *ResourceAccessDecision) GetIsAuthorized() bool {
 	return false
 }
 
+// A resource and the workspace that holds it.
 type ResourceWorkspace struct {
 	state       protoimpl.MessageState `protogen:"open.v1"`
 	ResourceRid string                 `protobuf:"bytes,1,opt,name=resource_rid,json=resourceRid,proto3" json:"resource_rid,omitempty"`

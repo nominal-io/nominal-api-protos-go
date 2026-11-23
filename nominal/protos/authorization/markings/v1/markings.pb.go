@@ -71,6 +71,8 @@ func (x *AuthorizedGroups) GetGroupRids() []string {
 	return nil
 }
 
+// An access restriction on data sources. A marking names the user groups that are authorized to access the data
+// sources it is applied to.
 type Marking struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	Rid   string                 `protobuf:"bytes,1,opt,name=rid,proto3" json:"rid,omitempty"`
@@ -82,11 +84,12 @@ type Marking struct {
 	// Group RIDs that are authorized to access data sources with this marking.
 	AuthorizedGroups *AuthorizedGroups `protobuf:"bytes,4,opt,name=authorized_groups,json=authorizedGroups,proto3" json:"authorized_groups,omitempty"`
 	// Symbol and color to identify markings
-	Symbol        *v1.Symbol             `protobuf:"bytes,5,opt,name=symbol,proto3,oneof" json:"symbol,omitempty"`
-	Color         *v1.Color              `protobuf:"bytes,6,opt,name=color,proto3,oneof" json:"color,omitempty"`
-	CreatedAt     *timestamppb.Timestamp `protobuf:"bytes,7,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
-	UpdatedAt     *timestamppb.Timestamp `protobuf:"bytes,8,opt,name=updated_at,json=updatedAt,proto3" json:"updated_at,omitempty"`
-	IsArchived    bool                   `protobuf:"varint,9,opt,name=is_archived,json=isArchived,proto3" json:"is_archived,omitempty"`
+	Symbol    *v1.Symbol             `protobuf:"bytes,5,opt,name=symbol,proto3,oneof" json:"symbol,omitempty"`
+	Color     *v1.Color              `protobuf:"bytes,6,opt,name=color,proto3,oneof" json:"color,omitempty"`
+	CreatedAt *timestamppb.Timestamp `protobuf:"bytes,7,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
+	UpdatedAt *timestamppb.Timestamp `protobuf:"bytes,8,opt,name=updated_at,json=updatedAt,proto3" json:"updated_at,omitempty"`
+	// Archived markings do not appear in search and cannot be updated or applied to data sources.
+	IsArchived    bool `protobuf:"varint,9,opt,name=is_archived,json=isArchived,proto3" json:"is_archived,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -194,11 +197,12 @@ type MarkingMetadata struct {
 	Id          string `protobuf:"bytes,2,opt,name=id,proto3" json:"id,omitempty"`
 	Description string `protobuf:"bytes,3,opt,name=description,proto3" json:"description,omitempty"`
 	// Symbol and color to identify markings
-	Symbol        *v1.Symbol             `protobuf:"bytes,4,opt,name=symbol,proto3,oneof" json:"symbol,omitempty"`
-	Color         *v1.Color              `protobuf:"bytes,5,opt,name=color,proto3,oneof" json:"color,omitempty"`
-	CreatedAt     *timestamppb.Timestamp `protobuf:"bytes,6,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
-	UpdatedAt     *timestamppb.Timestamp `protobuf:"bytes,7,opt,name=updated_at,json=updatedAt,proto3" json:"updated_at,omitempty"`
-	IsArchived    bool                   `protobuf:"varint,8,opt,name=is_archived,json=isArchived,proto3" json:"is_archived,omitempty"`
+	Symbol    *v1.Symbol             `protobuf:"bytes,4,opt,name=symbol,proto3,oneof" json:"symbol,omitempty"`
+	Color     *v1.Color              `protobuf:"bytes,5,opt,name=color,proto3,oneof" json:"color,omitempty"`
+	CreatedAt *timestamppb.Timestamp `protobuf:"bytes,6,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
+	UpdatedAt *timestamppb.Timestamp `protobuf:"bytes,7,opt,name=updated_at,json=updatedAt,proto3" json:"updated_at,omitempty"`
+	// Archived markings do not appear in search and cannot be updated or applied to data sources.
+	IsArchived    bool `protobuf:"varint,8,opt,name=is_archived,json=isArchived,proto3" json:"is_archived,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -934,7 +938,7 @@ type isSearchMarkingsQuery_Query interface {
 }
 
 type SearchMarkingsQuery_IdExactSubstringSearch struct {
-	// Search for markings with an ID that contains the given query as a substring.
+	// Search for markings with an ID that contains the given query as a case-insensitive substring.
 	IdExactSubstringSearch string `protobuf:"bytes,1,opt,name=id_exact_substring_search,json=idExactSubstringSearch,proto3,oneof"`
 }
 
@@ -998,8 +1002,9 @@ func (x *SearchMarkingsQueryList) GetQueries() []*SearchMarkingsQuery {
 
 type SearchMarkingsRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
-	Query *SearchMarkingsQuery   `protobuf:"bytes,1,opt,name=query,proto3" json:"query,omitempty"`
-	// Page sizes greater than 1_000 will be rejected. Default pageSize is 100.
+	// Matches all unarchived markings when omitted.
+	Query *SearchMarkingsQuery `protobuf:"bytes,1,opt,name=query,proto3" json:"query,omitempty"`
+	// Defaults to 100 when omitted.
 	PageSize      *int32  `protobuf:"varint,2,opt,name=page_size,json=pageSize,proto3,oneof" json:"page_size,omitempty"`
 	NextPageToken *string `protobuf:"bytes,3,opt,name=next_page_token,json=nextPageToken,proto3,oneof" json:"next_page_token,omitempty"`
 	unknownFields protoimpl.UnknownFields
@@ -1500,7 +1505,7 @@ func (*UpdateMarkingsOnResourceResponse) Descriptor() ([]byte, []int) {
 type GetResourcesForMarkingRequest struct {
 	state      protoimpl.MessageState `protogen:"open.v1"`
 	MarkingRid string                 `protobuf:"bytes,1,opt,name=marking_rid,json=markingRid,proto3" json:"marking_rid,omitempty"`
-	// Page sizes greater than 1_000 will be rejected. Default pageSize is 100.
+	// Defaults to 100 when omitted.
 	PageSize      *int32  `protobuf:"varint,2,opt,name=page_size,json=pageSize,proto3,oneof" json:"page_size,omitempty"`
 	NextPageToken *string `protobuf:"bytes,3,opt,name=next_page_token,json=nextPageToken,proto3,oneof" json:"next_page_token,omitempty"`
 	unknownFields protoimpl.UnknownFields
@@ -1612,7 +1617,7 @@ func (x *GetResourcesForMarkingResponse) GetNextPageToken() string {
 
 type GetMarkingsForResourcesRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
-	// The resources to get the markings for.
+	// RIDs of the data sources to get the markings for.
 	Resources     []string `protobuf:"bytes,1,rep,name=resources,proto3" json:"resources,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -1886,9 +1891,8 @@ func (x *GetMarkingsForResourcesResponse_ResourceMarkingsList) GetAppliedMarking
 }
 
 type GetMarkingsForResourcesResponse_ResourceMarkingsList_AppliedMarking struct {
-	state      protoimpl.MessageState `protogen:"open.v1"`
-	MarkingRid string                 `protobuf:"bytes,1,opt,name=marking_rid,json=markingRid,proto3" json:"marking_rid,omitempty"`
-	// nb: skipping field 2 in order to keep the door open to unify this message with "MarkedResource" above
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	MarkingRid    string                 `protobuf:"bytes,1,opt,name=marking_rid,json=markingRid,proto3" json:"marking_rid,omitempty"`
 	AppliedAt     *timestamppb.Timestamp `protobuf:"bytes,3,opt,name=applied_at,json=appliedAt,proto3" json:"applied_at,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -1996,14 +2000,14 @@ const file_nominal_protos_authorization_markings_v1_markings_proto_rawDesc = "" 
 	"\x15GetMarkingByIdRequest\x12(\n" +
 	"\x02id\x18\x01 \x01(\tB\x18\xbaH\x15r\x132\x11^[a-z][a-z0-9-]*$R\x02id\"^\n" +
 	"\x16GetMarkingByIdResponse\x12D\n" +
-	"\amarking\x18\x01 \x01(\v2*.nominal.authorization.markings.v1.MarkingR\amarking\"h\n" +
-	"\x17BatchGetMarkingsRequest\x12M\n" +
-	"\fmarking_rids\x18\x01 \x03(\tB*\x9a\xb2\x1a&\n" +
+	"\amarking\x18\x01 \x01(\v2*.nominal.authorization.markings.v1.MarkingR\amarking\"q\n" +
+	"\x17BatchGetMarkingsRequest\x12V\n" +
+	"\fmarking_rids\x18\x01 \x03(\tB3\xbaH\x06\x92\x01\x03\x10\xe8\a\x9a\xb2\x1a&\n" +
 	"$io.nominal.scout.rids.api.MarkingRidR\vmarkingRids\"b\n" +
 	"\x18BatchGetMarkingsResponse\x12F\n" +
-	"\bmarkings\x18\x01 \x03(\v2*.nominal.authorization.markings.v1.MarkingR\bmarkings\"o\n" +
-	"\x1eBatchGetMarkingMetadataRequest\x12M\n" +
-	"\fmarking_rids\x18\x01 \x03(\tB*\x9a\xb2\x1a&\n" +
+	"\bmarkings\x18\x01 \x03(\v2*.nominal.authorization.markings.v1.MarkingR\bmarkings\"x\n" +
+	"\x1eBatchGetMarkingMetadataRequest\x12V\n" +
+	"\fmarking_rids\x18\x01 \x03(\tB3\xbaH\x06\x92\x01\x03\x10\xe8\a\x9a\xb2\x1a&\n" +
 	"$io.nominal.scout.rids.api.MarkingRidR\vmarkingRids\"\x82\x01\n" +
 	"\x1fBatchGetMarkingMetadataResponse\x12_\n" +
 	"\x11marking_metadatas\x18\x01 \x03(\v22.nominal.authorization.markings.v1.MarkingMetadataR\x10markingMetadatas\"t\n" +

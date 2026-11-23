@@ -29,11 +29,23 @@ const (
 //
 // Computes resource visibility using the caller's workspace membership and the resource's read policy.
 type ResourceAccessServiceClient interface {
-	// Checks visibility rather than changing a stored resource, so this is a custom check operation.
-	// Returns a decision for each requested RID, in request order, including repeated RIDs.
+	// Checks, for each given resource RID (assets, runs, workbooks, datasets, and others), whether the caller can access
+	// the workspace that holds it; data sources need permission to read their data. Returns one decision per RID, in
+	// request order, including repeated RIDs. An unknown resource is not authorized.
+	//
+	// Errors:
+	// - INVALID_ARGUMENT: a resource RID is not a valid RID.
 	BatchCheckResourceAccess(ctx context.Context, in *BatchCheckResourceAccessRequest, opts ...grpc.CallOption) (*BatchCheckResourceAccessResponse, error)
-	// Gets workspace associations visible to the caller. Missing or unauthorized associations are omitted.
-	// Returns each association once, in first-occurrence request order.
+	// Gets the workspace that holds each given resource RID (assets, runs, workbooks, drives, data sources, and others).
+	// Returns only resources the caller can view; unknown or unviewable RIDs are omitted without error. Each resource
+	// appears once, in first-occurrence request order.
+	//
+	// A workbook, run, asset, drive, or data source is viewable when the caller holds its own view permission (for a
+	// data source, permission to read its metadata). Any other resource is viewable when the caller can view its
+	// workspace.
+	//
+	// Errors:
+	// - INVALID_ARGUMENT: a resource RID is not a valid RID.
 	BatchGetResourceWorkspaces(ctx context.Context, in *BatchGetResourceWorkspacesRequest, opts ...grpc.CallOption) (*BatchGetResourceWorkspacesResponse, error)
 }
 
@@ -71,11 +83,23 @@ func (c *resourceAccessServiceClient) BatchGetResourceWorkspaces(ctx context.Con
 //
 // Computes resource visibility using the caller's workspace membership and the resource's read policy.
 type ResourceAccessServiceServer interface {
-	// Checks visibility rather than changing a stored resource, so this is a custom check operation.
-	// Returns a decision for each requested RID, in request order, including repeated RIDs.
+	// Checks, for each given resource RID (assets, runs, workbooks, datasets, and others), whether the caller can access
+	// the workspace that holds it; data sources need permission to read their data. Returns one decision per RID, in
+	// request order, including repeated RIDs. An unknown resource is not authorized.
+	//
+	// Errors:
+	// - INVALID_ARGUMENT: a resource RID is not a valid RID.
 	BatchCheckResourceAccess(context.Context, *BatchCheckResourceAccessRequest) (*BatchCheckResourceAccessResponse, error)
-	// Gets workspace associations visible to the caller. Missing or unauthorized associations are omitted.
-	// Returns each association once, in first-occurrence request order.
+	// Gets the workspace that holds each given resource RID (assets, runs, workbooks, drives, data sources, and others).
+	// Returns only resources the caller can view; unknown or unviewable RIDs are omitted without error. Each resource
+	// appears once, in first-occurrence request order.
+	//
+	// A workbook, run, asset, drive, or data source is viewable when the caller holds its own view permission (for a
+	// data source, permission to read its metadata). Any other resource is viewable when the caller can view its
+	// workspace.
+	//
+	// Errors:
+	// - INVALID_ARGUMENT: a resource RID is not a valid RID.
 	BatchGetResourceWorkspaces(context.Context, *BatchGetResourceWorkspacesRequest) (*BatchGetResourceWorkspacesResponse, error)
 	mustEmbedUnimplementedResourceAccessServiceServer()
 }

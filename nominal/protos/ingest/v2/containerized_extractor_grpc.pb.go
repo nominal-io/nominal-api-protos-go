@@ -36,12 +36,13 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	ContainerizedExtractorService_CreateContainerizedExtractor_FullMethodName    = "/nominal.ingest.v2.ContainerizedExtractorService/CreateContainerizedExtractor"
-	ContainerizedExtractorService_GetContainerizedExtractor_FullMethodName       = "/nominal.ingest.v2.ContainerizedExtractorService/GetContainerizedExtractor"
-	ContainerizedExtractorService_UpdateContainerizedExtractor_FullMethodName    = "/nominal.ingest.v2.ContainerizedExtractorService/UpdateContainerizedExtractor"
-	ContainerizedExtractorService_ArchiveContainerizedExtractor_FullMethodName   = "/nominal.ingest.v2.ContainerizedExtractorService/ArchiveContainerizedExtractor"
-	ContainerizedExtractorService_UnarchiveContainerizedExtractor_FullMethodName = "/nominal.ingest.v2.ContainerizedExtractorService/UnarchiveContainerizedExtractor"
-	ContainerizedExtractorService_SearchContainerizedExtractors_FullMethodName   = "/nominal.ingest.v2.ContainerizedExtractorService/SearchContainerizedExtractors"
+	ContainerizedExtractorService_CreateContainerizedExtractor_FullMethodName              = "/nominal.ingest.v2.ContainerizedExtractorService/CreateContainerizedExtractor"
+	ContainerizedExtractorService_GetContainerizedExtractor_FullMethodName                 = "/nominal.ingest.v2.ContainerizedExtractorService/GetContainerizedExtractor"
+	ContainerizedExtractorService_UpdateContainerizedExtractor_FullMethodName              = "/nominal.ingest.v2.ContainerizedExtractorService/UpdateContainerizedExtractor"
+	ContainerizedExtractorService_ArchiveContainerizedExtractor_FullMethodName             = "/nominal.ingest.v2.ContainerizedExtractorService/ArchiveContainerizedExtractor"
+	ContainerizedExtractorService_UnarchiveContainerizedExtractor_FullMethodName           = "/nominal.ingest.v2.ContainerizedExtractorService/UnarchiveContainerizedExtractor"
+	ContainerizedExtractorService_GetContainerizedExtractorResourceDefaults_FullMethodName = "/nominal.ingest.v2.ContainerizedExtractorService/GetContainerizedExtractorResourceDefaults"
+	ContainerizedExtractorService_SearchContainerizedExtractors_FullMethodName             = "/nominal.ingest.v2.ContainerizedExtractorService/SearchContainerizedExtractors"
 )
 
 // ContainerizedExtractorServiceClient is the client API for ContainerizedExtractorService service.
@@ -97,6 +98,8 @@ type ContainerizedExtractorServiceClient interface {
 	//   - NOT_FOUND: the extractor does not exist in the workspace, or the caller cannot edit connectivity there
 	//     (reported as workspace not found).
 	UnarchiveContainerizedExtractor(ctx context.Context, in *UnarchiveContainerizedExtractorRequest, opts ...grpc.CallOption) (*UnarchiveContainerizedExtractorResponse, error)
+	// Returns this deployment's default extractor resources, which apply when an image leaves a field unset.
+	GetContainerizedExtractorResourceDefaults(ctx context.Context, in *GetContainerizedExtractorResourceDefaultsRequest, opts ...grpc.CallOption) (*GetContainerizedExtractorResourceDefaultsResponse, error)
 	// Searches the file extractors in a workspace by label, property, or accepted file extension. Returns a page,
 	// newest first.
 	//
@@ -168,6 +171,16 @@ func (c *containerizedExtractorServiceClient) UnarchiveContainerizedExtractor(ct
 	return out, nil
 }
 
+func (c *containerizedExtractorServiceClient) GetContainerizedExtractorResourceDefaults(ctx context.Context, in *GetContainerizedExtractorResourceDefaultsRequest, opts ...grpc.CallOption) (*GetContainerizedExtractorResourceDefaultsResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(GetContainerizedExtractorResourceDefaultsResponse)
+	err := c.cc.Invoke(ctx, ContainerizedExtractorService_GetContainerizedExtractorResourceDefaults_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *containerizedExtractorServiceClient) SearchContainerizedExtractors(ctx context.Context, in *SearchContainerizedExtractorsRequest, opts ...grpc.CallOption) (*SearchContainerizedExtractorsResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(SearchContainerizedExtractorsResponse)
@@ -231,6 +244,8 @@ type ContainerizedExtractorServiceServer interface {
 	//   - NOT_FOUND: the extractor does not exist in the workspace, or the caller cannot edit connectivity there
 	//     (reported as workspace not found).
 	UnarchiveContainerizedExtractor(context.Context, *UnarchiveContainerizedExtractorRequest) (*UnarchiveContainerizedExtractorResponse, error)
+	// Returns this deployment's default extractor resources, which apply when an image leaves a field unset.
+	GetContainerizedExtractorResourceDefaults(context.Context, *GetContainerizedExtractorResourceDefaultsRequest) (*GetContainerizedExtractorResourceDefaultsResponse, error)
 	// Searches the file extractors in a workspace by label, property, or accepted file extension. Returns a page,
 	// newest first.
 	//
@@ -266,6 +281,9 @@ func (UnimplementedContainerizedExtractorServiceServer) ArchiveContainerizedExtr
 }
 func (UnimplementedContainerizedExtractorServiceServer) UnarchiveContainerizedExtractor(context.Context, *UnarchiveContainerizedExtractorRequest) (*UnarchiveContainerizedExtractorResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method UnarchiveContainerizedExtractor not implemented")
+}
+func (UnimplementedContainerizedExtractorServiceServer) GetContainerizedExtractorResourceDefaults(context.Context, *GetContainerizedExtractorResourceDefaultsRequest) (*GetContainerizedExtractorResourceDefaultsResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method GetContainerizedExtractorResourceDefaults not implemented")
 }
 func (UnimplementedContainerizedExtractorServiceServer) SearchContainerizedExtractors(context.Context, *SearchContainerizedExtractorsRequest) (*SearchContainerizedExtractorsResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method SearchContainerizedExtractors not implemented")
@@ -382,6 +400,24 @@ func _ContainerizedExtractorService_UnarchiveContainerizedExtractor_Handler(srv 
 	return interceptor(ctx, in, info, handler)
 }
 
+func _ContainerizedExtractorService_GetContainerizedExtractorResourceDefaults_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetContainerizedExtractorResourceDefaultsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ContainerizedExtractorServiceServer).GetContainerizedExtractorResourceDefaults(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ContainerizedExtractorService_GetContainerizedExtractorResourceDefaults_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ContainerizedExtractorServiceServer).GetContainerizedExtractorResourceDefaults(ctx, req.(*GetContainerizedExtractorResourceDefaultsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _ContainerizedExtractorService_SearchContainerizedExtractors_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(SearchContainerizedExtractorsRequest)
 	if err := dec(in); err != nil {
@@ -426,6 +462,10 @@ var ContainerizedExtractorService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "UnarchiveContainerizedExtractor",
 			Handler:    _ContainerizedExtractorService_UnarchiveContainerizedExtractor_Handler,
+		},
+		{
+			MethodName: "GetContainerizedExtractorResourceDefaults",
+			Handler:    _ContainerizedExtractorService_GetContainerizedExtractorResourceDefaults_Handler,
 		},
 		{
 			MethodName: "SearchContainerizedExtractors",

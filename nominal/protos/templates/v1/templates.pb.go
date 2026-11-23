@@ -14,6 +14,7 @@ import (
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
+	fieldmaskpb "google.golang.org/protobuf/types/known/fieldmaskpb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
 	reflect "reflect"
 	sync "sync"
@@ -106,7 +107,7 @@ func (TemplateError) EnumDescriptor() ([]byte, []int) {
 // by commit.
 type Template struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
-	// Set by the server on create; identifies the template in updates.
+	// Set by the server on create; identifies the template in UpdateTemplateRequest.
 	Rid         string            `protobuf:"bytes,1,opt,name=rid,proto3" json:"rid,omitempty"`
 	Title       string            `protobuf:"bytes,2,opt,name=title,proto3" json:"title,omitempty"`
 	Description string            `protobuf:"bytes,3,opt,name=description,proto3" json:"description,omitempty"`
@@ -667,11 +668,270 @@ func (x *GetTemplateDataSourceRefNamesResponse) GetDataSourceRefNames() []string
 	return nil
 }
 
+type UpdateTemplateRequest struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// The template to update, identified by template.rid, carrying the new values of the fields in update_mask. Fields
+	// outside update_mask are ignored.
+	Template *Template `protobuf:"bytes,1,opt,name=template,proto3" json:"template,omitempty"`
+	// A listed field that is empty in template is cleared, except preview_image, which must be set.
+	UpdateMask    *fieldmaskpb.FieldMask `protobuf:"bytes,2,opt,name=update_mask,json=updateMask,proto3" json:"update_mask,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *UpdateTemplateRequest) Reset() {
+	*x = UpdateTemplateRequest{}
+	mi := &file_nominal_protos_templates_v1_templates_proto_msgTypes[9]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *UpdateTemplateRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*UpdateTemplateRequest) ProtoMessage() {}
+
+func (x *UpdateTemplateRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_nominal_protos_templates_v1_templates_proto_msgTypes[9]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use UpdateTemplateRequest.ProtoReflect.Descriptor instead.
+func (*UpdateTemplateRequest) Descriptor() ([]byte, []int) {
+	return file_nominal_protos_templates_v1_templates_proto_rawDescGZIP(), []int{9}
+}
+
+func (x *UpdateTemplateRequest) GetTemplate() *Template {
+	if x != nil {
+		return x.Template
+	}
+	return nil
+}
+
+func (x *UpdateTemplateRequest) GetUpdateMask() *fieldmaskpb.FieldMask {
+	if x != nil {
+		return x.UpdateMask
+	}
+	return nil
+}
+
+type UpdateTemplateResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Template      *Template              `protobuf:"bytes,1,opt,name=template,proto3" json:"template,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *UpdateTemplateResponse) Reset() {
+	*x = UpdateTemplateResponse{}
+	mi := &file_nominal_protos_templates_v1_templates_proto_msgTypes[10]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *UpdateTemplateResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*UpdateTemplateResponse) ProtoMessage() {}
+
+func (x *UpdateTemplateResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_nominal_protos_templates_v1_templates_proto_msgTypes[10]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use UpdateTemplateResponse.ProtoReflect.Descriptor instead.
+func (*UpdateTemplateResponse) Descriptor() ([]byte, []int) {
+	return file_nominal_protos_templates_v1_templates_proto_rawDescGZIP(), []int{10}
+}
+
+func (x *UpdateTemplateResponse) GetTemplate() *Template {
+	if x != nil {
+		return x.Template
+	}
+	return nil
+}
+
+type ArchiveTemplatesRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	TemplateRids  []string               `protobuf:"bytes,1,rep,name=template_rids,json=templateRids,proto3" json:"template_rids,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ArchiveTemplatesRequest) Reset() {
+	*x = ArchiveTemplatesRequest{}
+	mi := &file_nominal_protos_templates_v1_templates_proto_msgTypes[11]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ArchiveTemplatesRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ArchiveTemplatesRequest) ProtoMessage() {}
+
+func (x *ArchiveTemplatesRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_nominal_protos_templates_v1_templates_proto_msgTypes[11]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ArchiveTemplatesRequest.ProtoReflect.Descriptor instead.
+func (*ArchiveTemplatesRequest) Descriptor() ([]byte, []int) {
+	return file_nominal_protos_templates_v1_templates_proto_rawDescGZIP(), []int{11}
+}
+
+func (x *ArchiveTemplatesRequest) GetTemplateRids() []string {
+	if x != nil {
+		return x.TemplateRids
+	}
+	return nil
+}
+
+type ArchiveTemplatesResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ArchiveTemplatesResponse) Reset() {
+	*x = ArchiveTemplatesResponse{}
+	mi := &file_nominal_protos_templates_v1_templates_proto_msgTypes[12]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ArchiveTemplatesResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ArchiveTemplatesResponse) ProtoMessage() {}
+
+func (x *ArchiveTemplatesResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_nominal_protos_templates_v1_templates_proto_msgTypes[12]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ArchiveTemplatesResponse.ProtoReflect.Descriptor instead.
+func (*ArchiveTemplatesResponse) Descriptor() ([]byte, []int) {
+	return file_nominal_protos_templates_v1_templates_proto_rawDescGZIP(), []int{12}
+}
+
+type UnarchiveTemplatesRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	TemplateRids  []string               `protobuf:"bytes,1,rep,name=template_rids,json=templateRids,proto3" json:"template_rids,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *UnarchiveTemplatesRequest) Reset() {
+	*x = UnarchiveTemplatesRequest{}
+	mi := &file_nominal_protos_templates_v1_templates_proto_msgTypes[13]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *UnarchiveTemplatesRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*UnarchiveTemplatesRequest) ProtoMessage() {}
+
+func (x *UnarchiveTemplatesRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_nominal_protos_templates_v1_templates_proto_msgTypes[13]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use UnarchiveTemplatesRequest.ProtoReflect.Descriptor instead.
+func (*UnarchiveTemplatesRequest) Descriptor() ([]byte, []int) {
+	return file_nominal_protos_templates_v1_templates_proto_rawDescGZIP(), []int{13}
+}
+
+func (x *UnarchiveTemplatesRequest) GetTemplateRids() []string {
+	if x != nil {
+		return x.TemplateRids
+	}
+	return nil
+}
+
+type UnarchiveTemplatesResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *UnarchiveTemplatesResponse) Reset() {
+	*x = UnarchiveTemplatesResponse{}
+	mi := &file_nominal_protos_templates_v1_templates_proto_msgTypes[14]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *UnarchiveTemplatesResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*UnarchiveTemplatesResponse) ProtoMessage() {}
+
+func (x *UnarchiveTemplatesResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_nominal_protos_templates_v1_templates_proto_msgTypes[14]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use UnarchiveTemplatesResponse.ProtoReflect.Descriptor instead.
+func (*UnarchiveTemplatesResponse) Descriptor() ([]byte, []int) {
+	return file_nominal_protos_templates_v1_templates_proto_rawDescGZIP(), []int{14}
+}
+
 var File_nominal_protos_templates_v1_templates_proto protoreflect.FileDescriptor
 
 const file_nominal_protos_templates_v1_templates_proto_rawDesc = "" +
 	"\n" +
-	"+nominal/protos/templates/v1/templates.proto\x12\x14nominal.templates.v1\x1a\x1bbuf/validate/validate.proto\x1a\x1cgoogle/api/annotations.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a!nominal/protos/gen/v1/alias.proto\x1a!nominal/protos/gen/v1/error.proto\x1a(nominal/protos/templates/v1/search.proto\x1a!nominal/protos/types/images.proto\x1a-nominal/protos/versioning/v1/versioning.proto\"\xd2\a\n" +
+	"+nominal/protos/templates/v1/templates.proto\x12\x14nominal.templates.v1\x1a\x1bbuf/validate/validate.proto\x1a\x1cgoogle/api/annotations.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a!nominal/protos/gen/v1/alias.proto\x1a!nominal/protos/gen/v1/error.proto\x1a(nominal/protos/templates/v1/search.proto\x1a!nominal/protos/types/images.proto\x1a-nominal/protos/versioning/v1/versioning.proto\"\xd2\a\n" +
 	"\bTemplate\x12E\n" +
 	"\x03rid\x18\x01 \x01(\tB3\xbaH\x05r\x03\x18\x80\b\x9a\xb2\x1a'\n" +
 	"%io.nominal.scout.rids.api.TemplateRidR\x03rid\x12\x1e\n" +
@@ -732,7 +992,24 @@ const file_nominal_protos_templates_v1_templates_proto_rawDesc = "" +
 	"\x18template.version.bounded\x123branch and commit names are at most 1024 characters\x1a8this.branch.size() <= 1024 && this.commit.size() <= 1024R\aversion\"\x88\x01\n" +
 	"%GetTemplateDataSourceRefNamesResponse\x12_\n" +
 	"\x15data_source_ref_names\x18\x01 \x03(\tB,\x9a\xb2\x1a(\n" +
-	"&io.nominal.scout.api.DataSourceRefNameR\x12dataSourceRefNames*\xf2\x05\n" +
+	"&io.nominal.scout.api.DataSourceRefNameR\x12dataSourceRefNames\"\x9e\x04\n" +
+	"\x15UpdateTemplateRequest\x12B\n" +
+	"\btemplate\x18\x01 \x01(\v2\x1e.nominal.templates.v1.TemplateB\x06\xbaH\x03\xc8\x01\x01R\btemplate\x12\xc0\x03\n" +
+	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x82\x03\xbaH\xfe\x02\xba\x01N\n" +
+	"\x15update_mask.non_empty\x12\x1emust contain at least one path\x1a\x15this.paths.size() > 0\xba\x01\xdd\x01\n" +
+	"\x1bupdate_mask.supported_paths\x12Spaths must be title, description, labels, properties, is_published or preview_image\x1aithis.paths.all(p, p in ['title', 'description', 'labels', 'properties', 'is_published', 'preview_image'])\xba\x01F\n" +
+	"\x18update_mask.unique_paths\x12\x15paths must not repeat\x1a\x13this.paths.unique()\xc8\x01\x01R\n" +
+	"updateMask\"T\n" +
+	"\x16UpdateTemplateResponse\x12:\n" +
+	"\btemplate\x18\x01 \x01(\v2\x1e.nominal.templates.v1.TemplateR\btemplate\"\x81\x01\n" +
+	"\x17ArchiveTemplatesRequest\x12f\n" +
+	"\rtemplate_rids\x18\x01 \x03(\tBA\xbaH\x13\x92\x01\x10\b\x01\x10\xe8\a\x18\x01\"\ar\x05\x10\x01\x18\x80\b\x9a\xb2\x1a'\n" +
+	"%io.nominal.scout.rids.api.TemplateRidR\ftemplateRids\"\x1a\n" +
+	"\x18ArchiveTemplatesResponse\"\x83\x01\n" +
+	"\x19UnarchiveTemplatesRequest\x12f\n" +
+	"\rtemplate_rids\x18\x01 \x03(\tBA\xbaH\x13\x92\x01\x10\b\x01\x10\xe8\a\x18\x01\"\ar\x05\x10\x01\x18\x80\b\x9a\xb2\x1a'\n" +
+	"%io.nominal.scout.rids.api.TemplateRidR\ftemplateRids\"\x1c\n" +
+	"\x1aUnarchiveTemplatesResponse*\xf2\x05\n" +
 	"\rTemplateError\x12R\n" +
 	"\x1eTEMPLATE_ERROR_INVALID_REQUEST\x10\x00\x1a.\xb2\xb2\x1a*\n" +
 	"\x10INVALID_ARGUMENT\x12\x16InvalidTemplateRequest\x12J\n" +
@@ -749,12 +1026,15 @@ const file_nominal_protos_templates_v1_templates_proto_rawDesc = "" +
 	"!TEMPLATE_ERROR_INVALID_PAGE_TOKEN\x10\x06\x1a4\xb2\xb2\x1a0\n" +
 	"\x10INVALID_ARGUMENT\x12\x1cCannotDeserializeSearchToken\x12J\n" +
 	"\"TEMPLATE_ERROR_WORKSPACE_NOT_FOUND\x10\a\x1a\"\xb2\xb2\x1a\x1e\n" +
-	"\tNOT_FOUND\x12\x11WorkspaceNotFound2\xc8\x05\n" +
+	"\tNOT_FOUND\x12\x11WorkspaceNotFound2\xb1\t\n" +
 	"\x0fTemplateService\x12\x92\x01\n" +
 	"\vGetTemplate\x12(.nominal.templates.v1.GetTemplateRequest\x1a).nominal.templates.v1.GetTemplateResponse\".\x82\xd3\xe4\x93\x02(\x12&/templates/v1/templates/{template_rid}\x12\xa2\x01\n" +
 	"\x11BatchGetTemplates\x12..nominal.templates.v1.BatchGetTemplatesRequest\x1a/.nominal.templates.v1.BatchGetTemplatesResponse\",\x82\xd3\xe4\x93\x02&:\x01*\"!/templates/v1/templates/batch-get\x12\x99\x01\n" +
 	"\x0fSearchTemplates\x12,.nominal.templates.v1.SearchTemplatesRequest\x1a-.nominal.templates.v1.SearchTemplatesResponse\")\x82\xd3\xe4\x93\x02#:\x01*\"\x1e/templates/v1/templates/search\x12\xde\x01\n" +
-	"\x1dGetTemplateDataSourceRefNames\x12:.nominal.templates.v1.GetTemplateDataSourceRefNamesRequest\x1a;.nominal.templates.v1.GetTemplateDataSourceRefNamesResponse\"D\x82\xd3\xe4\x93\x02>\x12</templates/v1/templates/{template_rid}/data-source-ref-namesB\xf1\x01\n" +
+	"\x1dGetTemplateDataSourceRefNames\x12:.nominal.templates.v1.GetTemplateDataSourceRefNamesRequest\x1a;.nominal.templates.v1.GetTemplateDataSourceRefNamesResponse\"D\x82\xd3\xe4\x93\x02>\x12</templates/v1/templates/{template_rid}/data-source-ref-names\x12\x9e\x01\n" +
+	"\x0eUpdateTemplate\x12+.nominal.templates.v1.UpdateTemplateRequest\x1a,.nominal.templates.v1.UpdateTemplateResponse\"1\x82\xd3\xe4\x93\x02+:\x01*\x1a&/templates/v1/templates/{template.rid}\x12\x9d\x01\n" +
+	"\x10ArchiveTemplates\x12-.nominal.templates.v1.ArchiveTemplatesRequest\x1a..nominal.templates.v1.ArchiveTemplatesResponse\"*\x82\xd3\xe4\x93\x02$:\x01*\"\x1f/templates/v1/templates/archive\x12\xa5\x01\n" +
+	"\x12UnarchiveTemplates\x12/.nominal.templates.v1.UnarchiveTemplatesRequest\x1a0.nominal.templates.v1.UnarchiveTemplatesResponse\",\x82\xd3\xe4\x93\x02&:\x01*\"!/templates/v1/templates/unarchiveB\xf1\x01\n" +
 	"\x18com.nominal.templates.v1B\x0eTemplatesProtoP\x01ZSgithub.com/nominal-io/nominal-api-protos-go/nominal/protos/templates/v1;templatesv1\xa2\x02\x03NTX\xaa\x02\x14Nominal.Templates.V1\xca\x02\x14Nominal\\Templates\\V1\xe2\x02 Nominal\\Templates\\V1\\GPBMetadata\xea\x02\x16Nominal::Templates::V1b\x06proto3"
 
 var (
@@ -770,7 +1050,7 @@ func file_nominal_protos_templates_v1_templates_proto_rawDescGZIP() []byte {
 }
 
 var file_nominal_protos_templates_v1_templates_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
-var file_nominal_protos_templates_v1_templates_proto_msgTypes = make([]protoimpl.MessageInfo, 10)
+var file_nominal_protos_templates_v1_templates_proto_msgTypes = make([]protoimpl.MessageInfo, 16)
 var file_nominal_protos_templates_v1_templates_proto_goTypes = []any{
 	(TemplateError)(0),                            // 0: nominal.templates.v1.TemplateError
 	(*Template)(nil),                              // 1: nominal.templates.v1.Template
@@ -782,41 +1062,57 @@ var file_nominal_protos_templates_v1_templates_proto_goTypes = []any{
 	(*SearchTemplatesResponse)(nil),               // 7: nominal.templates.v1.SearchTemplatesResponse
 	(*GetTemplateDataSourceRefNamesRequest)(nil),  // 8: nominal.templates.v1.GetTemplateDataSourceRefNamesRequest
 	(*GetTemplateDataSourceRefNamesResponse)(nil), // 9: nominal.templates.v1.GetTemplateDataSourceRefNamesResponse
-	nil,                           // 10: nominal.templates.v1.Template.PropertiesEntry
-	(*timestamppb.Timestamp)(nil), // 11: google.protobuf.Timestamp
-	(*types.ThemeAwareImage)(nil), // 12: nominal.types.ThemeAwareImage
-	(*v1.BranchOrCommit)(nil),     // 13: nominal.versioning.v1.BranchOrCommit
-	(*v1.Commit)(nil),             // 14: nominal.versioning.v1.Commit
-	(*TemplateSearchQuery)(nil),   // 15: nominal.templates.v1.TemplateSearchQuery
-	(*TemplateSortOptions)(nil),   // 16: nominal.templates.v1.TemplateSortOptions
+	(*UpdateTemplateRequest)(nil),                 // 10: nominal.templates.v1.UpdateTemplateRequest
+	(*UpdateTemplateResponse)(nil),                // 11: nominal.templates.v1.UpdateTemplateResponse
+	(*ArchiveTemplatesRequest)(nil),               // 12: nominal.templates.v1.ArchiveTemplatesRequest
+	(*ArchiveTemplatesResponse)(nil),              // 13: nominal.templates.v1.ArchiveTemplatesResponse
+	(*UnarchiveTemplatesRequest)(nil),             // 14: nominal.templates.v1.UnarchiveTemplatesRequest
+	(*UnarchiveTemplatesResponse)(nil),            // 15: nominal.templates.v1.UnarchiveTemplatesResponse
+	nil,                                           // 16: nominal.templates.v1.Template.PropertiesEntry
+	(*timestamppb.Timestamp)(nil),                 // 17: google.protobuf.Timestamp
+	(*types.ThemeAwareImage)(nil),                 // 18: nominal.types.ThemeAwareImage
+	(*v1.BranchOrCommit)(nil),                     // 19: nominal.versioning.v1.BranchOrCommit
+	(*v1.Commit)(nil),                             // 20: nominal.versioning.v1.Commit
+	(*TemplateSearchQuery)(nil),                   // 21: nominal.templates.v1.TemplateSearchQuery
+	(*TemplateSortOptions)(nil),                   // 22: nominal.templates.v1.TemplateSortOptions
+	(*fieldmaskpb.FieldMask)(nil),                 // 23: google.protobuf.FieldMask
 }
 var file_nominal_protos_templates_v1_templates_proto_depIdxs = []int32{
-	10, // 0: nominal.templates.v1.Template.properties:type_name -> nominal.templates.v1.Template.PropertiesEntry
-	11, // 1: nominal.templates.v1.Template.created_at:type_name -> google.protobuf.Timestamp
-	11, // 2: nominal.templates.v1.Template.updated_at:type_name -> google.protobuf.Timestamp
-	11, // 3: nominal.templates.v1.Template.main_branch_committed_at:type_name -> google.protobuf.Timestamp
-	12, // 4: nominal.templates.v1.Template.preview_image:type_name -> nominal.types.ThemeAwareImage
-	13, // 5: nominal.templates.v1.GetTemplateRequest.version:type_name -> nominal.versioning.v1.BranchOrCommit
+	16, // 0: nominal.templates.v1.Template.properties:type_name -> nominal.templates.v1.Template.PropertiesEntry
+	17, // 1: nominal.templates.v1.Template.created_at:type_name -> google.protobuf.Timestamp
+	17, // 2: nominal.templates.v1.Template.updated_at:type_name -> google.protobuf.Timestamp
+	17, // 3: nominal.templates.v1.Template.main_branch_committed_at:type_name -> google.protobuf.Timestamp
+	18, // 4: nominal.templates.v1.Template.preview_image:type_name -> nominal.types.ThemeAwareImage
+	19, // 5: nominal.templates.v1.GetTemplateRequest.version:type_name -> nominal.versioning.v1.BranchOrCommit
 	1,  // 6: nominal.templates.v1.GetTemplateResponse.template:type_name -> nominal.templates.v1.Template
-	14, // 7: nominal.templates.v1.GetTemplateResponse.commit:type_name -> nominal.versioning.v1.Commit
+	20, // 7: nominal.templates.v1.GetTemplateResponse.commit:type_name -> nominal.versioning.v1.Commit
 	1,  // 8: nominal.templates.v1.BatchGetTemplatesResponse.templates:type_name -> nominal.templates.v1.Template
-	15, // 9: nominal.templates.v1.SearchTemplatesRequest.query:type_name -> nominal.templates.v1.TemplateSearchQuery
-	16, // 10: nominal.templates.v1.SearchTemplatesRequest.sort:type_name -> nominal.templates.v1.TemplateSortOptions
+	21, // 9: nominal.templates.v1.SearchTemplatesRequest.query:type_name -> nominal.templates.v1.TemplateSearchQuery
+	22, // 10: nominal.templates.v1.SearchTemplatesRequest.sort:type_name -> nominal.templates.v1.TemplateSortOptions
 	1,  // 11: nominal.templates.v1.SearchTemplatesResponse.templates:type_name -> nominal.templates.v1.Template
-	13, // 12: nominal.templates.v1.GetTemplateDataSourceRefNamesRequest.version:type_name -> nominal.versioning.v1.BranchOrCommit
-	2,  // 13: nominal.templates.v1.TemplateService.GetTemplate:input_type -> nominal.templates.v1.GetTemplateRequest
-	4,  // 14: nominal.templates.v1.TemplateService.BatchGetTemplates:input_type -> nominal.templates.v1.BatchGetTemplatesRequest
-	6,  // 15: nominal.templates.v1.TemplateService.SearchTemplates:input_type -> nominal.templates.v1.SearchTemplatesRequest
-	8,  // 16: nominal.templates.v1.TemplateService.GetTemplateDataSourceRefNames:input_type -> nominal.templates.v1.GetTemplateDataSourceRefNamesRequest
-	3,  // 17: nominal.templates.v1.TemplateService.GetTemplate:output_type -> nominal.templates.v1.GetTemplateResponse
-	5,  // 18: nominal.templates.v1.TemplateService.BatchGetTemplates:output_type -> nominal.templates.v1.BatchGetTemplatesResponse
-	7,  // 19: nominal.templates.v1.TemplateService.SearchTemplates:output_type -> nominal.templates.v1.SearchTemplatesResponse
-	9,  // 20: nominal.templates.v1.TemplateService.GetTemplateDataSourceRefNames:output_type -> nominal.templates.v1.GetTemplateDataSourceRefNamesResponse
-	17, // [17:21] is the sub-list for method output_type
-	13, // [13:17] is the sub-list for method input_type
-	13, // [13:13] is the sub-list for extension type_name
-	13, // [13:13] is the sub-list for extension extendee
-	0,  // [0:13] is the sub-list for field type_name
+	19, // 12: nominal.templates.v1.GetTemplateDataSourceRefNamesRequest.version:type_name -> nominal.versioning.v1.BranchOrCommit
+	1,  // 13: nominal.templates.v1.UpdateTemplateRequest.template:type_name -> nominal.templates.v1.Template
+	23, // 14: nominal.templates.v1.UpdateTemplateRequest.update_mask:type_name -> google.protobuf.FieldMask
+	1,  // 15: nominal.templates.v1.UpdateTemplateResponse.template:type_name -> nominal.templates.v1.Template
+	2,  // 16: nominal.templates.v1.TemplateService.GetTemplate:input_type -> nominal.templates.v1.GetTemplateRequest
+	4,  // 17: nominal.templates.v1.TemplateService.BatchGetTemplates:input_type -> nominal.templates.v1.BatchGetTemplatesRequest
+	6,  // 18: nominal.templates.v1.TemplateService.SearchTemplates:input_type -> nominal.templates.v1.SearchTemplatesRequest
+	8,  // 19: nominal.templates.v1.TemplateService.GetTemplateDataSourceRefNames:input_type -> nominal.templates.v1.GetTemplateDataSourceRefNamesRequest
+	10, // 20: nominal.templates.v1.TemplateService.UpdateTemplate:input_type -> nominal.templates.v1.UpdateTemplateRequest
+	12, // 21: nominal.templates.v1.TemplateService.ArchiveTemplates:input_type -> nominal.templates.v1.ArchiveTemplatesRequest
+	14, // 22: nominal.templates.v1.TemplateService.UnarchiveTemplates:input_type -> nominal.templates.v1.UnarchiveTemplatesRequest
+	3,  // 23: nominal.templates.v1.TemplateService.GetTemplate:output_type -> nominal.templates.v1.GetTemplateResponse
+	5,  // 24: nominal.templates.v1.TemplateService.BatchGetTemplates:output_type -> nominal.templates.v1.BatchGetTemplatesResponse
+	7,  // 25: nominal.templates.v1.TemplateService.SearchTemplates:output_type -> nominal.templates.v1.SearchTemplatesResponse
+	9,  // 26: nominal.templates.v1.TemplateService.GetTemplateDataSourceRefNames:output_type -> nominal.templates.v1.GetTemplateDataSourceRefNamesResponse
+	11, // 27: nominal.templates.v1.TemplateService.UpdateTemplate:output_type -> nominal.templates.v1.UpdateTemplateResponse
+	13, // 28: nominal.templates.v1.TemplateService.ArchiveTemplates:output_type -> nominal.templates.v1.ArchiveTemplatesResponse
+	15, // 29: nominal.templates.v1.TemplateService.UnarchiveTemplates:output_type -> nominal.templates.v1.UnarchiveTemplatesResponse
+	23, // [23:30] is the sub-list for method output_type
+	16, // [16:23] is the sub-list for method input_type
+	16, // [16:16] is the sub-list for extension type_name
+	16, // [16:16] is the sub-list for extension extendee
+	0,  // [0:16] is the sub-list for field type_name
 }
 
 func init() { file_nominal_protos_templates_v1_templates_proto_init() }
@@ -832,7 +1128,7 @@ func file_nominal_protos_templates_v1_templates_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_nominal_protos_templates_v1_templates_proto_rawDesc), len(file_nominal_protos_templates_v1_templates_proto_rawDesc)),
 			NumEnums:      1,
-			NumMessages:   10,
+			NumMessages:   16,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

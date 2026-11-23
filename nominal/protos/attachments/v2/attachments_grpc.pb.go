@@ -57,13 +57,7 @@ type AttachmentServiceClient interface {
 	// - NOT_FOUND: the attachment does not exist or the caller cannot view it.
 	GetAttachment(ctx context.Context, in *GetAttachmentRequest, opts ...grpc.CallOption) (*GetAttachmentResponse, error)
 	// Gets the metadata of several attachments by RID, in no set order. Archived attachments are returned, and a RID
-	// listed twice returns one attachment.
-	//
-	// The call is all or nothing: it never returns a partial result.
-	//
-	// Errors:
-	//   - NOT_FOUND: at least one RID does not exist or is not viewable by the caller. The error names the missing
-	//     RIDs.
+	// listed twice returns one attachment. Omits attachments that do not exist or that the caller cannot view.
 	BatchGetAttachments(ctx context.Context, in *BatchGetAttachmentsRequest, opts ...grpc.CallOption) (*BatchGetAttachmentsResponse, error)
 	// Updates an attachment's title, description, labels, properties, or archive state, as named by update_mask.
 	// Returns the updated attachment.
@@ -208,13 +202,7 @@ type AttachmentServiceServer interface {
 	// - NOT_FOUND: the attachment does not exist or the caller cannot view it.
 	GetAttachment(context.Context, *GetAttachmentRequest) (*GetAttachmentResponse, error)
 	// Gets the metadata of several attachments by RID, in no set order. Archived attachments are returned, and a RID
-	// listed twice returns one attachment.
-	//
-	// The call is all or nothing: it never returns a partial result.
-	//
-	// Errors:
-	//   - NOT_FOUND: at least one RID does not exist or is not viewable by the caller. The error names the missing
-	//     RIDs.
+	// listed twice returns one attachment. Omits attachments that do not exist or that the caller cannot view.
 	BatchGetAttachments(context.Context, *BatchGetAttachmentsRequest) (*BatchGetAttachmentsResponse, error)
 	// Updates an attachment's title, description, labels, properties, or archive state, as named by update_mask.
 	// Returns the updated attachment.

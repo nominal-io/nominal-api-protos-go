@@ -40,69 +40,105 @@ const (
 //
 // This service manages Markings, which are a mechanism to restrict access to data sources.
 type MarkingServiceClient interface {
-	// Creates a marking.
-	// Throws HTTP 409 / gRPC 6 if a marking with the same ID already exists.
-	// Throws HTTP 403 / gRPC 7 if the user does not have permission to create a marking.
+	// Creates a marking. Throws HTTP 409 / gRPC 6 if a marking with the same ID already exists. Throws
+	// HTTP 403 / gRPC 7 if the user does not have permission to create a marking.
+	//
 	// Throws HTTP 403 / gRPC 7 if the user does not have permission to read some of the specified groups.
 	CreateMarking(ctx context.Context, in *CreateMarkingRequest, opts ...grpc.CallOption) (*CreateMarkingResponse, error)
-	// Gets a marking by its RID.
-	// Throws HTTP 403 / gRPC 7 if the user does not have permission to read the marking.
-	// Throws HTTP 403 / gRPC 5 if the marking is not found.
+	// Returns one marking (an access restriction on data sources) by RID, with the user groups authorized to access
+	// data sources that carry it.
+	//
+	// Archived markings are returned. Groups the caller cannot read are left out. Use GetMarkingById to look up by
+	// ID.
+	//
+	// Errors:
+	// - NOT_FOUND: the marking does not exist.
+	// - PERMISSION_DENIED: the caller cannot read the marking.
 	GetMarking(ctx context.Context, in *GetMarkingRequest, opts ...grpc.CallOption) (*GetMarkingResponse, error)
-	// Gets a marking by its ID, a human-readable identifier unique within the org.
-	// Throws HTTP 403 / gRPC 7 if the user does not have permission to read the marking.
-	// Throws HTTP 403 / gRPC 5 if the marking is not found.
+	// Returns one marking (an access restriction on data sources) by its ID, with the user groups authorized to
+	// access data sources that carry it.
+	//
+	// The ID is matched exactly within the caller's organization. Archived markings are not found by ID, so look them
+	// up by RID with GetMarking. Groups the caller cannot read are left out.
+	//
+	// Errors:
+	// - NOT_FOUND: the organization has no unarchived marking with this ID.
+	// - PERMISSION_DENIED: the caller cannot read the marking.
 	GetMarkingById(ctx context.Context, in *GetMarkingByIdRequest, opts ...grpc.CallOption) (*GetMarkingByIdResponse, error)
-	// Gets multiple markings by RID.
-	// If a marking is not found or the user doesn't have permission to read it,
-	// it will not be included in the response.
+	// Returns markings (access restrictions on data sources) by RID, each with its authorized user groups. Use
+	// BatchGetMarkingMetadata when the groups are not needed.
+	//
+	// Archived markings are included. Markings that do not exist or that the caller cannot read are omitted, and
+	// groups the caller cannot read are left out. The order of the markings is not guaranteed.
+	//
+	// Returns INVALID_ARGUMENT if marking_rids has more than 1000 entries.
 	BatchGetMarkings(ctx context.Context, in *BatchGetMarkingsRequest, opts ...grpc.CallOption) (*BatchGetMarkingsResponse, error)
-	// Gets metadata for multiple markings by RID. Metadata does not include the authorized groups.
-	// If a marking is not found or the user doesn't have permission to read it,
-	// it will not be included in the response.
+	// Returns markings (access restrictions on data sources) by RID, without their authorized user groups. Use
+	// BatchGetMarkings when the groups are needed.
+	//
+	// Archived markings are included. Markings that do not exist or that the caller cannot read are omitted. The
+	// order of the markings is not guaranteed.
+	//
+	// Returns INVALID_ARGUMENT if marking_rids has more than 1000 entries.
 	BatchGetMarkingMetadata(ctx context.Context, in *BatchGetMarkingMetadataRequest, opts ...grpc.CallOption) (*BatchGetMarkingMetadataResponse, error)
-	// Gets the authorized Groups for each of a set of Markings.
-	// Markings that are not found or for which the user does not have permission to read
-	// will be filtered from the response.
-	// Groups for which the user does not have permission to read will be filtered from the response.
+	// Returns the user groups authorized to access data sources that carry each requested marking, keyed by marking
+	// RID.
+	//
+	// Archived markings are included. Markings that do not exist or that the caller cannot read are left out of the
+	// map, and groups the caller cannot read are left out of each list.
 	GetAuthorizedGroupsByMarking(ctx context.Context, in *GetAuthorizedGroupsByMarkingRequest, opts ...grpc.CallOption) (*GetAuthorizedGroupsByMarkingResponse, error)
-	// Search Markings, returning paged results.
-	// Throws HTTP 400 / gRPC 3 if the query is incorrectly formed.
+	// Searches the markings (access restrictions on data sources) of the caller's organization by ID substring,
+	// optionally combined with and/or. Returns a page of marking metadata.
+	//
+	// Results are ordered oldest created first and exclude archived markings. The ID match ignores case. With no
+	// query, every unarchived marking matches. Markings the caller cannot read are removed after paging, so a page
+	// can hold fewer markings than requested.
+	//
+	// Errors:
+	// - INVALID_ARGUMENT: the query is malformed, or next_page_token is not a token this operation returned.
 	SearchMarkings(ctx context.Context, in *SearchMarkingsRequest, opts ...grpc.CallOption) (*SearchMarkingsResponse, error)
-	// Updates a marking.
-	// Throws HTTP 403 / gRPC 7 if the user does not have permission to update the marking.
-	// Throws HTTP 403 / gRPC 7 if the user does not have permission to read any of the specified groups.
-	// Throws HTTP 403 / gRPC 5 if the marking is not found.
-	// Throws HTTP 409 / gRPC 6 if trying to update the ID of a marking to an ID that already exists.
-	// Throws HTTP 400 / gRPC 3 if trying to update an archived marking.
+	// Updates a marking's ID, description, symbol, color, or authorized groups; fields left out keep their value.
+	// Returns the marking.
+	//
+	// Fails with permission denied when the caller cannot update the marking or read a given group, including
+	// when the marking does not exist; with conflict when the ID is taken; and with invalid argument when the
+	// marking is archived.
 	UpdateMarking(ctx context.Context, in *UpdateMarkingRequest, opts ...grpc.CallOption) (*UpdateMarkingResponse, error)
-	// Archives markings. Archiving a marking is an idempotent operation that prevents further changes
-	// or applications of the marking.
-	// Archived markings will not appear in search but can be retrieved by `get` endpoints.
-	// Throws HTTP 403 / gRPC 7 if the user does not have permission to archive one or more of the markings
-	// or if any of the markings are not found.
-	// Throws HTTP 400 / gRPC 3 if the archived marking is currently applied to one or more resources.
-	// TODO(MGMT-489): this will throw 403 if any of the Markings don't exist, but we should throw 404 instead.
+	// Archives markings by RID; archiving an archived marking succeeds. An archived marking is left out of search and
+	// cannot be updated or applied to data sources.
+	//
+	// Fails with permission denied when the caller cannot update one of the markings, including when it does not
+	// exist, and with invalid argument when a marking is applied to a data source.
 	ArchiveMarkings(ctx context.Context, in *ArchiveMarkingsRequest, opts ...grpc.CallOption) (*ArchiveMarkingsResponse, error)
 	// Unarchives markings. Restores ability to apply and modify marking.
 	// Throws HTTP 403 / gRPC 7 if the user does not have permission to unarchive one or more of the markings
 	// or if any of the markings are not found.
-	// TODO(MGMT-489): this will throw 403 if any of the Markings don't exist, but we should throw 404 instead.
 	UnarchiveMarkings(ctx context.Context, in *UnarchiveMarkingsRequest, opts ...grpc.CallOption) (*UnarchiveMarkingsResponse, error)
-	// Update the markings that are applied on a resource. Supports applying and removing markings at once.
-	// This endpoint can be used to atomically replace the markings on a resource, or bulk apply/remove markings.
-	// This operation is idempotent and will not throw an error if the marking is already applied/removed on the resource.
-	// If a resource marking pair is present in both `markings_to_apply` and `markings_to_remove`, this will throw.
-	// Throws HTTP 403 / gRPC 7 if the user does not have permission to change the markings on the resource.
-	// Throws HTTP 400 / gRPC 3 if trying to apply an archived marking.
+	// Applies and removes markings on a data source in one call, so it can replace the data source's markings.
+	// Applying an applied marking, or removing one that is not applied, is not an error.
+	//
+	// Fails with permission denied when the caller cannot change the data source's markings or read the markings, and
+	// with invalid argument when a marking is in both lists or is archived.
 	UpdateMarkingsOnResource(ctx context.Context, in *UpdateMarkingsOnResourceRequest, opts ...grpc.CallOption) (*UpdateMarkingsOnResourceResponse, error)
-	// Gets the resources that a Marking is applied to. This endpoint is paginated.
-	// Any unauthorized resources will be filtered from the response.
-	// Throws HTTP 403 / gRPC 7 if the user does not have permission to read the marking.
+	// Lists the data sources a marking is currently applied to, as RIDs with the time the marking was applied.
+	//
+	// Results are ordered newest applied first. Data sources the caller cannot read are removed after paging, so a
+	// page can hold fewer data sources than requested.
+	//
+	// Errors:
+	// - INVALID_ARGUMENT: next_page_token is not a token this operation returned.
+	// - NOT_FOUND: the marking does not exist.
+	// - PERMISSION_DENIED: the caller cannot read the marking.
 	GetResourcesForMarking(ctx context.Context, in *GetResourcesForMarkingRequest, opts ...grpc.CallOption) (*GetResourcesForMarkingResponse, error)
-	// Gets the requested resources and the markings applied to them. Since the number of markings applied
-	// to a resource is typically small, this endpoint will return all markings for each resource.
-	// Any unauthorized resources or markings will be filtered from the response.
+	// Returns the markings (access restrictions) currently applied to each requested data source, keyed by data
+	// source RID, with the time each marking was applied.
+	//
+	// All markings of each data source are returned, with no paging, newest applied first. A data source with no
+	// markings maps to an empty list. Data sources the caller cannot read, and markings the caller cannot read, are
+	// omitted.
+	//
+	// Errors:
+	// - INVALID_ARGUMENT: a RID is not a data source.
 	GetMarkingsForResources(ctx context.Context, in *GetMarkingsForResourcesRequest, opts ...grpc.CallOption) (*GetMarkingsForResourcesResponse, error)
 }
 
@@ -250,69 +286,105 @@ func (c *markingServiceClient) GetMarkingsForResources(ctx context.Context, in *
 //
 // This service manages Markings, which are a mechanism to restrict access to data sources.
 type MarkingServiceServer interface {
-	// Creates a marking.
-	// Throws HTTP 409 / gRPC 6 if a marking with the same ID already exists.
-	// Throws HTTP 403 / gRPC 7 if the user does not have permission to create a marking.
+	// Creates a marking. Throws HTTP 409 / gRPC 6 if a marking with the same ID already exists. Throws
+	// HTTP 403 / gRPC 7 if the user does not have permission to create a marking.
+	//
 	// Throws HTTP 403 / gRPC 7 if the user does not have permission to read some of the specified groups.
 	CreateMarking(context.Context, *CreateMarkingRequest) (*CreateMarkingResponse, error)
-	// Gets a marking by its RID.
-	// Throws HTTP 403 / gRPC 7 if the user does not have permission to read the marking.
-	// Throws HTTP 403 / gRPC 5 if the marking is not found.
+	// Returns one marking (an access restriction on data sources) by RID, with the user groups authorized to access
+	// data sources that carry it.
+	//
+	// Archived markings are returned. Groups the caller cannot read are left out. Use GetMarkingById to look up by
+	// ID.
+	//
+	// Errors:
+	// - NOT_FOUND: the marking does not exist.
+	// - PERMISSION_DENIED: the caller cannot read the marking.
 	GetMarking(context.Context, *GetMarkingRequest) (*GetMarkingResponse, error)
-	// Gets a marking by its ID, a human-readable identifier unique within the org.
-	// Throws HTTP 403 / gRPC 7 if the user does not have permission to read the marking.
-	// Throws HTTP 403 / gRPC 5 if the marking is not found.
+	// Returns one marking (an access restriction on data sources) by its ID, with the user groups authorized to
+	// access data sources that carry it.
+	//
+	// The ID is matched exactly within the caller's organization. Archived markings are not found by ID, so look them
+	// up by RID with GetMarking. Groups the caller cannot read are left out.
+	//
+	// Errors:
+	// - NOT_FOUND: the organization has no unarchived marking with this ID.
+	// - PERMISSION_DENIED: the caller cannot read the marking.
 	GetMarkingById(context.Context, *GetMarkingByIdRequest) (*GetMarkingByIdResponse, error)
-	// Gets multiple markings by RID.
-	// If a marking is not found or the user doesn't have permission to read it,
-	// it will not be included in the response.
+	// Returns markings (access restrictions on data sources) by RID, each with its authorized user groups. Use
+	// BatchGetMarkingMetadata when the groups are not needed.
+	//
+	// Archived markings are included. Markings that do not exist or that the caller cannot read are omitted, and
+	// groups the caller cannot read are left out. The order of the markings is not guaranteed.
+	//
+	// Returns INVALID_ARGUMENT if marking_rids has more than 1000 entries.
 	BatchGetMarkings(context.Context, *BatchGetMarkingsRequest) (*BatchGetMarkingsResponse, error)
-	// Gets metadata for multiple markings by RID. Metadata does not include the authorized groups.
-	// If a marking is not found or the user doesn't have permission to read it,
-	// it will not be included in the response.
+	// Returns markings (access restrictions on data sources) by RID, without their authorized user groups. Use
+	// BatchGetMarkings when the groups are needed.
+	//
+	// Archived markings are included. Markings that do not exist or that the caller cannot read are omitted. The
+	// order of the markings is not guaranteed.
+	//
+	// Returns INVALID_ARGUMENT if marking_rids has more than 1000 entries.
 	BatchGetMarkingMetadata(context.Context, *BatchGetMarkingMetadataRequest) (*BatchGetMarkingMetadataResponse, error)
-	// Gets the authorized Groups for each of a set of Markings.
-	// Markings that are not found or for which the user does not have permission to read
-	// will be filtered from the response.
-	// Groups for which the user does not have permission to read will be filtered from the response.
+	// Returns the user groups authorized to access data sources that carry each requested marking, keyed by marking
+	// RID.
+	//
+	// Archived markings are included. Markings that do not exist or that the caller cannot read are left out of the
+	// map, and groups the caller cannot read are left out of each list.
 	GetAuthorizedGroupsByMarking(context.Context, *GetAuthorizedGroupsByMarkingRequest) (*GetAuthorizedGroupsByMarkingResponse, error)
-	// Search Markings, returning paged results.
-	// Throws HTTP 400 / gRPC 3 if the query is incorrectly formed.
+	// Searches the markings (access restrictions on data sources) of the caller's organization by ID substring,
+	// optionally combined with and/or. Returns a page of marking metadata.
+	//
+	// Results are ordered oldest created first and exclude archived markings. The ID match ignores case. With no
+	// query, every unarchived marking matches. Markings the caller cannot read are removed after paging, so a page
+	// can hold fewer markings than requested.
+	//
+	// Errors:
+	// - INVALID_ARGUMENT: the query is malformed, or next_page_token is not a token this operation returned.
 	SearchMarkings(context.Context, *SearchMarkingsRequest) (*SearchMarkingsResponse, error)
-	// Updates a marking.
-	// Throws HTTP 403 / gRPC 7 if the user does not have permission to update the marking.
-	// Throws HTTP 403 / gRPC 7 if the user does not have permission to read any of the specified groups.
-	// Throws HTTP 403 / gRPC 5 if the marking is not found.
-	// Throws HTTP 409 / gRPC 6 if trying to update the ID of a marking to an ID that already exists.
-	// Throws HTTP 400 / gRPC 3 if trying to update an archived marking.
+	// Updates a marking's ID, description, symbol, color, or authorized groups; fields left out keep their value.
+	// Returns the marking.
+	//
+	// Fails with permission denied when the caller cannot update the marking or read a given group, including
+	// when the marking does not exist; with conflict when the ID is taken; and with invalid argument when the
+	// marking is archived.
 	UpdateMarking(context.Context, *UpdateMarkingRequest) (*UpdateMarkingResponse, error)
-	// Archives markings. Archiving a marking is an idempotent operation that prevents further changes
-	// or applications of the marking.
-	// Archived markings will not appear in search but can be retrieved by `get` endpoints.
-	// Throws HTTP 403 / gRPC 7 if the user does not have permission to archive one or more of the markings
-	// or if any of the markings are not found.
-	// Throws HTTP 400 / gRPC 3 if the archived marking is currently applied to one or more resources.
-	// TODO(MGMT-489): this will throw 403 if any of the Markings don't exist, but we should throw 404 instead.
+	// Archives markings by RID; archiving an archived marking succeeds. An archived marking is left out of search and
+	// cannot be updated or applied to data sources.
+	//
+	// Fails with permission denied when the caller cannot update one of the markings, including when it does not
+	// exist, and with invalid argument when a marking is applied to a data source.
 	ArchiveMarkings(context.Context, *ArchiveMarkingsRequest) (*ArchiveMarkingsResponse, error)
 	// Unarchives markings. Restores ability to apply and modify marking.
 	// Throws HTTP 403 / gRPC 7 if the user does not have permission to unarchive one or more of the markings
 	// or if any of the markings are not found.
-	// TODO(MGMT-489): this will throw 403 if any of the Markings don't exist, but we should throw 404 instead.
 	UnarchiveMarkings(context.Context, *UnarchiveMarkingsRequest) (*UnarchiveMarkingsResponse, error)
-	// Update the markings that are applied on a resource. Supports applying and removing markings at once.
-	// This endpoint can be used to atomically replace the markings on a resource, or bulk apply/remove markings.
-	// This operation is idempotent and will not throw an error if the marking is already applied/removed on the resource.
-	// If a resource marking pair is present in both `markings_to_apply` and `markings_to_remove`, this will throw.
-	// Throws HTTP 403 / gRPC 7 if the user does not have permission to change the markings on the resource.
-	// Throws HTTP 400 / gRPC 3 if trying to apply an archived marking.
+	// Applies and removes markings on a data source in one call, so it can replace the data source's markings.
+	// Applying an applied marking, or removing one that is not applied, is not an error.
+	//
+	// Fails with permission denied when the caller cannot change the data source's markings or read the markings, and
+	// with invalid argument when a marking is in both lists or is archived.
 	UpdateMarkingsOnResource(context.Context, *UpdateMarkingsOnResourceRequest) (*UpdateMarkingsOnResourceResponse, error)
-	// Gets the resources that a Marking is applied to. This endpoint is paginated.
-	// Any unauthorized resources will be filtered from the response.
-	// Throws HTTP 403 / gRPC 7 if the user does not have permission to read the marking.
+	// Lists the data sources a marking is currently applied to, as RIDs with the time the marking was applied.
+	//
+	// Results are ordered newest applied first. Data sources the caller cannot read are removed after paging, so a
+	// page can hold fewer data sources than requested.
+	//
+	// Errors:
+	// - INVALID_ARGUMENT: next_page_token is not a token this operation returned.
+	// - NOT_FOUND: the marking does not exist.
+	// - PERMISSION_DENIED: the caller cannot read the marking.
 	GetResourcesForMarking(context.Context, *GetResourcesForMarkingRequest) (*GetResourcesForMarkingResponse, error)
-	// Gets the requested resources and the markings applied to them. Since the number of markings applied
-	// to a resource is typically small, this endpoint will return all markings for each resource.
-	// Any unauthorized resources or markings will be filtered from the response.
+	// Returns the markings (access restrictions) currently applied to each requested data source, keyed by data
+	// source RID, with the time each marking was applied.
+	//
+	// All markings of each data source are returned, with no paging, newest applied first. A data source with no
+	// markings maps to an empty list. Data sources the caller cannot read, and markings the caller cannot read, are
+	// omitted.
+	//
+	// Errors:
+	// - INVALID_ARGUMENT: a RID is not a data source.
 	GetMarkingsForResources(context.Context, *GetMarkingsForResourcesRequest) (*GetMarkingsForResourcesResponse, error)
 	mustEmbedUnimplementedMarkingServiceServer()
 }

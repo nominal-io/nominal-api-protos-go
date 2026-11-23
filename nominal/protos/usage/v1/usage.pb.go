@@ -282,16 +282,17 @@ func (x *ListUsageMetersResponse) GetMeters() []*UsageMeter {
 	return nil
 }
 
-// Aggregates usage meters using shared bounds, filters and grouping dimensions.
+// Aggregates usage observations in [start_time, end_time) using shared filters and grouping dimensions.
 type AggregateUsageRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
-	// Inclusive lower bound on bucket start timestamps.
+	// Inclusive lower bound on observation timestamps.
 	StartTime *timestamppb.Timestamp `protobuf:"bytes,1,opt,name=start_time,json=startTime,proto3" json:"start_time,omitempty"`
-	// Inclusive upper bound on bucket start timestamps.
+	// Exclusive upper bound on observation timestamps.
 	EndTime *timestamppb.Timestamp `protobuf:"bytes,2,opt,name=end_time,json=endTime,proto3" json:"end_time,omitempty"`
 	// Empty returns all supported meters.
 	MeterIds []string `protobuf:"bytes,3,rep,name=meter_ids,json=meterIds,proto3" json:"meter_ids,omitempty"`
-	// Duration of each bucket in milliseconds, aligned to multiples since the Unix epoch.
+	// Duration of each bucket in milliseconds, starting at start_time.
+	// The final bucket may be partial and includes only observations before end_time.
 	BucketDurationMillis int64 `protobuf:"varint,10,opt,name=bucket_duration_millis,json=bucketDurationMillis,proto3" json:"bucket_duration_millis,omitempty"`
 	// Dimensions to group by. Empty returns totals across the selected workspaces.
 	// Grouping by user excludes observations without a user tag.
@@ -385,7 +386,7 @@ func (x *AggregateUsageRequest) GetUserRids() []string {
 
 type UsagePoint struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
-	// UTC epoch-aligned bucket start.
+	// Bucket start, aligned to the requested start_time.
 	BucketStart   *timestamppb.Timestamp `protobuf:"bytes,1,opt,name=bucket_start,json=bucketStart,proto3" json:"bucket_start,omitempty"`
 	Quantity      float64                `protobuf:"fixed64,2,opt,name=quantity,proto3" json:"quantity,omitempty"`
 	unknownFields protoimpl.UnknownFields

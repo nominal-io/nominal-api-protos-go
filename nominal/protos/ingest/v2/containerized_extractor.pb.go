@@ -960,6 +960,88 @@ func (x *SearchContainerizedExtractorsResponse) GetNextPageToken() string {
 	return ""
 }
 
+type GetContainerizedExtractorResourceDefaultsRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GetContainerizedExtractorResourceDefaultsRequest) Reset() {
+	*x = GetContainerizedExtractorResourceDefaultsRequest{}
+	mi := &file_nominal_protos_ingest_v2_containerized_extractor_proto_msgTypes[13]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetContainerizedExtractorResourceDefaultsRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetContainerizedExtractorResourceDefaultsRequest) ProtoMessage() {}
+
+func (x *GetContainerizedExtractorResourceDefaultsRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_nominal_protos_ingest_v2_containerized_extractor_proto_msgTypes[13]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetContainerizedExtractorResourceDefaultsRequest.ProtoReflect.Descriptor instead.
+func (*GetContainerizedExtractorResourceDefaultsRequest) Descriptor() ([]byte, []int) {
+	return file_nominal_protos_ingest_v2_containerized_extractor_proto_rawDescGZIP(), []int{13}
+}
+
+type GetContainerizedExtractorResourceDefaultsResponse struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Resources an extractor runs with for each field its active image's resources leave unset, with every
+	// field set. Absent when this deployment does not run containerized extractors.
+	Resources     *v2.ContainerResources `protobuf:"bytes,1,opt,name=resources,proto3" json:"resources,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GetContainerizedExtractorResourceDefaultsResponse) Reset() {
+	*x = GetContainerizedExtractorResourceDefaultsResponse{}
+	mi := &file_nominal_protos_ingest_v2_containerized_extractor_proto_msgTypes[14]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetContainerizedExtractorResourceDefaultsResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetContainerizedExtractorResourceDefaultsResponse) ProtoMessage() {}
+
+func (x *GetContainerizedExtractorResourceDefaultsResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_nominal_protos_ingest_v2_containerized_extractor_proto_msgTypes[14]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetContainerizedExtractorResourceDefaultsResponse.ProtoReflect.Descriptor instead.
+func (*GetContainerizedExtractorResourceDefaultsResponse) Descriptor() ([]byte, []int) {
+	return file_nominal_protos_ingest_v2_containerized_extractor_proto_rawDescGZIP(), []int{14}
+}
+
+func (x *GetContainerizedExtractorResourceDefaultsResponse) GetResources() *v2.ContainerResources {
+	if x != nil {
+		return x.Resources
+	}
+	return nil
+}
+
 var File_nominal_protos_ingest_v2_containerized_extractor_proto protoreflect.FileDescriptor
 
 const file_nominal_protos_ingest_v2_containerized_extractor_proto_rawDesc = "" +
@@ -1077,12 +1159,14 @@ const file_nominal_protos_ingest_v2_containerized_extractor_proto_rawDesc = "" +
 	"extractors\x12G\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tB\x1a\x9a\xb2\x1a\x16\n" +
 	"\x14io.nominal.api.TokenH\x00R\rnextPageToken\x88\x01\x01B\x12\n" +
-	"\x10_next_page_token*t\n" +
+	"\x10_next_page_token\"2\n" +
+	"0GetContainerizedExtractorResourceDefaultsRequest\"z\n" +
+	"1GetContainerizedExtractorResourceDefaultsResponse\x12E\n" +
+	"\tresources\x18\x01 \x01(\v2'.nominal.registry.v2.ContainerResourcesR\tresources*t\n" +
 	"\x0fExtractorOrigin\x12 \n" +
 	"\x1cEXTRACTOR_ORIGIN_UNSPECIFIED\x10\x00\x12\x1d\n" +
 	"\x19EXTRACTOR_ORIGIN_CUSTOMER\x10\x01\x12 \n" +
-	"\x1cEXTRACTOR_ORIGIN_FIRST_PARTY\x10\x022\xa5\n" +
-	"\n" +
+	"\x1cEXTRACTOR_ORIGIN_FIRST_PARTY\x10\x022\x8c\f\n" +
 	"\x1dContainerizedExtractorService\x12\xcf\x01\n" +
 	"\x1cCreateContainerizedExtractor\x126.nominal.ingest.v2.CreateContainerizedExtractorRequest\x1a7.nominal.ingest.v2.CreateContainerizedExtractorResponse\">\xba\xb2\x1a!\n" +
 	"\x1f\n" +
@@ -1098,7 +1182,8 @@ const file_nominal_protos_ingest_v2_containerized_extractor_proto_rawDesc = "" +
 	"\x1bworkspace:edit_connectivity\"\x00\x82\xd3\xe4\x93\x02!:\x01*\"\x1c/extractors/v2/{rid}/archive\x12\xe8\x01\n" +
 	"\x1fUnarchiveContainerizedExtractor\x129.nominal.ingest.v2.UnarchiveContainerizedExtractorRequest\x1a:.nominal.ingest.v2.UnarchiveContainerizedExtractorResponse\"N\xba\xb2\x1a!\n" +
 	"\x1f\n" +
-	"\x1bworkspace:edit_connectivity\"\x00\x82\xd3\xe4\x93\x02#:\x01*\"\x1e/extractors/v2/{rid}/unarchive\x12\xcc\x01\n" +
+	"\x1bworkspace:edit_connectivity\"\x00\x82\xd3\xe4\x93\x02#:\x01*\"\x1e/extractors/v2/{rid}/unarchive\x12\xe4\x01\n" +
+	")GetContainerizedExtractorResourceDefaults\x12C.nominal.ingest.v2.GetContainerizedExtractorResourceDefaultsRequest\x1aD.nominal.ingest.v2.GetContainerizedExtractorResourceDefaultsResponse\",\xba\xb2\x1a\x00\x82\xd3\xe4\x93\x02\"\x12 /extractors/v2/resource-defaults\x12\xcc\x01\n" +
 	"\x1dSearchContainerizedExtractors\x127.nominal.ingest.v2.SearchContainerizedExtractorsRequest\x1a8.nominal.ingest.v2.SearchContainerizedExtractorsResponse\"8\xba\xb2\x1a\x14\n" +
 	"\x12\n" +
 	"\x0eworkspace:view\"\x00\x82\xd3\xe4\x93\x02\x1a:\x01*\"\x15/extractors/v2/searchB\xe9\x01\n" +
@@ -1117,60 +1202,66 @@ func file_nominal_protos_ingest_v2_containerized_extractor_proto_rawDescGZIP() [
 }
 
 var file_nominal_protos_ingest_v2_containerized_extractor_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
-var file_nominal_protos_ingest_v2_containerized_extractor_proto_msgTypes = make([]protoimpl.MessageInfo, 16)
+var file_nominal_protos_ingest_v2_containerized_extractor_proto_msgTypes = make([]protoimpl.MessageInfo, 18)
 var file_nominal_protos_ingest_v2_containerized_extractor_proto_goTypes = []any{
-	(ExtractorOrigin)(0),                            // 0: nominal.ingest.v2.ExtractorOrigin
-	(*ContainerizedExtractor)(nil),                  // 1: nominal.ingest.v2.ContainerizedExtractor
-	(*CreateContainerizedExtractorRequest)(nil),     // 2: nominal.ingest.v2.CreateContainerizedExtractorRequest
-	(*CreateContainerizedExtractorResponse)(nil),    // 3: nominal.ingest.v2.CreateContainerizedExtractorResponse
-	(*GetContainerizedExtractorRequest)(nil),        // 4: nominal.ingest.v2.GetContainerizedExtractorRequest
-	(*GetContainerizedExtractorResponse)(nil),       // 5: nominal.ingest.v2.GetContainerizedExtractorResponse
-	(*UpdateContainerizedExtractorRequest)(nil),     // 6: nominal.ingest.v2.UpdateContainerizedExtractorRequest
-	(*UpdateContainerizedExtractorResponse)(nil),    // 7: nominal.ingest.v2.UpdateContainerizedExtractorResponse
-	(*ArchiveContainerizedExtractorRequest)(nil),    // 8: nominal.ingest.v2.ArchiveContainerizedExtractorRequest
-	(*ArchiveContainerizedExtractorResponse)(nil),   // 9: nominal.ingest.v2.ArchiveContainerizedExtractorResponse
-	(*UnarchiveContainerizedExtractorRequest)(nil),  // 10: nominal.ingest.v2.UnarchiveContainerizedExtractorRequest
-	(*UnarchiveContainerizedExtractorResponse)(nil), // 11: nominal.ingest.v2.UnarchiveContainerizedExtractorResponse
-	(*SearchContainerizedExtractorsRequest)(nil),    // 12: nominal.ingest.v2.SearchContainerizedExtractorsRequest
-	(*SearchContainerizedExtractorsResponse)(nil),   // 13: nominal.ingest.v2.SearchContainerizedExtractorsResponse
-	nil,                                 // 14: nominal.ingest.v2.ContainerizedExtractor.PropertiesEntry
-	nil,                                 // 15: nominal.ingest.v2.CreateContainerizedExtractorRequest.PropertiesEntry
-	nil,                                 // 16: nominal.ingest.v2.SearchContainerizedExtractorsRequest.PropertiesEntry
-	(*timestamppb.Timestamp)(nil),       // 17: google.protobuf.Timestamp
-	(*v2.ContainerImage)(nil),           // 18: nominal.registry.v2.ContainerImage
-	(*types.PropertyUpdateWrapper)(nil), // 19: nominal.types.PropertyUpdateWrapper
-	(*types.LabelUpdateWrapper)(nil),    // 20: nominal.types.LabelUpdateWrapper
+	(ExtractorOrigin)(0),                                      // 0: nominal.ingest.v2.ExtractorOrigin
+	(*ContainerizedExtractor)(nil),                            // 1: nominal.ingest.v2.ContainerizedExtractor
+	(*CreateContainerizedExtractorRequest)(nil),               // 2: nominal.ingest.v2.CreateContainerizedExtractorRequest
+	(*CreateContainerizedExtractorResponse)(nil),              // 3: nominal.ingest.v2.CreateContainerizedExtractorResponse
+	(*GetContainerizedExtractorRequest)(nil),                  // 4: nominal.ingest.v2.GetContainerizedExtractorRequest
+	(*GetContainerizedExtractorResponse)(nil),                 // 5: nominal.ingest.v2.GetContainerizedExtractorResponse
+	(*UpdateContainerizedExtractorRequest)(nil),               // 6: nominal.ingest.v2.UpdateContainerizedExtractorRequest
+	(*UpdateContainerizedExtractorResponse)(nil),              // 7: nominal.ingest.v2.UpdateContainerizedExtractorResponse
+	(*ArchiveContainerizedExtractorRequest)(nil),              // 8: nominal.ingest.v2.ArchiveContainerizedExtractorRequest
+	(*ArchiveContainerizedExtractorResponse)(nil),             // 9: nominal.ingest.v2.ArchiveContainerizedExtractorResponse
+	(*UnarchiveContainerizedExtractorRequest)(nil),            // 10: nominal.ingest.v2.UnarchiveContainerizedExtractorRequest
+	(*UnarchiveContainerizedExtractorResponse)(nil),           // 11: nominal.ingest.v2.UnarchiveContainerizedExtractorResponse
+	(*SearchContainerizedExtractorsRequest)(nil),              // 12: nominal.ingest.v2.SearchContainerizedExtractorsRequest
+	(*SearchContainerizedExtractorsResponse)(nil),             // 13: nominal.ingest.v2.SearchContainerizedExtractorsResponse
+	(*GetContainerizedExtractorResourceDefaultsRequest)(nil),  // 14: nominal.ingest.v2.GetContainerizedExtractorResourceDefaultsRequest
+	(*GetContainerizedExtractorResourceDefaultsResponse)(nil), // 15: nominal.ingest.v2.GetContainerizedExtractorResourceDefaultsResponse
+	nil,                                 // 16: nominal.ingest.v2.ContainerizedExtractor.PropertiesEntry
+	nil,                                 // 17: nominal.ingest.v2.CreateContainerizedExtractorRequest.PropertiesEntry
+	nil,                                 // 18: nominal.ingest.v2.SearchContainerizedExtractorsRequest.PropertiesEntry
+	(*timestamppb.Timestamp)(nil),       // 19: google.protobuf.Timestamp
+	(*v2.ContainerImage)(nil),           // 20: nominal.registry.v2.ContainerImage
+	(*types.PropertyUpdateWrapper)(nil), // 21: nominal.types.PropertyUpdateWrapper
+	(*types.LabelUpdateWrapper)(nil),    // 22: nominal.types.LabelUpdateWrapper
+	(*v2.ContainerResources)(nil),       // 23: nominal.registry.v2.ContainerResources
 }
 var file_nominal_protos_ingest_v2_containerized_extractor_proto_depIdxs = []int32{
-	17, // 0: nominal.ingest.v2.ContainerizedExtractor.created_at:type_name -> google.protobuf.Timestamp
-	18, // 1: nominal.ingest.v2.ContainerizedExtractor.active_container_image:type_name -> nominal.registry.v2.ContainerImage
+	19, // 0: nominal.ingest.v2.ContainerizedExtractor.created_at:type_name -> google.protobuf.Timestamp
+	20, // 1: nominal.ingest.v2.ContainerizedExtractor.active_container_image:type_name -> nominal.registry.v2.ContainerImage
 	0,  // 2: nominal.ingest.v2.ContainerizedExtractor.origin:type_name -> nominal.ingest.v2.ExtractorOrigin
-	14, // 3: nominal.ingest.v2.ContainerizedExtractor.properties:type_name -> nominal.ingest.v2.ContainerizedExtractor.PropertiesEntry
-	15, // 4: nominal.ingest.v2.CreateContainerizedExtractorRequest.properties:type_name -> nominal.ingest.v2.CreateContainerizedExtractorRequest.PropertiesEntry
+	16, // 3: nominal.ingest.v2.ContainerizedExtractor.properties:type_name -> nominal.ingest.v2.ContainerizedExtractor.PropertiesEntry
+	17, // 4: nominal.ingest.v2.CreateContainerizedExtractorRequest.properties:type_name -> nominal.ingest.v2.CreateContainerizedExtractorRequest.PropertiesEntry
 	1,  // 5: nominal.ingest.v2.CreateContainerizedExtractorResponse.extractor:type_name -> nominal.ingest.v2.ContainerizedExtractor
 	1,  // 6: nominal.ingest.v2.GetContainerizedExtractorResponse.extractor:type_name -> nominal.ingest.v2.ContainerizedExtractor
-	19, // 7: nominal.ingest.v2.UpdateContainerizedExtractorRequest.properties:type_name -> nominal.types.PropertyUpdateWrapper
-	20, // 8: nominal.ingest.v2.UpdateContainerizedExtractorRequest.labels:type_name -> nominal.types.LabelUpdateWrapper
+	21, // 7: nominal.ingest.v2.UpdateContainerizedExtractorRequest.properties:type_name -> nominal.types.PropertyUpdateWrapper
+	22, // 8: nominal.ingest.v2.UpdateContainerizedExtractorRequest.labels:type_name -> nominal.types.LabelUpdateWrapper
 	1,  // 9: nominal.ingest.v2.UpdateContainerizedExtractorResponse.extractor:type_name -> nominal.ingest.v2.ContainerizedExtractor
-	16, // 10: nominal.ingest.v2.SearchContainerizedExtractorsRequest.properties:type_name -> nominal.ingest.v2.SearchContainerizedExtractorsRequest.PropertiesEntry
+	18, // 10: nominal.ingest.v2.SearchContainerizedExtractorsRequest.properties:type_name -> nominal.ingest.v2.SearchContainerizedExtractorsRequest.PropertiesEntry
 	1,  // 11: nominal.ingest.v2.SearchContainerizedExtractorsResponse.extractors:type_name -> nominal.ingest.v2.ContainerizedExtractor
-	2,  // 12: nominal.ingest.v2.ContainerizedExtractorService.CreateContainerizedExtractor:input_type -> nominal.ingest.v2.CreateContainerizedExtractorRequest
-	4,  // 13: nominal.ingest.v2.ContainerizedExtractorService.GetContainerizedExtractor:input_type -> nominal.ingest.v2.GetContainerizedExtractorRequest
-	6,  // 14: nominal.ingest.v2.ContainerizedExtractorService.UpdateContainerizedExtractor:input_type -> nominal.ingest.v2.UpdateContainerizedExtractorRequest
-	8,  // 15: nominal.ingest.v2.ContainerizedExtractorService.ArchiveContainerizedExtractor:input_type -> nominal.ingest.v2.ArchiveContainerizedExtractorRequest
-	10, // 16: nominal.ingest.v2.ContainerizedExtractorService.UnarchiveContainerizedExtractor:input_type -> nominal.ingest.v2.UnarchiveContainerizedExtractorRequest
-	12, // 17: nominal.ingest.v2.ContainerizedExtractorService.SearchContainerizedExtractors:input_type -> nominal.ingest.v2.SearchContainerizedExtractorsRequest
-	3,  // 18: nominal.ingest.v2.ContainerizedExtractorService.CreateContainerizedExtractor:output_type -> nominal.ingest.v2.CreateContainerizedExtractorResponse
-	5,  // 19: nominal.ingest.v2.ContainerizedExtractorService.GetContainerizedExtractor:output_type -> nominal.ingest.v2.GetContainerizedExtractorResponse
-	7,  // 20: nominal.ingest.v2.ContainerizedExtractorService.UpdateContainerizedExtractor:output_type -> nominal.ingest.v2.UpdateContainerizedExtractorResponse
-	9,  // 21: nominal.ingest.v2.ContainerizedExtractorService.ArchiveContainerizedExtractor:output_type -> nominal.ingest.v2.ArchiveContainerizedExtractorResponse
-	11, // 22: nominal.ingest.v2.ContainerizedExtractorService.UnarchiveContainerizedExtractor:output_type -> nominal.ingest.v2.UnarchiveContainerizedExtractorResponse
-	13, // 23: nominal.ingest.v2.ContainerizedExtractorService.SearchContainerizedExtractors:output_type -> nominal.ingest.v2.SearchContainerizedExtractorsResponse
-	18, // [18:24] is the sub-list for method output_type
-	12, // [12:18] is the sub-list for method input_type
-	12, // [12:12] is the sub-list for extension type_name
-	12, // [12:12] is the sub-list for extension extendee
-	0,  // [0:12] is the sub-list for field type_name
+	23, // 12: nominal.ingest.v2.GetContainerizedExtractorResourceDefaultsResponse.resources:type_name -> nominal.registry.v2.ContainerResources
+	2,  // 13: nominal.ingest.v2.ContainerizedExtractorService.CreateContainerizedExtractor:input_type -> nominal.ingest.v2.CreateContainerizedExtractorRequest
+	4,  // 14: nominal.ingest.v2.ContainerizedExtractorService.GetContainerizedExtractor:input_type -> nominal.ingest.v2.GetContainerizedExtractorRequest
+	6,  // 15: nominal.ingest.v2.ContainerizedExtractorService.UpdateContainerizedExtractor:input_type -> nominal.ingest.v2.UpdateContainerizedExtractorRequest
+	8,  // 16: nominal.ingest.v2.ContainerizedExtractorService.ArchiveContainerizedExtractor:input_type -> nominal.ingest.v2.ArchiveContainerizedExtractorRequest
+	10, // 17: nominal.ingest.v2.ContainerizedExtractorService.UnarchiveContainerizedExtractor:input_type -> nominal.ingest.v2.UnarchiveContainerizedExtractorRequest
+	14, // 18: nominal.ingest.v2.ContainerizedExtractorService.GetContainerizedExtractorResourceDefaults:input_type -> nominal.ingest.v2.GetContainerizedExtractorResourceDefaultsRequest
+	12, // 19: nominal.ingest.v2.ContainerizedExtractorService.SearchContainerizedExtractors:input_type -> nominal.ingest.v2.SearchContainerizedExtractorsRequest
+	3,  // 20: nominal.ingest.v2.ContainerizedExtractorService.CreateContainerizedExtractor:output_type -> nominal.ingest.v2.CreateContainerizedExtractorResponse
+	5,  // 21: nominal.ingest.v2.ContainerizedExtractorService.GetContainerizedExtractor:output_type -> nominal.ingest.v2.GetContainerizedExtractorResponse
+	7,  // 22: nominal.ingest.v2.ContainerizedExtractorService.UpdateContainerizedExtractor:output_type -> nominal.ingest.v2.UpdateContainerizedExtractorResponse
+	9,  // 23: nominal.ingest.v2.ContainerizedExtractorService.ArchiveContainerizedExtractor:output_type -> nominal.ingest.v2.ArchiveContainerizedExtractorResponse
+	11, // 24: nominal.ingest.v2.ContainerizedExtractorService.UnarchiveContainerizedExtractor:output_type -> nominal.ingest.v2.UnarchiveContainerizedExtractorResponse
+	15, // 25: nominal.ingest.v2.ContainerizedExtractorService.GetContainerizedExtractorResourceDefaults:output_type -> nominal.ingest.v2.GetContainerizedExtractorResourceDefaultsResponse
+	13, // 26: nominal.ingest.v2.ContainerizedExtractorService.SearchContainerizedExtractors:output_type -> nominal.ingest.v2.SearchContainerizedExtractorsResponse
+	20, // [20:27] is the sub-list for method output_type
+	13, // [13:20] is the sub-list for method input_type
+	13, // [13:13] is the sub-list for extension type_name
+	13, // [13:13] is the sub-list for extension extendee
+	0,  // [0:13] is the sub-list for field type_name
 }
 
 func init() { file_nominal_protos_ingest_v2_containerized_extractor_proto_init() }
@@ -1189,7 +1280,7 @@ func file_nominal_protos_ingest_v2_containerized_extractor_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_nominal_protos_ingest_v2_containerized_extractor_proto_rawDesc), len(file_nominal_protos_ingest_v2_containerized_extractor_proto_rawDesc)),
 			NumEnums:      1,
-			NumMessages:   16,
+			NumMessages:   18,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

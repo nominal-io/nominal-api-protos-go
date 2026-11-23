@@ -8,10 +8,11 @@ package channel_writerv2
 
 import (
 	_ "buf.build/gen/go/bufbuild/protovalidate/protocolbuffers/go/buf/validate"
+	v1 "github.com/nominal-io/nominal-api-protos-go/nominal/protos/domains/v1"
 	_ "github.com/nominal-io/nominal-api-protos-go/nominal/protos/gen/v1"
+	status "google.golang.org/genproto/googleapis/rpc/status"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
-	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
 	reflect "reflect"
 	sync "sync"
 	unsafe "unsafe"
@@ -24,14 +25,87 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
+type ChannelType int32
+
+const (
+	ChannelType_CHANNEL_TYPE_UNSPECIFIED  ChannelType = 0
+	ChannelType_CHANNEL_TYPE_DOUBLE       ChannelType = 1
+	ChannelType_CHANNEL_TYPE_STRING       ChannelType = 2
+	ChannelType_CHANNEL_TYPE_INT64        ChannelType = 3
+	ChannelType_CHANNEL_TYPE_UINT64       ChannelType = 4
+	ChannelType_CHANNEL_TYPE_DOUBLE_ARRAY ChannelType = 5
+	ChannelType_CHANNEL_TYPE_STRING_ARRAY ChannelType = 6
+	ChannelType_CHANNEL_TYPE_STRUCT       ChannelType = 7
+	ChannelType_CHANNEL_TYPE_LOG          ChannelType = 8
+)
+
+// Enum value maps for ChannelType.
+var (
+	ChannelType_name = map[int32]string{
+		0: "CHANNEL_TYPE_UNSPECIFIED",
+		1: "CHANNEL_TYPE_DOUBLE",
+		2: "CHANNEL_TYPE_STRING",
+		3: "CHANNEL_TYPE_INT64",
+		4: "CHANNEL_TYPE_UINT64",
+		5: "CHANNEL_TYPE_DOUBLE_ARRAY",
+		6: "CHANNEL_TYPE_STRING_ARRAY",
+		7: "CHANNEL_TYPE_STRUCT",
+		8: "CHANNEL_TYPE_LOG",
+	}
+	ChannelType_value = map[string]int32{
+		"CHANNEL_TYPE_UNSPECIFIED":  0,
+		"CHANNEL_TYPE_DOUBLE":       1,
+		"CHANNEL_TYPE_STRING":       2,
+		"CHANNEL_TYPE_INT64":        3,
+		"CHANNEL_TYPE_UINT64":       4,
+		"CHANNEL_TYPE_DOUBLE_ARRAY": 5,
+		"CHANNEL_TYPE_STRING_ARRAY": 6,
+		"CHANNEL_TYPE_STRUCT":       7,
+		"CHANNEL_TYPE_LOG":          8,
+	}
+)
+
+func (x ChannelType) Enum() *ChannelType {
+	p := new(ChannelType)
+	*p = x
+	return p
+}
+
+func (x ChannelType) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (ChannelType) Descriptor() protoreflect.EnumDescriptor {
+	return file_nominal_protos_channel_writer_v2_nominal_channel_writer_proto_enumTypes[0].Descriptor()
+}
+
+func (ChannelType) Type() protoreflect.EnumType {
+	return &file_nominal_protos_channel_writer_v2_nominal_channel_writer_proto_enumTypes[0]
+}
+
+func (x ChannelType) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use ChannelType.Descriptor instead.
+func (ChannelType) EnumDescriptor() ([]byte, []int) {
+	return file_nominal_protos_channel_writer_v2_nominal_channel_writer_proto_rawDescGZIP(), []int{0}
+}
+
 // Errors specific to this API. Shared domain errors (invalid structs, conflicting units) retain the
 // NominalChannelWriter Conjure error names used by the other write surfaces.
 type NominalChannelWriterError int32
 
 const (
-	NominalChannelWriterError_NOMINAL_CHANNEL_WRITER_ERROR_UNSPECIFIED         NominalChannelWriterError = 0
-	NominalChannelWriterError_NOMINAL_CHANNEL_WRITER_ERROR_INVALID_DATASET_RID NominalChannelWriterError = 1
-	NominalChannelWriterError_NOMINAL_CHANNEL_WRITER_ERROR_VALUES_NOT_SET      NominalChannelWriterError = 2
+	NominalChannelWriterError_NOMINAL_CHANNEL_WRITER_ERROR_UNSPECIFIED           NominalChannelWriterError = 0
+	NominalChannelWriterError_NOMINAL_CHANNEL_WRITER_ERROR_INVALID_DATASET_RID   NominalChannelWriterError = 1
+	NominalChannelWriterError_NOMINAL_CHANNEL_WRITER_ERROR_VALUES_NOT_SET        NominalChannelWriterError = 2
+	NominalChannelWriterError_NOMINAL_CHANNEL_WRITER_ERROR_SCHEMA_NOT_DECLARED   NominalChannelWriterError = 3
+	NominalChannelWriterError_NOMINAL_CHANNEL_WRITER_ERROR_DUPLICATE_SCHEMA_ID   NominalChannelWriterError = 4
+	NominalChannelWriterError_NOMINAL_CHANNEL_WRITER_ERROR_CHANNEL_TYPE_MISMATCH NominalChannelWriterError = 5
+	NominalChannelWriterError_NOMINAL_CHANNEL_WRITER_ERROR_SCHEMA_LIMIT_EXCEEDED NominalChannelWriterError = 6
+	NominalChannelWriterError_NOMINAL_CHANNEL_WRITER_ERROR_SCHEMA_ID_IN_USE      NominalChannelWriterError = 7
+	NominalChannelWriterError_NOMINAL_CHANNEL_WRITER_ERROR_DOMAIN_MISMATCH       NominalChannelWriterError = 8
 )
 
 // Enum value maps for NominalChannelWriterError.
@@ -40,11 +114,23 @@ var (
 		0: "NOMINAL_CHANNEL_WRITER_ERROR_UNSPECIFIED",
 		1: "NOMINAL_CHANNEL_WRITER_ERROR_INVALID_DATASET_RID",
 		2: "NOMINAL_CHANNEL_WRITER_ERROR_VALUES_NOT_SET",
+		3: "NOMINAL_CHANNEL_WRITER_ERROR_SCHEMA_NOT_DECLARED",
+		4: "NOMINAL_CHANNEL_WRITER_ERROR_DUPLICATE_SCHEMA_ID",
+		5: "NOMINAL_CHANNEL_WRITER_ERROR_CHANNEL_TYPE_MISMATCH",
+		6: "NOMINAL_CHANNEL_WRITER_ERROR_SCHEMA_LIMIT_EXCEEDED",
+		7: "NOMINAL_CHANNEL_WRITER_ERROR_SCHEMA_ID_IN_USE",
+		8: "NOMINAL_CHANNEL_WRITER_ERROR_DOMAIN_MISMATCH",
 	}
 	NominalChannelWriterError_value = map[string]int32{
-		"NOMINAL_CHANNEL_WRITER_ERROR_UNSPECIFIED":         0,
-		"NOMINAL_CHANNEL_WRITER_ERROR_INVALID_DATASET_RID": 1,
-		"NOMINAL_CHANNEL_WRITER_ERROR_VALUES_NOT_SET":      2,
+		"NOMINAL_CHANNEL_WRITER_ERROR_UNSPECIFIED":           0,
+		"NOMINAL_CHANNEL_WRITER_ERROR_INVALID_DATASET_RID":   1,
+		"NOMINAL_CHANNEL_WRITER_ERROR_VALUES_NOT_SET":        2,
+		"NOMINAL_CHANNEL_WRITER_ERROR_SCHEMA_NOT_DECLARED":   3,
+		"NOMINAL_CHANNEL_WRITER_ERROR_DUPLICATE_SCHEMA_ID":   4,
+		"NOMINAL_CHANNEL_WRITER_ERROR_CHANNEL_TYPE_MISMATCH": 5,
+		"NOMINAL_CHANNEL_WRITER_ERROR_SCHEMA_LIMIT_EXCEEDED": 6,
+		"NOMINAL_CHANNEL_WRITER_ERROR_SCHEMA_ID_IN_USE":      7,
+		"NOMINAL_CHANNEL_WRITER_ERROR_DOMAIN_MISMATCH":       8,
 	}
 )
 
@@ -59,11 +145,11 @@ func (x NominalChannelWriterError) String() string {
 }
 
 func (NominalChannelWriterError) Descriptor() protoreflect.EnumDescriptor {
-	return file_nominal_protos_channel_writer_v2_nominal_channel_writer_proto_enumTypes[0].Descriptor()
+	return file_nominal_protos_channel_writer_v2_nominal_channel_writer_proto_enumTypes[1].Descriptor()
 }
 
 func (NominalChannelWriterError) Type() protoreflect.EnumType {
-	return &file_nominal_protos_channel_writer_v2_nominal_channel_writer_proto_enumTypes[0]
+	return &file_nominal_protos_channel_writer_v2_nominal_channel_writer_proto_enumTypes[1]
 }
 
 func (x NominalChannelWriterError) Number() protoreflect.EnumNumber {
@@ -72,7 +158,7 @@ func (x NominalChannelWriterError) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use NominalChannelWriterError.Descriptor instead.
 func (NominalChannelWriterError) EnumDescriptor() ([]byte, []int) {
-	return file_nominal_protos_channel_writer_v2_nominal_channel_writer_proto_rawDescGZIP(), []int{0}
+	return file_nominal_protos_channel_writer_v2_nominal_channel_writer_proto_rawDescGZIP(), []int{1}
 }
 
 type WriteRequest struct {
@@ -81,7 +167,7 @@ type WriteRequest struct {
 	DatasetRid string   `protobuf:"bytes,1,opt,name=dataset_rid,json=datasetRid,proto3" json:"dataset_rid,omitempty"`
 	Batches    []*Batch `protobuf:"bytes,2,rep,name=batches,proto3" json:"batches,omitempty"`
 	// SENSITIVE: never log this value or serialize this message into a log or error payload.
-	// Client-provided identifier for tracing the origin of a write. Empty is treated as unset.
+	// Client-provided identifier for tracing the origin of a write.
 	SessionName   *string `protobuf:"bytes,3,opt,name=session_name,json=sessionName,proto3,oneof" json:"session_name,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -174,7 +260,7 @@ func (*WriteResponse) Descriptor() ([]byte, []int) {
 	return file_nominal_protos_channel_writer_v2_nominal_channel_writer_proto_rawDescGZIP(), []int{1}
 }
 
-// One series' points or one channel's logs. Required; an unset variant fails with VALUES_NOT_SET.
+// One series' points or one channel's logs.
 type Batch struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Types that are valid to be assigned to Batch:
@@ -257,14 +343,12 @@ func (*Batch_Points) isBatch_Batch() {}
 
 func (*Batch_Logs) isBatch_Batch() {}
 
-// One series' points as parallel columns: timestamps[i] is the timestamp of the i-th value.
+// One series' points as parallel axis/value columns, paired by index.
 type PointBatch struct {
-	state      protoimpl.MessageState   `protogen:"open.v1"`
-	Channel    string                   `protobuf:"bytes,1,opt,name=channel,proto3" json:"channel,omitempty"`
-	Tags       map[string]string        `protobuf:"bytes,2,rep,name=tags,proto3" json:"tags,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
-	Timestamps []*timestamppb.Timestamp `protobuf:"bytes,3,rep,name=timestamps,proto3" json:"timestamps,omitempty"`
-	// Required; an unset value type fails with VALUES_NOT_SET.
-	Values *Values `protobuf:"bytes,4,opt,name=values,proto3" json:"values,omitempty"`
+	state   protoimpl.MessageState `protogen:"open.v1"`
+	Channel string                 `protobuf:"bytes,1,opt,name=channel,proto3" json:"channel,omitempty"`
+	Tags    map[string]string      `protobuf:"bytes,2,rep,name=tags,proto3" json:"tags,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
+	Data    *PointData             `protobuf:"bytes,3,opt,name=data,proto3" json:"data,omitempty"`
 	// Applied when the channel's metadata is first created; an existing channel keeps its unit. Batches in a
 	// request that name the same channel must agree on it.
 	Unit          *string `protobuf:"bytes,5,opt,name=unit,proto3,oneof" json:"unit,omitempty"`
@@ -316,16 +400,9 @@ func (x *PointBatch) GetTags() map[string]string {
 	return nil
 }
 
-func (x *PointBatch) GetTimestamps() []*timestamppb.Timestamp {
+func (x *PointBatch) GetData() *PointData {
 	if x != nil {
-		return x.Timestamps
-	}
-	return nil
-}
-
-func (x *PointBatch) GetValues() *Values {
-	if x != nil {
-		return x.Values
+		return x.Data
 	}
 	return nil
 }
@@ -337,7 +414,7 @@ func (x *PointBatch) GetUnit() string {
 	return ""
 }
 
-// A batch's values, all of one type. Required; an unset variant fails with VALUES_NOT_SET.
+// A batch's values, all of one type.
 type Values struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Types that are valid to be assigned to Values:
@@ -899,13 +976,12 @@ func (x *Structs) GetValues() []string {
 	return nil
 }
 
-// One channel's logs as parallel columns: timestamps[i] is the timestamp of logs[i]. Logs carry no tags.
+// One channel's logs as parallel timestamp/log columns, paired by index. Logs carry no tags or domain.
 type LogBatch struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Defaults to "logs" when unset.
-	Channel       *string                  `protobuf:"bytes,1,opt,name=channel,proto3,oneof" json:"channel,omitempty"`
-	Timestamps    []*timestamppb.Timestamp `protobuf:"bytes,2,rep,name=timestamps,proto3" json:"timestamps,omitempty"`
-	Logs          []*LogValue              `protobuf:"bytes,3,rep,name=logs,proto3" json:"logs,omitempty"`
+	Channel       *string  `protobuf:"bytes,1,opt,name=channel,proto3,oneof" json:"channel,omitempty"`
+	Data          *LogData `protobuf:"bytes,2,opt,name=data,proto3" json:"data,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -947,16 +1023,9 @@ func (x *LogBatch) GetChannel() string {
 	return ""
 }
 
-func (x *LogBatch) GetTimestamps() []*timestamppb.Timestamp {
+func (x *LogBatch) GetData() *LogData {
 	if x != nil {
-		return x.Timestamps
-	}
-	return nil
-}
-
-func (x *LogBatch) GetLogs() []*LogValue {
-	if x != nil {
-		return x.Logs
+		return x.Data
 	}
 	return nil
 }
@@ -1014,40 +1083,685 @@ func (x *LogValue) GetArgs() map[string]string {
 	return nil
 }
 
+type WriteStreamRequest struct {
+	state          protoimpl.MessageState `protogen:"open.v1"`
+	SequenceNumber uint64                 `protobuf:"varint,1,opt,name=sequence_number,json=sequenceNumber,proto3" json:"sequence_number,omitempty"`
+	// Types that are valid to be assigned to Request:
+	//
+	//	*WriteStreamRequest_DeclareSchemas
+	//	*WriteStreamRequest_Chunk
+	Request       isWriteStreamRequest_Request `protobuf_oneof:"request"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *WriteStreamRequest) Reset() {
+	*x = WriteStreamRequest{}
+	mi := &file_nominal_protos_channel_writer_v2_nominal_channel_writer_proto_msgTypes[16]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *WriteStreamRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*WriteStreamRequest) ProtoMessage() {}
+
+func (x *WriteStreamRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_nominal_protos_channel_writer_v2_nominal_channel_writer_proto_msgTypes[16]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use WriteStreamRequest.ProtoReflect.Descriptor instead.
+func (*WriteStreamRequest) Descriptor() ([]byte, []int) {
+	return file_nominal_protos_channel_writer_v2_nominal_channel_writer_proto_rawDescGZIP(), []int{16}
+}
+
+func (x *WriteStreamRequest) GetSequenceNumber() uint64 {
+	if x != nil {
+		return x.SequenceNumber
+	}
+	return 0
+}
+
+func (x *WriteStreamRequest) GetRequest() isWriteStreamRequest_Request {
+	if x != nil {
+		return x.Request
+	}
+	return nil
+}
+
+func (x *WriteStreamRequest) GetDeclareSchemas() *DeclareSchemas {
+	if x != nil {
+		if x, ok := x.Request.(*WriteStreamRequest_DeclareSchemas); ok {
+			return x.DeclareSchemas
+		}
+	}
+	return nil
+}
+
+func (x *WriteStreamRequest) GetChunk() *WriteChunk {
+	if x != nil {
+		if x, ok := x.Request.(*WriteStreamRequest_Chunk); ok {
+			return x.Chunk
+		}
+	}
+	return nil
+}
+
+type isWriteStreamRequest_Request interface {
+	isWriteStreamRequest_Request()
+}
+
+type WriteStreamRequest_DeclareSchemas struct {
+	DeclareSchemas *DeclareSchemas `protobuf:"bytes,2,opt,name=declare_schemas,json=declareSchemas,proto3,oneof"`
+}
+
+type WriteStreamRequest_Chunk struct {
+	Chunk *WriteChunk `protobuf:"bytes,3,opt,name=chunk,proto3,oneof"`
+}
+
+func (*WriteStreamRequest_DeclareSchemas) isWriteStreamRequest_Request() {}
+
+func (*WriteStreamRequest_Chunk) isWriteStreamRequest_Request() {}
+
+type DeclareSchemas struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Schemas       []*Schema              `protobuf:"bytes,1,rep,name=schemas,proto3" json:"schemas,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *DeclareSchemas) Reset() {
+	*x = DeclareSchemas{}
+	mi := &file_nominal_protos_channel_writer_v2_nominal_channel_writer_proto_msgTypes[17]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *DeclareSchemas) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*DeclareSchemas) ProtoMessage() {}
+
+func (x *DeclareSchemas) ProtoReflect() protoreflect.Message {
+	mi := &file_nominal_protos_channel_writer_v2_nominal_channel_writer_proto_msgTypes[17]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use DeclareSchemas.ProtoReflect.Descriptor instead.
+func (*DeclareSchemas) Descriptor() ([]byte, []int) {
+	return file_nominal_protos_channel_writer_v2_nominal_channel_writer_proto_rawDescGZIP(), []int{17}
+}
+
+func (x *DeclareSchemas) GetSchemas() []*Schema {
+	if x != nil {
+		return x.Schemas
+	}
+	return nil
+}
+
+type Schema struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	SchemaId      uint32                 `protobuf:"varint,1,opt,name=schema_id,json=schemaId,proto3" json:"schema_id,omitempty"`
+	DatasetRid    string                 `protobuf:"bytes,2,opt,name=dataset_rid,json=datasetRid,proto3" json:"dataset_rid,omitempty"`
+	SessionName   *string                `protobuf:"bytes,3,opt,name=session_name,json=sessionName,proto3,oneof" json:"session_name,omitempty"`
+	Channel       string                 `protobuf:"bytes,4,opt,name=channel,proto3" json:"channel,omitempty"`
+	Tags          map[string]string      `protobuf:"bytes,5,rep,name=tags,proto3" json:"tags,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
+	Type          ChannelType            `protobuf:"varint,6,opt,name=type,proto3,enum=nominal.channel_writer.v2.ChannelType" json:"type,omitempty"`
+	Unit          *string                `protobuf:"bytes,7,opt,name=unit,proto3,oneof" json:"unit,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *Schema) Reset() {
+	*x = Schema{}
+	mi := &file_nominal_protos_channel_writer_v2_nominal_channel_writer_proto_msgTypes[18]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *Schema) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*Schema) ProtoMessage() {}
+
+func (x *Schema) ProtoReflect() protoreflect.Message {
+	mi := &file_nominal_protos_channel_writer_v2_nominal_channel_writer_proto_msgTypes[18]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use Schema.ProtoReflect.Descriptor instead.
+func (*Schema) Descriptor() ([]byte, []int) {
+	return file_nominal_protos_channel_writer_v2_nominal_channel_writer_proto_rawDescGZIP(), []int{18}
+}
+
+func (x *Schema) GetSchemaId() uint32 {
+	if x != nil {
+		return x.SchemaId
+	}
+	return 0
+}
+
+func (x *Schema) GetDatasetRid() string {
+	if x != nil {
+		return x.DatasetRid
+	}
+	return ""
+}
+
+func (x *Schema) GetSessionName() string {
+	if x != nil && x.SessionName != nil {
+		return *x.SessionName
+	}
+	return ""
+}
+
+func (x *Schema) GetChannel() string {
+	if x != nil {
+		return x.Channel
+	}
+	return ""
+}
+
+func (x *Schema) GetTags() map[string]string {
+	if x != nil {
+		return x.Tags
+	}
+	return nil
+}
+
+func (x *Schema) GetType() ChannelType {
+	if x != nil {
+		return x.Type
+	}
+	return ChannelType_CHANNEL_TYPE_UNSPECIFIED
+}
+
+func (x *Schema) GetUnit() string {
+	if x != nil && x.Unit != nil {
+		return *x.Unit
+	}
+	return ""
+}
+
+type WriteChunk struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Channels      []*ChannelData         `protobuf:"bytes,1,rep,name=channels,proto3" json:"channels,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *WriteChunk) Reset() {
+	*x = WriteChunk{}
+	mi := &file_nominal_protos_channel_writer_v2_nominal_channel_writer_proto_msgTypes[19]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *WriteChunk) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*WriteChunk) ProtoMessage() {}
+
+func (x *WriteChunk) ProtoReflect() protoreflect.Message {
+	mi := &file_nominal_protos_channel_writer_v2_nominal_channel_writer_proto_msgTypes[19]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use WriteChunk.ProtoReflect.Descriptor instead.
+func (*WriteChunk) Descriptor() ([]byte, []int) {
+	return file_nominal_protos_channel_writer_v2_nominal_channel_writer_proto_rawDescGZIP(), []int{19}
+}
+
+func (x *WriteChunk) GetChannels() []*ChannelData {
+	if x != nil {
+		return x.Channels
+	}
+	return nil
+}
+
+type ChannelData struct {
+	state    protoimpl.MessageState `protogen:"open.v1"`
+	SchemaId uint32                 `protobuf:"varint,1,opt,name=schema_id,json=schemaId,proto3" json:"schema_id,omitempty"`
+	// Types that are valid to be assigned to Data:
+	//
+	//	*ChannelData_Points
+	//	*ChannelData_Logs
+	Data          isChannelData_Data `protobuf_oneof:"data"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ChannelData) Reset() {
+	*x = ChannelData{}
+	mi := &file_nominal_protos_channel_writer_v2_nominal_channel_writer_proto_msgTypes[20]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ChannelData) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ChannelData) ProtoMessage() {}
+
+func (x *ChannelData) ProtoReflect() protoreflect.Message {
+	mi := &file_nominal_protos_channel_writer_v2_nominal_channel_writer_proto_msgTypes[20]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ChannelData.ProtoReflect.Descriptor instead.
+func (*ChannelData) Descriptor() ([]byte, []int) {
+	return file_nominal_protos_channel_writer_v2_nominal_channel_writer_proto_rawDescGZIP(), []int{20}
+}
+
+func (x *ChannelData) GetSchemaId() uint32 {
+	if x != nil {
+		return x.SchemaId
+	}
+	return 0
+}
+
+func (x *ChannelData) GetData() isChannelData_Data {
+	if x != nil {
+		return x.Data
+	}
+	return nil
+}
+
+func (x *ChannelData) GetPoints() *PointData {
+	if x != nil {
+		if x, ok := x.Data.(*ChannelData_Points); ok {
+			return x.Points
+		}
+	}
+	return nil
+}
+
+func (x *ChannelData) GetLogs() *LogData {
+	if x != nil {
+		if x, ok := x.Data.(*ChannelData_Logs); ok {
+			return x.Logs
+		}
+	}
+	return nil
+}
+
+type isChannelData_Data interface {
+	isChannelData_Data()
+}
+
+type ChannelData_Points struct {
+	Points *PointData `protobuf:"bytes,2,opt,name=points,proto3,oneof"`
+}
+
+type ChannelData_Logs struct {
+	Logs *LogData `protobuf:"bytes,3,opt,name=logs,proto3,oneof"`
+}
+
+func (*ChannelData_Points) isChannelData_Data() {}
+
+func (*ChannelData_Logs) isChannelData_Data() {}
+
+// Point coordinates and measured values, paired by index. The axes identify the channel's domain, which
+// is inferred from the channel's first write and is immutable per dataset and channel, regardless of
+// tags. Axes in one request or chunk must agree for each channel and match any existing channel; a
+// conflict fails with DOMAIN_MISMATCH before any writes are submitted.
+type PointData struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Shared with ingestion. Every Values arm caps its column at 50,000 entries, so the length rule
+	// above bounds the coordinates too.
+	Axes          *v1.AxisValues `protobuf:"bytes,1,opt,name=axes,proto3" json:"axes,omitempty"`
+	Values        *Values        `protobuf:"bytes,2,opt,name=values,proto3" json:"values,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *PointData) Reset() {
+	*x = PointData{}
+	mi := &file_nominal_protos_channel_writer_v2_nominal_channel_writer_proto_msgTypes[21]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *PointData) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*PointData) ProtoMessage() {}
+
+func (x *PointData) ProtoReflect() protoreflect.Message {
+	mi := &file_nominal_protos_channel_writer_v2_nominal_channel_writer_proto_msgTypes[21]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use PointData.ProtoReflect.Descriptor instead.
+func (*PointData) Descriptor() ([]byte, []int) {
+	return file_nominal_protos_channel_writer_v2_nominal_channel_writer_proto_rawDescGZIP(), []int{21}
+}
+
+func (x *PointData) GetAxes() *v1.AxisValues {
+	if x != nil {
+		return x.Axes
+	}
+	return nil
+}
+
+func (x *PointData) GetValues() *Values {
+	if x != nil {
+		return x.Values
+	}
+	return nil
+}
+
+// Log timestamps and messages, paired by index. Logs have no coordinate domain.
+type LogData struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Timestamps    *v1.TimeAxisValues     `protobuf:"bytes,1,opt,name=timestamps,proto3" json:"timestamps,omitempty"`
+	Logs          []*LogValue            `protobuf:"bytes,2,rep,name=logs,proto3" json:"logs,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *LogData) Reset() {
+	*x = LogData{}
+	mi := &file_nominal_protos_channel_writer_v2_nominal_channel_writer_proto_msgTypes[22]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *LogData) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*LogData) ProtoMessage() {}
+
+func (x *LogData) ProtoReflect() protoreflect.Message {
+	mi := &file_nominal_protos_channel_writer_v2_nominal_channel_writer_proto_msgTypes[22]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use LogData.ProtoReflect.Descriptor instead.
+func (*LogData) Descriptor() ([]byte, []int) {
+	return file_nominal_protos_channel_writer_v2_nominal_channel_writer_proto_rawDescGZIP(), []int{22}
+}
+
+func (x *LogData) GetTimestamps() *v1.TimeAxisValues {
+	if x != nil {
+		return x.Timestamps
+	}
+	return nil
+}
+
+func (x *LogData) GetLogs() []*LogValue {
+	if x != nil {
+		return x.Logs
+	}
+	return nil
+}
+
+type WriteStreamResponse struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Types that are valid to be assigned to Response:
+	//
+	//	*WriteStreamResponse_Accepted
+	//	*WriteStreamResponse_Rejected
+	Response      isWriteStreamResponse_Response `protobuf_oneof:"response"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *WriteStreamResponse) Reset() {
+	*x = WriteStreamResponse{}
+	mi := &file_nominal_protos_channel_writer_v2_nominal_channel_writer_proto_msgTypes[23]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *WriteStreamResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*WriteStreamResponse) ProtoMessage() {}
+
+func (x *WriteStreamResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_nominal_protos_channel_writer_v2_nominal_channel_writer_proto_msgTypes[23]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use WriteStreamResponse.ProtoReflect.Descriptor instead.
+func (*WriteStreamResponse) Descriptor() ([]byte, []int) {
+	return file_nominal_protos_channel_writer_v2_nominal_channel_writer_proto_rawDescGZIP(), []int{23}
+}
+
+func (x *WriteStreamResponse) GetResponse() isWriteStreamResponse_Response {
+	if x != nil {
+		return x.Response
+	}
+	return nil
+}
+
+func (x *WriteStreamResponse) GetAccepted() *Accepted {
+	if x != nil {
+		if x, ok := x.Response.(*WriteStreamResponse_Accepted); ok {
+			return x.Accepted
+		}
+	}
+	return nil
+}
+
+func (x *WriteStreamResponse) GetRejected() *Rejected {
+	if x != nil {
+		if x, ok := x.Response.(*WriteStreamResponse_Rejected); ok {
+			return x.Rejected
+		}
+	}
+	return nil
+}
+
+type isWriteStreamResponse_Response interface {
+	isWriteStreamResponse_Response()
+}
+
+type WriteStreamResponse_Accepted struct {
+	Accepted *Accepted `protobuf:"bytes,1,opt,name=accepted,proto3,oneof"`
+}
+
+type WriteStreamResponse_Rejected struct {
+	Rejected *Rejected `protobuf:"bytes,2,opt,name=rejected,proto3,oneof"`
+}
+
+func (*WriteStreamResponse_Accepted) isWriteStreamResponse_Response() {}
+
+func (*WriteStreamResponse_Rejected) isWriteStreamResponse_Response() {}
+
+type Accepted struct {
+	state           protoimpl.MessageState `protogen:"open.v1"`
+	SequenceNumbers []uint64               `protobuf:"varint,1,rep,packed,name=sequence_numbers,json=sequenceNumbers,proto3" json:"sequence_numbers,omitempty"`
+	unknownFields   protoimpl.UnknownFields
+	sizeCache       protoimpl.SizeCache
+}
+
+func (x *Accepted) Reset() {
+	*x = Accepted{}
+	mi := &file_nominal_protos_channel_writer_v2_nominal_channel_writer_proto_msgTypes[24]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *Accepted) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*Accepted) ProtoMessage() {}
+
+func (x *Accepted) ProtoReflect() protoreflect.Message {
+	mi := &file_nominal_protos_channel_writer_v2_nominal_channel_writer_proto_msgTypes[24]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use Accepted.ProtoReflect.Descriptor instead.
+func (*Accepted) Descriptor() ([]byte, []int) {
+	return file_nominal_protos_channel_writer_v2_nominal_channel_writer_proto_rawDescGZIP(), []int{24}
+}
+
+func (x *Accepted) GetSequenceNumbers() []uint64 {
+	if x != nil {
+		return x.SequenceNumbers
+	}
+	return nil
+}
+
+type Rejected struct {
+	state          protoimpl.MessageState `protogen:"open.v1"`
+	SequenceNumber uint64                 `protobuf:"varint,1,opt,name=sequence_number,json=sequenceNumber,proto3" json:"sequence_number,omitempty"`
+	Status         *status.Status         `protobuf:"bytes,2,opt,name=status,proto3" json:"status,omitempty"`
+	unknownFields  protoimpl.UnknownFields
+	sizeCache      protoimpl.SizeCache
+}
+
+func (x *Rejected) Reset() {
+	*x = Rejected{}
+	mi := &file_nominal_protos_channel_writer_v2_nominal_channel_writer_proto_msgTypes[25]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *Rejected) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*Rejected) ProtoMessage() {}
+
+func (x *Rejected) ProtoReflect() protoreflect.Message {
+	mi := &file_nominal_protos_channel_writer_v2_nominal_channel_writer_proto_msgTypes[25]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use Rejected.ProtoReflect.Descriptor instead.
+func (*Rejected) Descriptor() ([]byte, []int) {
+	return file_nominal_protos_channel_writer_v2_nominal_channel_writer_proto_rawDescGZIP(), []int{25}
+}
+
+func (x *Rejected) GetSequenceNumber() uint64 {
+	if x != nil {
+		return x.SequenceNumber
+	}
+	return 0
+}
+
+func (x *Rejected) GetStatus() *status.Status {
+	if x != nil {
+		return x.Status
+	}
+	return nil
+}
+
 var File_nominal_protos_channel_writer_v2_nominal_channel_writer_proto protoreflect.FileDescriptor
 
 const file_nominal_protos_channel_writer_v2_nominal_channel_writer_proto_rawDesc = "" +
 	"\n" +
-	"=nominal/protos/channel_writer/v2/nominal_channel_writer.proto\x12\x19nominal.channel_writer.v2\x1a\x1bbuf/validate/validate.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a!nominal/protos/gen/v1/alias.proto\x1a!nominal/protos/gen/v1/error.proto\"\xe7\x01\n" +
-	"\fWriteRequest\x12M\n" +
-	"\vdataset_rid\x18\x01 \x01(\tB,\xbaH\x05r\x03(\x80\x02\x9a\xb2\x1a \n" +
+	"=nominal/protos/channel_writer/v2/nominal_channel_writer.proto\x12\x19nominal.channel_writer.v2\x1a\x1bbuf/validate/validate.proto\x1a\x17google/rpc/status.proto\x1a$nominal/protos/domains/v1/axes.proto\x1a!nominal/protos/gen/v1/alias.proto\x1a!nominal/protos/gen/v1/error.proto\"\xae\x02\n" +
+	"\fWriteRequest\x12\x91\x01\n" +
+	"\vdataset_rid\x18\x01 \x01(\tBp\xbaHIrG(\x80\x022B^ri[.]catalog[.]([a-z0-9][a-z0-9-]*)?[.]dataset[.][a-zA-Z0-9._-]+$\x9a\xb2\x1a \n" +
 	"\x1eio.nominal.api.rids.DatasetRidR\n" +
 	"datasetRid\x12E\n" +
-	"\abatches\x18\x02 \x03(\v2 .nominal.channel_writer.v2.BatchB\t\xbaH\x06\x92\x01\x03\x10\x90NR\abatches\x120\n" +
-	"\fsession_name\x18\x03 \x01(\tB\b\xbaH\x05r\x03\x18\xff\x01H\x00R\vsessionName\x88\x01\x01B\x0f\n" +
+	"\abatches\x18\x02 \x03(\v2 .nominal.channel_writer.v2.BatchB\t\xbaH\x06\x92\x01\x03\x10\x90NR\abatches\x122\n" +
+	"\fsession_name\x18\x03 \x01(\tB\n" +
+	"\xbaH\ar\x05\x10\x01\x18\xff\x01H\x00R\vsessionName\x88\x01\x01B\x0f\n" +
 	"\r_session_name\"\x0f\n" +
-	"\rWriteResponse\"\x8c\x01\n" +
+	"\rWriteResponse\"\x93\x01\n" +
 	"\x05Batch\x12?\n" +
 	"\x06points\x18\x01 \x01(\v2%.nominal.channel_writer.v2.PointBatchH\x00R\x06points\x129\n" +
-	"\x04logs\x18\x02 \x01(\v2#.nominal.channel_writer.v2.LogBatchH\x00R\x04logsB\a\n" +
-	"\x05batch\"\xb6\b\n" +
+	"\x04logs\x18\x02 \x01(\v2#.nominal.channel_writer.v2.LogBatchH\x00R\x04logsB\x0e\n" +
+	"\x05batch\x12\x05\xbaH\x02\b\x01\"\xa1\x03\n" +
 	"\n" +
 	"PointBatch\x12>\n" +
 	"\achannel\x18\x01 \x01(\tB$\xbaH\x05r\x03\x18\x80\x04\x9a\xb2\x1a\x18\n" +
 	"\x16io.nominal.api.ChannelR\achannel\x12\x92\x01\n" +
-	"\x04tags\x18\x02 \x03(\v2/.nominal.channel_writer.v2.PointBatch.TagsEntryBM\xbaH\x15\x9a\x01\x12\x10@\"\ar\x05 \x01(\x80\x02*\x05r\x03(\x80 \x9a\xb2\x1a1\x12\x16io.nominal.api.TagName\x1a\x17io.nominal.api.TagValueR\x04tags\x12F\n" +
-	"\n" +
-	"timestamps\x18\x03 \x03(\v2\x1a.google.protobuf.TimestampB\n" +
-	"\xbaH\a\x92\x01\x04\x10І\x03R\n" +
-	"timestamps\x129\n" +
-	"\x06values\x18\x04 \x01(\v2!.nominal.channel_writer.v2.ValuesR\x06values\x12:\n" +
+	"\x04tags\x18\x02 \x03(\v2/.nominal.channel_writer.v2.PointBatch.TagsEntryBM\xbaH\x15\x9a\x01\x12\x10@\"\ar\x05 \x01(\x80\x02*\x05r\x03(\x80 \x9a\xb2\x1a1\x12\x16io.nominal.api.TagName\x1a\x17io.nominal.api.TagValueR\x04tags\x12@\n" +
+	"\x04data\x18\x03 \x01(\v2$.nominal.channel_writer.v2.PointDataB\x06\xbaH\x03\xc8\x01\x01R\x04data\x12:\n" +
 	"\x04unit\x18\x05 \x01(\tB!\xbaH\x05r\x03(\x80\x02\x9a\xb2\x1a\x15\n" +
 	"\x13io.nominal.api.UnitH\x00R\x04unit\x88\x01\x01\x1a7\n" +
 	"\tTagsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
-	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01:\xd1\x04\xbaH\xcd\x04\x1a\xca\x04\n" +
-	"\x19point_batch.lengths_match\x12-timestamps and values must be the same length\x1a\xfd\x03!has(this.values) || this.timestamps.size() == (has(this.values.doubles) ? this.values.doubles.values.size() : has(this.values.strings) ? this.values.strings.values.size() : has(this.values.ints) ? this.values.ints.values.size() : has(this.values.uint64s) ? this.values.uint64s.values.size() : has(this.values.double_arrays) ? this.values.double_arrays.arrays.size() : has(this.values.string_arrays) ? this.values.string_arrays.arrays.size() : has(this.values.structs) ? this.values.structs.values.size() : 0)B\a\n" +
-	"\x05_unit\"\xe9\x03\n" +
+	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01B\a\n" +
+	"\x05_unit\"\xf0\x03\n" +
 	"\x06Values\x12>\n" +
 	"\adoubles\x18\x01 \x01(\v2\".nominal.channel_writer.v2.DoublesH\x00R\adoubles\x12>\n" +
 	"\astrings\x18\x02 \x01(\v2\".nominal.channel_writer.v2.StringsH\x00R\astrings\x125\n" +
@@ -1055,8 +1769,8 @@ const file_nominal_protos_channel_writer_v2_nominal_channel_writer_proto_rawDesc
 	"\auint64s\x18\x04 \x01(\v2\".nominal.channel_writer.v2.Uint64sH\x00R\auint64s\x12N\n" +
 	"\rdouble_arrays\x18\x05 \x01(\v2'.nominal.channel_writer.v2.DoubleArraysH\x00R\fdoubleArrays\x12N\n" +
 	"\rstring_arrays\x18\x06 \x01(\v2'.nominal.channel_writer.v2.StringArraysH\x00R\fstringArrays\x12>\n" +
-	"\astructs\x18\a \x01(\v2\".nominal.channel_writer.v2.StructsH\x00R\astructsB\b\n" +
-	"\x06values\"-\n" +
+	"\astructs\x18\a \x01(\v2\".nominal.channel_writer.v2.StructsH\x00R\astructsB\x0f\n" +
+	"\x06values\x12\x05\xbaH\x02\b\x01\"-\n" +
 	"\aDoubles\x12\"\n" +
 	"\x06values\x18\x01 \x03(\x01B\n" +
 	"\xbaH\a\x92\x01\x04\x10І\x03R\x06values\"5\n" +
@@ -1080,15 +1794,11 @@ const file_nominal_protos_channel_writer_v2_nominal_channel_writer_proto_rawDesc
 	"\x06values\x18\x01 \x03(\tB\x10\xbaH\r\x92\x01\n" +
 	"\x10\xe7\a\"\x05r\x03(\x80\x02R\x06values\"5\n" +
 	"\aStructs\x12*\n" +
-	"\x06values\x18\x01 \x03(\tB\x12\xbaH\x0f\x92\x01\f\x10І\x03\"\x06r\x04(\x80\x80\x04R\x06values\"\xdf\x02\n" +
+	"\x06values\x18\x01 \x03(\tB\x12\xbaH\x0f\x92\x01\f\x10І\x03\"\x06r\x04(\x80\x80\x04R\x06values\"\x9b\x01\n" +
 	"\bLogBatch\x12C\n" +
 	"\achannel\x18\x01 \x01(\tB$\xbaH\x05r\x03\x18\x80\x04\x9a\xb2\x1a\x18\n" +
-	"\x16io.nominal.api.ChannelH\x00R\achannel\x88\x01\x01\x12E\n" +
-	"\n" +
-	"timestamps\x18\x02 \x03(\v2\x1a.google.protobuf.TimestampB\t\xbaH\x06\x92\x01\x03\x10\x90NR\n" +
-	"timestamps\x12B\n" +
-	"\x04logs\x18\x03 \x03(\v2#.nominal.channel_writer.v2.LogValueB\t\xbaH\x06\x92\x01\x03\x10\x90NR\x04logs:w\xbaHt\x1ar\n" +
-	"\x17log_batch.lengths_match\x12+timestamps and logs must be the same length\x1a*this.timestamps.size() == this.logs.size()B\n" +
+	"\x16io.nominal.api.ChannelH\x00R\achannel\x88\x01\x01\x12>\n" +
+	"\x04data\x18\x02 \x01(\v2\".nominal.channel_writer.v2.LogDataB\x06\xbaH\x03\xc8\x01\x01R\x04dataB\n" +
 	"\n" +
 	"\b_channel\"\xc5\x01\n" +
 	"\bLogValue\x12#\n" +
@@ -1096,15 +1806,94 @@ const file_nominal_protos_channel_writer_v2_nominal_channel_writer_proto_rawDesc
 	"\x04args\x18\x02 \x03(\v2-.nominal.channel_writer.v2.LogValue.ArgsEntryB\x18\xbaH\x15\x9a\x01\x12\x10 \"\ar\x05 \x01(\x80\x02*\x05r\x03(\x80 R\x04args\x1a7\n" +
 	"\tArgsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
-	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01*\xb2\x02\n" +
+	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"\xed\x01\n" +
+	"\x12WriteStreamRequest\x120\n" +
+	"\x0fsequence_number\x18\x01 \x01(\x04B\a\xbaH\x042\x02 \x00R\x0esequenceNumber\x12T\n" +
+	"\x0fdeclare_schemas\x18\x02 \x01(\v2).nominal.channel_writer.v2.DeclareSchemasH\x00R\x0edeclareSchemas\x12=\n" +
+	"\x05chunk\x18\x03 \x01(\v2%.nominal.channel_writer.v2.WriteChunkH\x00R\x05chunkB\x10\n" +
+	"\arequest\x12\x05\xbaH\x02\b\x01\"Y\n" +
+	"\x0eDeclareSchemas\x12G\n" +
+	"\aschemas\x18\x01 \x03(\v2!.nominal.channel_writer.v2.SchemaB\n" +
+	"\xbaH\a\x92\x01\x04\b\x01\x10dR\aschemas\"\xb2\x06\n" +
+	"\x06Schema\x12$\n" +
+	"\tschema_id\x18\x01 \x01(\rB\a\xbaH\x04*\x02 \x00R\bschemaId\x12\x91\x01\n" +
+	"\vdataset_rid\x18\x02 \x01(\tBp\xbaHIrG(\x80\x022B^ri[.]catalog[.]([a-z0-9][a-z0-9-]*)?[.]dataset[.][a-zA-Z0-9._-]+$\x9a\xb2\x1a \n" +
+	"\x1eio.nominal.api.rids.DatasetRidR\n" +
+	"datasetRid\x122\n" +
+	"\fsession_name\x18\x03 \x01(\tB\n" +
+	"\xbaH\ar\x05\x10\x01\x18\xff\x01H\x00R\vsessionName\x88\x01\x01\x12@\n" +
+	"\achannel\x18\x04 \x01(\tB&\xbaH\ar\x05\x10\x01\x18\x80\x04\x9a\xb2\x1a\x18\n" +
+	"\x16io.nominal.api.ChannelR\achannel\x12\x8e\x01\n" +
+	"\x04tags\x18\x05 \x03(\v2+.nominal.channel_writer.v2.Schema.TagsEntryBM\xbaH\x15\x9a\x01\x12\x10@\"\ar\x05 \x01(\x80\x02*\x05r\x03(\x80 \x9a\xb2\x1a1\x12\x16io.nominal.api.TagName\x1a\x17io.nominal.api.TagValueR\x04tags\x12F\n" +
+	"\x04type\x18\x06 \x01(\x0e2&.nominal.channel_writer.v2.ChannelTypeB\n" +
+	"\xbaH\a\x82\x01\x04\x10\x01 \x00R\x04type\x12:\n" +
+	"\x04unit\x18\a \x01(\tB!\xbaH\x05r\x03(\x80\x02\x9a\xb2\x1a\x15\n" +
+	"\x13io.nominal.api.UnitH\x01R\x04unit\x88\x01\x01\x1a7\n" +
+	"\tTagsEntry\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
+	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01:\x8f\x01\xbaH\x8b\x01\x1a\x88\x01\n" +
+	" schema.logs_have_no_tags_or_unit\x12'log channels cannot have tags or a unit\x1a;this.type != 8 || (size(this.tags) == 0 && !has(this.unit))B\x0f\n" +
+	"\r_session_nameB\a\n" +
+	"\x05_unit\"]\n" +
+	"\n" +
+	"WriteChunk\x12O\n" +
+	"\bchannels\x18\x01 \x03(\v2&.nominal.channel_writer.v2.ChannelDataB\v\xbaH\b\x92\x01\x05\b\x01\x10\x90NR\bchannels\"\xbc\x01\n" +
+	"\vChannelData\x12$\n" +
+	"\tschema_id\x18\x01 \x01(\rB\a\xbaH\x04*\x02 \x00R\bschemaId\x12>\n" +
+	"\x06points\x18\x02 \x01(\v2$.nominal.channel_writer.v2.PointDataH\x00R\x06points\x128\n" +
+	"\x04logs\x18\x03 \x01(\v2\".nominal.channel_writer.v2.LogDataH\x00R\x04logsB\r\n" +
+	"\x04data\x12\x05\xbaH\x02\b\x01\"\xe5\x05\n" +
+	"\tPointData\x12:\n" +
+	"\x04axes\x18\x01 \x01(\v2\x1e.nominal.domains.v1.AxisValuesB\x06\xbaH\x03\xc8\x01\x01R\x04axes\x12A\n" +
+	"\x06values\x18\x02 \x01(\v2!.nominal.channel_writer.v2.ValuesB\x06\xbaH\x03\xc8\x01\x01R\x06values:\xd8\x04\xbaH\xd4\x04\x1a\xd1\x04\n" +
+	"\x18point_data.lengths_match\x12'axes and values must be the same length\x1a\x8b\x04this.axes.time.timestamps.size() == ( !has(this.values) ? 0 : has(this.values.doubles) ? this.values.doubles.values.size() : has(this.values.strings) ? this.values.strings.values.size() : has(this.values.ints) ? this.values.ints.values.size() : has(this.values.uint64s) ? this.values.uint64s.values.size() : has(this.values.double_arrays) ? this.values.double_arrays.arrays.size() : has(this.values.string_arrays) ? this.values.string_arrays.arrays.size() : has(this.values.structs) ? this.values.structs.values.size() : 0)\"\x9d\x02\n" +
+	"\aLogData\x12J\n" +
+	"\n" +
+	"timestamps\x18\x01 \x01(\v2\".nominal.domains.v1.TimeAxisValuesB\x06\xbaH\x03\xc8\x01\x01R\n" +
+	"timestamps\x12B\n" +
+	"\x04logs\x18\x02 \x03(\v2#.nominal.channel_writer.v2.LogValueB\t\xbaH\x06\x92\x01\x03\x10\x90NR\x04logs:\x81\x01\xbaH~\x1a|\n" +
+	"\x16log_data.lengths_match\x12+timestamps and logs must be the same length\x1a5this.timestamps.timestamps.size() == this.logs.size()\"\xae\x01\n" +
+	"\x13WriteStreamResponse\x12A\n" +
+	"\baccepted\x18\x01 \x01(\v2#.nominal.channel_writer.v2.AcceptedH\x00R\baccepted\x12A\n" +
+	"\brejected\x18\x02 \x01(\v2#.nominal.channel_writer.v2.RejectedH\x00R\brejectedB\x11\n" +
+	"\bresponse\x12\x05\xbaH\x02\b\x01\"@\n" +
+	"\bAccepted\x124\n" +
+	"\x10sequence_numbers\x18\x01 \x03(\x04B\t\xbaH\x06\x92\x01\x03\x10\xe8\aR\x0fsequenceNumbers\"\xf0\x01\n" +
+	"\bRejected\x120\n" +
+	"\x0fsequence_number\x18\x01 \x01(\x04B\a\xbaH\x042\x02 \x00R\x0esequenceNumber\x122\n" +
+	"\x06status\x18\x02 \x01(\v2\x12.google.rpc.StatusB\x06\xbaH\x03\xc8\x01\x01R\x06status:~\xbaH{\x1ay\n" +
+	"\x16rejected.non_ok_status\x12/a rejection must have a non-OK gRPC status code\x1a.this.status.code > 0 && this.status.code <= 16*\xfb\x01\n" +
+	"\vChannelType\x12\x1c\n" +
+	"\x18CHANNEL_TYPE_UNSPECIFIED\x10\x00\x12\x17\n" +
+	"\x13CHANNEL_TYPE_DOUBLE\x10\x01\x12\x17\n" +
+	"\x13CHANNEL_TYPE_STRING\x10\x02\x12\x16\n" +
+	"\x12CHANNEL_TYPE_INT64\x10\x03\x12\x17\n" +
+	"\x13CHANNEL_TYPE_UINT64\x10\x04\x12\x1d\n" +
+	"\x19CHANNEL_TYPE_DOUBLE_ARRAY\x10\x05\x12\x1d\n" +
+	"\x19CHANNEL_TYPE_STRING_ARRAY\x10\x06\x12\x17\n" +
+	"\x13CHANNEL_TYPE_STRUCT\x10\a\x12\x14\n" +
+	"\x10CHANNEL_TYPE_LOG\x10\b*\xbd\b\n" +
 	"\x19NominalChannelWriterError\x12,\n" +
 	"(NOMINAL_CHANNEL_WRITER_ERROR_UNSPECIFIED\x10\x00\x12p\n" +
 	"0NOMINAL_CHANNEL_WRITER_ERROR_INVALID_DATASET_RID\x10\x01\x1a:\xb2\xb2\x1a6\n" +
 	"\x10INVALID_ARGUMENT\x12\"dataset_rid must be a dataset RID.\x12u\n" +
 	"+NOMINAL_CHANNEL_WRITER_ERROR_VALUES_NOT_SET\x10\x02\x1aD\xb2\xb2\x1a@\n" +
-	"\x10INVALID_ARGUMENT\x12,Every batch must set exactly one value type.2y\n" +
+	"\x10INVALID_ARGUMENT\x12,Every batch must set exactly one value type.\x12{\n" +
+	"0NOMINAL_CHANNEL_WRITER_ERROR_SCHEMA_NOT_DECLARED\x10\x03\x1aE\xb2\xb2\x1aA\n" +
+	"\x10INVALID_ARGUMENT\x12-The schema ID is not declared on this stream.\x12\x86\x01\n" +
+	"0NOMINAL_CHANNEL_WRITER_ERROR_DUPLICATE_SCHEMA_ID\x10\x04\x1aP\xb2\xb2\x1aL\n" +
+	"\x10INVALID_ARGUMENT\x128Schema IDs must be unique within a declaration or chunk.\x12~\n" +
+	"2NOMINAL_CHANNEL_WRITER_ERROR_CHANNEL_TYPE_MISMATCH\x10\x05\x1aF\xb2\xb2\x1aB\n" +
+	"\x10INVALID_ARGUMENT\x12.Values must match the channel's declared type.\x12\x85\x01\n" +
+	"2NOMINAL_CHANNEL_WRITER_ERROR_SCHEMA_LIMIT_EXCEEDED\x10\x06\x1aM\xb2\xb2\x1aI\n" +
+	"\x12RESOURCE_EXHAUSTED\x123The declaration exceeds the stream's schema budget.\x12z\n" +
+	"-NOMINAL_CHANNEL_WRITER_ERROR_SCHEMA_ID_IN_USE\x10\a\x1aG\xb2\xb2\x1aC\n" +
+	"\x10INVALID_ARGUMENT\x12/A schema ID is already declared on this stream.\x12\x7f\n" +
+	",NOMINAL_CHANNEL_WRITER_ERROR_DOMAIN_MISMATCH\x10\b\x1aM\xb2\xb2\x1aI\n" +
+	"\x10INVALID_ARGUMENT\x125Point axes must match the channel's immutable domain.2\xeb\x01\n" +
 	"\x1bNominalChannelWriterService\x12Z\n" +
-	"\x05Write\x12'.nominal.channel_writer.v2.WriteRequest\x1a(.nominal.channel_writer.v2.WriteResponseB\x9b\x02\n" +
+	"\x05Write\x12'.nominal.channel_writer.v2.WriteRequest\x1a(.nominal.channel_writer.v2.WriteResponse\x12p\n" +
+	"\vWriteStream\x12-.nominal.channel_writer.v2.WriteStreamRequest\x1a..nominal.channel_writer.v2.WriteStreamResponse(\x010\x01B\x9b\x02\n" +
 	"\x1dcom.nominal.channel_writer.v2B\x19NominalChannelWriterProtoP\x01Z]github.com/nominal-io/nominal-api-protos-go/nominal/protos/channel_writer/v2;channel_writerv2\xa2\x02\x03NCX\xaa\x02\x18Nominal.ChannelWriter.V2\xca\x02\x18Nominal\\ChannelWriter\\V2\xe2\x02$Nominal\\ChannelWriter\\V2\\GPBMetadata\xea\x02\x1aNominal::ChannelWriter::V2b\x06proto3"
 
 var (
@@ -1119,56 +1908,85 @@ func file_nominal_protos_channel_writer_v2_nominal_channel_writer_proto_rawDescG
 	return file_nominal_protos_channel_writer_v2_nominal_channel_writer_proto_rawDescData
 }
 
-var file_nominal_protos_channel_writer_v2_nominal_channel_writer_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
-var file_nominal_protos_channel_writer_v2_nominal_channel_writer_proto_msgTypes = make([]protoimpl.MessageInfo, 18)
+var file_nominal_protos_channel_writer_v2_nominal_channel_writer_proto_enumTypes = make([]protoimpl.EnumInfo, 2)
+var file_nominal_protos_channel_writer_v2_nominal_channel_writer_proto_msgTypes = make([]protoimpl.MessageInfo, 29)
 var file_nominal_protos_channel_writer_v2_nominal_channel_writer_proto_goTypes = []any{
-	(NominalChannelWriterError)(0), // 0: nominal.channel_writer.v2.NominalChannelWriterError
-	(*WriteRequest)(nil),           // 1: nominal.channel_writer.v2.WriteRequest
-	(*WriteResponse)(nil),          // 2: nominal.channel_writer.v2.WriteResponse
-	(*Batch)(nil),                  // 3: nominal.channel_writer.v2.Batch
-	(*PointBatch)(nil),             // 4: nominal.channel_writer.v2.PointBatch
-	(*Values)(nil),                 // 5: nominal.channel_writer.v2.Values
-	(*Doubles)(nil),                // 6: nominal.channel_writer.v2.Doubles
-	(*Strings)(nil),                // 7: nominal.channel_writer.v2.Strings
-	(*Ints)(nil),                   // 8: nominal.channel_writer.v2.Ints
-	(*Uint64S)(nil),                // 9: nominal.channel_writer.v2.Uint64s
-	(*DoubleArrays)(nil),           // 10: nominal.channel_writer.v2.DoubleArrays
-	(*DoubleArray)(nil),            // 11: nominal.channel_writer.v2.DoubleArray
-	(*StringArrays)(nil),           // 12: nominal.channel_writer.v2.StringArrays
-	(*StringArray)(nil),            // 13: nominal.channel_writer.v2.StringArray
-	(*Structs)(nil),                // 14: nominal.channel_writer.v2.Structs
-	(*LogBatch)(nil),               // 15: nominal.channel_writer.v2.LogBatch
-	(*LogValue)(nil),               // 16: nominal.channel_writer.v2.LogValue
-	nil,                            // 17: nominal.channel_writer.v2.PointBatch.TagsEntry
-	nil,                            // 18: nominal.channel_writer.v2.LogValue.ArgsEntry
-	(*timestamppb.Timestamp)(nil),  // 19: google.protobuf.Timestamp
+	(ChannelType)(0),               // 0: nominal.channel_writer.v2.ChannelType
+	(NominalChannelWriterError)(0), // 1: nominal.channel_writer.v2.NominalChannelWriterError
+	(*WriteRequest)(nil),           // 2: nominal.channel_writer.v2.WriteRequest
+	(*WriteResponse)(nil),          // 3: nominal.channel_writer.v2.WriteResponse
+	(*Batch)(nil),                  // 4: nominal.channel_writer.v2.Batch
+	(*PointBatch)(nil),             // 5: nominal.channel_writer.v2.PointBatch
+	(*Values)(nil),                 // 6: nominal.channel_writer.v2.Values
+	(*Doubles)(nil),                // 7: nominal.channel_writer.v2.Doubles
+	(*Strings)(nil),                // 8: nominal.channel_writer.v2.Strings
+	(*Ints)(nil),                   // 9: nominal.channel_writer.v2.Ints
+	(*Uint64S)(nil),                // 10: nominal.channel_writer.v2.Uint64s
+	(*DoubleArrays)(nil),           // 11: nominal.channel_writer.v2.DoubleArrays
+	(*DoubleArray)(nil),            // 12: nominal.channel_writer.v2.DoubleArray
+	(*StringArrays)(nil),           // 13: nominal.channel_writer.v2.StringArrays
+	(*StringArray)(nil),            // 14: nominal.channel_writer.v2.StringArray
+	(*Structs)(nil),                // 15: nominal.channel_writer.v2.Structs
+	(*LogBatch)(nil),               // 16: nominal.channel_writer.v2.LogBatch
+	(*LogValue)(nil),               // 17: nominal.channel_writer.v2.LogValue
+	(*WriteStreamRequest)(nil),     // 18: nominal.channel_writer.v2.WriteStreamRequest
+	(*DeclareSchemas)(nil),         // 19: nominal.channel_writer.v2.DeclareSchemas
+	(*Schema)(nil),                 // 20: nominal.channel_writer.v2.Schema
+	(*WriteChunk)(nil),             // 21: nominal.channel_writer.v2.WriteChunk
+	(*ChannelData)(nil),            // 22: nominal.channel_writer.v2.ChannelData
+	(*PointData)(nil),              // 23: nominal.channel_writer.v2.PointData
+	(*LogData)(nil),                // 24: nominal.channel_writer.v2.LogData
+	(*WriteStreamResponse)(nil),    // 25: nominal.channel_writer.v2.WriteStreamResponse
+	(*Accepted)(nil),               // 26: nominal.channel_writer.v2.Accepted
+	(*Rejected)(nil),               // 27: nominal.channel_writer.v2.Rejected
+	nil,                            // 28: nominal.channel_writer.v2.PointBatch.TagsEntry
+	nil,                            // 29: nominal.channel_writer.v2.LogValue.ArgsEntry
+	nil,                            // 30: nominal.channel_writer.v2.Schema.TagsEntry
+	(*v1.AxisValues)(nil),          // 31: nominal.domains.v1.AxisValues
+	(*v1.TimeAxisValues)(nil),      // 32: nominal.domains.v1.TimeAxisValues
+	(*status.Status)(nil),          // 33: google.rpc.Status
 }
 var file_nominal_protos_channel_writer_v2_nominal_channel_writer_proto_depIdxs = []int32{
-	3,  // 0: nominal.channel_writer.v2.WriteRequest.batches:type_name -> nominal.channel_writer.v2.Batch
-	4,  // 1: nominal.channel_writer.v2.Batch.points:type_name -> nominal.channel_writer.v2.PointBatch
-	15, // 2: nominal.channel_writer.v2.Batch.logs:type_name -> nominal.channel_writer.v2.LogBatch
-	17, // 3: nominal.channel_writer.v2.PointBatch.tags:type_name -> nominal.channel_writer.v2.PointBatch.TagsEntry
-	19, // 4: nominal.channel_writer.v2.PointBatch.timestamps:type_name -> google.protobuf.Timestamp
-	5,  // 5: nominal.channel_writer.v2.PointBatch.values:type_name -> nominal.channel_writer.v2.Values
-	6,  // 6: nominal.channel_writer.v2.Values.doubles:type_name -> nominal.channel_writer.v2.Doubles
-	7,  // 7: nominal.channel_writer.v2.Values.strings:type_name -> nominal.channel_writer.v2.Strings
-	8,  // 8: nominal.channel_writer.v2.Values.ints:type_name -> nominal.channel_writer.v2.Ints
-	9,  // 9: nominal.channel_writer.v2.Values.uint64s:type_name -> nominal.channel_writer.v2.Uint64s
-	10, // 10: nominal.channel_writer.v2.Values.double_arrays:type_name -> nominal.channel_writer.v2.DoubleArrays
-	12, // 11: nominal.channel_writer.v2.Values.string_arrays:type_name -> nominal.channel_writer.v2.StringArrays
-	14, // 12: nominal.channel_writer.v2.Values.structs:type_name -> nominal.channel_writer.v2.Structs
-	11, // 13: nominal.channel_writer.v2.DoubleArrays.arrays:type_name -> nominal.channel_writer.v2.DoubleArray
-	13, // 14: nominal.channel_writer.v2.StringArrays.arrays:type_name -> nominal.channel_writer.v2.StringArray
-	19, // 15: nominal.channel_writer.v2.LogBatch.timestamps:type_name -> google.protobuf.Timestamp
-	16, // 16: nominal.channel_writer.v2.LogBatch.logs:type_name -> nominal.channel_writer.v2.LogValue
-	18, // 17: nominal.channel_writer.v2.LogValue.args:type_name -> nominal.channel_writer.v2.LogValue.ArgsEntry
-	1,  // 18: nominal.channel_writer.v2.NominalChannelWriterService.Write:input_type -> nominal.channel_writer.v2.WriteRequest
-	2,  // 19: nominal.channel_writer.v2.NominalChannelWriterService.Write:output_type -> nominal.channel_writer.v2.WriteResponse
-	19, // [19:20] is the sub-list for method output_type
-	18, // [18:19] is the sub-list for method input_type
-	18, // [18:18] is the sub-list for extension type_name
-	18, // [18:18] is the sub-list for extension extendee
-	0,  // [0:18] is the sub-list for field type_name
+	4,  // 0: nominal.channel_writer.v2.WriteRequest.batches:type_name -> nominal.channel_writer.v2.Batch
+	5,  // 1: nominal.channel_writer.v2.Batch.points:type_name -> nominal.channel_writer.v2.PointBatch
+	16, // 2: nominal.channel_writer.v2.Batch.logs:type_name -> nominal.channel_writer.v2.LogBatch
+	28, // 3: nominal.channel_writer.v2.PointBatch.tags:type_name -> nominal.channel_writer.v2.PointBatch.TagsEntry
+	23, // 4: nominal.channel_writer.v2.PointBatch.data:type_name -> nominal.channel_writer.v2.PointData
+	7,  // 5: nominal.channel_writer.v2.Values.doubles:type_name -> nominal.channel_writer.v2.Doubles
+	8,  // 6: nominal.channel_writer.v2.Values.strings:type_name -> nominal.channel_writer.v2.Strings
+	9,  // 7: nominal.channel_writer.v2.Values.ints:type_name -> nominal.channel_writer.v2.Ints
+	10, // 8: nominal.channel_writer.v2.Values.uint64s:type_name -> nominal.channel_writer.v2.Uint64s
+	11, // 9: nominal.channel_writer.v2.Values.double_arrays:type_name -> nominal.channel_writer.v2.DoubleArrays
+	13, // 10: nominal.channel_writer.v2.Values.string_arrays:type_name -> nominal.channel_writer.v2.StringArrays
+	15, // 11: nominal.channel_writer.v2.Values.structs:type_name -> nominal.channel_writer.v2.Structs
+	12, // 12: nominal.channel_writer.v2.DoubleArrays.arrays:type_name -> nominal.channel_writer.v2.DoubleArray
+	14, // 13: nominal.channel_writer.v2.StringArrays.arrays:type_name -> nominal.channel_writer.v2.StringArray
+	24, // 14: nominal.channel_writer.v2.LogBatch.data:type_name -> nominal.channel_writer.v2.LogData
+	29, // 15: nominal.channel_writer.v2.LogValue.args:type_name -> nominal.channel_writer.v2.LogValue.ArgsEntry
+	19, // 16: nominal.channel_writer.v2.WriteStreamRequest.declare_schemas:type_name -> nominal.channel_writer.v2.DeclareSchemas
+	21, // 17: nominal.channel_writer.v2.WriteStreamRequest.chunk:type_name -> nominal.channel_writer.v2.WriteChunk
+	20, // 18: nominal.channel_writer.v2.DeclareSchemas.schemas:type_name -> nominal.channel_writer.v2.Schema
+	30, // 19: nominal.channel_writer.v2.Schema.tags:type_name -> nominal.channel_writer.v2.Schema.TagsEntry
+	0,  // 20: nominal.channel_writer.v2.Schema.type:type_name -> nominal.channel_writer.v2.ChannelType
+	22, // 21: nominal.channel_writer.v2.WriteChunk.channels:type_name -> nominal.channel_writer.v2.ChannelData
+	23, // 22: nominal.channel_writer.v2.ChannelData.points:type_name -> nominal.channel_writer.v2.PointData
+	24, // 23: nominal.channel_writer.v2.ChannelData.logs:type_name -> nominal.channel_writer.v2.LogData
+	31, // 24: nominal.channel_writer.v2.PointData.axes:type_name -> nominal.domains.v1.AxisValues
+	6,  // 25: nominal.channel_writer.v2.PointData.values:type_name -> nominal.channel_writer.v2.Values
+	32, // 26: nominal.channel_writer.v2.LogData.timestamps:type_name -> nominal.domains.v1.TimeAxisValues
+	17, // 27: nominal.channel_writer.v2.LogData.logs:type_name -> nominal.channel_writer.v2.LogValue
+	26, // 28: nominal.channel_writer.v2.WriteStreamResponse.accepted:type_name -> nominal.channel_writer.v2.Accepted
+	27, // 29: nominal.channel_writer.v2.WriteStreamResponse.rejected:type_name -> nominal.channel_writer.v2.Rejected
+	33, // 30: nominal.channel_writer.v2.Rejected.status:type_name -> google.rpc.Status
+	2,  // 31: nominal.channel_writer.v2.NominalChannelWriterService.Write:input_type -> nominal.channel_writer.v2.WriteRequest
+	18, // 32: nominal.channel_writer.v2.NominalChannelWriterService.WriteStream:input_type -> nominal.channel_writer.v2.WriteStreamRequest
+	3,  // 33: nominal.channel_writer.v2.NominalChannelWriterService.Write:output_type -> nominal.channel_writer.v2.WriteResponse
+	25, // 34: nominal.channel_writer.v2.NominalChannelWriterService.WriteStream:output_type -> nominal.channel_writer.v2.WriteStreamResponse
+	33, // [33:35] is the sub-list for method output_type
+	31, // [31:33] is the sub-list for method input_type
+	31, // [31:31] is the sub-list for extension type_name
+	31, // [31:31] is the sub-list for extension extendee
+	0,  // [0:31] is the sub-list for field type_name
 }
 
 func init() { file_nominal_protos_channel_writer_v2_nominal_channel_writer_proto_init() }
@@ -1192,13 +2010,26 @@ func file_nominal_protos_channel_writer_v2_nominal_channel_writer_proto_init() {
 		(*Values_Structs)(nil),
 	}
 	file_nominal_protos_channel_writer_v2_nominal_channel_writer_proto_msgTypes[14].OneofWrappers = []any{}
+	file_nominal_protos_channel_writer_v2_nominal_channel_writer_proto_msgTypes[16].OneofWrappers = []any{
+		(*WriteStreamRequest_DeclareSchemas)(nil),
+		(*WriteStreamRequest_Chunk)(nil),
+	}
+	file_nominal_protos_channel_writer_v2_nominal_channel_writer_proto_msgTypes[18].OneofWrappers = []any{}
+	file_nominal_protos_channel_writer_v2_nominal_channel_writer_proto_msgTypes[20].OneofWrappers = []any{
+		(*ChannelData_Points)(nil),
+		(*ChannelData_Logs)(nil),
+	}
+	file_nominal_protos_channel_writer_v2_nominal_channel_writer_proto_msgTypes[23].OneofWrappers = []any{
+		(*WriteStreamResponse_Accepted)(nil),
+		(*WriteStreamResponse_Rejected)(nil),
+	}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_nominal_protos_channel_writer_v2_nominal_channel_writer_proto_rawDesc), len(file_nominal_protos_channel_writer_v2_nominal_channel_writer_proto_rawDesc)),
-			NumEnums:      1,
-			NumMessages:   18,
+			NumEnums:      2,
+			NumMessages:   29,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

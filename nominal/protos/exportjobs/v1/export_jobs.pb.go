@@ -8,8 +8,10 @@ package exportjobsv1
 
 import (
 	_ "buf.build/gen/go/bufbuild/protovalidate/protocolbuffers/go/buf/validate"
+	v1 "github.com/nominal-io/nominal-api-protos-go/nominal/protos/dataexports/v1"
+	v11 "github.com/nominal-io/nominal-api-protos-go/nominal/protos/datasets/v1"
 	_ "github.com/nominal-io/nominal-api-protos-go/nominal/protos/gen/v1"
-	v1 "github.com/nominal-io/nominal-api-protos-go/nominal/protos/sql/v1"
+	v12 "github.com/nominal-io/nominal-api-protos-go/nominal/protos/sql/v1"
 	types "github.com/nominal-io/nominal-api-protos-go/nominal/protos/types"
 	time "github.com/nominal-io/nominal-api-protos-go/nominal/protos/types/time"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
@@ -37,6 +39,11 @@ const (
 	ExportJobError_EXPORT_JOB_ERROR_INVALID_PAGE_TOKEN ExportJobError = 2
 	// The deployment has no object storage configured for exports.
 	ExportJobError_EXPORT_JOB_ERROR_EXPORT_NOT_CONFIGURED ExportJobError = 3
+	// The request names more file ids than one export may.
+	ExportJobError_EXPORT_JOB_ERROR_TOO_MANY_FILES ExportJobError = 4
+	// A dataset is unknown, outside the workspace, or unreadable by the caller, or a file id is not a live file of its
+	// dataset. Deliberately indistinguishable. Metadata names up to 5 of the dataset rids or file ids.
+	ExportJobError_EXPORT_JOB_ERROR_DATASET_FILES_NOT_FOUND ExportJobError = 5
 )
 
 // Enum value maps for ExportJobError.
@@ -46,12 +53,16 @@ var (
 		1: "EXPORT_JOB_ERROR_NOT_FOUND",
 		2: "EXPORT_JOB_ERROR_INVALID_PAGE_TOKEN",
 		3: "EXPORT_JOB_ERROR_EXPORT_NOT_CONFIGURED",
+		4: "EXPORT_JOB_ERROR_TOO_MANY_FILES",
+		5: "EXPORT_JOB_ERROR_DATASET_FILES_NOT_FOUND",
 	}
 	ExportJobError_value = map[string]int32{
-		"EXPORT_JOB_ERROR_UNSPECIFIED":           0,
-		"EXPORT_JOB_ERROR_NOT_FOUND":             1,
-		"EXPORT_JOB_ERROR_INVALID_PAGE_TOKEN":    2,
-		"EXPORT_JOB_ERROR_EXPORT_NOT_CONFIGURED": 3,
+		"EXPORT_JOB_ERROR_UNSPECIFIED":             0,
+		"EXPORT_JOB_ERROR_NOT_FOUND":               1,
+		"EXPORT_JOB_ERROR_INVALID_PAGE_TOKEN":      2,
+		"EXPORT_JOB_ERROR_EXPORT_NOT_CONFIGURED":   3,
+		"EXPORT_JOB_ERROR_TOO_MANY_FILES":          4,
+		"EXPORT_JOB_ERROR_DATASET_FILES_NOT_FOUND": 5,
 	}
 )
 
@@ -416,12 +427,16 @@ type CreateExportJobRequest struct {
 	state        protoimpl.MessageState `protogen:"open.v1"`
 	WorkspaceRid string                 `protobuf:"bytes,3,opt,name=workspace_rid,json=workspaceRid,proto3" json:"workspace_rid,omitempty"`
 	// The export form's state when the client built `source`. Stored and returned as given so that a client can
-	// prefill a new export. The server applies only file_format and parquet_options; the other fields shape the
-	// output through `source`, which the client built from them.
+	// prefill a new export. For sql, the server applies only file_format and parquet_options. For compute, it
+	// applies none: the definition is authoritative and is not checked against these.
 	Settings *ExportSettings `protobuf:"bytes,4,opt,name=settings,proto3,oneof" json:"settings,omitempty"`
+	// For zip, `settings` must be unset.
+	//
 	// Types that are valid to be assigned to Source:
 	//
 	//	*CreateExportJobRequest_Sql
+	//	*CreateExportJobRequest_Compute
+	//	*CreateExportJobRequest_Zip
 	Source        isCreateExportJobRequest_Source `protobuf_oneof:"source"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -487,6 +502,24 @@ func (x *CreateExportJobRequest) GetSql() *SqlExportSource {
 	return nil
 }
 
+func (x *CreateExportJobRequest) GetCompute() *ComputeExportSource {
+	if x != nil {
+		if x, ok := x.Source.(*CreateExportJobRequest_Compute); ok {
+			return x.Compute
+		}
+	}
+	return nil
+}
+
+func (x *CreateExportJobRequest) GetZip() *ZipExportSource {
+	if x != nil {
+		if x, ok := x.Source.(*CreateExportJobRequest_Zip); ok {
+			return x.Zip
+		}
+	}
+	return nil
+}
+
 type isCreateExportJobRequest_Source interface {
 	isCreateExportJobRequest_Source()
 }
@@ -495,7 +528,19 @@ type CreateExportJobRequest_Sql struct {
 	Sql *SqlExportSource `protobuf:"bytes,5,opt,name=sql,proto3,oneof"`
 }
 
+type CreateExportJobRequest_Compute struct {
+	Compute *ComputeExportSource `protobuf:"bytes,6,opt,name=compute,proto3,oneof"`
+}
+
+type CreateExportJobRequest_Zip struct {
+	Zip *ZipExportSource `protobuf:"bytes,7,opt,name=zip,proto3,oneof"`
+}
+
 func (*CreateExportJobRequest_Sql) isCreateExportJobRequest_Source() {}
+
+func (*CreateExportJobRequest_Compute) isCreateExportJobRequest_Source() {}
+
+func (*CreateExportJobRequest_Zip) isCreateExportJobRequest_Source() {}
 
 type CreateExportJobResponse struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
@@ -585,6 +630,288 @@ func (x *SqlExportSource) GetQuery() string {
 	return ""
 }
 
+// Exports computed channel data, as DataExportService.CreateExport would write it.
+type ComputeExportSource struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Definition    *v1.ExportDefinition   `protobuf:"bytes,1,opt,name=definition,proto3" json:"definition,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ComputeExportSource) Reset() {
+	*x = ComputeExportSource{}
+	mi := &file_nominal_protos_exportjobs_v1_export_jobs_proto_msgTypes[6]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ComputeExportSource) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ComputeExportSource) ProtoMessage() {}
+
+func (x *ComputeExportSource) ProtoReflect() protoreflect.Message {
+	mi := &file_nominal_protos_exportjobs_v1_export_jobs_proto_msgTypes[6]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ComputeExportSource.ProtoReflect.Descriptor instead.
+func (*ComputeExportSource) Descriptor() ([]byte, []int) {
+	return file_nominal_protos_exportjobs_v1_export_jobs_proto_rawDescGZIP(), []int{6}
+}
+
+func (x *ComputeExportSource) GetDefinition() *v1.ExportDefinition {
+	if x != nil {
+		return x.Definition
+	}
+	return nil
+}
+
+// Zips dataset files into one object. The selections are resolved when the job runs.
+type ZipExportSource struct {
+	state         protoimpl.MessageState   `protogen:"open.v1"`
+	Selections    []*DatasetFilesSelection `protobuf:"bytes,1,rep,name=selections,proto3" json:"selections,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ZipExportSource) Reset() {
+	*x = ZipExportSource{}
+	mi := &file_nominal_protos_exportjobs_v1_export_jobs_proto_msgTypes[7]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ZipExportSource) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ZipExportSource) ProtoMessage() {}
+
+func (x *ZipExportSource) ProtoReflect() protoreflect.Message {
+	mi := &file_nominal_protos_exportjobs_v1_export_jobs_proto_msgTypes[7]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ZipExportSource.ProtoReflect.Descriptor instead.
+func (*ZipExportSource) Descriptor() ([]byte, []int) {
+	return file_nominal_protos_exportjobs_v1_export_jobs_proto_rawDescGZIP(), []int{7}
+}
+
+func (x *ZipExportSource) GetSelections() []*DatasetFilesSelection {
+	if x != nil {
+		return x.Selections
+	}
+	return nil
+}
+
+// Files of one dataset to put in the zip. Exactly one of file_ids, query or all_files.
+type DatasetFilesSelection struct {
+	state      protoimpl.MessageState `protogen:"open.v1"`
+	DatasetRid string                 `protobuf:"bytes,1,opt,name=dataset_rid,json=datasetRid,proto3" json:"dataset_rid,omitempty"`
+	// Types that are valid to be assigned to Files:
+	//
+	//	*DatasetFilesSelection_FileIds
+	//	*DatasetFilesSelection_Query
+	//	*DatasetFilesSelection_AllFiles
+	Files         isDatasetFilesSelection_Files `protobuf_oneof:"files"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *DatasetFilesSelection) Reset() {
+	*x = DatasetFilesSelection{}
+	mi := &file_nominal_protos_exportjobs_v1_export_jobs_proto_msgTypes[8]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *DatasetFilesSelection) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*DatasetFilesSelection) ProtoMessage() {}
+
+func (x *DatasetFilesSelection) ProtoReflect() protoreflect.Message {
+	mi := &file_nominal_protos_exportjobs_v1_export_jobs_proto_msgTypes[8]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use DatasetFilesSelection.ProtoReflect.Descriptor instead.
+func (*DatasetFilesSelection) Descriptor() ([]byte, []int) {
+	return file_nominal_protos_exportjobs_v1_export_jobs_proto_rawDescGZIP(), []int{8}
+}
+
+func (x *DatasetFilesSelection) GetDatasetRid() string {
+	if x != nil {
+		return x.DatasetRid
+	}
+	return ""
+}
+
+func (x *DatasetFilesSelection) GetFiles() isDatasetFilesSelection_Files {
+	if x != nil {
+		return x.Files
+	}
+	return nil
+}
+
+func (x *DatasetFilesSelection) GetFileIds() *DatasetFileIds {
+	if x != nil {
+		if x, ok := x.Files.(*DatasetFilesSelection_FileIds); ok {
+			return x.FileIds
+		}
+	}
+	return nil
+}
+
+func (x *DatasetFilesSelection) GetQuery() *v11.DatasetFileQuery {
+	if x != nil {
+		if x, ok := x.Files.(*DatasetFilesSelection_Query); ok {
+			return x.Query
+		}
+	}
+	return nil
+}
+
+func (x *DatasetFilesSelection) GetAllFiles() *AllDatasetFiles {
+	if x != nil {
+		if x, ok := x.Files.(*DatasetFilesSelection_AllFiles); ok {
+			return x.AllFiles
+		}
+	}
+	return nil
+}
+
+type isDatasetFilesSelection_Files interface {
+	isDatasetFilesSelection_Files()
+}
+
+type DatasetFilesSelection_FileIds struct {
+	// These files, in this order.
+	FileIds *DatasetFileIds `protobuf:"bytes,2,opt,name=file_ids,json=fileIds,proto3,oneof"`
+}
+
+type DatasetFilesSelection_Query struct {
+	// Every uploaded, non-deleted file matching the query, with SearchDatasetFiles semantics.
+	Query *v11.DatasetFileQuery `protobuf:"bytes,3,opt,name=query,proto3,oneof"`
+}
+
+type DatasetFilesSelection_AllFiles struct {
+	// Every uploaded, non-deleted file in the dataset.
+	AllFiles *AllDatasetFiles `protobuf:"bytes,4,opt,name=all_files,json=allFiles,proto3,oneof"`
+}
+
+func (*DatasetFilesSelection_FileIds) isDatasetFilesSelection_Files() {}
+
+func (*DatasetFilesSelection_Query) isDatasetFilesSelection_Files() {}
+
+func (*DatasetFilesSelection_AllFiles) isDatasetFilesSelection_Files() {}
+
+// Explicit dataset file ids.
+type DatasetFileIds struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Ids           []string               `protobuf:"bytes,1,rep,name=ids,proto3" json:"ids,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *DatasetFileIds) Reset() {
+	*x = DatasetFileIds{}
+	mi := &file_nominal_protos_exportjobs_v1_export_jobs_proto_msgTypes[9]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *DatasetFileIds) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*DatasetFileIds) ProtoMessage() {}
+
+func (x *DatasetFileIds) ProtoReflect() protoreflect.Message {
+	mi := &file_nominal_protos_exportjobs_v1_export_jobs_proto_msgTypes[9]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use DatasetFileIds.ProtoReflect.Descriptor instead.
+func (*DatasetFileIds) Descriptor() ([]byte, []int) {
+	return file_nominal_protos_exportjobs_v1_export_jobs_proto_rawDescGZIP(), []int{9}
+}
+
+func (x *DatasetFileIds) GetIds() []string {
+	if x != nil {
+		return x.Ids
+	}
+	return nil
+}
+
+// Selects every non-deleted file in a dataset.
+type AllDatasetFiles struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *AllDatasetFiles) Reset() {
+	*x = AllDatasetFiles{}
+	mi := &file_nominal_protos_exportjobs_v1_export_jobs_proto_msgTypes[10]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *AllDatasetFiles) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*AllDatasetFiles) ProtoMessage() {}
+
+func (x *AllDatasetFiles) ProtoReflect() protoreflect.Message {
+	mi := &file_nominal_protos_exportjobs_v1_export_jobs_proto_msgTypes[10]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use AllDatasetFiles.ProtoReflect.Descriptor instead.
+func (*AllDatasetFiles) Descriptor() ([]byte, []int) {
+	return file_nominal_protos_exportjobs_v1_export_jobs_proto_rawDescGZIP(), []int{10}
+}
+
 type GetExportJobRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	ExportId      string                 `protobuf:"bytes,1,opt,name=export_id,json=exportId,proto3" json:"export_id,omitempty"`
@@ -594,7 +921,7 @@ type GetExportJobRequest struct {
 
 func (x *GetExportJobRequest) Reset() {
 	*x = GetExportJobRequest{}
-	mi := &file_nominal_protos_exportjobs_v1_export_jobs_proto_msgTypes[6]
+	mi := &file_nominal_protos_exportjobs_v1_export_jobs_proto_msgTypes[11]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -606,7 +933,7 @@ func (x *GetExportJobRequest) String() string {
 func (*GetExportJobRequest) ProtoMessage() {}
 
 func (x *GetExportJobRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_exportjobs_v1_export_jobs_proto_msgTypes[6]
+	mi := &file_nominal_protos_exportjobs_v1_export_jobs_proto_msgTypes[11]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -619,7 +946,7 @@ func (x *GetExportJobRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetExportJobRequest.ProtoReflect.Descriptor instead.
 func (*GetExportJobRequest) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_exportjobs_v1_export_jobs_proto_rawDescGZIP(), []int{6}
+	return file_nominal_protos_exportjobs_v1_export_jobs_proto_rawDescGZIP(), []int{11}
 }
 
 func (x *GetExportJobRequest) GetExportId() string {
@@ -638,7 +965,7 @@ type GetExportJobResponse struct {
 
 func (x *GetExportJobResponse) Reset() {
 	*x = GetExportJobResponse{}
-	mi := &file_nominal_protos_exportjobs_v1_export_jobs_proto_msgTypes[7]
+	mi := &file_nominal_protos_exportjobs_v1_export_jobs_proto_msgTypes[12]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -650,7 +977,7 @@ func (x *GetExportJobResponse) String() string {
 func (*GetExportJobResponse) ProtoMessage() {}
 
 func (x *GetExportJobResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_exportjobs_v1_export_jobs_proto_msgTypes[7]
+	mi := &file_nominal_protos_exportjobs_v1_export_jobs_proto_msgTypes[12]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -663,7 +990,7 @@ func (x *GetExportJobResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetExportJobResponse.ProtoReflect.Descriptor instead.
 func (*GetExportJobResponse) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_exportjobs_v1_export_jobs_proto_rawDescGZIP(), []int{7}
+	return file_nominal_protos_exportjobs_v1_export_jobs_proto_rawDescGZIP(), []int{12}
 }
 
 func (x *GetExportJobResponse) GetExportJob() *ExportJob {
@@ -684,7 +1011,7 @@ type ListExportJobsRequest struct {
 
 func (x *ListExportJobsRequest) Reset() {
 	*x = ListExportJobsRequest{}
-	mi := &file_nominal_protos_exportjobs_v1_export_jobs_proto_msgTypes[8]
+	mi := &file_nominal_protos_exportjobs_v1_export_jobs_proto_msgTypes[13]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -696,7 +1023,7 @@ func (x *ListExportJobsRequest) String() string {
 func (*ListExportJobsRequest) ProtoMessage() {}
 
 func (x *ListExportJobsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_exportjobs_v1_export_jobs_proto_msgTypes[8]
+	mi := &file_nominal_protos_exportjobs_v1_export_jobs_proto_msgTypes[13]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -709,7 +1036,7 @@ func (x *ListExportJobsRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListExportJobsRequest.ProtoReflect.Descriptor instead.
 func (*ListExportJobsRequest) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_exportjobs_v1_export_jobs_proto_rawDescGZIP(), []int{8}
+	return file_nominal_protos_exportjobs_v1_export_jobs_proto_rawDescGZIP(), []int{13}
 }
 
 func (x *ListExportJobsRequest) GetWorkspaceRid() string {
@@ -743,7 +1070,7 @@ type ListExportJobsResponse struct {
 
 func (x *ListExportJobsResponse) Reset() {
 	*x = ListExportJobsResponse{}
-	mi := &file_nominal_protos_exportjobs_v1_export_jobs_proto_msgTypes[9]
+	mi := &file_nominal_protos_exportjobs_v1_export_jobs_proto_msgTypes[14]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -755,7 +1082,7 @@ func (x *ListExportJobsResponse) String() string {
 func (*ListExportJobsResponse) ProtoMessage() {}
 
 func (x *ListExportJobsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_exportjobs_v1_export_jobs_proto_msgTypes[9]
+	mi := &file_nominal_protos_exportjobs_v1_export_jobs_proto_msgTypes[14]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -768,7 +1095,7 @@ func (x *ListExportJobsResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListExportJobsResponse.ProtoReflect.Descriptor instead.
 func (*ListExportJobsResponse) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_exportjobs_v1_export_jobs_proto_rawDescGZIP(), []int{9}
+	return file_nominal_protos_exportjobs_v1_export_jobs_proto_rawDescGZIP(), []int{14}
 }
 
 func (x *ListExportJobsResponse) GetExportJobs() []*ExportJobSummary {
@@ -794,14 +1121,14 @@ type ExportSettings struct {
 	Fill            *ExportFill            `protobuf:"bytes,5,opt,name=fill,proto3" json:"fill,omitempty"`
 	FileFormat      ExportFileFormat       `protobuf:"varint,6,opt,name=file_format,json=fileFormat,proto3,enum=nominal.exportjobs.v1.ExportFileFormat" json:"file_format,omitempty"`
 	// Only valid with file_format PARQUET. Unset writes zstd with the server's default row group size.
-	ParquetOptions *v1.SqlServiceParquetOptions `protobuf:"bytes,7,opt,name=parquet_options,json=parquetOptions,proto3" json:"parquet_options,omitempty"`
+	ParquetOptions *v12.SqlServiceParquetOptions `protobuf:"bytes,7,opt,name=parquet_options,json=parquetOptions,proto3" json:"parquet_options,omitempty"`
 	unknownFields  protoimpl.UnknownFields
 	sizeCache      protoimpl.SizeCache
 }
 
 func (x *ExportSettings) Reset() {
 	*x = ExportSettings{}
-	mi := &file_nominal_protos_exportjobs_v1_export_jobs_proto_msgTypes[10]
+	mi := &file_nominal_protos_exportjobs_v1_export_jobs_proto_msgTypes[15]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -813,7 +1140,7 @@ func (x *ExportSettings) String() string {
 func (*ExportSettings) ProtoMessage() {}
 
 func (x *ExportSettings) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_exportjobs_v1_export_jobs_proto_msgTypes[10]
+	mi := &file_nominal_protos_exportjobs_v1_export_jobs_proto_msgTypes[15]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -826,7 +1153,7 @@ func (x *ExportSettings) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ExportSettings.ProtoReflect.Descriptor instead.
 func (*ExportSettings) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_exportjobs_v1_export_jobs_proto_rawDescGZIP(), []int{10}
+	return file_nominal_protos_exportjobs_v1_export_jobs_proto_rawDescGZIP(), []int{15}
 }
 
 func (x *ExportSettings) GetChannels() []*ExportChannel {
@@ -871,7 +1198,7 @@ func (x *ExportSettings) GetFileFormat() ExportFileFormat {
 	return ExportFileFormat_EXPORT_FILE_FORMAT_UNSPECIFIED
 }
 
-func (x *ExportSettings) GetParquetOptions() *v1.SqlServiceParquetOptions {
+func (x *ExportSettings) GetParquetOptions() *v12.SqlServiceParquetOptions {
 	if x != nil {
 		return x.ParquetOptions
 	}
@@ -890,7 +1217,7 @@ type ExportChannel struct {
 
 func (x *ExportChannel) Reset() {
 	*x = ExportChannel{}
-	mi := &file_nominal_protos_exportjobs_v1_export_jobs_proto_msgTypes[11]
+	mi := &file_nominal_protos_exportjobs_v1_export_jobs_proto_msgTypes[16]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -902,7 +1229,7 @@ func (x *ExportChannel) String() string {
 func (*ExportChannel) ProtoMessage() {}
 
 func (x *ExportChannel) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_exportjobs_v1_export_jobs_proto_msgTypes[11]
+	mi := &file_nominal_protos_exportjobs_v1_export_jobs_proto_msgTypes[16]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -915,7 +1242,7 @@ func (x *ExportChannel) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ExportChannel.ProtoReflect.Descriptor instead.
 func (*ExportChannel) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_exportjobs_v1_export_jobs_proto_rawDescGZIP(), []int{11}
+	return file_nominal_protos_exportjobs_v1_export_jobs_proto_rawDescGZIP(), []int{16}
 }
 
 func (x *ExportChannel) GetDatasetRid() string {
@@ -957,7 +1284,7 @@ type ExportTagFilter struct {
 
 func (x *ExportTagFilter) Reset() {
 	*x = ExportTagFilter{}
-	mi := &file_nominal_protos_exportjobs_v1_export_jobs_proto_msgTypes[12]
+	mi := &file_nominal_protos_exportjobs_v1_export_jobs_proto_msgTypes[17]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -969,7 +1296,7 @@ func (x *ExportTagFilter) String() string {
 func (*ExportTagFilter) ProtoMessage() {}
 
 func (x *ExportTagFilter) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_exportjobs_v1_export_jobs_proto_msgTypes[12]
+	mi := &file_nominal_protos_exportjobs_v1_export_jobs_proto_msgTypes[17]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -982,7 +1309,7 @@ func (x *ExportTagFilter) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ExportTagFilter.ProtoReflect.Descriptor instead.
 func (*ExportTagFilter) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_exportjobs_v1_export_jobs_proto_rawDescGZIP(), []int{12}
+	return file_nominal_protos_exportjobs_v1_export_jobs_proto_rawDescGZIP(), []int{17}
 }
 
 func (x *ExportTagFilter) GetKey() string {
@@ -1009,7 +1336,7 @@ type ExportTimeWindow struct {
 
 func (x *ExportTimeWindow) Reset() {
 	*x = ExportTimeWindow{}
-	mi := &file_nominal_protos_exportjobs_v1_export_jobs_proto_msgTypes[13]
+	mi := &file_nominal_protos_exportjobs_v1_export_jobs_proto_msgTypes[18]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1021,7 +1348,7 @@ func (x *ExportTimeWindow) String() string {
 func (*ExportTimeWindow) ProtoMessage() {}
 
 func (x *ExportTimeWindow) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_exportjobs_v1_export_jobs_proto_msgTypes[13]
+	mi := &file_nominal_protos_exportjobs_v1_export_jobs_proto_msgTypes[18]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1034,7 +1361,7 @@ func (x *ExportTimeWindow) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ExportTimeWindow.ProtoReflect.Descriptor instead.
 func (*ExportTimeWindow) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_exportjobs_v1_export_jobs_proto_rawDescGZIP(), []int{13}
+	return file_nominal_protos_exportjobs_v1_export_jobs_proto_rawDescGZIP(), []int{18}
 }
 
 func (x *ExportTimeWindow) GetStartTime() *timestamppb.Timestamp {
@@ -1064,7 +1391,7 @@ type ExportSampling struct {
 
 func (x *ExportSampling) Reset() {
 	*x = ExportSampling{}
-	mi := &file_nominal_protos_exportjobs_v1_export_jobs_proto_msgTypes[14]
+	mi := &file_nominal_protos_exportjobs_v1_export_jobs_proto_msgTypes[19]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1076,7 +1403,7 @@ func (x *ExportSampling) String() string {
 func (*ExportSampling) ProtoMessage() {}
 
 func (x *ExportSampling) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_exportjobs_v1_export_jobs_proto_msgTypes[14]
+	mi := &file_nominal_protos_exportjobs_v1_export_jobs_proto_msgTypes[19]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1089,7 +1416,7 @@ func (x *ExportSampling) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ExportSampling.ProtoReflect.Descriptor instead.
 func (*ExportSampling) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_exportjobs_v1_export_jobs_proto_rawDescGZIP(), []int{14}
+	return file_nominal_protos_exportjobs_v1_export_jobs_proto_rawDescGZIP(), []int{19}
 }
 
 func (x *ExportSampling) GetSampling() isExportSampling_Sampling {
@@ -1141,7 +1468,7 @@ type ExportFullResolution struct {
 
 func (x *ExportFullResolution) Reset() {
 	*x = ExportFullResolution{}
-	mi := &file_nominal_protos_exportjobs_v1_export_jobs_proto_msgTypes[15]
+	mi := &file_nominal_protos_exportjobs_v1_export_jobs_proto_msgTypes[20]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1153,7 +1480,7 @@ func (x *ExportFullResolution) String() string {
 func (*ExportFullResolution) ProtoMessage() {}
 
 func (x *ExportFullResolution) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_exportjobs_v1_export_jobs_proto_msgTypes[15]
+	mi := &file_nominal_protos_exportjobs_v1_export_jobs_proto_msgTypes[20]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1166,7 +1493,7 @@ func (x *ExportFullResolution) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ExportFullResolution.ProtoReflect.Descriptor instead.
 func (*ExportFullResolution) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_exportjobs_v1_export_jobs_proto_rawDescGZIP(), []int{15}
+	return file_nominal_protos_exportjobs_v1_export_jobs_proto_rawDescGZIP(), []int{20}
 }
 
 type ExportTimestampFormat struct {
@@ -1182,7 +1509,7 @@ type ExportTimestampFormat struct {
 
 func (x *ExportTimestampFormat) Reset() {
 	*x = ExportTimestampFormat{}
-	mi := &file_nominal_protos_exportjobs_v1_export_jobs_proto_msgTypes[16]
+	mi := &file_nominal_protos_exportjobs_v1_export_jobs_proto_msgTypes[21]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1194,7 +1521,7 @@ func (x *ExportTimestampFormat) String() string {
 func (*ExportTimestampFormat) ProtoMessage() {}
 
 func (x *ExportTimestampFormat) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_exportjobs_v1_export_jobs_proto_msgTypes[16]
+	mi := &file_nominal_protos_exportjobs_v1_export_jobs_proto_msgTypes[21]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1207,7 +1534,7 @@ func (x *ExportTimestampFormat) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ExportTimestampFormat.ProtoReflect.Descriptor instead.
 func (*ExportTimestampFormat) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_exportjobs_v1_export_jobs_proto_rawDescGZIP(), []int{16}
+	return file_nominal_protos_exportjobs_v1_export_jobs_proto_rawDescGZIP(), []int{21}
 }
 
 func (x *ExportTimestampFormat) GetFormat() isExportTimestampFormat_Format {
@@ -1261,7 +1588,7 @@ type ExportAbsoluteTimestamps struct {
 
 func (x *ExportAbsoluteTimestamps) Reset() {
 	*x = ExportAbsoluteTimestamps{}
-	mi := &file_nominal_protos_exportjobs_v1_export_jobs_proto_msgTypes[17]
+	mi := &file_nominal_protos_exportjobs_v1_export_jobs_proto_msgTypes[22]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1273,7 +1600,7 @@ func (x *ExportAbsoluteTimestamps) String() string {
 func (*ExportAbsoluteTimestamps) ProtoMessage() {}
 
 func (x *ExportAbsoluteTimestamps) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_exportjobs_v1_export_jobs_proto_msgTypes[17]
+	mi := &file_nominal_protos_exportjobs_v1_export_jobs_proto_msgTypes[22]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1286,7 +1613,7 @@ func (x *ExportAbsoluteTimestamps) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ExportAbsoluteTimestamps.ProtoReflect.Descriptor instead.
 func (*ExportAbsoluteTimestamps) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_exportjobs_v1_export_jobs_proto_rawDescGZIP(), []int{17}
+	return file_nominal_protos_exportjobs_v1_export_jobs_proto_rawDescGZIP(), []int{22}
 }
 
 type ExportRelativeTimestamps struct {
@@ -1299,7 +1626,7 @@ type ExportRelativeTimestamps struct {
 
 func (x *ExportRelativeTimestamps) Reset() {
 	*x = ExportRelativeTimestamps{}
-	mi := &file_nominal_protos_exportjobs_v1_export_jobs_proto_msgTypes[18]
+	mi := &file_nominal_protos_exportjobs_v1_export_jobs_proto_msgTypes[23]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1311,7 +1638,7 @@ func (x *ExportRelativeTimestamps) String() string {
 func (*ExportRelativeTimestamps) ProtoMessage() {}
 
 func (x *ExportRelativeTimestamps) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_exportjobs_v1_export_jobs_proto_msgTypes[18]
+	mi := &file_nominal_protos_exportjobs_v1_export_jobs_proto_msgTypes[23]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1324,7 +1651,7 @@ func (x *ExportRelativeTimestamps) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ExportRelativeTimestamps.ProtoReflect.Descriptor instead.
 func (*ExportRelativeTimestamps) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_exportjobs_v1_export_jobs_proto_rawDescGZIP(), []int{18}
+	return file_nominal_protos_exportjobs_v1_export_jobs_proto_rawDescGZIP(), []int{23}
 }
 
 func (x *ExportRelativeTimestamps) GetRelativeTo() *timestamppb.Timestamp {
@@ -1354,7 +1681,7 @@ type ExportFill struct {
 
 func (x *ExportFill) Reset() {
 	*x = ExportFill{}
-	mi := &file_nominal_protos_exportjobs_v1_export_jobs_proto_msgTypes[19]
+	mi := &file_nominal_protos_exportjobs_v1_export_jobs_proto_msgTypes[24]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1366,7 +1693,7 @@ func (x *ExportFill) String() string {
 func (*ExportFill) ProtoMessage() {}
 
 func (x *ExportFill) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_exportjobs_v1_export_jobs_proto_msgTypes[19]
+	mi := &file_nominal_protos_exportjobs_v1_export_jobs_proto_msgTypes[24]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1379,7 +1706,7 @@ func (x *ExportFill) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ExportFill.ProtoReflect.Descriptor instead.
 func (*ExportFill) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_exportjobs_v1_export_jobs_proto_rawDescGZIP(), []int{19}
+	return file_nominal_protos_exportjobs_v1_export_jobs_proto_rawDescGZIP(), []int{24}
 }
 
 func (x *ExportFill) GetFill() isExportFill_Fill {
@@ -1431,7 +1758,7 @@ type ExportNoFill struct {
 
 func (x *ExportNoFill) Reset() {
 	*x = ExportNoFill{}
-	mi := &file_nominal_protos_exportjobs_v1_export_jobs_proto_msgTypes[20]
+	mi := &file_nominal_protos_exportjobs_v1_export_jobs_proto_msgTypes[25]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1443,7 +1770,7 @@ func (x *ExportNoFill) String() string {
 func (*ExportNoFill) ProtoMessage() {}
 
 func (x *ExportNoFill) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_exportjobs_v1_export_jobs_proto_msgTypes[20]
+	mi := &file_nominal_protos_exportjobs_v1_export_jobs_proto_msgTypes[25]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1456,7 +1783,7 @@ func (x *ExportNoFill) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ExportNoFill.ProtoReflect.Descriptor instead.
 func (*ExportNoFill) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_exportjobs_v1_export_jobs_proto_rawDescGZIP(), []int{20}
+	return file_nominal_protos_exportjobs_v1_export_jobs_proto_rawDescGZIP(), []int{25}
 }
 
 type ExportForwardFill struct {
@@ -1467,7 +1794,7 @@ type ExportForwardFill struct {
 
 func (x *ExportForwardFill) Reset() {
 	*x = ExportForwardFill{}
-	mi := &file_nominal_protos_exportjobs_v1_export_jobs_proto_msgTypes[21]
+	mi := &file_nominal_protos_exportjobs_v1_export_jobs_proto_msgTypes[26]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1479,7 +1806,7 @@ func (x *ExportForwardFill) String() string {
 func (*ExportForwardFill) ProtoMessage() {}
 
 func (x *ExportForwardFill) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_exportjobs_v1_export_jobs_proto_msgTypes[21]
+	mi := &file_nominal_protos_exportjobs_v1_export_jobs_proto_msgTypes[26]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1492,14 +1819,14 @@ func (x *ExportForwardFill) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ExportForwardFill.ProtoReflect.Descriptor instead.
 func (*ExportForwardFill) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_exportjobs_v1_export_jobs_proto_rawDescGZIP(), []int{21}
+	return file_nominal_protos_exportjobs_v1_export_jobs_proto_rawDescGZIP(), []int{26}
 }
 
 var File_nominal_protos_exportjobs_v1_export_jobs_proto protoreflect.FileDescriptor
 
 const file_nominal_protos_exportjobs_v1_export_jobs_proto_rawDesc = "" +
 	"\n" +
-	".nominal/protos/exportjobs/v1/export_jobs.proto\x12\x15nominal.exportjobs.v1\x1a\x1bbuf/validate/validate.proto\x1a\x1cgoogle/api/annotations.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a!nominal/protos/gen/v1/alias.proto\x1a!nominal/protos/gen/v1/error.proto\x1a\x1fnominal/protos/sql/v1/sql.proto\x1a!nominal/protos/types/common.proto\x1a$nominal/protos/types/time/time.proto\"\xa1\x02\n" +
+	".nominal/protos/exportjobs/v1/export_jobs.proto\x12\x15nominal.exportjobs.v1\x1a\x1bbuf/validate/validate.proto\x1a\x1cgoogle/api/annotations.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a0nominal/protos/dataexports/v1/data_exports.proto\x1a.nominal/protos/datasets/v1/dataset_files.proto\x1a!nominal/protos/gen/v1/alias.proto\x1a!nominal/protos/gen/v1/error.proto\x1a\x1fnominal/protos/sql/v1/sql.proto\x1a!nominal/protos/types/common.proto\x1a$nominal/protos/types/time/time.proto\"\xa1\x02\n" +
 	"\tExportJob\x12\x1b\n" +
 	"\texport_id\x18\x01 \x01(\tR\bexportId\x12A\n" +
 	"\bsettings\x18\x02 \x01(\v2%.nominal.exportjobs.v1.ExportSettingsR\bsettings\x12>\n" +
@@ -1520,19 +1847,41 @@ const file_nominal_protos_exportjobs_v1_export_jobs_proto_rawDesc = "" +
 	"\vexpire_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampR\n" +
 	"expireTime\x12!\n" +
 	"\fdownload_url\x18\x04 \x01(\tR\vdownloadUrl\x12S\n" +
-	"\x18download_url_expire_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampR\x15downloadUrlExpireTime\"\xa1\x02\n" +
+	"\x18download_url_expire_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampR\x15downloadUrlExpireTime\"\xa5\x03\n" +
 	"\x16CreateExportJobRequest\x12Q\n" +
 	"\rworkspace_rid\x18\x03 \x01(\tB,\xbaH\x03\xc8\x01\x01\x9a\xb2\x1a\"\n" +
 	" io.nominal.api.rids.WorkspaceRidR\fworkspaceRid\x12F\n" +
 	"\bsettings\x18\x04 \x01(\v2%.nominal.exportjobs.v1.ExportSettingsH\x01R\bsettings\x88\x01\x01\x12:\n" +
-	"\x03sql\x18\x05 \x01(\v2&.nominal.exportjobs.v1.SqlExportSourceH\x00R\x03sqlB\x0f\n" +
+	"\x03sql\x18\x05 \x01(\v2&.nominal.exportjobs.v1.SqlExportSourceH\x00R\x03sql\x12F\n" +
+	"\acompute\x18\x06 \x01(\v2*.nominal.exportjobs.v1.ComputeExportSourceH\x00R\acompute\x12:\n" +
+	"\x03zip\x18\a \x01(\v2&.nominal.exportjobs.v1.ZipExportSourceH\x00R\x03zipB\x0f\n" +
 	"\x06source\x12\x05\xbaH\x02\b\x01B\v\n" +
 	"\t_settingsJ\x04\b\x01\x10\x02J\x04\b\x02\x10\x03R\x06source\"Z\n" +
 	"\x17CreateExportJobResponse\x12?\n" +
 	"\n" +
 	"export_job\x18\x01 \x01(\v2 .nominal.exportjobs.v1.ExportJobR\texportJob\"5\n" +
 	"\x0fSqlExportSource\x12\"\n" +
-	"\x05query\x18\x01 \x01(\tB\f\xbaH\t\xc8\x01\x01r\x04\x18\xa0\x8d\x06R\x05query\"?\n" +
+	"\x05query\x18\x01 \x01(\tB\f\xbaH\t\xc8\x01\x01r\x04\x18\xa0\x8d\x06R\x05query\"g\n" +
+	"\x13ComputeExportSource\x12P\n" +
+	"\n" +
+	"definition\x18\x01 \x01(\v2(.nominal.dataexports.v1.ExportDefinitionB\x06\xbaH\x03\xc8\x01\x01R\n" +
+	"definition\"k\n" +
+	"\x0fZipExportSource\x12X\n" +
+	"\n" +
+	"selections\x18\x01 \x03(\v2,.nominal.exportjobs.v1.DatasetFilesSelectionB\n" +
+	"\xbaH\a\x92\x01\x04\b\x01\x10dR\n" +
+	"selections\"\xc3\x02\n" +
+	"\x15DatasetFilesSelection\x12P\n" +
+	"\vdataset_rid\x18\x01 \x01(\tB/\xbaH\b\xc8\x01\x01r\x03\x18\x80\b\x9a\xb2\x1a \n" +
+	"\x1eio.nominal.api.rids.DatasetRidR\n" +
+	"datasetRid\x12B\n" +
+	"\bfile_ids\x18\x02 \x01(\v2%.nominal.exportjobs.v1.DatasetFileIdsH\x00R\afileIds\x12=\n" +
+	"\x05query\x18\x03 \x01(\v2%.nominal.datasets.v1.DatasetFileQueryH\x00R\x05query\x12E\n" +
+	"\tall_files\x18\x04 \x01(\v2&.nominal.exportjobs.v1.AllDatasetFilesH\x00R\ballFilesB\x0e\n" +
+	"\x05files\x12\x05\xbaH\x02\b\x01\"6\n" +
+	"\x0eDatasetFileIds\x12$\n" +
+	"\x03ids\x18\x01 \x03(\tB\x12\xbaH\x0f\x92\x01\f\b\x01\x10\xe8\a\"\x05r\x03\xb0\x01\x01R\x03ids\"\x11\n" +
+	"\x0fAllDatasetFiles\"?\n" +
 	"\x13GetExportJobRequest\x12(\n" +
 	"\texport_id\x18\x01 \x01(\tB\v\xbaH\b\xc8\x01\x01r\x03\xb0\x01\x01R\bexportId\"W\n" +
 	"\x14GetExportJobResponse\x12?\n" +
@@ -1607,7 +1956,7 @@ const file_nominal_protos_exportjobs_v1_export_jobs_proto_rawDesc = "" +
 	"\aforward\x18\x02 \x01(\v2(.nominal.exportjobs.v1.ExportForwardFillH\x00R\aforwardB\x06\n" +
 	"\x04fill\"\x0e\n" +
 	"\fExportNoFill\"\x13\n" +
-	"\x11ExportForwardFill*\xd6\x02\n" +
+	"\x11ExportForwardFill*\x85\x04\n" +
 	"\x0eExportJobError\x12 \n" +
 	"\x1cEXPORT_JOB_ERROR_UNSPECIFIED\x10\x00\x12E\n" +
 	"\x1aEXPORT_JOB_ERROR_NOT_FOUND\x10\x01\x1a%\xb2\xb2\x1a!\n" +
@@ -1615,7 +1964,11 @@ const file_nominal_protos_exportjobs_v1_export_jobs_proto_rawDesc = "" +
 	"#EXPORT_JOB_ERROR_INVALID_PAGE_TOKEN\x10\x02\x1a5\xb2\xb2\x1a1\n" +
 	"\x10INVALID_ARGUMENT\x12\x1dInvalid export job page token\x12{\n" +
 	"&EXPORT_JOB_ERROR_EXPORT_NOT_CONFIGURED\x10\x03\x1aO\xb2\xb2\x1aK\n" +
-	"\x13FAILED_PRECONDITION\x124Export storage is not configured for this deployment*\xf7\x01\n" +
+	"\x13FAILED_PRECONDITION\x124Export storage is not configured for this deployment\x12U\n" +
+	"\x1fEXPORT_JOB_ERROR_TOO_MANY_FILES\x10\x04\x1a0\xb2\xb2\x1a,\n" +
+	"\x10INVALID_ARGUMENT\x12\x18Too many files requested\x12V\n" +
+	"(EXPORT_JOB_ERROR_DATASET_FILES_NOT_FOUND\x10\x05\x1a(\xb2\xb2\x1a$\n" +
+	"\tNOT_FOUND\x12\x17Dataset files not found*\xf7\x01\n" +
 	"\x0fExportJobStatus\x12!\n" +
 	"\x1dEXPORT_JOB_STATUS_UNSPECIFIED\x10\x00\x12\x1f\n" +
 	"\x1bEXPORT_JOB_STATUS_SUBMITTED\x10\x01\x12!\n" +
@@ -1647,81 +2000,95 @@ func file_nominal_protos_exportjobs_v1_export_jobs_proto_rawDescGZIP() []byte {
 }
 
 var file_nominal_protos_exportjobs_v1_export_jobs_proto_enumTypes = make([]protoimpl.EnumInfo, 3)
-var file_nominal_protos_exportjobs_v1_export_jobs_proto_msgTypes = make([]protoimpl.MessageInfo, 22)
+var file_nominal_protos_exportjobs_v1_export_jobs_proto_msgTypes = make([]protoimpl.MessageInfo, 27)
 var file_nominal_protos_exportjobs_v1_export_jobs_proto_goTypes = []any{
-	(ExportJobError)(0),                 // 0: nominal.exportjobs.v1.ExportJobError
-	(ExportJobStatus)(0),                // 1: nominal.exportjobs.v1.ExportJobStatus
-	(ExportFileFormat)(0),               // 2: nominal.exportjobs.v1.ExportFileFormat
-	(*ExportJob)(nil),                   // 3: nominal.exportjobs.v1.ExportJob
-	(*ExportJobSummary)(nil),            // 4: nominal.exportjobs.v1.ExportJobSummary
-	(*ExportFile)(nil),                  // 5: nominal.exportjobs.v1.ExportFile
-	(*CreateExportJobRequest)(nil),      // 6: nominal.exportjobs.v1.CreateExportJobRequest
-	(*CreateExportJobResponse)(nil),     // 7: nominal.exportjobs.v1.CreateExportJobResponse
-	(*SqlExportSource)(nil),             // 8: nominal.exportjobs.v1.SqlExportSource
-	(*GetExportJobRequest)(nil),         // 9: nominal.exportjobs.v1.GetExportJobRequest
-	(*GetExportJobResponse)(nil),        // 10: nominal.exportjobs.v1.GetExportJobResponse
-	(*ListExportJobsRequest)(nil),       // 11: nominal.exportjobs.v1.ListExportJobsRequest
-	(*ListExportJobsResponse)(nil),      // 12: nominal.exportjobs.v1.ListExportJobsResponse
-	(*ExportSettings)(nil),              // 13: nominal.exportjobs.v1.ExportSettings
-	(*ExportChannel)(nil),               // 14: nominal.exportjobs.v1.ExportChannel
-	(*ExportTagFilter)(nil),             // 15: nominal.exportjobs.v1.ExportTagFilter
-	(*ExportTimeWindow)(nil),            // 16: nominal.exportjobs.v1.ExportTimeWindow
-	(*ExportSampling)(nil),              // 17: nominal.exportjobs.v1.ExportSampling
-	(*ExportFullResolution)(nil),        // 18: nominal.exportjobs.v1.ExportFullResolution
-	(*ExportTimestampFormat)(nil),       // 19: nominal.exportjobs.v1.ExportTimestampFormat
-	(*ExportAbsoluteTimestamps)(nil),    // 20: nominal.exportjobs.v1.ExportAbsoluteTimestamps
-	(*ExportRelativeTimestamps)(nil),    // 21: nominal.exportjobs.v1.ExportRelativeTimestamps
-	(*ExportFill)(nil),                  // 22: nominal.exportjobs.v1.ExportFill
-	(*ExportNoFill)(nil),                // 23: nominal.exportjobs.v1.ExportNoFill
-	(*ExportForwardFill)(nil),           // 24: nominal.exportjobs.v1.ExportForwardFill
-	(*timestamppb.Timestamp)(nil),       // 25: google.protobuf.Timestamp
-	(*v1.SqlServiceParquetOptions)(nil), // 26: nominal.sql.v1.SqlServiceParquetOptions
-	(*types.Duration)(nil),              // 27: nominal.types.Duration
-	(time.TimeUnit)(0),                  // 28: nominal.types.time.TimeUnit
+	(ExportJobError)(0),                  // 0: nominal.exportjobs.v1.ExportJobError
+	(ExportJobStatus)(0),                 // 1: nominal.exportjobs.v1.ExportJobStatus
+	(ExportFileFormat)(0),                // 2: nominal.exportjobs.v1.ExportFileFormat
+	(*ExportJob)(nil),                    // 3: nominal.exportjobs.v1.ExportJob
+	(*ExportJobSummary)(nil),             // 4: nominal.exportjobs.v1.ExportJobSummary
+	(*ExportFile)(nil),                   // 5: nominal.exportjobs.v1.ExportFile
+	(*CreateExportJobRequest)(nil),       // 6: nominal.exportjobs.v1.CreateExportJobRequest
+	(*CreateExportJobResponse)(nil),      // 7: nominal.exportjobs.v1.CreateExportJobResponse
+	(*SqlExportSource)(nil),              // 8: nominal.exportjobs.v1.SqlExportSource
+	(*ComputeExportSource)(nil),          // 9: nominal.exportjobs.v1.ComputeExportSource
+	(*ZipExportSource)(nil),              // 10: nominal.exportjobs.v1.ZipExportSource
+	(*DatasetFilesSelection)(nil),        // 11: nominal.exportjobs.v1.DatasetFilesSelection
+	(*DatasetFileIds)(nil),               // 12: nominal.exportjobs.v1.DatasetFileIds
+	(*AllDatasetFiles)(nil),              // 13: nominal.exportjobs.v1.AllDatasetFiles
+	(*GetExportJobRequest)(nil),          // 14: nominal.exportjobs.v1.GetExportJobRequest
+	(*GetExportJobResponse)(nil),         // 15: nominal.exportjobs.v1.GetExportJobResponse
+	(*ListExportJobsRequest)(nil),        // 16: nominal.exportjobs.v1.ListExportJobsRequest
+	(*ListExportJobsResponse)(nil),       // 17: nominal.exportjobs.v1.ListExportJobsResponse
+	(*ExportSettings)(nil),               // 18: nominal.exportjobs.v1.ExportSettings
+	(*ExportChannel)(nil),                // 19: nominal.exportjobs.v1.ExportChannel
+	(*ExportTagFilter)(nil),              // 20: nominal.exportjobs.v1.ExportTagFilter
+	(*ExportTimeWindow)(nil),             // 21: nominal.exportjobs.v1.ExportTimeWindow
+	(*ExportSampling)(nil),               // 22: nominal.exportjobs.v1.ExportSampling
+	(*ExportFullResolution)(nil),         // 23: nominal.exportjobs.v1.ExportFullResolution
+	(*ExportTimestampFormat)(nil),        // 24: nominal.exportjobs.v1.ExportTimestampFormat
+	(*ExportAbsoluteTimestamps)(nil),     // 25: nominal.exportjobs.v1.ExportAbsoluteTimestamps
+	(*ExportRelativeTimestamps)(nil),     // 26: nominal.exportjobs.v1.ExportRelativeTimestamps
+	(*ExportFill)(nil),                   // 27: nominal.exportjobs.v1.ExportFill
+	(*ExportNoFill)(nil),                 // 28: nominal.exportjobs.v1.ExportNoFill
+	(*ExportForwardFill)(nil),            // 29: nominal.exportjobs.v1.ExportForwardFill
+	(*timestamppb.Timestamp)(nil),        // 30: google.protobuf.Timestamp
+	(*v1.ExportDefinition)(nil),          // 31: nominal.dataexports.v1.ExportDefinition
+	(*v11.DatasetFileQuery)(nil),         // 32: nominal.datasets.v1.DatasetFileQuery
+	(*v12.SqlServiceParquetOptions)(nil), // 33: nominal.sql.v1.SqlServiceParquetOptions
+	(*types.Duration)(nil),               // 34: nominal.types.Duration
+	(time.TimeUnit)(0),                   // 35: nominal.types.time.TimeUnit
 }
 var file_nominal_protos_exportjobs_v1_export_jobs_proto_depIdxs = []int32{
-	13, // 0: nominal.exportjobs.v1.ExportJob.settings:type_name -> nominal.exportjobs.v1.ExportSettings
+	18, // 0: nominal.exportjobs.v1.ExportJob.settings:type_name -> nominal.exportjobs.v1.ExportSettings
 	1,  // 1: nominal.exportjobs.v1.ExportJob.status:type_name -> nominal.exportjobs.v1.ExportJobStatus
 	5,  // 2: nominal.exportjobs.v1.ExportJob.files:type_name -> nominal.exportjobs.v1.ExportFile
-	25, // 3: nominal.exportjobs.v1.ExportJob.create_time:type_name -> google.protobuf.Timestamp
+	30, // 3: nominal.exportjobs.v1.ExportJob.create_time:type_name -> google.protobuf.Timestamp
 	1,  // 4: nominal.exportjobs.v1.ExportJobSummary.status:type_name -> nominal.exportjobs.v1.ExportJobStatus
-	25, // 5: nominal.exportjobs.v1.ExportJobSummary.create_time:type_name -> google.protobuf.Timestamp
-	25, // 6: nominal.exportjobs.v1.ExportFile.expire_time:type_name -> google.protobuf.Timestamp
-	25, // 7: nominal.exportjobs.v1.ExportFile.download_url_expire_time:type_name -> google.protobuf.Timestamp
-	13, // 8: nominal.exportjobs.v1.CreateExportJobRequest.settings:type_name -> nominal.exportjobs.v1.ExportSettings
+	30, // 5: nominal.exportjobs.v1.ExportJobSummary.create_time:type_name -> google.protobuf.Timestamp
+	30, // 6: nominal.exportjobs.v1.ExportFile.expire_time:type_name -> google.protobuf.Timestamp
+	30, // 7: nominal.exportjobs.v1.ExportFile.download_url_expire_time:type_name -> google.protobuf.Timestamp
+	18, // 8: nominal.exportjobs.v1.CreateExportJobRequest.settings:type_name -> nominal.exportjobs.v1.ExportSettings
 	8,  // 9: nominal.exportjobs.v1.CreateExportJobRequest.sql:type_name -> nominal.exportjobs.v1.SqlExportSource
-	3,  // 10: nominal.exportjobs.v1.CreateExportJobResponse.export_job:type_name -> nominal.exportjobs.v1.ExportJob
-	3,  // 11: nominal.exportjobs.v1.GetExportJobResponse.export_job:type_name -> nominal.exportjobs.v1.ExportJob
-	4,  // 12: nominal.exportjobs.v1.ListExportJobsResponse.export_jobs:type_name -> nominal.exportjobs.v1.ExportJobSummary
-	14, // 13: nominal.exportjobs.v1.ExportSettings.channels:type_name -> nominal.exportjobs.v1.ExportChannel
-	16, // 14: nominal.exportjobs.v1.ExportSettings.time_window:type_name -> nominal.exportjobs.v1.ExportTimeWindow
-	17, // 15: nominal.exportjobs.v1.ExportSettings.sampling:type_name -> nominal.exportjobs.v1.ExportSampling
-	19, // 16: nominal.exportjobs.v1.ExportSettings.timestamp_format:type_name -> nominal.exportjobs.v1.ExportTimestampFormat
-	22, // 17: nominal.exportjobs.v1.ExportSettings.fill:type_name -> nominal.exportjobs.v1.ExportFill
-	2,  // 18: nominal.exportjobs.v1.ExportSettings.file_format:type_name -> nominal.exportjobs.v1.ExportFileFormat
-	26, // 19: nominal.exportjobs.v1.ExportSettings.parquet_options:type_name -> nominal.sql.v1.SqlServiceParquetOptions
-	15, // 20: nominal.exportjobs.v1.ExportChannel.tag_filters:type_name -> nominal.exportjobs.v1.ExportTagFilter
-	25, // 21: nominal.exportjobs.v1.ExportTimeWindow.start_time:type_name -> google.protobuf.Timestamp
-	25, // 22: nominal.exportjobs.v1.ExportTimeWindow.end_time:type_name -> google.protobuf.Timestamp
-	18, // 23: nominal.exportjobs.v1.ExportSampling.full:type_name -> nominal.exportjobs.v1.ExportFullResolution
-	27, // 24: nominal.exportjobs.v1.ExportSampling.interval:type_name -> nominal.types.Duration
-	20, // 25: nominal.exportjobs.v1.ExportTimestampFormat.absolute:type_name -> nominal.exportjobs.v1.ExportAbsoluteTimestamps
-	21, // 26: nominal.exportjobs.v1.ExportTimestampFormat.relative:type_name -> nominal.exportjobs.v1.ExportRelativeTimestamps
-	25, // 27: nominal.exportjobs.v1.ExportRelativeTimestamps.relative_to:type_name -> google.protobuf.Timestamp
-	28, // 28: nominal.exportjobs.v1.ExportRelativeTimestamps.unit:type_name -> nominal.types.time.TimeUnit
-	23, // 29: nominal.exportjobs.v1.ExportFill.none:type_name -> nominal.exportjobs.v1.ExportNoFill
-	24, // 30: nominal.exportjobs.v1.ExportFill.forward:type_name -> nominal.exportjobs.v1.ExportForwardFill
-	6,  // 31: nominal.exportjobs.v1.ExportJobService.CreateExportJob:input_type -> nominal.exportjobs.v1.CreateExportJobRequest
-	9,  // 32: nominal.exportjobs.v1.ExportJobService.GetExportJob:input_type -> nominal.exportjobs.v1.GetExportJobRequest
-	11, // 33: nominal.exportjobs.v1.ExportJobService.ListExportJobs:input_type -> nominal.exportjobs.v1.ListExportJobsRequest
-	7,  // 34: nominal.exportjobs.v1.ExportJobService.CreateExportJob:output_type -> nominal.exportjobs.v1.CreateExportJobResponse
-	10, // 35: nominal.exportjobs.v1.ExportJobService.GetExportJob:output_type -> nominal.exportjobs.v1.GetExportJobResponse
-	12, // 36: nominal.exportjobs.v1.ExportJobService.ListExportJobs:output_type -> nominal.exportjobs.v1.ListExportJobsResponse
-	34, // [34:37] is the sub-list for method output_type
-	31, // [31:34] is the sub-list for method input_type
-	31, // [31:31] is the sub-list for extension type_name
-	31, // [31:31] is the sub-list for extension extendee
-	0,  // [0:31] is the sub-list for field type_name
+	9,  // 10: nominal.exportjobs.v1.CreateExportJobRequest.compute:type_name -> nominal.exportjobs.v1.ComputeExportSource
+	10, // 11: nominal.exportjobs.v1.CreateExportJobRequest.zip:type_name -> nominal.exportjobs.v1.ZipExportSource
+	3,  // 12: nominal.exportjobs.v1.CreateExportJobResponse.export_job:type_name -> nominal.exportjobs.v1.ExportJob
+	31, // 13: nominal.exportjobs.v1.ComputeExportSource.definition:type_name -> nominal.dataexports.v1.ExportDefinition
+	11, // 14: nominal.exportjobs.v1.ZipExportSource.selections:type_name -> nominal.exportjobs.v1.DatasetFilesSelection
+	12, // 15: nominal.exportjobs.v1.DatasetFilesSelection.file_ids:type_name -> nominal.exportjobs.v1.DatasetFileIds
+	32, // 16: nominal.exportjobs.v1.DatasetFilesSelection.query:type_name -> nominal.datasets.v1.DatasetFileQuery
+	13, // 17: nominal.exportjobs.v1.DatasetFilesSelection.all_files:type_name -> nominal.exportjobs.v1.AllDatasetFiles
+	3,  // 18: nominal.exportjobs.v1.GetExportJobResponse.export_job:type_name -> nominal.exportjobs.v1.ExportJob
+	4,  // 19: nominal.exportjobs.v1.ListExportJobsResponse.export_jobs:type_name -> nominal.exportjobs.v1.ExportJobSummary
+	19, // 20: nominal.exportjobs.v1.ExportSettings.channels:type_name -> nominal.exportjobs.v1.ExportChannel
+	21, // 21: nominal.exportjobs.v1.ExportSettings.time_window:type_name -> nominal.exportjobs.v1.ExportTimeWindow
+	22, // 22: nominal.exportjobs.v1.ExportSettings.sampling:type_name -> nominal.exportjobs.v1.ExportSampling
+	24, // 23: nominal.exportjobs.v1.ExportSettings.timestamp_format:type_name -> nominal.exportjobs.v1.ExportTimestampFormat
+	27, // 24: nominal.exportjobs.v1.ExportSettings.fill:type_name -> nominal.exportjobs.v1.ExportFill
+	2,  // 25: nominal.exportjobs.v1.ExportSettings.file_format:type_name -> nominal.exportjobs.v1.ExportFileFormat
+	33, // 26: nominal.exportjobs.v1.ExportSettings.parquet_options:type_name -> nominal.sql.v1.SqlServiceParquetOptions
+	20, // 27: nominal.exportjobs.v1.ExportChannel.tag_filters:type_name -> nominal.exportjobs.v1.ExportTagFilter
+	30, // 28: nominal.exportjobs.v1.ExportTimeWindow.start_time:type_name -> google.protobuf.Timestamp
+	30, // 29: nominal.exportjobs.v1.ExportTimeWindow.end_time:type_name -> google.protobuf.Timestamp
+	23, // 30: nominal.exportjobs.v1.ExportSampling.full:type_name -> nominal.exportjobs.v1.ExportFullResolution
+	34, // 31: nominal.exportjobs.v1.ExportSampling.interval:type_name -> nominal.types.Duration
+	25, // 32: nominal.exportjobs.v1.ExportTimestampFormat.absolute:type_name -> nominal.exportjobs.v1.ExportAbsoluteTimestamps
+	26, // 33: nominal.exportjobs.v1.ExportTimestampFormat.relative:type_name -> nominal.exportjobs.v1.ExportRelativeTimestamps
+	30, // 34: nominal.exportjobs.v1.ExportRelativeTimestamps.relative_to:type_name -> google.protobuf.Timestamp
+	35, // 35: nominal.exportjobs.v1.ExportRelativeTimestamps.unit:type_name -> nominal.types.time.TimeUnit
+	28, // 36: nominal.exportjobs.v1.ExportFill.none:type_name -> nominal.exportjobs.v1.ExportNoFill
+	29, // 37: nominal.exportjobs.v1.ExportFill.forward:type_name -> nominal.exportjobs.v1.ExportForwardFill
+	6,  // 38: nominal.exportjobs.v1.ExportJobService.CreateExportJob:input_type -> nominal.exportjobs.v1.CreateExportJobRequest
+	14, // 39: nominal.exportjobs.v1.ExportJobService.GetExportJob:input_type -> nominal.exportjobs.v1.GetExportJobRequest
+	16, // 40: nominal.exportjobs.v1.ExportJobService.ListExportJobs:input_type -> nominal.exportjobs.v1.ListExportJobsRequest
+	7,  // 41: nominal.exportjobs.v1.ExportJobService.CreateExportJob:output_type -> nominal.exportjobs.v1.CreateExportJobResponse
+	15, // 42: nominal.exportjobs.v1.ExportJobService.GetExportJob:output_type -> nominal.exportjobs.v1.GetExportJobResponse
+	17, // 43: nominal.exportjobs.v1.ExportJobService.ListExportJobs:output_type -> nominal.exportjobs.v1.ListExportJobsResponse
+	41, // [41:44] is the sub-list for method output_type
+	38, // [38:41] is the sub-list for method input_type
+	38, // [38:38] is the sub-list for extension type_name
+	38, // [38:38] is the sub-list for extension extendee
+	0,  // [0:38] is the sub-list for field type_name
 }
 
 func init() { file_nominal_protos_exportjobs_v1_export_jobs_proto_init() }
@@ -1731,19 +2098,26 @@ func file_nominal_protos_exportjobs_v1_export_jobs_proto_init() {
 	}
 	file_nominal_protos_exportjobs_v1_export_jobs_proto_msgTypes[3].OneofWrappers = []any{
 		(*CreateExportJobRequest_Sql)(nil),
+		(*CreateExportJobRequest_Compute)(nil),
+		(*CreateExportJobRequest_Zip)(nil),
 	}
-	file_nominal_protos_exportjobs_v1_export_jobs_proto_msgTypes[8].OneofWrappers = []any{}
-	file_nominal_protos_exportjobs_v1_export_jobs_proto_msgTypes[9].OneofWrappers = []any{}
-	file_nominal_protos_exportjobs_v1_export_jobs_proto_msgTypes[11].OneofWrappers = []any{}
-	file_nominal_protos_exportjobs_v1_export_jobs_proto_msgTypes[14].OneofWrappers = []any{
+	file_nominal_protos_exportjobs_v1_export_jobs_proto_msgTypes[8].OneofWrappers = []any{
+		(*DatasetFilesSelection_FileIds)(nil),
+		(*DatasetFilesSelection_Query)(nil),
+		(*DatasetFilesSelection_AllFiles)(nil),
+	}
+	file_nominal_protos_exportjobs_v1_export_jobs_proto_msgTypes[13].OneofWrappers = []any{}
+	file_nominal_protos_exportjobs_v1_export_jobs_proto_msgTypes[14].OneofWrappers = []any{}
+	file_nominal_protos_exportjobs_v1_export_jobs_proto_msgTypes[16].OneofWrappers = []any{}
+	file_nominal_protos_exportjobs_v1_export_jobs_proto_msgTypes[19].OneofWrappers = []any{
 		(*ExportSampling_Full)(nil),
 		(*ExportSampling_Interval)(nil),
 	}
-	file_nominal_protos_exportjobs_v1_export_jobs_proto_msgTypes[16].OneofWrappers = []any{
+	file_nominal_protos_exportjobs_v1_export_jobs_proto_msgTypes[21].OneofWrappers = []any{
 		(*ExportTimestampFormat_Absolute)(nil),
 		(*ExportTimestampFormat_Relative)(nil),
 	}
-	file_nominal_protos_exportjobs_v1_export_jobs_proto_msgTypes[19].OneofWrappers = []any{
+	file_nominal_protos_exportjobs_v1_export_jobs_proto_msgTypes[24].OneofWrappers = []any{
 		(*ExportFill_None)(nil),
 		(*ExportFill_Forward)(nil),
 	}
@@ -1753,7 +2127,7 @@ func file_nominal_protos_exportjobs_v1_export_jobs_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_nominal_protos_exportjobs_v1_export_jobs_proto_rawDesc), len(file_nominal_protos_exportjobs_v1_export_jobs_proto_rawDesc)),
 			NumEnums:      3,
-			NumMessages:   22,
+			NumMessages:   27,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

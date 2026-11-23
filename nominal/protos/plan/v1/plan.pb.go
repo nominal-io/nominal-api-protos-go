@@ -93,16 +93,20 @@ func (PlanSortField) EnumDescriptor() ([]byte, []int) {
 	return file_nominal_protos_plan_v1_plan_proto_rawDescGZIP(), []int{0}
 }
 
+// Most severe first: ERROR, MAJOR, WARNING, INFO. The numbers are not an order. Only ERROR blocks a write. Show an
+// unknown value as at least a warning, and never treat it as blocking.
 type PlanViolationSeverity int32
 
 const (
 	PlanViolationSeverity_PLAN_VIOLATION_SEVERITY_UNSPECIFIED PlanViolationSeverity = 0
 	// The document is internally inconsistent. Rejected on write.
 	PlanViolationSeverity_PLAN_VIOLATION_SEVERITY_ERROR PlanViolationSeverity = 1
+	// A major problem the author should resolve, such as placed activities breaking a constraint after an edit to
+	// the formulation. Never blocks a write, so an author can save midway through reformulating and fix it after.
+	PlanViolationSeverity_PLAN_VIOLATION_SEVERITY_MAJOR PlanViolationSeverity = 4
 	// Savable but suspect. Never blocks a write.
 	PlanViolationSeverity_PLAN_VIOLATION_SEVERITY_WARNING PlanViolationSeverity = 2
-	// Routine note about how the plan was read. Needs no author action and never blocks a write. Older clients
-	// may report an unknown enum value and should treat it conservatively.
+	// Routine note about how the plan was read. Needs no author action and never blocks a write.
 	PlanViolationSeverity_PLAN_VIOLATION_SEVERITY_INFO PlanViolationSeverity = 3
 )
 
@@ -111,12 +115,14 @@ var (
 	PlanViolationSeverity_name = map[int32]string{
 		0: "PLAN_VIOLATION_SEVERITY_UNSPECIFIED",
 		1: "PLAN_VIOLATION_SEVERITY_ERROR",
+		4: "PLAN_VIOLATION_SEVERITY_MAJOR",
 		2: "PLAN_VIOLATION_SEVERITY_WARNING",
 		3: "PLAN_VIOLATION_SEVERITY_INFO",
 	}
 	PlanViolationSeverity_value = map[string]int32{
 		"PLAN_VIOLATION_SEVERITY_UNSPECIFIED": 0,
 		"PLAN_VIOLATION_SEVERITY_ERROR":       1,
+		"PLAN_VIOLATION_SEVERITY_MAJOR":       4,
 		"PLAN_VIOLATION_SEVERITY_WARNING":     2,
 		"PLAN_VIOLATION_SEVERITY_INFO":        3,
 	}
@@ -2730,7 +2736,8 @@ type Resource struct {
 	state       protoimpl.MessageState `protogen:"open.v1"`
 	Name        string                 `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	Description *string                `protobuf:"bytes,2,opt,name=description,proto3,oneof" json:"description,omitempty"`
-	// How many assets each activity serving the objective assigns against this demand. Unset is read as one.
+	// How many assets the resource asks for in total. The distinct assets that the activities serving the objective
+	// assign to it count toward this, and a solve picks the rest from the candidate pool. Unset is read as one.
 	Count *int32 `protobuf:"varint,3,opt,name=count,proto3,oneof" json:"count,omitempty"`
 	// Field-unset means the resource has no candidate pool yet: any asset may fill it, bounded only by
 	// `PlanContentV1.base_asset_pool`.
@@ -4826,8 +4833,9 @@ func (x *CreatePlanRequest) GetImportAssetLimits() bool {
 type CreatePlanResponse struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	Plan  *Plan                  `protobuf:"bytes,1,opt,name=plan,proto3" json:"plan,omitempty"`
-	// WARNING findings on the content just written, as `ValidatePlan` would report them for that content with no
-	// `workspace_rid`: findings that need asset metadata, such as inherited capacity or turnaround, are not checked.
+	// MAJOR and WARNING findings on the content just written, as `ValidatePlan` would report them for that content
+	// with no `workspace_rid`: findings that need asset metadata, such as inherited capacity or turnaround, are not
+	// checked.
 	// Content with `inherit_asset_limits` false needs none for an asset's own capacity and turnaround, so those are.
 	// A write never carries an ERROR finding: content with one is rejected instead.
 	Warnings []*PlanViolation `protobuf:"bytes,2,rep,name=warnings,proto3" json:"warnings,omitempty"`
@@ -5270,8 +5278,8 @@ func (x *CreatePlanCommitRequest) GetImportAssetLimits() bool {
 type CreatePlanCommitResponse struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	Plan  *Plan                  `protobuf:"bytes,1,opt,name=plan,proto3" json:"plan,omitempty"`
-	// As `CreatePlanResponse.warnings`, for the committed content. Working-state commits skip warning evaluation
-	// and return the default empty list with `is_warnings_truncated` false.
+	// As `CreatePlanResponse.warnings`, for the committed content. Working-state commits skip the findings that do
+	// not block and return the default empty list with `is_warnings_truncated` false.
 	Warnings []*PlanViolation `protobuf:"bytes,2,rep,name=warnings,proto3" json:"warnings,omitempty"`
 	// As `ValidatePlanResponse.is_truncated`, for `warnings`.
 	IsWarningsTruncated bool `protobuf:"varint,3,opt,name=is_warnings_truncated,json=isWarningsTruncated,proto3" json:"is_warnings_truncated,omitempty"`
@@ -6261,9 +6269,14 @@ func (x *StoredPlanRevision) GetAt() *v1.BranchOrCommit {
 // SENSITIVE: violations quote author-chosen ids and names. Never log this message.
 type ValidatePlanResponse struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
-	// Empty means every rule that ran found nothing. It does not mean the schedule is feasible: of the
-	// `constraints`, only the conflicts and overruns listed under `PlanViolation.code` are checked, and whether
-	// each activity fills its objectives' resource `count`s is not.
+	// Empty means every rule that ran found nothing. It does not mean the schedule is feasible: placed activities are
+	// checked against each constraint for what the document alone resolves (`constraint.unsatisfied`). Unplaced
+	// activities, asset searches, objective groups, segments and dead references are not checked, nor are buffers on
+	// assets that can hold more than one use or usage ceilings without a timezone. Whether the assets assigned
+	// to an objective's resources match their `count`s is not checked either.
+	//
+	// Most severe first (ERROR, MAJOR, WARNING, INFO), in discovery order within a severity. At the cap, the findings
+	// dropped are the later, less severe ones.
 	Violations []*PlanViolation `protobuf:"bytes,1,rep,name=violations,proto3" json:"violations,omitempty"`
 	// True when a rule stopped against its work budget, or the cap above was reached. The findings
 	// present are real either way; what this rules out is reading an empty tail as "nothing else
@@ -6348,6 +6361,7 @@ type PlanViolation struct {
 	//	constraint.windows-disjoint  allowed windows on one subject that share no instant (warning)
 	//	constraint.window-shorter-than-duration  a subject whose longest allowed window is shorter than its planned duration (warning)
 	//	constraint.finalized-outside-window  a finalized activity outside an allowed window that names it (warning)
+	//	constraint.unsatisfied       a constraint of any kind that the current placements break for one of its subjects, or for a cluster of overlapping activities under mutual exclusion; the message names the kind, the constraint and the scheduled activities, and the first subject's path is `constraints[i].subjects[j]` for the violated subject, or `constraints[i]` for a mutual-exclusion cluster or a capacity pooled across several subjects; a breach that an older code also finds is reported under both, each at its own severity (major)
 	//	asset.not-in-candidate-set   an assigned asset a named resource's pool does not offer, or that none of the activity's objectives' pools offer
 	//	asset.resource-not-served    an assignment filling a demand of an objective the activity does not serve
 	//	asset.assigned-twice         one asset listed by two of an activity's assignments
@@ -6358,6 +6372,11 @@ type PlanViolation struct {
 	//	asset.unresolved             a scheduled asset the workspace read could not find or show, so its limits went unchecked (warning)
 	//	constraint.capacity-exceeded more concurrent uses of a group's, a resource's or the plan's assets than a pooled `capacity` constraint allows (warning)
 	//	pin.incomplete               an activity pinned where the solver cannot hold it (see `SingleActivity.pin`), so it is scheduled as if unpinned; the message names the cause
+	//	activity.unscheduled-in-status  a finalized, in-progress or completed activity with no start, no end, or neither (warning)
+	//	activity.outside-segment-window  an activity with a start or end outside its segment, comparing only the bounds both have (warning)
+	//	activity.outside-plan-window an activity with a start or end outside the plan, comparing only the bounds both have (warning)
+	//	activity.no-objectives       an activity that serves no objective (warning)
+	//	resource.no-candidate-pool   a resource with no candidate pool, or a source list naming nothing; one naming an asset group is not checked (warning)
 	//	shape.<protovalidate rule>   a field rule breach, e.g. "shape.string.max_len"
 	Code string `protobuf:"bytes,2,opt,name=code,proto3" json:"code,omitempty"`
 	// Human-readable, suitable for showing the author directly.
@@ -7391,10 +7410,11 @@ const file_nominal_protos_plan_v1_plan_proto_rawDesc = "" +
 	"\tEDITED_AT\x10\x03\x12\x0e\n" +
 	"\n" +
 	"START_DATE\x10\x04\x12\f\n" +
-	"\bEND_DATE\x10\x05*\xaa\x01\n" +
+	"\bEND_DATE\x10\x05*\xcd\x01\n" +
 	"\x15PlanViolationSeverity\x12'\n" +
 	"#PLAN_VIOLATION_SEVERITY_UNSPECIFIED\x10\x00\x12!\n" +
-	"\x1dPLAN_VIOLATION_SEVERITY_ERROR\x10\x01\x12#\n" +
+	"\x1dPLAN_VIOLATION_SEVERITY_ERROR\x10\x01\x12!\n" +
+	"\x1dPLAN_VIOLATION_SEVERITY_MAJOR\x10\x04\x12#\n" +
 	"\x1fPLAN_VIOLATION_SEVERITY_WARNING\x10\x02\x12 \n" +
 	"\x1cPLAN_VIOLATION_SEVERITY_INFO\x10\x03*\xdd\x02\n" +
 	"\x0fPlanElementKind\x12!\n" +

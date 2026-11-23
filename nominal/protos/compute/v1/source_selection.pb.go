@@ -240,6 +240,90 @@ func (*RunReferenceExpression_Literal) isRunReferenceExpression_Kind() {}
 
 func (*RunReferenceExpression_VariableName) isRunReferenceExpression_Kind() {}
 
+// A frozen entity set, by RID or by a variable bound to its RID. Its stored members are read when the
+// enclosing dataset or series is evaluated.
+type EntitySetReferenceExpression struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Types that are valid to be assigned to Kind:
+	//
+	//	*EntitySetReferenceExpression_Literal
+	//	*EntitySetReferenceExpression_VariableName
+	Kind          isEntitySetReferenceExpression_Kind `protobuf_oneof:"kind"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *EntitySetReferenceExpression) Reset() {
+	*x = EntitySetReferenceExpression{}
+	mi := &file_nominal_protos_compute_v1_source_selection_proto_msgTypes[2]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *EntitySetReferenceExpression) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*EntitySetReferenceExpression) ProtoMessage() {}
+
+func (x *EntitySetReferenceExpression) ProtoReflect() protoreflect.Message {
+	mi := &file_nominal_protos_compute_v1_source_selection_proto_msgTypes[2]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use EntitySetReferenceExpression.ProtoReflect.Descriptor instead.
+func (*EntitySetReferenceExpression) Descriptor() ([]byte, []int) {
+	return file_nominal_protos_compute_v1_source_selection_proto_rawDescGZIP(), []int{2}
+}
+
+func (x *EntitySetReferenceExpression) GetKind() isEntitySetReferenceExpression_Kind {
+	if x != nil {
+		return x.Kind
+	}
+	return nil
+}
+
+func (x *EntitySetReferenceExpression) GetLiteral() string {
+	if x != nil {
+		if x, ok := x.Kind.(*EntitySetReferenceExpression_Literal); ok {
+			return x.Literal
+		}
+	}
+	return ""
+}
+
+func (x *EntitySetReferenceExpression) GetVariableName() string {
+	if x != nil {
+		if x, ok := x.Kind.(*EntitySetReferenceExpression_VariableName); ok {
+			return x.VariableName
+		}
+	}
+	return ""
+}
+
+type isEntitySetReferenceExpression_Kind interface {
+	isEntitySetReferenceExpression_Kind()
+}
+
+type EntitySetReferenceExpression_Literal struct {
+	Literal string `protobuf:"bytes,1,opt,name=literal,proto3,oneof"`
+}
+
+type EntitySetReferenceExpression_VariableName struct {
+	VariableName string `protobuf:"bytes,2,opt,name=variable_name,json=variableName,proto3,oneof"`
+}
+
+func (*EntitySetReferenceExpression_Literal) isEntitySetReferenceExpression_Kind() {}
+
+func (*EntitySetReferenceExpression_VariableName) isEntitySetReferenceExpression_Kind() {}
+
 type DataSourceReferenceExpression struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Types that are valid to be assigned to Kind:
@@ -253,7 +337,7 @@ type DataSourceReferenceExpression struct {
 
 func (x *DataSourceReferenceExpression) Reset() {
 	*x = DataSourceReferenceExpression{}
-	mi := &file_nominal_protos_compute_v1_source_selection_proto_msgTypes[2]
+	mi := &file_nominal_protos_compute_v1_source_selection_proto_msgTypes[3]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -265,7 +349,7 @@ func (x *DataSourceReferenceExpression) String() string {
 func (*DataSourceReferenceExpression) ProtoMessage() {}
 
 func (x *DataSourceReferenceExpression) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_compute_v1_source_selection_proto_msgTypes[2]
+	mi := &file_nominal_protos_compute_v1_source_selection_proto_msgTypes[3]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -278,7 +362,7 @@ func (x *DataSourceReferenceExpression) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DataSourceReferenceExpression.ProtoReflect.Descriptor instead.
 func (*DataSourceReferenceExpression) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_compute_v1_source_selection_proto_rawDescGZIP(), []int{2}
+	return file_nominal_protos_compute_v1_source_selection_proto_rawDescGZIP(), []int{3}
 }
 
 func (x *DataSourceReferenceExpression) GetKind() isDataSourceReferenceExpression_Kind {
@@ -335,7 +419,7 @@ type ResourceTypeReferenceExpression struct {
 
 func (x *ResourceTypeReferenceExpression) Reset() {
 	*x = ResourceTypeReferenceExpression{}
-	mi := &file_nominal_protos_compute_v1_source_selection_proto_msgTypes[3]
+	mi := &file_nominal_protos_compute_v1_source_selection_proto_msgTypes[4]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -347,7 +431,7 @@ func (x *ResourceTypeReferenceExpression) String() string {
 func (*ResourceTypeReferenceExpression) ProtoMessage() {}
 
 func (x *ResourceTypeReferenceExpression) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_compute_v1_source_selection_proto_msgTypes[3]
+	mi := &file_nominal_protos_compute_v1_source_selection_proto_msgTypes[4]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -360,7 +444,7 @@ func (x *ResourceTypeReferenceExpression) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ResourceTypeReferenceExpression.ProtoReflect.Descriptor instead.
 func (*ResourceTypeReferenceExpression) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_compute_v1_source_selection_proto_rawDescGZIP(), []int{3}
+	return file_nominal_protos_compute_v1_source_selection_proto_rawDescGZIP(), []int{4}
 }
 
 func (x *ResourceTypeReferenceExpression) GetKind() isResourceTypeReferenceExpression_Kind {
@@ -420,7 +504,7 @@ type ChannelSelection struct {
 
 func (x *ChannelSelection) Reset() {
 	*x = ChannelSelection{}
-	mi := &file_nominal_protos_compute_v1_source_selection_proto_msgTypes[4]
+	mi := &file_nominal_protos_compute_v1_source_selection_proto_msgTypes[5]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -432,7 +516,7 @@ func (x *ChannelSelection) String() string {
 func (*ChannelSelection) ProtoMessage() {}
 
 func (x *ChannelSelection) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_compute_v1_source_selection_proto_msgTypes[4]
+	mi := &file_nominal_protos_compute_v1_source_selection_proto_msgTypes[5]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -445,7 +529,7 @@ func (x *ChannelSelection) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ChannelSelection.ProtoReflect.Descriptor instead.
 func (*ChannelSelection) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_compute_v1_source_selection_proto_rawDescGZIP(), []int{4}
+	return file_nominal_protos_compute_v1_source_selection_proto_rawDescGZIP(), []int{5}
 }
 
 func (x *ChannelSelection) GetSource() isChannelSelection_Source {
@@ -518,7 +602,7 @@ type DataSourceChannelSelection struct {
 
 func (x *DataSourceChannelSelection) Reset() {
 	*x = DataSourceChannelSelection{}
-	mi := &file_nominal_protos_compute_v1_source_selection_proto_msgTypes[5]
+	mi := &file_nominal_protos_compute_v1_source_selection_proto_msgTypes[6]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -530,7 +614,7 @@ func (x *DataSourceChannelSelection) String() string {
 func (*DataSourceChannelSelection) ProtoMessage() {}
 
 func (x *DataSourceChannelSelection) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_compute_v1_source_selection_proto_msgTypes[5]
+	mi := &file_nominal_protos_compute_v1_source_selection_proto_msgTypes[6]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -543,7 +627,7 @@ func (x *DataSourceChannelSelection) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DataSourceChannelSelection.ProtoReflect.Descriptor instead.
 func (*DataSourceChannelSelection) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_compute_v1_source_selection_proto_rawDescGZIP(), []int{5}
+	return file_nominal_protos_compute_v1_source_selection_proto_rawDescGZIP(), []int{6}
 }
 
 func (x *DataSourceChannelSelection) GetDataSource() *DataSourceReferenceExpression {
@@ -595,7 +679,7 @@ type AssetChannelSelection struct {
 
 func (x *AssetChannelSelection) Reset() {
 	*x = AssetChannelSelection{}
-	mi := &file_nominal_protos_compute_v1_source_selection_proto_msgTypes[6]
+	mi := &file_nominal_protos_compute_v1_source_selection_proto_msgTypes[7]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -607,7 +691,7 @@ func (x *AssetChannelSelection) String() string {
 func (*AssetChannelSelection) ProtoMessage() {}
 
 func (x *AssetChannelSelection) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_compute_v1_source_selection_proto_msgTypes[6]
+	mi := &file_nominal_protos_compute_v1_source_selection_proto_msgTypes[7]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -620,7 +704,7 @@ func (x *AssetChannelSelection) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use AssetChannelSelection.ProtoReflect.Descriptor instead.
 func (*AssetChannelSelection) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_compute_v1_source_selection_proto_rawDescGZIP(), []int{6}
+	return file_nominal_protos_compute_v1_source_selection_proto_rawDescGZIP(), []int{7}
 }
 
 func (x *AssetChannelSelection) GetAsset() *AssetReferenceExpression {
@@ -674,7 +758,7 @@ type RunChannelSelection struct {
 
 func (x *RunChannelSelection) Reset() {
 	*x = RunChannelSelection{}
-	mi := &file_nominal_protos_compute_v1_source_selection_proto_msgTypes[7]
+	mi := &file_nominal_protos_compute_v1_source_selection_proto_msgTypes[8]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -686,7 +770,7 @@ func (x *RunChannelSelection) String() string {
 func (*RunChannelSelection) ProtoMessage() {}
 
 func (x *RunChannelSelection) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_compute_v1_source_selection_proto_msgTypes[7]
+	mi := &file_nominal_protos_compute_v1_source_selection_proto_msgTypes[8]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -699,7 +783,7 @@ func (x *RunChannelSelection) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use RunChannelSelection.ProtoReflect.Descriptor instead.
 func (*RunChannelSelection) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_compute_v1_source_selection_proto_rawDescGZIP(), []int{7}
+	return file_nominal_protos_compute_v1_source_selection_proto_rawDescGZIP(), []int{8}
 }
 
 func (x *RunChannelSelection) GetRun() *RunReferenceExpression {
@@ -758,7 +842,7 @@ type ChannelTagConstraints struct {
 
 func (x *ChannelTagConstraints) Reset() {
 	*x = ChannelTagConstraints{}
-	mi := &file_nominal_protos_compute_v1_source_selection_proto_msgTypes[8]
+	mi := &file_nominal_protos_compute_v1_source_selection_proto_msgTypes[9]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -770,7 +854,7 @@ func (x *ChannelTagConstraints) String() string {
 func (*ChannelTagConstraints) ProtoMessage() {}
 
 func (x *ChannelTagConstraints) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_compute_v1_source_selection_proto_msgTypes[8]
+	mi := &file_nominal_protos_compute_v1_source_selection_proto_msgTypes[9]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -783,7 +867,7 @@ func (x *ChannelTagConstraints) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ChannelTagConstraints.ProtoReflect.Descriptor instead.
 func (*ChannelTagConstraints) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_compute_v1_source_selection_proto_rawDescGZIP(), []int{8}
+	return file_nominal_protos_compute_v1_source_selection_proto_rawDescGZIP(), []int{9}
 }
 
 func (x *ChannelTagConstraints) GetKind() isChannelTagConstraints_Kind {
@@ -838,7 +922,7 @@ type ExactTagValues struct {
 
 func (x *ExactTagValues) Reset() {
 	*x = ExactTagValues{}
-	mi := &file_nominal_protos_compute_v1_source_selection_proto_msgTypes[9]
+	mi := &file_nominal_protos_compute_v1_source_selection_proto_msgTypes[10]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -850,7 +934,7 @@ func (x *ExactTagValues) String() string {
 func (*ExactTagValues) ProtoMessage() {}
 
 func (x *ExactTagValues) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_compute_v1_source_selection_proto_msgTypes[9]
+	mi := &file_nominal_protos_compute_v1_source_selection_proto_msgTypes[10]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -863,7 +947,7 @@ func (x *ExactTagValues) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ExactTagValues.ProtoReflect.Descriptor instead.
 func (*ExactTagValues) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_compute_v1_source_selection_proto_rawDescGZIP(), []int{9}
+	return file_nominal_protos_compute_v1_source_selection_proto_rawDescGZIP(), []int{10}
 }
 
 func (x *ExactTagValues) GetValues() map[string]*StringConstant {
@@ -887,7 +971,7 @@ type SeriesSampling struct {
 
 func (x *SeriesSampling) Reset() {
 	*x = SeriesSampling{}
-	mi := &file_nominal_protos_compute_v1_source_selection_proto_msgTypes[10]
+	mi := &file_nominal_protos_compute_v1_source_selection_proto_msgTypes[11]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -899,7 +983,7 @@ func (x *SeriesSampling) String() string {
 func (*SeriesSampling) ProtoMessage() {}
 
 func (x *SeriesSampling) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_compute_v1_source_selection_proto_msgTypes[10]
+	mi := &file_nominal_protos_compute_v1_source_selection_proto_msgTypes[11]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -912,7 +996,7 @@ func (x *SeriesSampling) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SeriesSampling.ProtoReflect.Descriptor instead.
 func (*SeriesSampling) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_compute_v1_source_selection_proto_rawDescGZIP(), []int{10}
+	return file_nominal_protos_compute_v1_source_selection_proto_rawDescGZIP(), []int{11}
 }
 
 func (x *SeriesSampling) GetKind() isSeriesSampling_Kind {
@@ -974,6 +1058,12 @@ const file_nominal_protos_compute_v1_source_selection_proto_rawDesc = "" +
 	"\x16RunReferenceExpression\x12K\n" +
 	"\aliteral\x18\x01 \x01(\tB/\xbaH\ar\x05\x10\x01\x18\xe8\a\x9a\xb2\x1a!\n" +
 	"\x1fio.nominal.scout.run.api.RunRidH\x00R\aliteral\x121\n" +
+	"\rvariable_name\x18\x02 \x01(\tB\n" +
+	"\xbaH\ar\x05\x10\x01\x18\xe8\aH\x00R\fvariableNameB\r\n" +
+	"\x04kind\x12\x05\xbaH\x02\b\x01\"\xb4\x01\n" +
+	"\x1cEntitySetReferenceExpression\x12R\n" +
+	"\aliteral\x18\x01 \x01(\tB6\xbaH\ar\x05\x10\x01\x18\xe8\a\x9a\xb2\x1a(\n" +
+	"&io.nominal.scout.rids.api.EntitySetRidH\x00R\aliteral\x121\n" +
 	"\rvariable_name\x18\x02 \x01(\tB\n" +
 	"\xbaH\ar\x05\x10\x01\x18\xe8\aH\x00R\fvariableNameB\r\n" +
 	"\x04kind\x12\x05\xbaH\x02\b\x01\"\xb0\x01\n" +
@@ -1052,52 +1142,53 @@ func file_nominal_protos_compute_v1_source_selection_proto_rawDescGZIP() []byte 
 }
 
 var file_nominal_protos_compute_v1_source_selection_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
-var file_nominal_protos_compute_v1_source_selection_proto_msgTypes = make([]protoimpl.MessageInfo, 12)
+var file_nominal_protos_compute_v1_source_selection_proto_msgTypes = make([]protoimpl.MessageInfo, 13)
 var file_nominal_protos_compute_v1_source_selection_proto_goTypes = []any{
 	(SeriesStorageEngine)(0),                // 0: nominal.compute.v1.SeriesStorageEngine
 	(*AssetReferenceExpression)(nil),        // 1: nominal.compute.v1.AssetReferenceExpression
 	(*RunReferenceExpression)(nil),          // 2: nominal.compute.v1.RunReferenceExpression
-	(*DataSourceReferenceExpression)(nil),   // 3: nominal.compute.v1.DataSourceReferenceExpression
-	(*ResourceTypeReferenceExpression)(nil), // 4: nominal.compute.v1.ResourceTypeReferenceExpression
-	(*ChannelSelection)(nil),                // 5: nominal.compute.v1.ChannelSelection
-	(*DataSourceChannelSelection)(nil),      // 6: nominal.compute.v1.DataSourceChannelSelection
-	(*AssetChannelSelection)(nil),           // 7: nominal.compute.v1.AssetChannelSelection
-	(*RunChannelSelection)(nil),             // 8: nominal.compute.v1.RunChannelSelection
-	(*ChannelTagConstraints)(nil),           // 9: nominal.compute.v1.ChannelTagConstraints
-	(*ExactTagValues)(nil),                  // 10: nominal.compute.v1.ExactTagValues
-	(*SeriesSampling)(nil),                  // 11: nominal.compute.v1.SeriesSampling
-	nil,                                     // 12: nominal.compute.v1.ExactTagValues.ValuesEntry
-	(*StringConstant)(nil),                  // 13: nominal.compute.v1.StringConstant
-	(*TagKeySet)(nil),                       // 14: nominal.compute.v1.TagKeySet
-	(*TagPredicateExpression)(nil),          // 15: nominal.compute.v1.TagPredicateExpression
-	(*IntegerConstant)(nil),                 // 16: nominal.compute.v1.IntegerConstant
+	(*EntitySetReferenceExpression)(nil),    // 3: nominal.compute.v1.EntitySetReferenceExpression
+	(*DataSourceReferenceExpression)(nil),   // 4: nominal.compute.v1.DataSourceReferenceExpression
+	(*ResourceTypeReferenceExpression)(nil), // 5: nominal.compute.v1.ResourceTypeReferenceExpression
+	(*ChannelSelection)(nil),                // 6: nominal.compute.v1.ChannelSelection
+	(*DataSourceChannelSelection)(nil),      // 7: nominal.compute.v1.DataSourceChannelSelection
+	(*AssetChannelSelection)(nil),           // 8: nominal.compute.v1.AssetChannelSelection
+	(*RunChannelSelection)(nil),             // 9: nominal.compute.v1.RunChannelSelection
+	(*ChannelTagConstraints)(nil),           // 10: nominal.compute.v1.ChannelTagConstraints
+	(*ExactTagValues)(nil),                  // 11: nominal.compute.v1.ExactTagValues
+	(*SeriesSampling)(nil),                  // 12: nominal.compute.v1.SeriesSampling
+	nil,                                     // 13: nominal.compute.v1.ExactTagValues.ValuesEntry
+	(*StringConstant)(nil),                  // 14: nominal.compute.v1.StringConstant
+	(*TagKeySet)(nil),                       // 15: nominal.compute.v1.TagKeySet
+	(*TagPredicateExpression)(nil),          // 16: nominal.compute.v1.TagPredicateExpression
+	(*IntegerConstant)(nil),                 // 17: nominal.compute.v1.IntegerConstant
 }
 var file_nominal_protos_compute_v1_source_selection_proto_depIdxs = []int32{
-	6,  // 0: nominal.compute.v1.ChannelSelection.data_source:type_name -> nominal.compute.v1.DataSourceChannelSelection
-	7,  // 1: nominal.compute.v1.ChannelSelection.asset:type_name -> nominal.compute.v1.AssetChannelSelection
-	8,  // 2: nominal.compute.v1.ChannelSelection.run:type_name -> nominal.compute.v1.RunChannelSelection
-	3,  // 3: nominal.compute.v1.DataSourceChannelSelection.data_source:type_name -> nominal.compute.v1.DataSourceReferenceExpression
-	13, // 4: nominal.compute.v1.DataSourceChannelSelection.channel:type_name -> nominal.compute.v1.StringConstant
-	9,  // 5: nominal.compute.v1.DataSourceChannelSelection.tags:type_name -> nominal.compute.v1.ChannelTagConstraints
-	14, // 6: nominal.compute.v1.DataSourceChannelSelection.grouping_keys:type_name -> nominal.compute.v1.TagKeySet
+	7,  // 0: nominal.compute.v1.ChannelSelection.data_source:type_name -> nominal.compute.v1.DataSourceChannelSelection
+	8,  // 1: nominal.compute.v1.ChannelSelection.asset:type_name -> nominal.compute.v1.AssetChannelSelection
+	9,  // 2: nominal.compute.v1.ChannelSelection.run:type_name -> nominal.compute.v1.RunChannelSelection
+	4,  // 3: nominal.compute.v1.DataSourceChannelSelection.data_source:type_name -> nominal.compute.v1.DataSourceReferenceExpression
+	14, // 4: nominal.compute.v1.DataSourceChannelSelection.channel:type_name -> nominal.compute.v1.StringConstant
+	10, // 5: nominal.compute.v1.DataSourceChannelSelection.tags:type_name -> nominal.compute.v1.ChannelTagConstraints
+	15, // 6: nominal.compute.v1.DataSourceChannelSelection.grouping_keys:type_name -> nominal.compute.v1.TagKeySet
 	0,  // 7: nominal.compute.v1.DataSourceChannelSelection.storage:type_name -> nominal.compute.v1.SeriesStorageEngine
 	1,  // 8: nominal.compute.v1.AssetChannelSelection.asset:type_name -> nominal.compute.v1.AssetReferenceExpression
-	13, // 9: nominal.compute.v1.AssetChannelSelection.data_scope:type_name -> nominal.compute.v1.StringConstant
-	13, // 10: nominal.compute.v1.AssetChannelSelection.channel:type_name -> nominal.compute.v1.StringConstant
-	9,  // 11: nominal.compute.v1.AssetChannelSelection.tags:type_name -> nominal.compute.v1.ChannelTagConstraints
-	14, // 12: nominal.compute.v1.AssetChannelSelection.grouping_keys:type_name -> nominal.compute.v1.TagKeySet
+	14, // 9: nominal.compute.v1.AssetChannelSelection.data_scope:type_name -> nominal.compute.v1.StringConstant
+	14, // 10: nominal.compute.v1.AssetChannelSelection.channel:type_name -> nominal.compute.v1.StringConstant
+	10, // 11: nominal.compute.v1.AssetChannelSelection.tags:type_name -> nominal.compute.v1.ChannelTagConstraints
+	15, // 12: nominal.compute.v1.AssetChannelSelection.grouping_keys:type_name -> nominal.compute.v1.TagKeySet
 	2,  // 13: nominal.compute.v1.RunChannelSelection.run:type_name -> nominal.compute.v1.RunReferenceExpression
 	1,  // 14: nominal.compute.v1.RunChannelSelection.asset:type_name -> nominal.compute.v1.AssetReferenceExpression
-	13, // 15: nominal.compute.v1.RunChannelSelection.data_scope:type_name -> nominal.compute.v1.StringConstant
-	13, // 16: nominal.compute.v1.RunChannelSelection.channel:type_name -> nominal.compute.v1.StringConstant
-	9,  // 17: nominal.compute.v1.RunChannelSelection.tags:type_name -> nominal.compute.v1.ChannelTagConstraints
-	14, // 18: nominal.compute.v1.RunChannelSelection.grouping_keys:type_name -> nominal.compute.v1.TagKeySet
-	10, // 19: nominal.compute.v1.ChannelTagConstraints.exact_values:type_name -> nominal.compute.v1.ExactTagValues
-	15, // 20: nominal.compute.v1.ChannelTagConstraints.predicate:type_name -> nominal.compute.v1.TagPredicateExpression
-	12, // 21: nominal.compute.v1.ExactTagValues.values:type_name -> nominal.compute.v1.ExactTagValues.ValuesEntry
-	16, // 22: nominal.compute.v1.SeriesSampling.every_nth_per_series:type_name -> nominal.compute.v1.IntegerConstant
-	16, // 23: nominal.compute.v1.SeriesSampling.hash_subsample:type_name -> nominal.compute.v1.IntegerConstant
-	13, // 24: nominal.compute.v1.ExactTagValues.ValuesEntry.value:type_name -> nominal.compute.v1.StringConstant
+	14, // 15: nominal.compute.v1.RunChannelSelection.data_scope:type_name -> nominal.compute.v1.StringConstant
+	14, // 16: nominal.compute.v1.RunChannelSelection.channel:type_name -> nominal.compute.v1.StringConstant
+	10, // 17: nominal.compute.v1.RunChannelSelection.tags:type_name -> nominal.compute.v1.ChannelTagConstraints
+	15, // 18: nominal.compute.v1.RunChannelSelection.grouping_keys:type_name -> nominal.compute.v1.TagKeySet
+	11, // 19: nominal.compute.v1.ChannelTagConstraints.exact_values:type_name -> nominal.compute.v1.ExactTagValues
+	16, // 20: nominal.compute.v1.ChannelTagConstraints.predicate:type_name -> nominal.compute.v1.TagPredicateExpression
+	13, // 21: nominal.compute.v1.ExactTagValues.values:type_name -> nominal.compute.v1.ExactTagValues.ValuesEntry
+	17, // 22: nominal.compute.v1.SeriesSampling.every_nth_per_series:type_name -> nominal.compute.v1.IntegerConstant
+	17, // 23: nominal.compute.v1.SeriesSampling.hash_subsample:type_name -> nominal.compute.v1.IntegerConstant
+	14, // 24: nominal.compute.v1.ExactTagValues.ValuesEntry.value:type_name -> nominal.compute.v1.StringConstant
 	25, // [25:25] is the sub-list for method output_type
 	25, // [25:25] is the sub-list for method input_type
 	25, // [25:25] is the sub-list for extension type_name
@@ -1121,24 +1212,28 @@ func file_nominal_protos_compute_v1_source_selection_proto_init() {
 		(*RunReferenceExpression_VariableName)(nil),
 	}
 	file_nominal_protos_compute_v1_source_selection_proto_msgTypes[2].OneofWrappers = []any{
+		(*EntitySetReferenceExpression_Literal)(nil),
+		(*EntitySetReferenceExpression_VariableName)(nil),
+	}
+	file_nominal_protos_compute_v1_source_selection_proto_msgTypes[3].OneofWrappers = []any{
 		(*DataSourceReferenceExpression_Literal)(nil),
 		(*DataSourceReferenceExpression_VariableName)(nil),
 	}
-	file_nominal_protos_compute_v1_source_selection_proto_msgTypes[3].OneofWrappers = []any{
+	file_nominal_protos_compute_v1_source_selection_proto_msgTypes[4].OneofWrappers = []any{
 		(*ResourceTypeReferenceExpression_Literal)(nil),
 		(*ResourceTypeReferenceExpression_VariableName)(nil),
 	}
-	file_nominal_protos_compute_v1_source_selection_proto_msgTypes[4].OneofWrappers = []any{
+	file_nominal_protos_compute_v1_source_selection_proto_msgTypes[5].OneofWrappers = []any{
 		(*ChannelSelection_DataSource)(nil),
 		(*ChannelSelection_Asset)(nil),
 		(*ChannelSelection_Run)(nil),
 	}
-	file_nominal_protos_compute_v1_source_selection_proto_msgTypes[5].OneofWrappers = []any{}
-	file_nominal_protos_compute_v1_source_selection_proto_msgTypes[8].OneofWrappers = []any{
+	file_nominal_protos_compute_v1_source_selection_proto_msgTypes[6].OneofWrappers = []any{}
+	file_nominal_protos_compute_v1_source_selection_proto_msgTypes[9].OneofWrappers = []any{
 		(*ChannelTagConstraints_ExactValues)(nil),
 		(*ChannelTagConstraints_Predicate)(nil),
 	}
-	file_nominal_protos_compute_v1_source_selection_proto_msgTypes[10].OneofWrappers = []any{
+	file_nominal_protos_compute_v1_source_selection_proto_msgTypes[11].OneofWrappers = []any{
 		(*SeriesSampling_EveryNthPerSeries)(nil),
 		(*SeriesSampling_HashSubsample)(nil),
 	}
@@ -1148,7 +1243,7 @@ func file_nominal_protos_compute_v1_source_selection_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_nominal_protos_compute_v1_source_selection_proto_rawDesc), len(file_nominal_protos_compute_v1_source_selection_proto_rawDesc)),
 			NumEnums:      1,
-			NumMessages:   12,
+			NumMessages:   13,
 			NumExtensions: 0,
 			NumServices:   0,
 		},

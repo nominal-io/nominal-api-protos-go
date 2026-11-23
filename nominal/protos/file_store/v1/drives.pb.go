@@ -8,6 +8,7 @@ package file_storev1
 
 import (
 	_ "buf.build/gen/go/bufbuild/protovalidate/protocolbuffers/go/buf/validate"
+	_ "github.com/nominal-io/nominal-api-protos-go/nominal/protos/authz/v1"
 	_ "github.com/nominal-io/nominal-api-protos-go/nominal/protos/gen/v1"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
@@ -1711,7 +1712,7 @@ var File_nominal_protos_file_store_v1_drives_proto protoreflect.FileDescriptor
 
 const file_nominal_protos_file_store_v1_drives_proto_rawDesc = "" +
 	"\n" +
-	")nominal/protos/file_store/v1/drives.proto\x12\x15nominal.file_store.v1\x1a\x1bbuf/validate/validate.proto\x1a\x1cgoogle/api/annotations.proto\x1a-nominal/protos/file_store/v1/file_store.proto\x1a!nominal/protos/gen/v1/alias.proto\x1a!nominal/protos/gen/v1/error.proto\"\xc3\x02\n" +
+	")nominal/protos/file_store/v1/drives.proto\x12\x15nominal.file_store.v1\x1a\x1bbuf/validate/validate.proto\x1a\x1cgoogle/api/annotations.proto\x1a)nominal/protos/authz/v1/annotations.proto\x1a-nominal/protos/file_store/v1/file_store.proto\x1a!nominal/protos/gen/v1/alias.proto\x1a!nominal/protos/gen/v1/error.proto\"\xc3\x02\n" +
 	"\x12CreateDriveRequest\x12K\n" +
 	"\rworkspace_rid\x18\x01 \x01(\tB&\x9a\xb2\x1a\"\n" +
 	" io.nominal.api.rids.WorkspaceRidR\fworkspaceRid\x12\xa8\x01\n" +
@@ -1847,23 +1848,76 @@ const file_nominal_protos_file_store_v1_drives_proto_rawDesc = "" +
 	")DRIVE_ADMIN_ERROR_VIRTUAL_DRIVE_NOT_FOUND\x10\x02\x1a(\xb2\xb2\x1a$\n" +
 	"\tNOT_FOUND\x12\x17Virtual drive not found\x12v\n" +
 	"5DRIVE_ADMIN_ERROR_INVALID_VIRTUAL_DRIVE_CONFIGURATION\x10\x03\x1a;\xb2\xb2\x1a7\n" +
-	"\x10INVALID_ARGUMENT\x12#Invalid virtual drive configuration2\xc4\x13\n" +
-	"\rDrivesService\x12\x86\x01\n" +
-	"\vCreateDrive\x12).nominal.file_store.v1.CreateDriveRequest\x1a*.nominal.file_store.v1.CreateDriveResponse\" \x82\xd3\xe4\x93\x02\x1a:\x01*\"\x15/file-store/v1/drives\x12\xa3\x01\n" +
-	"\x12CreateVirtualDrive\x120.nominal.file_store.v1.CreateVirtualDriveRequest\x1a1.nominal.file_store.v1.CreateVirtualDriveResponse\"(\x82\xd3\xe4\x93\x02\":\x01*\"\x1d/file-store/v1/virtual-drives\x12\x86\x01\n" +
-	"\bGetDrive\x12&.nominal.file_store.v1.GetDriveRequest\x1a'.nominal.file_store.v1.GetDriveResponse\")\x82\xd3\xe4\x93\x02#\x12!/file-store/v1/drives/{drive_rid}\x12\xc0\x01\n" +
-	"\x16GetVirtualDriveDetails\x124.nominal.file_store.v1.GetVirtualDriveDetailsRequest\x1a5.nominal.file_store.v1.GetVirtualDriveDetailsResponse\"9\x82\xd3\xe4\x93\x023\x121/file-store/v1/virtual-drives/{drive_rid}/details\x12\xbc\x01\n" +
-	"\x15GetVirtualDriveStatus\x123.nominal.file_store.v1.GetVirtualDriveStatusRequest\x1a4.nominal.file_store.v1.GetVirtualDriveStatusResponse\"8\x82\xd3\xe4\x93\x022\x120/file-store/v1/virtual-drives/{drive_rid}/status\x12\xa6\x01\n" +
-	"\fGetDriveById\x12*.nominal.file_store.v1.GetDriveByIdRequest\x1a+.nominal.file_store.v1.GetDriveByIdResponse\"=\x82\xd3\xe4\x93\x027\x125/file-store/v1/workspaces/{workspace_rid}/drives/{id}\x12\xe0\x01\n" +
-	"\x1aGetVirtualDriveDetailsById\x128.nominal.file_store.v1.GetVirtualDriveDetailsByIdRequest\x1a9.nominal.file_store.v1.GetVirtualDriveDetailsByIdResponse\"M\x82\xd3\xe4\x93\x02G\x12E/file-store/v1/workspaces/{workspace_rid}/virtual-drives/{id}/details\x12\xdc\x01\n" +
-	"\x19GetVirtualDriveStatusById\x127.nominal.file_store.v1.GetVirtualDriveStatusByIdRequest\x1a8.nominal.file_store.v1.GetVirtualDriveStatusByIdResponse\"L\x82\xd3\xe4\x93\x02F\x12D/file-store/v1/workspaces/{workspace_rid}/virtual-drives/{id}/status\x12\x9b\x01\n" +
+	"\x10INVALID_ARGUMENT\x12#Invalid virtual drive configuration2\x84\x19\n" +
+	"\rDrivesService\x12\xac\x01\n" +
+	"\vCreateDrive\x12).nominal.file_store.v1.CreateDriveRequest\x1a*.nominal.file_store.v1.CreateDriveResponse\"F\xba\xb2\x1a\"\n" +
+	" \n" +
+	"\x1cworkspace:edit_configuration\"\x00\x82\xd3\xe4\x93\x02\x1a:\x01*\"\x15/file-store/v1/drives\x12\xc4\x01\n" +
+	"\x12CreateVirtualDrive\x120.nominal.file_store.v1.CreateVirtualDriveRequest\x1a1.nominal.file_store.v1.CreateVirtualDriveResponse\"I\xba\xb2\x1a\x1d\n" +
+	"\x1b\n" +
+	"\x17workspace:attach_secret\"\x00\x82\xd3\xe4\x93\x02\":\x01*\"\x1d/file-store/v1/virtual-drives\x12\xae\x01\n" +
+	"\bGetDrive\x12&.nominal.file_store.v1.GetDriveRequest\x1a'.nominal.file_store.v1.GetDriveResponse\"Q\xba\xb2\x1a$\n" +
+	"\"\n" +
+	"\x13drive:read_metadata\x12\v\n" +
+	"\tdrive_rid\x82\xd3\xe4\x93\x02#\x12!/file-store/v1/drives/{drive_rid}\x12\x98\x02\n" +
+	"\x16GetVirtualDriveDetails\x124.nominal.file_store.v1.GetVirtualDriveDetailsRequest\x1a5.nominal.file_store.v1.GetVirtualDriveDetailsResponse\"\x90\x01\xba\xb2\x1aS\n" +
+	"\"\n" +
+	"\x13drive:read_metadata\x12\v\n" +
+	"\tdrive_rid\n" +
+	"-\n" +
+	"\x1edrive:read_connection_metadata\x12\v\n" +
+	"\tdrive_rid\x82\xd3\xe4\x93\x023\x121/file-store/v1/virtual-drives/{drive_rid}/details\x12\xe4\x01\n" +
+	"\x15GetVirtualDriveStatus\x123.nominal.file_store.v1.GetVirtualDriveStatusRequest\x1a4.nominal.file_store.v1.GetVirtualDriveStatusResponse\"`\xba\xb2\x1a$\n" +
+	"\"\n" +
+	"\x13drive:read_metadata\x12\v\n" +
+	"\tdrive_rid\x82\xd3\xe4\x93\x022\x120/file-store/v1/virtual-drives/{drive_rid}/status\x12\xbe\x01\n" +
+	"\fGetDriveById\x12*.nominal.file_store.v1.GetDriveByIdRequest\x1a+.nominal.file_store.v1.GetDriveByIdResponse\"U\xba\xb2\x1a\x14\n" +
+	"\x12\n" +
+	"\x0eworkspace:view\"\x00\x82\xd3\xe4\x93\x027\x125/file-store/v1/workspaces/{workspace_rid}/drives/{id}\x12\xf8\x01\n" +
+	"\x1aGetVirtualDriveDetailsById\x128.nominal.file_store.v1.GetVirtualDriveDetailsByIdRequest\x1a9.nominal.file_store.v1.GetVirtualDriveDetailsByIdResponse\"e\xba\xb2\x1a\x14\n" +
+	"\x12\n" +
+	"\x0eworkspace:view\"\x00\x82\xd3\xe4\x93\x02G\x12E/file-store/v1/workspaces/{workspace_rid}/virtual-drives/{id}/details\x12\xf4\x01\n" +
+	"\x19GetVirtualDriveStatusById\x127.nominal.file_store.v1.GetVirtualDriveStatusByIdRequest\x1a8.nominal.file_store.v1.GetVirtualDriveStatusByIdResponse\"d\xba\xb2\x1a\x14\n" +
+	"\x12\n" +
+	"\x0eworkspace:view\"\x00\x82\xd3\xe4\x93\x02F\x12D/file-store/v1/workspaces/{workspace_rid}/virtual-drives/{id}/status\x12\xb3\x01\n" +
 	"\n" +
-	"ListDrives\x12(.nominal.file_store.v1.ListDrivesRequest\x1a).nominal.file_store.v1.ListDrivesResponse\"8\x82\xd3\xe4\x93\x022\x120/file-store/v1/workspaces/{workspace_rid}/drives\x12\xaf\x01\n" +
-	"\x12UpdateVirtualDrive\x120.nominal.file_store.v1.UpdateVirtualDriveRequest\x1a1.nominal.file_store.v1.UpdateVirtualDriveResponse\"4\x82\xd3\xe4\x93\x02.:\x01*\x1a)/file-store/v1/virtual-drives/{drive_rid}\x12\xa7\x01\n" +
-	"\x12UpdateDriveDetails\x120.nominal.file_store.v1.UpdateDriveDetailsRequest\x1a1.nominal.file_store.v1.UpdateDriveDetailsResponse\",\x82\xd3\xe4\x93\x02&:\x01*\x1a!/file-store/v1/drives/{drive_rid}\x12\x9d\x01\n" +
-	"\fArchiveDrive\x12*.nominal.file_store.v1.ArchiveDriveRequest\x1a+.nominal.file_store.v1.ArchiveDriveResponse\"4\x82\xd3\xe4\x93\x02.:\x01*\")/file-store/v1/drives/{drive_rid}/archive\x12\xa5\x01\n" +
-	"\x0eUnarchiveDrive\x12,.nominal.file_store.v1.UnarchiveDriveRequest\x1a-.nominal.file_store.v1.UnarchiveDriveResponse\"6\x82\xd3\xe4\x93\x020:\x01*\"+/file-store/v1/drives/{drive_rid}/unarchive\x12\xcb\x01\n" +
-	"\x17NotifyVirtualDriveFiles\x125.nominal.file_store.v1.NotifyVirtualDriveFilesRequest\x1a6.nominal.file_store.v1.NotifyVirtualDriveFilesResponse\"A\x82\xd3\xe4\x93\x02;:\x01*\"6/file-store/v1/virtual-drives/{drive_rid}/files/notifyB\xf1\x01\n" +
+	"ListDrives\x12(.nominal.file_store.v1.ListDrivesRequest\x1a).nominal.file_store.v1.ListDrivesResponse\"P\xba\xb2\x1a\x14\n" +
+	"\x12\n" +
+	"\x0eworkspace:view\"\x00\x82\xd3\xe4\x93\x022\x120/file-store/v1/workspaces/{workspace_rid}/drives\x12\xf4\x01\n" +
+	"\x12UpdateVirtualDrive\x120.nominal.file_store.v1.UpdateVirtualDriveRequest\x1a1.nominal.file_store.v1.UpdateVirtualDriveResponse\"y\xba\xb2\x1aA\n" +
+	"\"\n" +
+	"\x13drive:read_metadata\x12\v\n" +
+	"\tdrive_rid\n" +
+	"\x1b\n" +
+	"\x17workspace:attach_secret\"\x00\x82\xd3\xe4\x93\x02.:\x01*\x1a)/file-store/v1/virtual-drives/{drive_rid}\x12\xf3\x01\n" +
+	"\x12UpdateDriveDetails\x120.nominal.file_store.v1.UpdateDriveDetailsRequest\x1a1.nominal.file_store.v1.UpdateDriveDetailsResponse\"x\xba\xb2\x1aH\n" +
+	"\"\n" +
+	"\x13drive:read_metadata\x12\v\n" +
+	"\tdrive_rid\n" +
+	"\"\n" +
+	"\x13drive:edit_metadata\x12\v\n" +
+	"\tdrive_rid\x82\xd3\xe4\x93\x02&:\x01*\x1a!/file-store/v1/drives/{drive_rid}\x12\xea\x01\n" +
+	"\fArchiveDrive\x12*.nominal.file_store.v1.ArchiveDriveRequest\x1a+.nominal.file_store.v1.ArchiveDriveResponse\"\x80\x01\xba\xb2\x1aH\n" +
+	"\"\n" +
+	"\x13drive:read_metadata\x12\v\n" +
+	"\tdrive_rid\n" +
+	"\"\n" +
+	"\x13drive:edit_metadata\x12\v\n" +
+	"\tdrive_rid\x82\xd3\xe4\x93\x02.:\x01*\")/file-store/v1/drives/{drive_rid}/archive\x12\xf2\x01\n" +
+	"\x0eUnarchiveDrive\x12,.nominal.file_store.v1.UnarchiveDriveRequest\x1a-.nominal.file_store.v1.UnarchiveDriveResponse\"\x82\x01\xba\xb2\x1aH\n" +
+	"\"\n" +
+	"\x13drive:read_metadata\x12\v\n" +
+	"\tdrive_rid\n" +
+	"\"\n" +
+	"\x13drive:edit_metadata\x12\v\n" +
+	"\tdrive_rid\x82\xd3\xe4\x93\x020:\x01*\"+/file-store/v1/drives/{drive_rid}/unarchive\x12\x91\x02\n" +
+	"\x17NotifyVirtualDriveFiles\x125.nominal.file_store.v1.NotifyVirtualDriveFilesRequest\x1a6.nominal.file_store.v1.NotifyVirtualDriveFilesResponse\"\x86\x01\xba\xb2\x1aA\n" +
+	"\x1e\n" +
+	"\x0fdrive:read_file\x12\v\n" +
+	"\tdrive_rid\n" +
+	"\x1f\n" +
+	"\x10drive:write_file\x12\v\n" +
+	"\tdrive_rid\x82\xd3\xe4\x93\x02;:\x01*\"6/file-store/v1/virtual-drives/{drive_rid}/files/notifyB\xf1\x01\n" +
 	"\x19com.nominal.file_store.v1B\vDrivesProtoP\x01ZUgithub.com/nominal-io/nominal-api-protos-go/nominal/protos/file_store/v1;file_storev1\xa2\x02\x03NFX\xaa\x02\x14Nominal.FileStore.V1\xca\x02\x14Nominal\\FileStore\\V1\xe2\x02 Nominal\\FileStore\\V1\\GPBMetadata\xea\x02\x16Nominal::FileStore::V1b\x06proto3"
 
 var (

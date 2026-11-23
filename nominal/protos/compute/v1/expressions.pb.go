@@ -1062,6 +1062,7 @@ type NumericExpression struct {
 	//	*NumericExpression_IntervalTags
 	//	*NumericExpression_TimeDifference
 	//	*NumericExpression_TagPair
+	//	*NumericExpression_GeoDistance
 	Kind          isNumericExpression_Kind `protobuf_oneof:"kind"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -1633,6 +1634,15 @@ func (x *NumericExpression) GetTagPair() *NumericTagPairExpression {
 	return nil
 }
 
+func (x *NumericExpression) GetGeoDistance() *NumericGeoDistanceExpression {
+	if x != nil {
+		if x, ok := x.Kind.(*NumericExpression_GeoDistance); ok {
+			return x.GeoDistance
+		}
+	}
+	return nil
+}
+
 type isNumericExpression_Kind interface {
 	isNumericExpression_Kind()
 }
@@ -1880,6 +1890,10 @@ type NumericExpression_TagPair struct {
 	TagPair *NumericTagPairExpression `protobuf:"bytes,58,opt,name=tag_pair,json=tagPair,proto3,oneof"`
 }
 
+type NumericExpression_GeoDistance struct {
+	GeoDistance *NumericGeoDistanceExpression `protobuf:"bytes,59,opt,name=geo_distance,json=geoDistance,proto3,oneof"`
+}
+
 func (*NumericExpression_Reference) isNumericExpression_Kind() {}
 
 func (*NumericExpression_Constant) isNumericExpression_Kind() {}
@@ -1995,6 +2009,8 @@ func (*NumericExpression_IntervalTags) isNumericExpression_Kind() {}
 func (*NumericExpression_TimeDifference) isNumericExpression_Kind() {}
 
 func (*NumericExpression_TagPair) isNumericExpression_Kind() {}
+
+func (*NumericExpression_GeoDistance) isNumericExpression_Kind() {}
 
 // The names and defaults an expression is evaluated with. A `BoundExpression` carries its own
 // context, which applies to that expression only.
@@ -2653,6 +2669,7 @@ type DatasetExpression struct {
 	//	*DatasetExpression_RemoveSeries
 	//	*DatasetExpression_Reference
 	//	*DatasetExpression_Dimensions
+	//	*DatasetExpression_EntitySet
 	Kind          isDatasetExpression_Kind `protobuf_oneof:"kind"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -2812,6 +2829,15 @@ func (x *DatasetExpression) GetDimensions() *DatasetDimensions {
 	return nil
 }
 
+func (x *DatasetExpression) GetEntitySet() *EntitySetReferenceExpression {
+	if x != nil {
+		if x, ok := x.Kind.(*DatasetExpression_EntitySet); ok {
+			return x.EntitySet
+		}
+	}
+	return nil
+}
+
 type isDatasetExpression_Kind interface {
 	isDatasetExpression_Kind()
 }
@@ -2868,6 +2894,11 @@ type DatasetExpression_Dimensions struct {
 	Dimensions *DatasetDimensions `protobuf:"bytes,13,opt,name=dimensions,proto3,oneof"`
 }
 
+type DatasetExpression_EntitySet struct {
+	// The stored members of an entity set, combined: runs as `run` and assets as `asset`.
+	EntitySet *EntitySetReferenceExpression `protobuf:"bytes,14,opt,name=entity_set,json=entitySet,proto3,oneof"`
+}
+
 func (*DatasetExpression_Asset) isDatasetExpression_Kind() {}
 
 func (*DatasetExpression_Run) isDatasetExpression_Kind() {}
@@ -2893,6 +2924,8 @@ func (*DatasetExpression_RemoveSeries) isDatasetExpression_Kind() {}
 func (*DatasetExpression_Reference) isDatasetExpression_Kind() {}
 
 func (*DatasetExpression_Dimensions) isDatasetExpression_Kind() {}
+
+func (*DatasetExpression_EntitySet) isDatasetExpression_Kind() {}
 
 // Every series of every input, in one dataset. Points that share a timestamp are all kept.
 type DatasetConcatenation struct {
@@ -4658,6 +4691,113 @@ func (x *NumericAbsoluteTimestampExpression) GetUnit() time.TimeUnit {
 	return time.TimeUnit(0)
 }
 
+// The great-circle distance in meters between two positions, using the haversine formula on a
+// sphere of the Earth's mean radius (6,371,008.8 m).
+type NumericGeoDistanceExpression struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	From          *GeoPositionExpression `protobuf:"bytes,1,opt,name=from,proto3" json:"from,omitempty"`
+	To            *GeoPositionExpression `protobuf:"bytes,2,opt,name=to,proto3" json:"to,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *NumericGeoDistanceExpression) Reset() {
+	*x = NumericGeoDistanceExpression{}
+	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[34]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *NumericGeoDistanceExpression) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*NumericGeoDistanceExpression) ProtoMessage() {}
+
+func (x *NumericGeoDistanceExpression) ProtoReflect() protoreflect.Message {
+	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[34]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use NumericGeoDistanceExpression.ProtoReflect.Descriptor instead.
+func (*NumericGeoDistanceExpression) Descriptor() ([]byte, []int) {
+	return file_nominal_protos_compute_v1_expressions_proto_rawDescGZIP(), []int{34}
+}
+
+func (x *NumericGeoDistanceExpression) GetFrom() *GeoPositionExpression {
+	if x != nil {
+		return x.From
+	}
+	return nil
+}
+
+func (x *NumericGeoDistanceExpression) GetTo() *GeoPositionExpression {
+	if x != nil {
+		return x.To
+	}
+	return nil
+}
+
+// A position on the Earth as latitude and longitude series, in degrees.
+type GeoPositionExpression struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Latitude      *NumericExpression     `protobuf:"bytes,1,opt,name=latitude,proto3" json:"latitude,omitempty"`
+	Longitude     *NumericExpression     `protobuf:"bytes,2,opt,name=longitude,proto3" json:"longitude,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GeoPositionExpression) Reset() {
+	*x = GeoPositionExpression{}
+	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[35]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GeoPositionExpression) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GeoPositionExpression) ProtoMessage() {}
+
+func (x *GeoPositionExpression) ProtoReflect() protoreflect.Message {
+	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[35]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GeoPositionExpression.ProtoReflect.Descriptor instead.
+func (*GeoPositionExpression) Descriptor() ([]byte, []int) {
+	return file_nominal_protos_compute_v1_expressions_proto_rawDescGZIP(), []int{35}
+}
+
+func (x *GeoPositionExpression) GetLatitude() *NumericExpression {
+	if x != nil {
+		return x.Latitude
+	}
+	return nil
+}
+
+func (x *GeoPositionExpression) GetLongitude() *NumericExpression {
+	if x != nil {
+		return x.Longitude
+	}
+	return nil
+}
+
 // Replaces each point's value with the time since the previous point, in `unit`s. The first point
 // has no predecessor and is omitted.
 type NumericTimeDifferenceExpression struct {
@@ -4671,7 +4811,7 @@ type NumericTimeDifferenceExpression struct {
 
 func (x *NumericTimeDifferenceExpression) Reset() {
 	*x = NumericTimeDifferenceExpression{}
-	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[34]
+	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[36]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4683,7 +4823,7 @@ func (x *NumericTimeDifferenceExpression) String() string {
 func (*NumericTimeDifferenceExpression) ProtoMessage() {}
 
 func (x *NumericTimeDifferenceExpression) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[34]
+	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[36]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4696,7 +4836,7 @@ func (x *NumericTimeDifferenceExpression) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use NumericTimeDifferenceExpression.ProtoReflect.Descriptor instead.
 func (*NumericTimeDifferenceExpression) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_compute_v1_expressions_proto_rawDescGZIP(), []int{34}
+	return file_nominal_protos_compute_v1_expressions_proto_rawDescGZIP(), []int{36}
 }
 
 func (x *NumericTimeDifferenceExpression) GetInput() *SeriesExpression {
@@ -4726,7 +4866,7 @@ type NumericReduceUnderRangesExpression struct {
 
 func (x *NumericReduceUnderRangesExpression) Reset() {
 	*x = NumericReduceUnderRangesExpression{}
-	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[35]
+	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[37]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4738,7 +4878,7 @@ func (x *NumericReduceUnderRangesExpression) String() string {
 func (*NumericReduceUnderRangesExpression) ProtoMessage() {}
 
 func (x *NumericReduceUnderRangesExpression) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[35]
+	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[37]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4751,7 +4891,7 @@ func (x *NumericReduceUnderRangesExpression) ProtoReflect() protoreflect.Message
 
 // Deprecated: Use NumericReduceUnderRangesExpression.ProtoReflect.Descriptor instead.
 func (*NumericReduceUnderRangesExpression) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_compute_v1_expressions_proto_rawDescGZIP(), []int{35}
+	return file_nominal_protos_compute_v1_expressions_proto_rawDescGZIP(), []int{37}
 }
 
 func (x *NumericReduceUnderRangesExpression) GetInput() *NumericExpression {
@@ -4786,7 +4926,7 @@ type NumericLogMatchesExpression struct {
 
 func (x *NumericLogMatchesExpression) Reset() {
 	*x = NumericLogMatchesExpression{}
-	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[36]
+	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[38]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4798,7 +4938,7 @@ func (x *NumericLogMatchesExpression) String() string {
 func (*NumericLogMatchesExpression) ProtoMessage() {}
 
 func (x *NumericLogMatchesExpression) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[36]
+	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[38]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4811,7 +4951,7 @@ func (x *NumericLogMatchesExpression) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use NumericLogMatchesExpression.ProtoReflect.Descriptor instead.
 func (*NumericLogMatchesExpression) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_compute_v1_expressions_proto_rawDescGZIP(), []int{36}
+	return file_nominal_protos_compute_v1_expressions_proto_rawDescGZIP(), []int{38}
 }
 
 func (x *NumericLogMatchesExpression) GetInput() *LogExpression {
@@ -4838,7 +4978,7 @@ type NumericCountDuplicatesExpression struct {
 
 func (x *NumericCountDuplicatesExpression) Reset() {
 	*x = NumericCountDuplicatesExpression{}
-	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[37]
+	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[39]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4850,7 +4990,7 @@ func (x *NumericCountDuplicatesExpression) String() string {
 func (*NumericCountDuplicatesExpression) ProtoMessage() {}
 
 func (x *NumericCountDuplicatesExpression) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[37]
+	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[39]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4863,7 +5003,7 @@ func (x *NumericCountDuplicatesExpression) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use NumericCountDuplicatesExpression.ProtoReflect.Descriptor instead.
 func (*NumericCountDuplicatesExpression) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_compute_v1_expressions_proto_rawDescGZIP(), []int{37}
+	return file_nominal_protos_compute_v1_expressions_proto_rawDescGZIP(), []int{39}
 }
 
 func (x *NumericCountDuplicatesExpression) GetInputs() []*CategoricalExpression {
@@ -4886,7 +5026,7 @@ type NumericCategoricalMappingExpression struct {
 
 func (x *NumericCategoricalMappingExpression) Reset() {
 	*x = NumericCategoricalMappingExpression{}
-	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[38]
+	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[40]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4898,7 +5038,7 @@ func (x *NumericCategoricalMappingExpression) String() string {
 func (*NumericCategoricalMappingExpression) ProtoMessage() {}
 
 func (x *NumericCategoricalMappingExpression) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[38]
+	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[40]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4911,7 +5051,7 @@ func (x *NumericCategoricalMappingExpression) ProtoReflect() protoreflect.Messag
 
 // Deprecated: Use NumericCategoricalMappingExpression.ProtoReflect.Descriptor instead.
 func (*NumericCategoricalMappingExpression) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_compute_v1_expressions_proto_rawDescGZIP(), []int{38}
+	return file_nominal_protos_compute_v1_expressions_proto_rawDescGZIP(), []int{40}
 }
 
 func (x *NumericCategoricalMappingExpression) GetInput() *CategoricalExpression {
@@ -4950,7 +5090,7 @@ type NumericStructFieldExpression struct {
 
 func (x *NumericStructFieldExpression) Reset() {
 	*x = NumericStructFieldExpression{}
-	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[39]
+	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[41]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4962,7 +5102,7 @@ func (x *NumericStructFieldExpression) String() string {
 func (*NumericStructFieldExpression) ProtoMessage() {}
 
 func (x *NumericStructFieldExpression) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[39]
+	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[41]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4975,7 +5115,7 @@ func (x *NumericStructFieldExpression) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use NumericStructFieldExpression.ProtoReflect.Descriptor instead.
 func (*NumericStructFieldExpression) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_compute_v1_expressions_proto_rawDescGZIP(), []int{39}
+	return file_nominal_protos_compute_v1_expressions_proto_rawDescGZIP(), []int{41}
 }
 
 func (x *NumericStructFieldExpression) GetInput() *StructExpression {
@@ -5010,7 +5150,7 @@ type NumericRangeFilterExpression struct {
 
 func (x *NumericRangeFilterExpression) Reset() {
 	*x = NumericRangeFilterExpression{}
-	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[40]
+	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[42]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5022,7 +5162,7 @@ func (x *NumericRangeFilterExpression) String() string {
 func (*NumericRangeFilterExpression) ProtoMessage() {}
 
 func (x *NumericRangeFilterExpression) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[40]
+	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[42]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5035,7 +5175,7 @@ func (x *NumericRangeFilterExpression) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use NumericRangeFilterExpression.ProtoReflect.Descriptor instead.
 func (*NumericRangeFilterExpression) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_compute_v1_expressions_proto_rawDescGZIP(), []int{40}
+	return file_nominal_protos_compute_v1_expressions_proto_rawDescGZIP(), []int{42}
 }
 
 func (x *NumericRangeFilterExpression) GetInput() *NumericExpression {
@@ -5066,7 +5206,7 @@ type NumericGroupWithinRangesExpression struct {
 
 func (x *NumericGroupWithinRangesExpression) Reset() {
 	*x = NumericGroupWithinRangesExpression{}
-	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[41]
+	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[43]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5078,7 +5218,7 @@ func (x *NumericGroupWithinRangesExpression) String() string {
 func (*NumericGroupWithinRangesExpression) ProtoMessage() {}
 
 func (x *NumericGroupWithinRangesExpression) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[41]
+	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[43]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5091,7 +5231,7 @@ func (x *NumericGroupWithinRangesExpression) ProtoReflect() protoreflect.Message
 
 // Deprecated: Use NumericGroupWithinRangesExpression.ProtoReflect.Descriptor instead.
 func (*NumericGroupWithinRangesExpression) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_compute_v1_expressions_proto_rawDescGZIP(), []int{41}
+	return file_nominal_protos_compute_v1_expressions_proto_rawDescGZIP(), []int{43}
 }
 
 func (x *NumericGroupWithinRangesExpression) GetInput() *NumericExpression {
@@ -5127,7 +5267,7 @@ type NumericAggregationExpression struct {
 
 func (x *NumericAggregationExpression) Reset() {
 	*x = NumericAggregationExpression{}
-	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[42]
+	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[44]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5139,7 +5279,7 @@ func (x *NumericAggregationExpression) String() string {
 func (*NumericAggregationExpression) ProtoMessage() {}
 
 func (x *NumericAggregationExpression) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[42]
+	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[44]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5152,7 +5292,7 @@ func (x *NumericAggregationExpression) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use NumericAggregationExpression.ProtoReflect.Descriptor instead.
 func (*NumericAggregationExpression) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_compute_v1_expressions_proto_rawDescGZIP(), []int{42}
+	return file_nominal_protos_compute_v1_expressions_proto_rawDescGZIP(), []int{44}
 }
 
 func (x *NumericAggregationExpression) GetInput() *AggregationInput {
@@ -5185,7 +5325,7 @@ type AggregationInput struct {
 
 func (x *AggregationInput) Reset() {
 	*x = AggregationInput{}
-	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[43]
+	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[45]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5197,7 +5337,7 @@ func (x *AggregationInput) String() string {
 func (*AggregationInput) ProtoMessage() {}
 
 func (x *AggregationInput) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[43]
+	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[45]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5210,7 +5350,7 @@ func (x *AggregationInput) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use AggregationInput.ProtoReflect.Descriptor instead.
 func (*AggregationInput) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_compute_v1_expressions_proto_rawDescGZIP(), []int{43}
+	return file_nominal_protos_compute_v1_expressions_proto_rawDescGZIP(), []int{45}
 }
 
 func (x *AggregationInput) GetKind() isAggregationInput_Kind {
@@ -5280,7 +5420,7 @@ type TimeWindowAggregation struct {
 
 func (x *TimeWindowAggregation) Reset() {
 	*x = TimeWindowAggregation{}
-	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[44]
+	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[46]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5292,7 +5432,7 @@ func (x *TimeWindowAggregation) String() string {
 func (*TimeWindowAggregation) ProtoMessage() {}
 
 func (x *TimeWindowAggregation) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[44]
+	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[46]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5305,7 +5445,7 @@ func (x *TimeWindowAggregation) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use TimeWindowAggregation.ProtoReflect.Descriptor instead.
 func (*TimeWindowAggregation) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_compute_v1_expressions_proto_rawDescGZIP(), []int{44}
+	return file_nominal_protos_compute_v1_expressions_proto_rawDescGZIP(), []int{46}
 }
 
 func (x *TimeWindowAggregation) GetInput() *SeriesExpression {
@@ -5333,7 +5473,7 @@ type PointWindowAggregation struct {
 
 func (x *PointWindowAggregation) Reset() {
 	*x = PointWindowAggregation{}
-	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[45]
+	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[47]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5345,7 +5485,7 @@ func (x *PointWindowAggregation) String() string {
 func (*PointWindowAggregation) ProtoMessage() {}
 
 func (x *PointWindowAggregation) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[45]
+	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[47]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5358,7 +5498,7 @@ func (x *PointWindowAggregation) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use PointWindowAggregation.ProtoReflect.Descriptor instead.
 func (*PointWindowAggregation) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_compute_v1_expressions_proto_rawDescGZIP(), []int{45}
+	return file_nominal_protos_compute_v1_expressions_proto_rawDescGZIP(), []int{47}
 }
 
 func (x *PointWindowAggregation) GetInput() *SeriesExpression {
@@ -5391,7 +5531,7 @@ type GroupedSeriesAggregation struct {
 
 func (x *GroupedSeriesAggregation) Reset() {
 	*x = GroupedSeriesAggregation{}
-	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[46]
+	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[48]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5403,7 +5543,7 @@ func (x *GroupedSeriesAggregation) String() string {
 func (*GroupedSeriesAggregation) ProtoMessage() {}
 
 func (x *GroupedSeriesAggregation) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[46]
+	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[48]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5416,7 +5556,7 @@ func (x *GroupedSeriesAggregation) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GroupedSeriesAggregation.ProtoReflect.Descriptor instead.
 func (*GroupedSeriesAggregation) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_compute_v1_expressions_proto_rawDescGZIP(), []int{46}
+	return file_nominal_protos_compute_v1_expressions_proto_rawDescGZIP(), []int{48}
 }
 
 func (x *GroupedSeriesAggregation) GetInput() *SeriesExpression {
@@ -5460,7 +5600,7 @@ type AggregationGroupingKeys struct {
 
 func (x *AggregationGroupingKeys) Reset() {
 	*x = AggregationGroupingKeys{}
-	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[47]
+	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[49]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5472,7 +5612,7 @@ func (x *AggregationGroupingKeys) String() string {
 func (*AggregationGroupingKeys) ProtoMessage() {}
 
 func (x *AggregationGroupingKeys) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[47]
+	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[49]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5485,7 +5625,7 @@ func (x *AggregationGroupingKeys) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use AggregationGroupingKeys.ProtoReflect.Descriptor instead.
 func (*AggregationGroupingKeys) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_compute_v1_expressions_proto_rawDescGZIP(), []int{47}
+	return file_nominal_protos_compute_v1_expressions_proto_rawDescGZIP(), []int{49}
 }
 
 func (x *AggregationGroupingKeys) GetKind() isAggregationGroupingKeys_Kind {
@@ -5539,7 +5679,7 @@ type CurrentGroupingKeys struct {
 
 func (x *CurrentGroupingKeys) Reset() {
 	*x = CurrentGroupingKeys{}
-	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[48]
+	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[50]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5551,7 +5691,7 @@ func (x *CurrentGroupingKeys) String() string {
 func (*CurrentGroupingKeys) ProtoMessage() {}
 
 func (x *CurrentGroupingKeys) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[48]
+	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[50]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5564,7 +5704,7 @@ func (x *CurrentGroupingKeys) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CurrentGroupingKeys.ProtoReflect.Descriptor instead.
 func (*CurrentGroupingKeys) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_compute_v1_expressions_proto_rawDescGZIP(), []int{48}
+	return file_nominal_protos_compute_v1_expressions_proto_rawDescGZIP(), []int{50}
 }
 
 type AggregationTimestamp struct {
@@ -5580,7 +5720,7 @@ type AggregationTimestamp struct {
 
 func (x *AggregationTimestamp) Reset() {
 	*x = AggregationTimestamp{}
-	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[49]
+	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[51]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5592,7 +5732,7 @@ func (x *AggregationTimestamp) String() string {
 func (*AggregationTimestamp) ProtoMessage() {}
 
 func (x *AggregationTimestamp) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[49]
+	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[51]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5605,7 +5745,7 @@ func (x *AggregationTimestamp) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use AggregationTimestamp.ProtoReflect.Descriptor instead.
 func (*AggregationTimestamp) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_compute_v1_expressions_proto_rawDescGZIP(), []int{49}
+	return file_nominal_protos_compute_v1_expressions_proto_rawDescGZIP(), []int{51}
 }
 
 func (x *AggregationTimestamp) GetKind() isAggregationTimestamp_Kind {
@@ -5659,7 +5799,7 @@ type CurrentTimestamps struct {
 
 func (x *CurrentTimestamps) Reset() {
 	*x = CurrentTimestamps{}
-	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[50]
+	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[52]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5671,7 +5811,7 @@ func (x *CurrentTimestamps) String() string {
 func (*CurrentTimestamps) ProtoMessage() {}
 
 func (x *CurrentTimestamps) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[50]
+	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[52]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5684,7 +5824,7 @@ func (x *CurrentTimestamps) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CurrentTimestamps.ProtoReflect.Descriptor instead.
 func (*CurrentTimestamps) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_compute_v1_expressions_proto_rawDescGZIP(), []int{50}
+	return file_nominal_protos_compute_v1_expressions_proto_rawDescGZIP(), []int{52}
 }
 
 // The duration of each range, as a point at the range's start, in `unit`s.
@@ -5700,7 +5840,7 @@ type NumericRangeDurationExpression struct {
 
 func (x *NumericRangeDurationExpression) Reset() {
 	*x = NumericRangeDurationExpression{}
-	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[51]
+	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[53]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5712,7 +5852,7 @@ func (x *NumericRangeDurationExpression) String() string {
 func (*NumericRangeDurationExpression) ProtoMessage() {}
 
 func (x *NumericRangeDurationExpression) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[51]
+	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[53]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5725,7 +5865,7 @@ func (x *NumericRangeDurationExpression) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use NumericRangeDurationExpression.ProtoReflect.Descriptor instead.
 func (*NumericRangeDurationExpression) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_compute_v1_expressions_proto_rawDescGZIP(), []int{51}
+	return file_nominal_protos_compute_v1_expressions_proto_rawDescGZIP(), []int{53}
 }
 
 func (x *NumericRangeDurationExpression) GetInput() *RangeExpression {
@@ -5760,7 +5900,7 @@ type ScalarUdfExpression struct {
 
 func (x *ScalarUdfExpression) Reset() {
 	*x = ScalarUdfExpression{}
-	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[52]
+	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[54]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5772,7 +5912,7 @@ func (x *ScalarUdfExpression) String() string {
 func (*ScalarUdfExpression) ProtoMessage() {}
 
 func (x *ScalarUdfExpression) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[52]
+	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[54]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5785,7 +5925,7 @@ func (x *ScalarUdfExpression) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ScalarUdfExpression.ProtoReflect.Descriptor instead.
 func (*ScalarUdfExpression) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_compute_v1_expressions_proto_rawDescGZIP(), []int{52}
+	return file_nominal_protos_compute_v1_expressions_proto_rawDescGZIP(), []int{54}
 }
 
 func (x *ScalarUdfExpression) GetInputs() []*SeriesExpression {
@@ -5814,7 +5954,7 @@ type NumericArrayIndexExpression struct {
 
 func (x *NumericArrayIndexExpression) Reset() {
 	*x = NumericArrayIndexExpression{}
-	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[53]
+	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[55]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5826,7 +5966,7 @@ func (x *NumericArrayIndexExpression) String() string {
 func (*NumericArrayIndexExpression) ProtoMessage() {}
 
 func (x *NumericArrayIndexExpression) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[53]
+	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[55]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5839,7 +5979,7 @@ func (x *NumericArrayIndexExpression) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use NumericArrayIndexExpression.ProtoReflect.Descriptor instead.
 func (*NumericArrayIndexExpression) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_compute_v1_expressions_proto_rawDescGZIP(), []int{53}
+	return file_nominal_protos_compute_v1_expressions_proto_rawDescGZIP(), []int{55}
 }
 
 func (x *NumericArrayIndexExpression) GetInput() *NumericArrayExpression {
@@ -5872,7 +6012,7 @@ type NumericIntervalTagsExpression struct {
 
 func (x *NumericIntervalTagsExpression) Reset() {
 	*x = NumericIntervalTagsExpression{}
-	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[54]
+	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[56]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5884,7 +6024,7 @@ func (x *NumericIntervalTagsExpression) String() string {
 func (*NumericIntervalTagsExpression) ProtoMessage() {}
 
 func (x *NumericIntervalTagsExpression) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[54]
+	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[56]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5897,7 +6037,7 @@ func (x *NumericIntervalTagsExpression) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use NumericIntervalTagsExpression.ProtoReflect.Descriptor instead.
 func (*NumericIntervalTagsExpression) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_compute_v1_expressions_proto_rawDescGZIP(), []int{54}
+	return file_nominal_protos_compute_v1_expressions_proto_rawDescGZIP(), []int{56}
 }
 
 func (x *NumericIntervalTagsExpression) GetInput() *NumericExpression {
@@ -5934,7 +6074,7 @@ type IntervalSourceExpression struct {
 
 func (x *IntervalSourceExpression) Reset() {
 	*x = IntervalSourceExpression{}
-	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[55]
+	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[57]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5946,7 +6086,7 @@ func (x *IntervalSourceExpression) String() string {
 func (*IntervalSourceExpression) ProtoMessage() {}
 
 func (x *IntervalSourceExpression) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[55]
+	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[57]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5959,7 +6099,7 @@ func (x *IntervalSourceExpression) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use IntervalSourceExpression.ProtoReflect.Descriptor instead.
 func (*IntervalSourceExpression) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_compute_v1_expressions_proto_rawDescGZIP(), []int{55}
+	return file_nominal_protos_compute_v1_expressions_proto_rawDescGZIP(), []int{57}
 }
 
 func (x *IntervalSourceExpression) GetKind() isIntervalSourceExpression_Kind {
@@ -6015,7 +6155,7 @@ type EventIntervals struct {
 
 func (x *EventIntervals) Reset() {
 	*x = EventIntervals{}
-	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[56]
+	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[58]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -6027,7 +6167,7 @@ func (x *EventIntervals) String() string {
 func (*EventIntervals) ProtoMessage() {}
 
 func (x *EventIntervals) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[56]
+	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[58]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -6040,7 +6180,7 @@ func (x *EventIntervals) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use EventIntervals.ProtoReflect.Descriptor instead.
 func (*EventIntervals) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_compute_v1_expressions_proto_rawDescGZIP(), []int{56}
+	return file_nominal_protos_compute_v1_expressions_proto_rawDescGZIP(), []int{58}
 }
 
 func (x *EventIntervals) GetQuery() *EventPredicateExpression {
@@ -6070,7 +6210,7 @@ type RangeIntervals struct {
 
 func (x *RangeIntervals) Reset() {
 	*x = RangeIntervals{}
-	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[57]
+	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[59]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -6082,7 +6222,7 @@ func (x *RangeIntervals) String() string {
 func (*RangeIntervals) ProtoMessage() {}
 
 func (x *RangeIntervals) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[57]
+	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[59]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -6095,7 +6235,7 @@ func (x *RangeIntervals) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use RangeIntervals.ProtoReflect.Descriptor instead.
 func (*RangeIntervals) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_compute_v1_expressions_proto_rawDescGZIP(), []int{57}
+	return file_nominal_protos_compute_v1_expressions_proto_rawDescGZIP(), []int{59}
 }
 
 func (x *RangeIntervals) GetInput() *RangeExpression {
@@ -6128,7 +6268,7 @@ type EventIntervalTag struct {
 
 func (x *EventIntervalTag) Reset() {
 	*x = EventIntervalTag{}
-	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[58]
+	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[60]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -6140,7 +6280,7 @@ func (x *EventIntervalTag) String() string {
 func (*EventIntervalTag) ProtoMessage() {}
 
 func (x *EventIntervalTag) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[58]
+	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[60]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -6153,7 +6293,7 @@ func (x *EventIntervalTag) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use EventIntervalTag.ProtoReflect.Descriptor instead.
 func (*EventIntervalTag) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_compute_v1_expressions_proto_rawDescGZIP(), []int{58}
+	return file_nominal_protos_compute_v1_expressions_proto_rawDescGZIP(), []int{60}
 }
 
 func (x *EventIntervalTag) GetKind() isEventIntervalTag_Kind {
@@ -6260,7 +6400,7 @@ type RangeIntervalTag struct {
 
 func (x *RangeIntervalTag) Reset() {
 	*x = RangeIntervalTag{}
-	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[59]
+	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[61]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -6272,7 +6412,7 @@ func (x *RangeIntervalTag) String() string {
 func (*RangeIntervalTag) ProtoMessage() {}
 
 func (x *RangeIntervalTag) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[59]
+	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[61]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -6285,7 +6425,7 @@ func (x *RangeIntervalTag) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use RangeIntervalTag.ProtoReflect.Descriptor instead.
 func (*RangeIntervalTag) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_compute_v1_expressions_proto_rawDescGZIP(), []int{59}
+	return file_nominal_protos_compute_v1_expressions_proto_rawDescGZIP(), []int{61}
 }
 
 func (x *RangeIntervalTag) GetKind() isRangeIntervalTag_Kind {
@@ -6339,7 +6479,7 @@ type IntervalIndexTag struct {
 
 func (x *IntervalIndexTag) Reset() {
 	*x = IntervalIndexTag{}
-	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[60]
+	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[62]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -6351,7 +6491,7 @@ func (x *IntervalIndexTag) String() string {
 func (*IntervalIndexTag) ProtoMessage() {}
 
 func (x *IntervalIndexTag) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[60]
+	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[62]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -6364,7 +6504,7 @@ func (x *IntervalIndexTag) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use IntervalIndexTag.ProtoReflect.Descriptor instead.
 func (*IntervalIndexTag) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_compute_v1_expressions_proto_rawDescGZIP(), []int{60}
+	return file_nominal_protos_compute_v1_expressions_proto_rawDescGZIP(), []int{62}
 }
 
 type IntervalStartTag struct {
@@ -6375,7 +6515,7 @@ type IntervalStartTag struct {
 
 func (x *IntervalStartTag) Reset() {
 	*x = IntervalStartTag{}
-	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[61]
+	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[63]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -6387,7 +6527,7 @@ func (x *IntervalStartTag) String() string {
 func (*IntervalStartTag) ProtoMessage() {}
 
 func (x *IntervalStartTag) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[61]
+	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[63]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -6400,7 +6540,7 @@ func (x *IntervalStartTag) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use IntervalStartTag.ProtoReflect.Descriptor instead.
 func (*IntervalStartTag) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_compute_v1_expressions_proto_rawDescGZIP(), []int{61}
+	return file_nominal_protos_compute_v1_expressions_proto_rawDescGZIP(), []int{63}
 }
 
 type EventLevelTag struct {
@@ -6411,7 +6551,7 @@ type EventLevelTag struct {
 
 func (x *EventLevelTag) Reset() {
 	*x = EventLevelTag{}
-	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[62]
+	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[64]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -6423,7 +6563,7 @@ func (x *EventLevelTag) String() string {
 func (*EventLevelTag) ProtoMessage() {}
 
 func (x *EventLevelTag) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[62]
+	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[64]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -6436,7 +6576,7 @@ func (x *EventLevelTag) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use EventLevelTag.ProtoReflect.Descriptor instead.
 func (*EventLevelTag) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_compute_v1_expressions_proto_rawDescGZIP(), []int{62}
+	return file_nominal_protos_compute_v1_expressions_proto_rawDescGZIP(), []int{64}
 }
 
 // The timestamp subtracted from each point of an interval.
@@ -6454,7 +6594,7 @@ type IntervalTimeShift struct {
 
 func (x *IntervalTimeShift) Reset() {
 	*x = IntervalTimeShift{}
-	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[63]
+	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[65]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -6466,7 +6606,7 @@ func (x *IntervalTimeShift) String() string {
 func (*IntervalTimeShift) ProtoMessage() {}
 
 func (x *IntervalTimeShift) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[63]
+	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[65]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -6479,7 +6619,7 @@ func (x *IntervalTimeShift) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use IntervalTimeShift.ProtoReflect.Descriptor instead.
 func (*IntervalTimeShift) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_compute_v1_expressions_proto_rawDescGZIP(), []int{63}
+	return file_nominal_protos_compute_v1_expressions_proto_rawDescGZIP(), []int{65}
 }
 
 func (x *IntervalTimeShift) GetKind() isIntervalTimeShift_Kind {
@@ -6549,7 +6689,7 @@ type IntervalStartAnchor struct {
 
 func (x *IntervalStartAnchor) Reset() {
 	*x = IntervalStartAnchor{}
-	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[64]
+	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[66]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -6561,7 +6701,7 @@ func (x *IntervalStartAnchor) String() string {
 func (*IntervalStartAnchor) ProtoMessage() {}
 
 func (x *IntervalStartAnchor) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[64]
+	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[66]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -6574,7 +6714,7 @@ func (x *IntervalStartAnchor) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use IntervalStartAnchor.ProtoReflect.Descriptor instead.
 func (*IntervalStartAnchor) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_compute_v1_expressions_proto_rawDescGZIP(), []int{64}
+	return file_nominal_protos_compute_v1_expressions_proto_rawDescGZIP(), []int{66}
 }
 
 type IntervalEndAnchor struct {
@@ -6585,7 +6725,7 @@ type IntervalEndAnchor struct {
 
 func (x *IntervalEndAnchor) Reset() {
 	*x = IntervalEndAnchor{}
-	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[65]
+	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[67]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -6597,7 +6737,7 @@ func (x *IntervalEndAnchor) String() string {
 func (*IntervalEndAnchor) ProtoMessage() {}
 
 func (x *IntervalEndAnchor) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[65]
+	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[67]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -6610,7 +6750,7 @@ func (x *IntervalEndAnchor) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use IntervalEndAnchor.ProtoReflect.Descriptor instead.
 func (*IntervalEndAnchor) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_compute_v1_expressions_proto_rawDescGZIP(), []int{65}
+	return file_nominal_protos_compute_v1_expressions_proto_rawDescGZIP(), []int{67}
 }
 
 // The event at position `index` among the events matching `query` whose timestamp falls in the
@@ -6629,7 +6769,7 @@ type EventOrdinalSelection struct {
 
 func (x *EventOrdinalSelection) Reset() {
 	*x = EventOrdinalSelection{}
-	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[66]
+	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[68]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -6641,7 +6781,7 @@ func (x *EventOrdinalSelection) String() string {
 func (*EventOrdinalSelection) ProtoMessage() {}
 
 func (x *EventOrdinalSelection) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[66]
+	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[68]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -6654,7 +6794,7 @@ func (x *EventOrdinalSelection) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use EventOrdinalSelection.ProtoReflect.Descriptor instead.
 func (*EventOrdinalSelection) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_compute_v1_expressions_proto_rawDescGZIP(), []int{66}
+	return file_nominal_protos_compute_v1_expressions_proto_rawDescGZIP(), []int{68}
 }
 
 func (x *EventOrdinalSelection) GetQuery() *EventPredicateExpression {
@@ -6693,7 +6833,7 @@ type RangeOrdinalSelection struct {
 
 func (x *RangeOrdinalSelection) Reset() {
 	*x = RangeOrdinalSelection{}
-	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[67]
+	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[69]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -6705,7 +6845,7 @@ func (x *RangeOrdinalSelection) String() string {
 func (*RangeOrdinalSelection) ProtoMessage() {}
 
 func (x *RangeOrdinalSelection) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[67]
+	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[69]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -6718,7 +6858,7 @@ func (x *RangeOrdinalSelection) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use RangeOrdinalSelection.ProtoReflect.Descriptor instead.
 func (*RangeOrdinalSelection) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_compute_v1_expressions_proto_rawDescGZIP(), []int{67}
+	return file_nominal_protos_compute_v1_expressions_proto_rawDescGZIP(), []int{69}
 }
 
 func (x *RangeOrdinalSelection) GetInput() *RangeExpression {
@@ -6759,7 +6899,7 @@ type RunAnchorExpression struct {
 
 func (x *RunAnchorExpression) Reset() {
 	*x = RunAnchorExpression{}
-	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[68]
+	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[70]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -6771,7 +6911,7 @@ func (x *RunAnchorExpression) String() string {
 func (*RunAnchorExpression) ProtoMessage() {}
 
 func (x *RunAnchorExpression) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[68]
+	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[70]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -6784,7 +6924,7 @@ func (x *RunAnchorExpression) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use RunAnchorExpression.ProtoReflect.Descriptor instead.
 func (*RunAnchorExpression) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_compute_v1_expressions_proto_rawDescGZIP(), []int{68}
+	return file_nominal_protos_compute_v1_expressions_proto_rawDescGZIP(), []int{70}
 }
 
 func (x *RunAnchorExpression) GetKind() isRunAnchorExpression_Kind {
@@ -6872,7 +7012,7 @@ type DatasetAnchorAlignment struct {
 
 func (x *DatasetAnchorAlignment) Reset() {
 	*x = DatasetAnchorAlignment{}
-	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[69]
+	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[71]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -6884,7 +7024,7 @@ func (x *DatasetAnchorAlignment) String() string {
 func (*DatasetAnchorAlignment) ProtoMessage() {}
 
 func (x *DatasetAnchorAlignment) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[69]
+	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[71]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -6897,7 +7037,7 @@ func (x *DatasetAnchorAlignment) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DatasetAnchorAlignment.ProtoReflect.Descriptor instead.
 func (*DatasetAnchorAlignment) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_compute_v1_expressions_proto_rawDescGZIP(), []int{69}
+	return file_nominal_protos_compute_v1_expressions_proto_rawDescGZIP(), []int{71}
 }
 
 func (x *DatasetAnchorAlignment) GetInput() *DatasetExpression {
@@ -6955,7 +7095,7 @@ type CategoricalExpression struct {
 
 func (x *CategoricalExpression) Reset() {
 	*x = CategoricalExpression{}
-	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[70]
+	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[72]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -6967,7 +7107,7 @@ func (x *CategoricalExpression) String() string {
 func (*CategoricalExpression) ProtoMessage() {}
 
 func (x *CategoricalExpression) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[70]
+	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[72]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -6980,7 +7120,7 @@ func (x *CategoricalExpression) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CategoricalExpression.ProtoReflect.Descriptor instead.
 func (*CategoricalExpression) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_compute_v1_expressions_proto_rawDescGZIP(), []int{70}
+	return file_nominal_protos_compute_v1_expressions_proto_rawDescGZIP(), []int{72}
 }
 
 func (x *CategoricalExpression) GetKind() isCategoricalExpression_Kind {
@@ -7352,7 +7492,7 @@ type CategoricalDuplicateTimestampAggregationExpression struct {
 
 func (x *CategoricalDuplicateTimestampAggregationExpression) Reset() {
 	*x = CategoricalDuplicateTimestampAggregationExpression{}
-	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[71]
+	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[73]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -7364,7 +7504,7 @@ func (x *CategoricalDuplicateTimestampAggregationExpression) String() string {
 func (*CategoricalDuplicateTimestampAggregationExpression) ProtoMessage() {}
 
 func (x *CategoricalDuplicateTimestampAggregationExpression) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[71]
+	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[73]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -7377,7 +7517,7 @@ func (x *CategoricalDuplicateTimestampAggregationExpression) ProtoReflect() prot
 
 // Deprecated: Use CategoricalDuplicateTimestampAggregationExpression.ProtoReflect.Descriptor instead.
 func (*CategoricalDuplicateTimestampAggregationExpression) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_compute_v1_expressions_proto_rawDescGZIP(), []int{71}
+	return file_nominal_protos_compute_v1_expressions_proto_rawDescGZIP(), []int{73}
 }
 
 func (x *CategoricalDuplicateTimestampAggregationExpression) GetInput() *CategoricalExpression {
@@ -7409,7 +7549,7 @@ type CategoricalResampleExpression struct {
 
 func (x *CategoricalResampleExpression) Reset() {
 	*x = CategoricalResampleExpression{}
-	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[72]
+	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[74]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -7421,7 +7561,7 @@ func (x *CategoricalResampleExpression) String() string {
 func (*CategoricalResampleExpression) ProtoMessage() {}
 
 func (x *CategoricalResampleExpression) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[72]
+	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[74]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -7434,7 +7574,7 @@ func (x *CategoricalResampleExpression) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CategoricalResampleExpression.ProtoReflect.Descriptor instead.
 func (*CategoricalResampleExpression) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_compute_v1_expressions_proto_rawDescGZIP(), []int{72}
+	return file_nominal_protos_compute_v1_expressions_proto_rawDescGZIP(), []int{74}
 }
 
 func (x *CategoricalResampleExpression) GetInput() *CategoricalExpression {
@@ -7470,7 +7610,7 @@ type CategoricalResampleV2Expression struct {
 
 func (x *CategoricalResampleV2Expression) Reset() {
 	*x = CategoricalResampleV2Expression{}
-	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[73]
+	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[75]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -7482,7 +7622,7 @@ func (x *CategoricalResampleV2Expression) String() string {
 func (*CategoricalResampleV2Expression) ProtoMessage() {}
 
 func (x *CategoricalResampleV2Expression) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[73]
+	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[75]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -7495,7 +7635,7 @@ func (x *CategoricalResampleV2Expression) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CategoricalResampleV2Expression.ProtoReflect.Descriptor instead.
 func (*CategoricalResampleV2Expression) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_compute_v1_expressions_proto_rawDescGZIP(), []int{73}
+	return file_nominal_protos_compute_v1_expressions_proto_rawDescGZIP(), []int{75}
 }
 
 func (x *CategoricalResampleV2Expression) GetInput() *CategoricalExpression {
@@ -7523,7 +7663,7 @@ type CategoricalNthPointDownsampleExpression struct {
 
 func (x *CategoricalNthPointDownsampleExpression) Reset() {
 	*x = CategoricalNthPointDownsampleExpression{}
-	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[74]
+	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[76]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -7535,7 +7675,7 @@ func (x *CategoricalNthPointDownsampleExpression) String() string {
 func (*CategoricalNthPointDownsampleExpression) ProtoMessage() {}
 
 func (x *CategoricalNthPointDownsampleExpression) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[74]
+	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[76]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -7548,7 +7688,7 @@ func (x *CategoricalNthPointDownsampleExpression) ProtoReflect() protoreflect.Me
 
 // Deprecated: Use CategoricalNthPointDownsampleExpression.ProtoReflect.Descriptor instead.
 func (*CategoricalNthPointDownsampleExpression) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_compute_v1_expressions_proto_rawDescGZIP(), []int{74}
+	return file_nominal_protos_compute_v1_expressions_proto_rawDescGZIP(), []int{76}
 }
 
 func (x *CategoricalNthPointDownsampleExpression) GetInput() *CategoricalExpression {
@@ -7577,7 +7717,7 @@ type CategoricalTimeRangeFilterExpression struct {
 
 func (x *CategoricalTimeRangeFilterExpression) Reset() {
 	*x = CategoricalTimeRangeFilterExpression{}
-	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[75]
+	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[77]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -7589,7 +7729,7 @@ func (x *CategoricalTimeRangeFilterExpression) String() string {
 func (*CategoricalTimeRangeFilterExpression) ProtoMessage() {}
 
 func (x *CategoricalTimeRangeFilterExpression) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[75]
+	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[77]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -7602,7 +7742,7 @@ func (x *CategoricalTimeRangeFilterExpression) ProtoReflect() protoreflect.Messa
 
 // Deprecated: Use CategoricalTimeRangeFilterExpression.ProtoReflect.Descriptor instead.
 func (*CategoricalTimeRangeFilterExpression) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_compute_v1_expressions_proto_rawDescGZIP(), []int{75}
+	return file_nominal_protos_compute_v1_expressions_proto_rawDescGZIP(), []int{77}
 }
 
 func (x *CategoricalTimeRangeFilterExpression) GetInput() *CategoricalExpression {
@@ -7639,7 +7779,7 @@ type CategoricalTimeShiftExpression struct {
 
 func (x *CategoricalTimeShiftExpression) Reset() {
 	*x = CategoricalTimeShiftExpression{}
-	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[76]
+	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[78]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -7651,7 +7791,7 @@ func (x *CategoricalTimeShiftExpression) String() string {
 func (*CategoricalTimeShiftExpression) ProtoMessage() {}
 
 func (x *CategoricalTimeShiftExpression) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[76]
+	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[78]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -7664,7 +7804,7 @@ func (x *CategoricalTimeShiftExpression) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CategoricalTimeShiftExpression.ProtoReflect.Descriptor instead.
 func (*CategoricalTimeShiftExpression) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_compute_v1_expressions_proto_rawDescGZIP(), []int{76}
+	return file_nominal_protos_compute_v1_expressions_proto_rawDescGZIP(), []int{78}
 }
 
 func (x *CategoricalTimeShiftExpression) GetInput() *CategoricalExpression {
@@ -7692,7 +7832,7 @@ type CategoricalTimeShiftV2Expression struct {
 
 func (x *CategoricalTimeShiftV2Expression) Reset() {
 	*x = CategoricalTimeShiftV2Expression{}
-	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[77]
+	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[79]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -7704,7 +7844,7 @@ func (x *CategoricalTimeShiftV2Expression) String() string {
 func (*CategoricalTimeShiftV2Expression) ProtoMessage() {}
 
 func (x *CategoricalTimeShiftV2Expression) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[77]
+	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[79]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -7717,7 +7857,7 @@ func (x *CategoricalTimeShiftV2Expression) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CategoricalTimeShiftV2Expression.ProtoReflect.Descriptor instead.
 func (*CategoricalTimeShiftV2Expression) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_compute_v1_expressions_proto_rawDescGZIP(), []int{77}
+	return file_nominal_protos_compute_v1_expressions_proto_rawDescGZIP(), []int{79}
 }
 
 func (x *CategoricalTimeShiftV2Expression) GetInput() *CategoricalExpression {
@@ -7746,7 +7886,7 @@ type CategoricalUnionExpression struct {
 
 func (x *CategoricalUnionExpression) Reset() {
 	*x = CategoricalUnionExpression{}
-	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[78]
+	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[80]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -7758,7 +7898,7 @@ func (x *CategoricalUnionExpression) String() string {
 func (*CategoricalUnionExpression) ProtoMessage() {}
 
 func (x *CategoricalUnionExpression) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[78]
+	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[80]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -7771,7 +7911,7 @@ func (x *CategoricalUnionExpression) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CategoricalUnionExpression.ProtoReflect.Descriptor instead.
 func (*CategoricalUnionExpression) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_compute_v1_expressions_proto_rawDescGZIP(), []int{78}
+	return file_nominal_protos_compute_v1_expressions_proto_rawDescGZIP(), []int{80}
 }
 
 func (x *CategoricalUnionExpression) GetInputs() []*CategoricalExpression {
@@ -7799,7 +7939,7 @@ type CategoricalRangeFilterExpression struct {
 
 func (x *CategoricalRangeFilterExpression) Reset() {
 	*x = CategoricalRangeFilterExpression{}
-	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[79]
+	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[81]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -7811,7 +7951,7 @@ func (x *CategoricalRangeFilterExpression) String() string {
 func (*CategoricalRangeFilterExpression) ProtoMessage() {}
 
 func (x *CategoricalRangeFilterExpression) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[79]
+	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[81]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -7824,7 +7964,7 @@ func (x *CategoricalRangeFilterExpression) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CategoricalRangeFilterExpression.ProtoReflect.Descriptor instead.
 func (*CategoricalRangeFilterExpression) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_compute_v1_expressions_proto_rawDescGZIP(), []int{79}
+	return file_nominal_protos_compute_v1_expressions_proto_rawDescGZIP(), []int{81}
 }
 
 func (x *CategoricalRangeFilterExpression) GetInput() *CategoricalExpression {
@@ -7856,7 +7996,7 @@ type CategoricalNumericMappingExpression struct {
 
 func (x *CategoricalNumericMappingExpression) Reset() {
 	*x = CategoricalNumericMappingExpression{}
-	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[80]
+	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[82]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -7868,7 +8008,7 @@ func (x *CategoricalNumericMappingExpression) String() string {
 func (*CategoricalNumericMappingExpression) ProtoMessage() {}
 
 func (x *CategoricalNumericMappingExpression) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[80]
+	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[82]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -7881,7 +8021,7 @@ func (x *CategoricalNumericMappingExpression) ProtoReflect() protoreflect.Messag
 
 // Deprecated: Use CategoricalNumericMappingExpression.ProtoReflect.Descriptor instead.
 func (*CategoricalNumericMappingExpression) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_compute_v1_expressions_proto_rawDescGZIP(), []int{80}
+	return file_nominal_protos_compute_v1_expressions_proto_rawDescGZIP(), []int{82}
 }
 
 func (x *CategoricalNumericMappingExpression) GetInput() *NumericExpression {
@@ -7918,7 +8058,7 @@ type NumericCategoricalInterval struct {
 
 func (x *NumericCategoricalInterval) Reset() {
 	*x = NumericCategoricalInterval{}
-	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[81]
+	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[83]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -7930,7 +8070,7 @@ func (x *NumericCategoricalInterval) String() string {
 func (*NumericCategoricalInterval) ProtoMessage() {}
 
 func (x *NumericCategoricalInterval) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[81]
+	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[83]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -7943,7 +8083,7 @@ func (x *NumericCategoricalInterval) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use NumericCategoricalInterval.ProtoReflect.Descriptor instead.
 func (*NumericCategoricalInterval) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_compute_v1_expressions_proto_rawDescGZIP(), []int{81}
+	return file_nominal_protos_compute_v1_expressions_proto_rawDescGZIP(), []int{83}
 }
 
 func (x *NumericCategoricalInterval) GetStart() *DoubleConstant {
@@ -7979,7 +8119,7 @@ type CategoricalArrayIndexExpression struct {
 
 func (x *CategoricalArrayIndexExpression) Reset() {
 	*x = CategoricalArrayIndexExpression{}
-	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[82]
+	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[84]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -7991,7 +8131,7 @@ func (x *CategoricalArrayIndexExpression) String() string {
 func (*CategoricalArrayIndexExpression) ProtoMessage() {}
 
 func (x *CategoricalArrayIndexExpression) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[82]
+	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[84]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -8004,7 +8144,7 @@ func (x *CategoricalArrayIndexExpression) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CategoricalArrayIndexExpression.ProtoReflect.Descriptor instead.
 func (*CategoricalArrayIndexExpression) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_compute_v1_expressions_proto_rawDescGZIP(), []int{82}
+	return file_nominal_protos_compute_v1_expressions_proto_rawDescGZIP(), []int{84}
 }
 
 func (x *CategoricalArrayIndexExpression) GetInput() *CategoricalArrayExpression {
@@ -8033,7 +8173,7 @@ type CategoricalStructFieldExpression struct {
 
 func (x *CategoricalStructFieldExpression) Reset() {
 	*x = CategoricalStructFieldExpression{}
-	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[83]
+	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[85]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -8045,7 +8185,7 @@ func (x *CategoricalStructFieldExpression) String() string {
 func (*CategoricalStructFieldExpression) ProtoMessage() {}
 
 func (x *CategoricalStructFieldExpression) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[83]
+	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[85]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -8058,7 +8198,7 @@ func (x *CategoricalStructFieldExpression) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CategoricalStructFieldExpression.ProtoReflect.Descriptor instead.
 func (*CategoricalStructFieldExpression) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_compute_v1_expressions_proto_rawDescGZIP(), []int{83}
+	return file_nominal_protos_compute_v1_expressions_proto_rawDescGZIP(), []int{85}
 }
 
 func (x *CategoricalStructFieldExpression) GetInput() *StructExpression {
@@ -8090,7 +8230,7 @@ type CategoricalEventsExpression struct {
 
 func (x *CategoricalEventsExpression) Reset() {
 	*x = CategoricalEventsExpression{}
-	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[84]
+	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[86]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -8102,7 +8242,7 @@ func (x *CategoricalEventsExpression) String() string {
 func (*CategoricalEventsExpression) ProtoMessage() {}
 
 func (x *CategoricalEventsExpression) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[84]
+	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[86]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -8115,7 +8255,7 @@ func (x *CategoricalEventsExpression) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CategoricalEventsExpression.ProtoReflect.Descriptor instead.
 func (*CategoricalEventsExpression) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_compute_v1_expressions_proto_rawDescGZIP(), []int{84}
+	return file_nominal_protos_compute_v1_expressions_proto_rawDescGZIP(), []int{86}
 }
 
 func (x *CategoricalEventsExpression) GetQuery() *EventPredicateExpression {
@@ -8176,7 +8316,7 @@ type EventLevelValue struct {
 
 func (x *EventLevelValue) Reset() {
 	*x = EventLevelValue{}
-	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[85]
+	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[87]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -8188,7 +8328,7 @@ func (x *EventLevelValue) String() string {
 func (*EventLevelValue) ProtoMessage() {}
 
 func (x *EventLevelValue) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[85]
+	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[87]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -8201,7 +8341,7 @@ func (x *EventLevelValue) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use EventLevelValue.ProtoReflect.Descriptor instead.
 func (*EventLevelValue) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_compute_v1_expressions_proto_rawDescGZIP(), []int{85}
+	return file_nominal_protos_compute_v1_expressions_proto_rawDescGZIP(), []int{87}
 }
 
 type CategoricalAggregationExpression struct {
@@ -8214,7 +8354,7 @@ type CategoricalAggregationExpression struct {
 
 func (x *CategoricalAggregationExpression) Reset() {
 	*x = CategoricalAggregationExpression{}
-	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[86]
+	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[88]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -8226,7 +8366,7 @@ func (x *CategoricalAggregationExpression) String() string {
 func (*CategoricalAggregationExpression) ProtoMessage() {}
 
 func (x *CategoricalAggregationExpression) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[86]
+	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[88]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -8239,7 +8379,7 @@ func (x *CategoricalAggregationExpression) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CategoricalAggregationExpression.ProtoReflect.Descriptor instead.
 func (*CategoricalAggregationExpression) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_compute_v1_expressions_proto_rawDescGZIP(), []int{86}
+	return file_nominal_protos_compute_v1_expressions_proto_rawDescGZIP(), []int{88}
 }
 
 func (x *CategoricalAggregationExpression) GetInput() *AggregationInput {
@@ -8266,7 +8406,7 @@ type CategoricalTagFilterExpression struct {
 
 func (x *CategoricalTagFilterExpression) Reset() {
 	*x = CategoricalTagFilterExpression{}
-	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[87]
+	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[89]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -8278,7 +8418,7 @@ func (x *CategoricalTagFilterExpression) String() string {
 func (*CategoricalTagFilterExpression) ProtoMessage() {}
 
 func (x *CategoricalTagFilterExpression) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[87]
+	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[89]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -8291,7 +8431,7 @@ func (x *CategoricalTagFilterExpression) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CategoricalTagFilterExpression.ProtoReflect.Descriptor instead.
 func (*CategoricalTagFilterExpression) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_compute_v1_expressions_proto_rawDescGZIP(), []int{87}
+	return file_nominal_protos_compute_v1_expressions_proto_rawDescGZIP(), []int{89}
 }
 
 func (x *CategoricalTagFilterExpression) GetInput() *CategoricalExpression {
@@ -8320,7 +8460,7 @@ type CategoricalTagSelectionExpression struct {
 
 func (x *CategoricalTagSelectionExpression) Reset() {
 	*x = CategoricalTagSelectionExpression{}
-	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[88]
+	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[90]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -8332,7 +8472,7 @@ func (x *CategoricalTagSelectionExpression) String() string {
 func (*CategoricalTagSelectionExpression) ProtoMessage() {}
 
 func (x *CategoricalTagSelectionExpression) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[88]
+	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[90]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -8345,7 +8485,7 @@ func (x *CategoricalTagSelectionExpression) ProtoReflect() protoreflect.Message 
 
 // Deprecated: Use CategoricalTagSelectionExpression.ProtoReflect.Descriptor instead.
 func (*CategoricalTagSelectionExpression) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_compute_v1_expressions_proto_rawDescGZIP(), []int{88}
+	return file_nominal_protos_compute_v1_expressions_proto_rawDescGZIP(), []int{90}
 }
 
 func (x *CategoricalTagSelectionExpression) GetInput() *CategoricalExpression {
@@ -8372,7 +8512,7 @@ type CategoricalToStartOfIntervalExpression struct {
 
 func (x *CategoricalToStartOfIntervalExpression) Reset() {
 	*x = CategoricalToStartOfIntervalExpression{}
-	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[89]
+	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[91]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -8384,7 +8524,7 @@ func (x *CategoricalToStartOfIntervalExpression) String() string {
 func (*CategoricalToStartOfIntervalExpression) ProtoMessage() {}
 
 func (x *CategoricalToStartOfIntervalExpression) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[89]
+	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[91]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -8397,7 +8537,7 @@ func (x *CategoricalToStartOfIntervalExpression) ProtoReflect() protoreflect.Mes
 
 // Deprecated: Use CategoricalToStartOfIntervalExpression.ProtoReflect.Descriptor instead.
 func (*CategoricalToStartOfIntervalExpression) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_compute_v1_expressions_proto_rawDescGZIP(), []int{89}
+	return file_nominal_protos_compute_v1_expressions_proto_rawDescGZIP(), []int{91}
 }
 
 func (x *CategoricalToStartOfIntervalExpression) GetInput() *CategoricalExpression {
@@ -8428,7 +8568,7 @@ type BooleanExpression struct {
 
 func (x *BooleanExpression) Reset() {
 	*x = BooleanExpression{}
-	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[90]
+	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[92]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -8440,7 +8580,7 @@ func (x *BooleanExpression) String() string {
 func (*BooleanExpression) ProtoMessage() {}
 
 func (x *BooleanExpression) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[90]
+	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[92]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -8453,7 +8593,7 @@ func (x *BooleanExpression) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use BooleanExpression.ProtoReflect.Descriptor instead.
 func (*BooleanExpression) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_compute_v1_expressions_proto_rawDescGZIP(), []int{90}
+	return file_nominal_protos_compute_v1_expressions_proto_rawDescGZIP(), []int{92}
 }
 
 func (x *BooleanExpression) GetKind() isBooleanExpression_Kind {
@@ -8508,7 +8648,7 @@ type NumericUnaryExpression struct {
 
 func (x *NumericUnaryExpression) Reset() {
 	*x = NumericUnaryExpression{}
-	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[91]
+	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[93]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -8520,7 +8660,7 @@ func (x *NumericUnaryExpression) String() string {
 func (*NumericUnaryExpression) ProtoMessage() {}
 
 func (x *NumericUnaryExpression) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[91]
+	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[93]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -8533,7 +8673,7 @@ func (x *NumericUnaryExpression) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use NumericUnaryExpression.ProtoReflect.Descriptor instead.
 func (*NumericUnaryExpression) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_compute_v1_expressions_proto_rawDescGZIP(), []int{91}
+	return file_nominal_protos_compute_v1_expressions_proto_rawDescGZIP(), []int{93}
 }
 
 func (x *NumericUnaryExpression) GetOperation() UnaryNumericOperation {
@@ -8572,7 +8712,7 @@ type NumericBinaryExpression struct {
 
 func (x *NumericBinaryExpression) Reset() {
 	*x = NumericBinaryExpression{}
-	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[92]
+	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[94]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -8584,7 +8724,7 @@ func (x *NumericBinaryExpression) String() string {
 func (*NumericBinaryExpression) ProtoMessage() {}
 
 func (x *NumericBinaryExpression) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[92]
+	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[94]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -8597,7 +8737,7 @@ func (x *NumericBinaryExpression) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use NumericBinaryExpression.ProtoReflect.Descriptor instead.
 func (*NumericBinaryExpression) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_compute_v1_expressions_proto_rawDescGZIP(), []int{92}
+	return file_nominal_protos_compute_v1_expressions_proto_rawDescGZIP(), []int{94}
 }
 
 func (x *NumericBinaryExpression) GetOperation() BinaryNumericOperation {
@@ -8649,7 +8789,7 @@ type NumericNaryExpression struct {
 
 func (x *NumericNaryExpression) Reset() {
 	*x = NumericNaryExpression{}
-	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[93]
+	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[95]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -8661,7 +8801,7 @@ func (x *NumericNaryExpression) String() string {
 func (*NumericNaryExpression) ProtoMessage() {}
 
 func (x *NumericNaryExpression) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[93]
+	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[95]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -8674,7 +8814,7 @@ func (x *NumericNaryExpression) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use NumericNaryExpression.ProtoReflect.Descriptor instead.
 func (*NumericNaryExpression) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_compute_v1_expressions_proto_rawDescGZIP(), []int{93}
+	return file_nominal_protos_compute_v1_expressions_proto_rawDescGZIP(), []int{95}
 }
 
 func (x *NumericNaryExpression) GetOperation() NaryNumericOperation {
@@ -8714,7 +8854,7 @@ type NumericBitwiseExpression struct {
 
 func (x *NumericBitwiseExpression) Reset() {
 	*x = NumericBitwiseExpression{}
-	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[94]
+	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[96]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -8726,7 +8866,7 @@ func (x *NumericBitwiseExpression) String() string {
 func (*NumericBitwiseExpression) ProtoMessage() {}
 
 func (x *NumericBitwiseExpression) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[94]
+	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[96]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -8739,7 +8879,7 @@ func (x *NumericBitwiseExpression) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use NumericBitwiseExpression.ProtoReflect.Descriptor instead.
 func (*NumericBitwiseExpression) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_compute_v1_expressions_proto_rawDescGZIP(), []int{94}
+	return file_nominal_protos_compute_v1_expressions_proto_rawDescGZIP(), []int{96}
 }
 
 func (x *NumericBitwiseExpression) GetOperation() BitwiseOperation {
@@ -8776,7 +8916,7 @@ type NumericConditionalExpression struct {
 
 func (x *NumericConditionalExpression) Reset() {
 	*x = NumericConditionalExpression{}
-	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[95]
+	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[97]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -8788,7 +8928,7 @@ func (x *NumericConditionalExpression) String() string {
 func (*NumericConditionalExpression) ProtoMessage() {}
 
 func (x *NumericConditionalExpression) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[95]
+	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[97]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -8801,7 +8941,7 @@ func (x *NumericConditionalExpression) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use NumericConditionalExpression.ProtoReflect.Descriptor instead.
 func (*NumericConditionalExpression) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_compute_v1_expressions_proto_rawDescGZIP(), []int{95}
+	return file_nominal_protos_compute_v1_expressions_proto_rawDescGZIP(), []int{97}
 }
 
 func (x *NumericConditionalExpression) GetCondition() *BooleanExpression {
@@ -8837,7 +8977,7 @@ type ComparisonExpression struct {
 
 func (x *ComparisonExpression) Reset() {
 	*x = ComparisonExpression{}
-	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[96]
+	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[98]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -8849,7 +8989,7 @@ func (x *ComparisonExpression) String() string {
 func (*ComparisonExpression) ProtoMessage() {}
 
 func (x *ComparisonExpression) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[96]
+	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[98]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -8862,7 +9002,7 @@ func (x *ComparisonExpression) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ComparisonExpression.ProtoReflect.Descriptor instead.
 func (*ComparisonExpression) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_compute_v1_expressions_proto_rawDescGZIP(), []int{96}
+	return file_nominal_protos_compute_v1_expressions_proto_rawDescGZIP(), []int{98}
 }
 
 func (x *ComparisonExpression) GetOperation() ComparisonOperation {
@@ -8898,7 +9038,7 @@ type LogicalExpression struct {
 
 func (x *LogicalExpression) Reset() {
 	*x = LogicalExpression{}
-	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[97]
+	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[99]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -8910,7 +9050,7 @@ func (x *LogicalExpression) String() string {
 func (*LogicalExpression) ProtoMessage() {}
 
 func (x *LogicalExpression) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[97]
+	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[99]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -8923,7 +9063,7 @@ func (x *LogicalExpression) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use LogicalExpression.ProtoReflect.Descriptor instead.
 func (*LogicalExpression) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_compute_v1_expressions_proto_rawDescGZIP(), []int{97}
+	return file_nominal_protos_compute_v1_expressions_proto_rawDescGZIP(), []int{99}
 }
 
 func (x *LogicalExpression) GetOperation() LogicalOperation {
@@ -8960,7 +9100,7 @@ type InterpolationConfiguration struct {
 
 func (x *InterpolationConfiguration) Reset() {
 	*x = InterpolationConfiguration{}
-	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[98]
+	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[100]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -8972,7 +9112,7 @@ func (x *InterpolationConfiguration) String() string {
 func (*InterpolationConfiguration) ProtoMessage() {}
 
 func (x *InterpolationConfiguration) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[98]
+	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[100]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -8985,7 +9125,7 @@ func (x *InterpolationConfiguration) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use InterpolationConfiguration.ProtoReflect.Descriptor instead.
 func (*InterpolationConfiguration) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_compute_v1_expressions_proto_rawDescGZIP(), []int{98}
+	return file_nominal_protos_compute_v1_expressions_proto_rawDescGZIP(), []int{100}
 }
 
 func (x *InterpolationConfiguration) GetKind() isInterpolationConfiguration_Kind {
@@ -9026,7 +9166,7 @@ type ForwardFillInterpolation struct {
 
 func (x *ForwardFillInterpolation) Reset() {
 	*x = ForwardFillInterpolation{}
-	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[99]
+	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[101]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -9038,7 +9178,7 @@ func (x *ForwardFillInterpolation) String() string {
 func (*ForwardFillInterpolation) ProtoMessage() {}
 
 func (x *ForwardFillInterpolation) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[99]
+	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[101]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -9051,7 +9191,7 @@ func (x *ForwardFillInterpolation) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ForwardFillInterpolation.ProtoReflect.Descriptor instead.
 func (*ForwardFillInterpolation) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_compute_v1_expressions_proto_rawDescGZIP(), []int{99}
+	return file_nominal_protos_compute_v1_expressions_proto_rawDescGZIP(), []int{101}
 }
 
 func (x *ForwardFillInterpolation) GetMaxFillDuration() *DurationConstant {
@@ -9074,7 +9214,7 @@ type NumericCumulativeSumExpression struct {
 
 func (x *NumericCumulativeSumExpression) Reset() {
 	*x = NumericCumulativeSumExpression{}
-	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[100]
+	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[102]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -9086,7 +9226,7 @@ func (x *NumericCumulativeSumExpression) String() string {
 func (*NumericCumulativeSumExpression) ProtoMessage() {}
 
 func (x *NumericCumulativeSumExpression) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[100]
+	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[102]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -9099,7 +9239,7 @@ func (x *NumericCumulativeSumExpression) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use NumericCumulativeSumExpression.ProtoReflect.Descriptor instead.
 func (*NumericCumulativeSumExpression) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_compute_v1_expressions_proto_rawDescGZIP(), []int{100}
+	return file_nominal_protos_compute_v1_expressions_proto_rawDescGZIP(), []int{102}
 }
 
 func (x *NumericCumulativeSumExpression) GetInput() *NumericExpression {
@@ -9131,7 +9271,7 @@ type NumericDerivativeExpression struct {
 
 func (x *NumericDerivativeExpression) Reset() {
 	*x = NumericDerivativeExpression{}
-	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[101]
+	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[103]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -9143,7 +9283,7 @@ func (x *NumericDerivativeExpression) String() string {
 func (*NumericDerivativeExpression) ProtoMessage() {}
 
 func (x *NumericDerivativeExpression) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[101]
+	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[103]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -9156,7 +9296,7 @@ func (x *NumericDerivativeExpression) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use NumericDerivativeExpression.ProtoReflect.Descriptor instead.
 func (*NumericDerivativeExpression) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_compute_v1_expressions_proto_rawDescGZIP(), []int{101}
+	return file_nominal_protos_compute_v1_expressions_proto_rawDescGZIP(), []int{103}
 }
 
 func (x *NumericDerivativeExpression) GetInput() *NumericExpression {
@@ -9195,7 +9335,7 @@ type NumericIntegralExpression struct {
 
 func (x *NumericIntegralExpression) Reset() {
 	*x = NumericIntegralExpression{}
-	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[102]
+	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[104]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -9207,7 +9347,7 @@ func (x *NumericIntegralExpression) String() string {
 func (*NumericIntegralExpression) ProtoMessage() {}
 
 func (x *NumericIntegralExpression) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[102]
+	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[104]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -9220,7 +9360,7 @@ func (x *NumericIntegralExpression) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use NumericIntegralExpression.ProtoReflect.Descriptor instead.
 func (*NumericIntegralExpression) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_compute_v1_expressions_proto_rawDescGZIP(), []int{102}
+	return file_nominal_protos_compute_v1_expressions_proto_rawDescGZIP(), []int{104}
 }
 
 func (x *NumericIntegralExpression) GetInput() *NumericExpression {
@@ -9258,7 +9398,7 @@ type NumericTimeRangeFilterExpression struct {
 
 func (x *NumericTimeRangeFilterExpression) Reset() {
 	*x = NumericTimeRangeFilterExpression{}
-	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[103]
+	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[105]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -9270,7 +9410,7 @@ func (x *NumericTimeRangeFilterExpression) String() string {
 func (*NumericTimeRangeFilterExpression) ProtoMessage() {}
 
 func (x *NumericTimeRangeFilterExpression) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[103]
+	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[105]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -9283,7 +9423,7 @@ func (x *NumericTimeRangeFilterExpression) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use NumericTimeRangeFilterExpression.ProtoReflect.Descriptor instead.
 func (*NumericTimeRangeFilterExpression) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_compute_v1_expressions_proto_rawDescGZIP(), []int{103}
+	return file_nominal_protos_compute_v1_expressions_proto_rawDescGZIP(), []int{105}
 }
 
 func (x *NumericTimeRangeFilterExpression) GetInput() *NumericExpression {
@@ -9320,7 +9460,7 @@ type NumericTimeShiftExpression struct {
 
 func (x *NumericTimeShiftExpression) Reset() {
 	*x = NumericTimeShiftExpression{}
-	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[104]
+	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[106]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -9332,7 +9472,7 @@ func (x *NumericTimeShiftExpression) String() string {
 func (*NumericTimeShiftExpression) ProtoMessage() {}
 
 func (x *NumericTimeShiftExpression) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[104]
+	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[106]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -9345,7 +9485,7 @@ func (x *NumericTimeShiftExpression) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use NumericTimeShiftExpression.ProtoReflect.Descriptor instead.
 func (*NumericTimeShiftExpression) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_compute_v1_expressions_proto_rawDescGZIP(), []int{104}
+	return file_nominal_protos_compute_v1_expressions_proto_rawDescGZIP(), []int{106}
 }
 
 func (x *NumericTimeShiftExpression) GetInput() *NumericExpression {
@@ -9375,7 +9515,7 @@ type NumericValueDifferenceExpression struct {
 
 func (x *NumericValueDifferenceExpression) Reset() {
 	*x = NumericValueDifferenceExpression{}
-	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[105]
+	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[107]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -9387,7 +9527,7 @@ func (x *NumericValueDifferenceExpression) String() string {
 func (*NumericValueDifferenceExpression) ProtoMessage() {}
 
 func (x *NumericValueDifferenceExpression) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[105]
+	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[107]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -9400,7 +9540,7 @@ func (x *NumericValueDifferenceExpression) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use NumericValueDifferenceExpression.ProtoReflect.Descriptor instead.
 func (*NumericValueDifferenceExpression) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_compute_v1_expressions_proto_rawDescGZIP(), []int{105}
+	return file_nominal_protos_compute_v1_expressions_proto_rawDescGZIP(), []int{107}
 }
 
 func (x *NumericValueDifferenceExpression) GetInput() *NumericExpression {
@@ -9431,7 +9571,7 @@ type NumericPhaseUnwrapExpression struct {
 
 func (x *NumericPhaseUnwrapExpression) Reset() {
 	*x = NumericPhaseUnwrapExpression{}
-	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[106]
+	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[108]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -9443,7 +9583,7 @@ func (x *NumericPhaseUnwrapExpression) String() string {
 func (*NumericPhaseUnwrapExpression) ProtoMessage() {}
 
 func (x *NumericPhaseUnwrapExpression) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[106]
+	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[108]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -9456,7 +9596,7 @@ func (x *NumericPhaseUnwrapExpression) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use NumericPhaseUnwrapExpression.ProtoReflect.Descriptor instead.
 func (*NumericPhaseUnwrapExpression) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_compute_v1_expressions_proto_rawDescGZIP(), []int{106}
+	return file_nominal_protos_compute_v1_expressions_proto_rawDescGZIP(), []int{108}
 }
 
 func (x *NumericPhaseUnwrapExpression) GetInput() *NumericExpression {
@@ -9487,7 +9627,7 @@ type NumericPointLimitExpression struct {
 
 func (x *NumericPointLimitExpression) Reset() {
 	*x = NumericPointLimitExpression{}
-	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[107]
+	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[109]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -9499,7 +9639,7 @@ func (x *NumericPointLimitExpression) String() string {
 func (*NumericPointLimitExpression) ProtoMessage() {}
 
 func (x *NumericPointLimitExpression) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[107]
+	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[109]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -9512,7 +9652,7 @@ func (x *NumericPointLimitExpression) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use NumericPointLimitExpression.ProtoReflect.Descriptor instead.
 func (*NumericPointLimitExpression) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_compute_v1_expressions_proto_rawDescGZIP(), []int{107}
+	return file_nominal_protos_compute_v1_expressions_proto_rawDescGZIP(), []int{109}
 }
 
 func (x *NumericPointLimitExpression) GetInput() *NumericExpression {
@@ -9548,7 +9688,7 @@ type NumericNthPointDownsampleExpression struct {
 
 func (x *NumericNthPointDownsampleExpression) Reset() {
 	*x = NumericNthPointDownsampleExpression{}
-	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[108]
+	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[110]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -9560,7 +9700,7 @@ func (x *NumericNthPointDownsampleExpression) String() string {
 func (*NumericNthPointDownsampleExpression) ProtoMessage() {}
 
 func (x *NumericNthPointDownsampleExpression) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[108]
+	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[110]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -9573,7 +9713,7 @@ func (x *NumericNthPointDownsampleExpression) ProtoReflect() protoreflect.Messag
 
 // Deprecated: Use NumericNthPointDownsampleExpression.ProtoReflect.Descriptor instead.
 func (*NumericNthPointDownsampleExpression) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_compute_v1_expressions_proto_rawDescGZIP(), []int{108}
+	return file_nominal_protos_compute_v1_expressions_proto_rawDescGZIP(), []int{110}
 }
 
 func (x *NumericNthPointDownsampleExpression) GetInput() *NumericExpression {
@@ -9603,7 +9743,7 @@ type NumericLargestTriangleThreeBucketsExpression struct {
 
 func (x *NumericLargestTriangleThreeBucketsExpression) Reset() {
 	*x = NumericLargestTriangleThreeBucketsExpression{}
-	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[109]
+	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[111]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -9615,7 +9755,7 @@ func (x *NumericLargestTriangleThreeBucketsExpression) String() string {
 func (*NumericLargestTriangleThreeBucketsExpression) ProtoMessage() {}
 
 func (x *NumericLargestTriangleThreeBucketsExpression) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[109]
+	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[111]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -9628,7 +9768,7 @@ func (x *NumericLargestTriangleThreeBucketsExpression) ProtoReflect() protorefle
 
 // Deprecated: Use NumericLargestTriangleThreeBucketsExpression.ProtoReflect.Descriptor instead.
 func (*NumericLargestTriangleThreeBucketsExpression) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_compute_v1_expressions_proto_rawDescGZIP(), []int{109}
+	return file_nominal_protos_compute_v1_expressions_proto_rawDescGZIP(), []int{111}
 }
 
 func (x *NumericLargestTriangleThreeBucketsExpression) GetInput() *NumericExpression {
@@ -9656,7 +9796,7 @@ type NumericConditionFilterExpression struct {
 
 func (x *NumericConditionFilterExpression) Reset() {
 	*x = NumericConditionFilterExpression{}
-	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[110]
+	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[112]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -9668,7 +9808,7 @@ func (x *NumericConditionFilterExpression) String() string {
 func (*NumericConditionFilterExpression) ProtoMessage() {}
 
 func (x *NumericConditionFilterExpression) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[110]
+	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[112]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -9681,7 +9821,7 @@ func (x *NumericConditionFilterExpression) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use NumericConditionFilterExpression.ProtoReflect.Descriptor instead.
 func (*NumericConditionFilterExpression) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_compute_v1_expressions_proto_rawDescGZIP(), []int{110}
+	return file_nominal_protos_compute_v1_expressions_proto_rawDescGZIP(), []int{112}
 }
 
 func (x *NumericConditionFilterExpression) GetInput() *NumericExpression {
@@ -9710,7 +9850,7 @@ type NumericThresholdFilterExpression struct {
 
 func (x *NumericThresholdFilterExpression) Reset() {
 	*x = NumericThresholdFilterExpression{}
-	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[111]
+	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[113]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -9722,7 +9862,7 @@ func (x *NumericThresholdFilterExpression) String() string {
 func (*NumericThresholdFilterExpression) ProtoMessage() {}
 
 func (x *NumericThresholdFilterExpression) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[111]
+	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[113]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -9735,7 +9875,7 @@ func (x *NumericThresholdFilterExpression) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use NumericThresholdFilterExpression.ProtoReflect.Descriptor instead.
 func (*NumericThresholdFilterExpression) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_compute_v1_expressions_proto_rawDescGZIP(), []int{111}
+	return file_nominal_protos_compute_v1_expressions_proto_rawDescGZIP(), []int{113}
 }
 
 func (x *NumericThresholdFilterExpression) GetInput() *NumericExpression {
@@ -9774,7 +9914,7 @@ type NumericApproximateFilterExpression struct {
 
 func (x *NumericApproximateFilterExpression) Reset() {
 	*x = NumericApproximateFilterExpression{}
-	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[112]
+	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[114]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -9786,7 +9926,7 @@ func (x *NumericApproximateFilterExpression) String() string {
 func (*NumericApproximateFilterExpression) ProtoMessage() {}
 
 func (x *NumericApproximateFilterExpression) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[112]
+	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[114]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -9799,7 +9939,7 @@ func (x *NumericApproximateFilterExpression) ProtoReflect() protoreflect.Message
 
 // Deprecated: Use NumericApproximateFilterExpression.ProtoReflect.Descriptor instead.
 func (*NumericApproximateFilterExpression) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_compute_v1_expressions_proto_rawDescGZIP(), []int{112}
+	return file_nominal_protos_compute_v1_expressions_proto_rawDescGZIP(), []int{114}
 }
 
 func (x *NumericApproximateFilterExpression) GetInput() *NumericExpression {
@@ -9847,7 +9987,7 @@ type NumericSignalFilterExpression struct {
 
 func (x *NumericSignalFilterExpression) Reset() {
 	*x = NumericSignalFilterExpression{}
-	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[113]
+	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[115]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -9859,7 +9999,7 @@ func (x *NumericSignalFilterExpression) String() string {
 func (*NumericSignalFilterExpression) ProtoMessage() {}
 
 func (x *NumericSignalFilterExpression) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[113]
+	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[115]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -9872,7 +10012,7 @@ func (x *NumericSignalFilterExpression) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use NumericSignalFilterExpression.ProtoReflect.Descriptor instead.
 func (*NumericSignalFilterExpression) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_compute_v1_expressions_proto_rawDescGZIP(), []int{113}
+	return file_nominal_protos_compute_v1_expressions_proto_rawDescGZIP(), []int{115}
 }
 
 func (x *NumericSignalFilterExpression) GetInput() *NumericExpression {
@@ -9916,7 +10056,7 @@ type NumericUnitConversionExpression struct {
 
 func (x *NumericUnitConversionExpression) Reset() {
 	*x = NumericUnitConversionExpression{}
-	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[114]
+	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[116]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -9928,7 +10068,7 @@ func (x *NumericUnitConversionExpression) String() string {
 func (*NumericUnitConversionExpression) ProtoMessage() {}
 
 func (x *NumericUnitConversionExpression) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[114]
+	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[116]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -9941,7 +10081,7 @@ func (x *NumericUnitConversionExpression) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use NumericUnitConversionExpression.ProtoReflect.Descriptor instead.
 func (*NumericUnitConversionExpression) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_compute_v1_expressions_proto_rawDescGZIP(), []int{114}
+	return file_nominal_protos_compute_v1_expressions_proto_rawDescGZIP(), []int{116}
 }
 
 func (x *NumericUnitConversionExpression) GetInput() *NumericExpression {
@@ -9972,7 +10112,7 @@ type NumericUnitOverrideExpression struct {
 
 func (x *NumericUnitOverrideExpression) Reset() {
 	*x = NumericUnitOverrideExpression{}
-	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[115]
+	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[117]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -9984,7 +10124,7 @@ func (x *NumericUnitOverrideExpression) String() string {
 func (*NumericUnitOverrideExpression) ProtoMessage() {}
 
 func (x *NumericUnitOverrideExpression) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[115]
+	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[117]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -9997,7 +10137,7 @@ func (x *NumericUnitOverrideExpression) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use NumericUnitOverrideExpression.ProtoReflect.Descriptor instead.
 func (*NumericUnitOverrideExpression) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_compute_v1_expressions_proto_rawDescGZIP(), []int{115}
+	return file_nominal_protos_compute_v1_expressions_proto_rawDescGZIP(), []int{117}
 }
 
 func (x *NumericUnitOverrideExpression) GetInput() *NumericExpression {
@@ -10035,7 +10175,7 @@ type NumericZScoreExpression struct {
 
 func (x *NumericZScoreExpression) Reset() {
 	*x = NumericZScoreExpression{}
-	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[116]
+	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[118]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -10047,7 +10187,7 @@ func (x *NumericZScoreExpression) String() string {
 func (*NumericZScoreExpression) ProtoMessage() {}
 
 func (x *NumericZScoreExpression) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[116]
+	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[118]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -10060,7 +10200,7 @@ func (x *NumericZScoreExpression) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use NumericZScoreExpression.ProtoReflect.Descriptor instead.
 func (*NumericZScoreExpression) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_compute_v1_expressions_proto_rawDescGZIP(), []int{116}
+	return file_nominal_protos_compute_v1_expressions_proto_rawDescGZIP(), []int{118}
 }
 
 func (x *NumericZScoreExpression) GetInput() *NumericExpression {
@@ -10102,7 +10242,7 @@ type NumericUnionExpression struct {
 
 func (x *NumericUnionExpression) Reset() {
 	*x = NumericUnionExpression{}
-	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[117]
+	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[119]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -10114,7 +10254,7 @@ func (x *NumericUnionExpression) String() string {
 func (*NumericUnionExpression) ProtoMessage() {}
 
 func (x *NumericUnionExpression) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[117]
+	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[119]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -10127,7 +10267,7 @@ func (x *NumericUnionExpression) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use NumericUnionExpression.ProtoReflect.Descriptor instead.
 func (*NumericUnionExpression) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_compute_v1_expressions_proto_rawDescGZIP(), []int{117}
+	return file_nominal_protos_compute_v1_expressions_proto_rawDescGZIP(), []int{119}
 }
 
 func (x *NumericUnionExpression) GetInputs() []*NumericExpression {
@@ -10155,7 +10295,7 @@ type NumericDropNanExpression struct {
 
 func (x *NumericDropNanExpression) Reset() {
 	*x = NumericDropNanExpression{}
-	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[118]
+	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[120]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -10167,7 +10307,7 @@ func (x *NumericDropNanExpression) String() string {
 func (*NumericDropNanExpression) ProtoMessage() {}
 
 func (x *NumericDropNanExpression) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[118]
+	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[120]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -10180,7 +10320,7 @@ func (x *NumericDropNanExpression) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use NumericDropNanExpression.ProtoReflect.Descriptor instead.
 func (*NumericDropNanExpression) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_compute_v1_expressions_proto_rawDescGZIP(), []int{118}
+	return file_nominal_protos_compute_v1_expressions_proto_rawDescGZIP(), []int{120}
 }
 
 func (x *NumericDropNanExpression) GetInput() *NumericExpression {
@@ -10202,7 +10342,7 @@ type NumericTimeShiftV2Expression struct {
 
 func (x *NumericTimeShiftV2Expression) Reset() {
 	*x = NumericTimeShiftV2Expression{}
-	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[119]
+	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[121]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -10214,7 +10354,7 @@ func (x *NumericTimeShiftV2Expression) String() string {
 func (*NumericTimeShiftV2Expression) ProtoMessage() {}
 
 func (x *NumericTimeShiftV2Expression) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[119]
+	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[121]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -10227,7 +10367,7 @@ func (x *NumericTimeShiftV2Expression) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use NumericTimeShiftV2Expression.ProtoReflect.Descriptor instead.
 func (*NumericTimeShiftV2Expression) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_compute_v1_expressions_proto_rawDescGZIP(), []int{119}
+	return file_nominal_protos_compute_v1_expressions_proto_rawDescGZIP(), []int{121}
 }
 
 func (x *NumericTimeShiftV2Expression) GetInput() *NumericExpression {
@@ -10258,7 +10398,7 @@ type NumericResampleV2Expression struct {
 
 func (x *NumericResampleV2Expression) Reset() {
 	*x = NumericResampleV2Expression{}
-	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[120]
+	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[122]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -10270,7 +10410,7 @@ func (x *NumericResampleV2Expression) String() string {
 func (*NumericResampleV2Expression) ProtoMessage() {}
 
 func (x *NumericResampleV2Expression) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[120]
+	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[122]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -10283,7 +10423,7 @@ func (x *NumericResampleV2Expression) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use NumericResampleV2Expression.ProtoReflect.Descriptor instead.
 func (*NumericResampleV2Expression) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_compute_v1_expressions_proto_rawDescGZIP(), []int{120}
+	return file_nominal_protos_compute_v1_expressions_proto_rawDescGZIP(), []int{122}
 }
 
 func (x *NumericResampleV2Expression) GetInput() *NumericExpression {
@@ -10314,7 +10454,7 @@ type NumericToStartOfIntervalExpression struct {
 
 func (x *NumericToStartOfIntervalExpression) Reset() {
 	*x = NumericToStartOfIntervalExpression{}
-	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[121]
+	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[123]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -10326,7 +10466,7 @@ func (x *NumericToStartOfIntervalExpression) String() string {
 func (*NumericToStartOfIntervalExpression) ProtoMessage() {}
 
 func (x *NumericToStartOfIntervalExpression) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[121]
+	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[123]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -10339,7 +10479,7 @@ func (x *NumericToStartOfIntervalExpression) ProtoReflect() protoreflect.Message
 
 // Deprecated: Use NumericToStartOfIntervalExpression.ProtoReflect.Descriptor instead.
 func (*NumericToStartOfIntervalExpression) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_compute_v1_expressions_proto_rawDescGZIP(), []int{121}
+	return file_nominal_protos_compute_v1_expressions_proto_rawDescGZIP(), []int{123}
 }
 
 func (x *NumericToStartOfIntervalExpression) GetInput() *NumericExpression {
@@ -10373,7 +10513,7 @@ type NumericScalarTransformExpression struct {
 
 func (x *NumericScalarTransformExpression) Reset() {
 	*x = NumericScalarTransformExpression{}
-	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[122]
+	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[124]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -10385,7 +10525,7 @@ func (x *NumericScalarTransformExpression) String() string {
 func (*NumericScalarTransformExpression) ProtoMessage() {}
 
 func (x *NumericScalarTransformExpression) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[122]
+	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[124]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -10398,7 +10538,7 @@ func (x *NumericScalarTransformExpression) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use NumericScalarTransformExpression.ProtoReflect.Descriptor instead.
 func (*NumericScalarTransformExpression) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_compute_v1_expressions_proto_rawDescGZIP(), []int{122}
+	return file_nominal_protos_compute_v1_expressions_proto_rawDescGZIP(), []int{124}
 }
 
 func (x *NumericScalarTransformExpression) GetInput() *NumericExpression {
@@ -10476,7 +10616,7 @@ type NumericArithmeticExpression struct {
 
 func (x *NumericArithmeticExpression) Reset() {
 	*x = NumericArithmeticExpression{}
-	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[123]
+	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[125]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -10488,7 +10628,7 @@ func (x *NumericArithmeticExpression) String() string {
 func (*NumericArithmeticExpression) ProtoMessage() {}
 
 func (x *NumericArithmeticExpression) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[123]
+	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[125]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -10501,7 +10641,7 @@ func (x *NumericArithmeticExpression) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use NumericArithmeticExpression.ProtoReflect.Descriptor instead.
 func (*NumericArithmeticExpression) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_compute_v1_expressions_proto_rawDescGZIP(), []int{123}
+	return file_nominal_protos_compute_v1_expressions_proto_rawDescGZIP(), []int{125}
 }
 
 func (x *NumericArithmeticExpression) GetInputs() map[string]*NumericExpression {
@@ -10552,7 +10692,7 @@ type NumericFormulaFilterExpression struct {
 
 func (x *NumericFormulaFilterExpression) Reset() {
 	*x = NumericFormulaFilterExpression{}
-	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[124]
+	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[126]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -10564,7 +10704,7 @@ func (x *NumericFormulaFilterExpression) String() string {
 func (*NumericFormulaFilterExpression) ProtoMessage() {}
 
 func (x *NumericFormulaFilterExpression) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[124]
+	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[126]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -10577,7 +10717,7 @@ func (x *NumericFormulaFilterExpression) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use NumericFormulaFilterExpression.ProtoReflect.Descriptor instead.
 func (*NumericFormulaFilterExpression) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_compute_v1_expressions_proto_rawDescGZIP(), []int{124}
+	return file_nominal_protos_compute_v1_expressions_proto_rawDescGZIP(), []int{126}
 }
 
 func (x *NumericFormulaFilterExpression) GetFilteredInputName() string {
@@ -10622,7 +10762,7 @@ type NumericLiteralBitwiseExpression struct {
 
 func (x *NumericLiteralBitwiseExpression) Reset() {
 	*x = NumericLiteralBitwiseExpression{}
-	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[125]
+	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[127]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -10634,7 +10774,7 @@ func (x *NumericLiteralBitwiseExpression) String() string {
 func (*NumericLiteralBitwiseExpression) ProtoMessage() {}
 
 func (x *NumericLiteralBitwiseExpression) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[125]
+	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[127]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -10647,7 +10787,7 @@ func (x *NumericLiteralBitwiseExpression) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use NumericLiteralBitwiseExpression.ProtoReflect.Descriptor instead.
 func (*NumericLiteralBitwiseExpression) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_compute_v1_expressions_proto_rawDescGZIP(), []int{125}
+	return file_nominal_protos_compute_v1_expressions_proto_rawDescGZIP(), []int{127}
 }
 
 func (x *NumericLiteralBitwiseExpression) GetInput() *NumericExpression {
@@ -10678,7 +10818,7 @@ type LiteralBitFunction struct {
 
 func (x *LiteralBitFunction) Reset() {
 	*x = LiteralBitFunction{}
-	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[126]
+	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[128]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -10690,7 +10830,7 @@ func (x *LiteralBitFunction) String() string {
 func (*LiteralBitFunction) ProtoMessage() {}
 
 func (x *LiteralBitFunction) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[126]
+	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[128]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -10703,7 +10843,7 @@ func (x *LiteralBitFunction) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use LiteralBitFunction.ProtoReflect.Descriptor instead.
 func (*LiteralBitFunction) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_compute_v1_expressions_proto_rawDescGZIP(), []int{126}
+	return file_nominal_protos_compute_v1_expressions_proto_rawDescGZIP(), []int{128}
 }
 
 func (x *LiteralBitFunction) GetKind() isLiteralBitFunction_Kind {
@@ -10772,7 +10912,7 @@ type LiteralBitwiseFunction struct {
 
 func (x *LiteralBitwiseFunction) Reset() {
 	*x = LiteralBitwiseFunction{}
-	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[127]
+	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[129]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -10784,7 +10924,7 @@ func (x *LiteralBitwiseFunction) String() string {
 func (*LiteralBitwiseFunction) ProtoMessage() {}
 
 func (x *LiteralBitwiseFunction) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[127]
+	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[129]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -10797,7 +10937,7 @@ func (x *LiteralBitwiseFunction) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use LiteralBitwiseFunction.ProtoReflect.Descriptor instead.
 func (*LiteralBitwiseFunction) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_compute_v1_expressions_proto_rawDescGZIP(), []int{127}
+	return file_nominal_protos_compute_v1_expressions_proto_rawDescGZIP(), []int{129}
 }
 
 func (x *LiteralBitwiseFunction) GetOperation() LiteralBitwiseOperation {
@@ -10825,7 +10965,7 @@ type LiteralShiftFunction struct {
 
 func (x *LiteralShiftFunction) Reset() {
 	*x = LiteralShiftFunction{}
-	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[128]
+	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[130]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -10837,7 +10977,7 @@ func (x *LiteralShiftFunction) String() string {
 func (*LiteralShiftFunction) ProtoMessage() {}
 
 func (x *LiteralShiftFunction) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[128]
+	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[130]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -10850,7 +10990,7 @@ func (x *LiteralShiftFunction) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use LiteralShiftFunction.ProtoReflect.Descriptor instead.
 func (*LiteralShiftFunction) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_compute_v1_expressions_proto_rawDescGZIP(), []int{128}
+	return file_nominal_protos_compute_v1_expressions_proto_rawDescGZIP(), []int{130}
 }
 
 func (x *LiteralShiftFunction) GetDirection() ShiftDirection {
@@ -10878,7 +11018,7 @@ type BitTestIndex struct {
 
 func (x *BitTestIndex) Reset() {
 	*x = BitTestIndex{}
-	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[129]
+	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[131]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -10890,7 +11030,7 @@ func (x *BitTestIndex) String() string {
 func (*BitTestIndex) ProtoMessage() {}
 
 func (x *BitTestIndex) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[129]
+	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[131]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -10903,7 +11043,7 @@ func (x *BitTestIndex) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use BitTestIndex.ProtoReflect.Descriptor instead.
 func (*BitTestIndex) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_compute_v1_expressions_proto_rawDescGZIP(), []int{129}
+	return file_nominal_protos_compute_v1_expressions_proto_rawDescGZIP(), []int{131}
 }
 
 func (x *BitTestIndex) GetIndex() int32 {
@@ -10930,7 +11070,7 @@ type NumericResampleExpression struct {
 
 func (x *NumericResampleExpression) Reset() {
 	*x = NumericResampleExpression{}
-	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[130]
+	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[132]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -10942,7 +11082,7 @@ func (x *NumericResampleExpression) String() string {
 func (*NumericResampleExpression) ProtoMessage() {}
 
 func (x *NumericResampleExpression) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[130]
+	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[132]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -10955,7 +11095,7 @@ func (x *NumericResampleExpression) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use NumericResampleExpression.ProtoReflect.Descriptor instead.
 func (*NumericResampleExpression) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_compute_v1_expressions_proto_rawDescGZIP(), []int{130}
+	return file_nominal_protos_compute_v1_expressions_proto_rawDescGZIP(), []int{132}
 }
 
 func (x *NumericResampleExpression) GetInput() *NumericExpression {
@@ -11006,7 +11146,7 @@ type NumericRefpropExpression struct {
 
 func (x *NumericRefpropExpression) Reset() {
 	*x = NumericRefpropExpression{}
-	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[131]
+	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[133]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -11018,7 +11158,7 @@ func (x *NumericRefpropExpression) String() string {
 func (*NumericRefpropExpression) ProtoMessage() {}
 
 func (x *NumericRefpropExpression) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[131]
+	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[133]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -11031,7 +11171,7 @@ func (x *NumericRefpropExpression) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use NumericRefpropExpression.ProtoReflect.Descriptor instead.
 func (*NumericRefpropExpression) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_compute_v1_expressions_proto_rawDescGZIP(), []int{131}
+	return file_nominal_protos_compute_v1_expressions_proto_rawDescGZIP(), []int{133}
 }
 
 func (x *NumericRefpropExpression) GetInputs() []*RefpropInput {
@@ -11074,7 +11214,7 @@ type RefpropInput struct {
 
 func (x *RefpropInput) Reset() {
 	*x = RefpropInput{}
-	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[132]
+	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[134]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -11086,7 +11226,7 @@ func (x *RefpropInput) String() string {
 func (*RefpropInput) ProtoMessage() {}
 
 func (x *RefpropInput) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[132]
+	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[134]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -11099,7 +11239,7 @@ func (x *RefpropInput) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use RefpropInput.ProtoReflect.Descriptor instead.
 func (*RefpropInput) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_compute_v1_expressions_proto_rawDescGZIP(), []int{132}
+	return file_nominal_protos_compute_v1_expressions_proto_rawDescGZIP(), []int{134}
 }
 
 func (x *RefpropInput) GetProperty() RefpropProperty {
@@ -11131,7 +11271,7 @@ type NumericRollingAggregationExpression struct {
 
 func (x *NumericRollingAggregationExpression) Reset() {
 	*x = NumericRollingAggregationExpression{}
-	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[133]
+	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[135]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -11143,7 +11283,7 @@ func (x *NumericRollingAggregationExpression) String() string {
 func (*NumericRollingAggregationExpression) ProtoMessage() {}
 
 func (x *NumericRollingAggregationExpression) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[133]
+	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[135]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -11156,7 +11296,7 @@ func (x *NumericRollingAggregationExpression) ProtoReflect() protoreflect.Messag
 
 // Deprecated: Use NumericRollingAggregationExpression.ProtoReflect.Descriptor instead.
 func (*NumericRollingAggregationExpression) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_compute_v1_expressions_proto_rawDescGZIP(), []int{133}
+	return file_nominal_protos_compute_v1_expressions_proto_rawDescGZIP(), []int{135}
 }
 
 func (x *NumericRollingAggregationExpression) GetInput() *NumericExpression {
@@ -11205,7 +11345,7 @@ type NumericDuplicateTimestampAggregationExpression struct {
 
 func (x *NumericDuplicateTimestampAggregationExpression) Reset() {
 	*x = NumericDuplicateTimestampAggregationExpression{}
-	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[134]
+	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[136]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -11217,7 +11357,7 @@ func (x *NumericDuplicateTimestampAggregationExpression) String() string {
 func (*NumericDuplicateTimestampAggregationExpression) ProtoMessage() {}
 
 func (x *NumericDuplicateTimestampAggregationExpression) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[134]
+	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[136]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -11230,7 +11370,7 @@ func (x *NumericDuplicateTimestampAggregationExpression) ProtoReflect() protoref
 
 // Deprecated: Use NumericDuplicateTimestampAggregationExpression.ProtoReflect.Descriptor instead.
 func (*NumericDuplicateTimestampAggregationExpression) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_compute_v1_expressions_proto_rawDescGZIP(), []int{134}
+	return file_nominal_protos_compute_v1_expressions_proto_rawDescGZIP(), []int{136}
 }
 
 func (x *NumericDuplicateTimestampAggregationExpression) GetInput() *NumericExpression {
@@ -11280,7 +11420,7 @@ type NumericTagFilterExpression struct {
 
 func (x *NumericTagFilterExpression) Reset() {
 	*x = NumericTagFilterExpression{}
-	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[135]
+	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[137]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -11292,7 +11432,7 @@ func (x *NumericTagFilterExpression) String() string {
 func (*NumericTagFilterExpression) ProtoMessage() {}
 
 func (x *NumericTagFilterExpression) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[135]
+	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[137]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -11305,7 +11445,7 @@ func (x *NumericTagFilterExpression) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use NumericTagFilterExpression.ProtoReflect.Descriptor instead.
 func (*NumericTagFilterExpression) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_compute_v1_expressions_proto_rawDescGZIP(), []int{135}
+	return file_nominal_protos_compute_v1_expressions_proto_rawDescGZIP(), []int{137}
 }
 
 func (x *NumericTagFilterExpression) GetInput() *NumericExpression {
@@ -11335,7 +11475,7 @@ type NumericTagSelectionExpression struct {
 
 func (x *NumericTagSelectionExpression) Reset() {
 	*x = NumericTagSelectionExpression{}
-	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[136]
+	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[138]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -11347,7 +11487,7 @@ func (x *NumericTagSelectionExpression) String() string {
 func (*NumericTagSelectionExpression) ProtoMessage() {}
 
 func (x *NumericTagSelectionExpression) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[136]
+	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[138]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -11360,7 +11500,7 @@ func (x *NumericTagSelectionExpression) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use NumericTagSelectionExpression.ProtoReflect.Descriptor instead.
 func (*NumericTagSelectionExpression) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_compute_v1_expressions_proto_rawDescGZIP(), []int{136}
+	return file_nominal_protos_compute_v1_expressions_proto_rawDescGZIP(), []int{138}
 }
 
 func (x *NumericTagSelectionExpression) GetInput() *NumericExpression {
@@ -11396,7 +11536,7 @@ type NumericTagPairExpression struct {
 
 func (x *NumericTagPairExpression) Reset() {
 	*x = NumericTagPairExpression{}
-	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[137]
+	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[139]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -11408,7 +11548,7 @@ func (x *NumericTagPairExpression) String() string {
 func (*NumericTagPairExpression) ProtoMessage() {}
 
 func (x *NumericTagPairExpression) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[137]
+	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[139]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -11421,7 +11561,7 @@ func (x *NumericTagPairExpression) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use NumericTagPairExpression.ProtoReflect.Descriptor instead.
 func (*NumericTagPairExpression) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_compute_v1_expressions_proto_rawDescGZIP(), []int{137}
+	return file_nominal_protos_compute_v1_expressions_proto_rawDescGZIP(), []int{139}
 }
 
 func (x *NumericTagPairExpression) GetInput() *NumericExpression {
@@ -11472,7 +11612,7 @@ type NumericArrayExpression struct {
 
 func (x *NumericArrayExpression) Reset() {
 	*x = NumericArrayExpression{}
-	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[138]
+	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[140]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -11484,7 +11624,7 @@ func (x *NumericArrayExpression) String() string {
 func (*NumericArrayExpression) ProtoMessage() {}
 
 func (x *NumericArrayExpression) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[138]
+	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[140]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -11497,7 +11637,7 @@ func (x *NumericArrayExpression) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use NumericArrayExpression.ProtoReflect.Descriptor instead.
 func (*NumericArrayExpression) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_compute_v1_expressions_proto_rawDescGZIP(), []int{138}
+	return file_nominal_protos_compute_v1_expressions_proto_rawDescGZIP(), []int{140}
 }
 
 func (x *NumericArrayExpression) GetKind() isNumericArrayExpression_Kind {
@@ -11657,7 +11797,7 @@ type NumericArrayStructFieldExpression struct {
 
 func (x *NumericArrayStructFieldExpression) Reset() {
 	*x = NumericArrayStructFieldExpression{}
-	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[139]
+	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[141]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -11669,7 +11809,7 @@ func (x *NumericArrayStructFieldExpression) String() string {
 func (*NumericArrayStructFieldExpression) ProtoMessage() {}
 
 func (x *NumericArrayStructFieldExpression) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[139]
+	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[141]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -11682,7 +11822,7 @@ func (x *NumericArrayStructFieldExpression) ProtoReflect() protoreflect.Message 
 
 // Deprecated: Use NumericArrayStructFieldExpression.ProtoReflect.Descriptor instead.
 func (*NumericArrayStructFieldExpression) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_compute_v1_expressions_proto_rawDescGZIP(), []int{139}
+	return file_nominal_protos_compute_v1_expressions_proto_rawDescGZIP(), []int{141}
 }
 
 func (x *NumericArrayStructFieldExpression) GetInput() *StructExpression {
@@ -11709,7 +11849,7 @@ type NumericArrayTimeShiftExpression struct {
 
 func (x *NumericArrayTimeShiftExpression) Reset() {
 	*x = NumericArrayTimeShiftExpression{}
-	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[140]
+	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[142]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -11721,7 +11861,7 @@ func (x *NumericArrayTimeShiftExpression) String() string {
 func (*NumericArrayTimeShiftExpression) ProtoMessage() {}
 
 func (x *NumericArrayTimeShiftExpression) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[140]
+	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[142]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -11734,7 +11874,7 @@ func (x *NumericArrayTimeShiftExpression) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use NumericArrayTimeShiftExpression.ProtoReflect.Descriptor instead.
 func (*NumericArrayTimeShiftExpression) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_compute_v1_expressions_proto_rawDescGZIP(), []int{140}
+	return file_nominal_protos_compute_v1_expressions_proto_rawDescGZIP(), []int{142}
 }
 
 func (x *NumericArrayTimeShiftExpression) GetInput() *NumericArrayExpression {
@@ -11761,7 +11901,7 @@ type NumericArrayToStartOfIntervalExpression struct {
 
 func (x *NumericArrayToStartOfIntervalExpression) Reset() {
 	*x = NumericArrayToStartOfIntervalExpression{}
-	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[141]
+	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[143]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -11773,7 +11913,7 @@ func (x *NumericArrayToStartOfIntervalExpression) String() string {
 func (*NumericArrayToStartOfIntervalExpression) ProtoMessage() {}
 
 func (x *NumericArrayToStartOfIntervalExpression) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[141]
+	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[143]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -11786,7 +11926,7 @@ func (x *NumericArrayToStartOfIntervalExpression) ProtoReflect() protoreflect.Me
 
 // Deprecated: Use NumericArrayToStartOfIntervalExpression.ProtoReflect.Descriptor instead.
 func (*NumericArrayToStartOfIntervalExpression) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_compute_v1_expressions_proto_rawDescGZIP(), []int{141}
+	return file_nominal_protos_compute_v1_expressions_proto_rawDescGZIP(), []int{143}
 }
 
 func (x *NumericArrayToStartOfIntervalExpression) GetInput() *NumericArrayExpression {
@@ -11813,7 +11953,7 @@ type NumericArrayTagFilterExpression struct {
 
 func (x *NumericArrayTagFilterExpression) Reset() {
 	*x = NumericArrayTagFilterExpression{}
-	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[142]
+	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[144]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -11825,7 +11965,7 @@ func (x *NumericArrayTagFilterExpression) String() string {
 func (*NumericArrayTagFilterExpression) ProtoMessage() {}
 
 func (x *NumericArrayTagFilterExpression) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[142]
+	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[144]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -11838,7 +11978,7 @@ func (x *NumericArrayTagFilterExpression) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use NumericArrayTagFilterExpression.ProtoReflect.Descriptor instead.
 func (*NumericArrayTagFilterExpression) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_compute_v1_expressions_proto_rawDescGZIP(), []int{142}
+	return file_nominal_protos_compute_v1_expressions_proto_rawDescGZIP(), []int{144}
 }
 
 func (x *NumericArrayTagFilterExpression) GetInput() *NumericArrayExpression {
@@ -11867,7 +12007,7 @@ type NumericArrayTagSelectionExpression struct {
 
 func (x *NumericArrayTagSelectionExpression) Reset() {
 	*x = NumericArrayTagSelectionExpression{}
-	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[143]
+	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[145]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -11879,7 +12019,7 @@ func (x *NumericArrayTagSelectionExpression) String() string {
 func (*NumericArrayTagSelectionExpression) ProtoMessage() {}
 
 func (x *NumericArrayTagSelectionExpression) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[143]
+	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[145]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -11892,7 +12032,7 @@ func (x *NumericArrayTagSelectionExpression) ProtoReflect() protoreflect.Message
 
 // Deprecated: Use NumericArrayTagSelectionExpression.ProtoReflect.Descriptor instead.
 func (*NumericArrayTagSelectionExpression) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_compute_v1_expressions_proto_rawDescGZIP(), []int{143}
+	return file_nominal_protos_compute_v1_expressions_proto_rawDescGZIP(), []int{145}
 }
 
 func (x *NumericArrayTagSelectionExpression) GetInput() *NumericArrayExpression {
@@ -11929,7 +12069,7 @@ type CategoricalArrayExpression struct {
 
 func (x *CategoricalArrayExpression) Reset() {
 	*x = CategoricalArrayExpression{}
-	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[144]
+	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[146]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -11941,7 +12081,7 @@ func (x *CategoricalArrayExpression) String() string {
 func (*CategoricalArrayExpression) ProtoMessage() {}
 
 func (x *CategoricalArrayExpression) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[144]
+	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[146]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -11954,7 +12094,7 @@ func (x *CategoricalArrayExpression) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CategoricalArrayExpression.ProtoReflect.Descriptor instead.
 func (*CategoricalArrayExpression) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_compute_v1_expressions_proto_rawDescGZIP(), []int{144}
+	return file_nominal_protos_compute_v1_expressions_proto_rawDescGZIP(), []int{146}
 }
 
 func (x *CategoricalArrayExpression) GetKind() isCategoricalArrayExpression_Kind {
@@ -12114,7 +12254,7 @@ type CategoricalArrayStructFieldExpression struct {
 
 func (x *CategoricalArrayStructFieldExpression) Reset() {
 	*x = CategoricalArrayStructFieldExpression{}
-	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[145]
+	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[147]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -12126,7 +12266,7 @@ func (x *CategoricalArrayStructFieldExpression) String() string {
 func (*CategoricalArrayStructFieldExpression) ProtoMessage() {}
 
 func (x *CategoricalArrayStructFieldExpression) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[145]
+	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[147]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -12139,7 +12279,7 @@ func (x *CategoricalArrayStructFieldExpression) ProtoReflect() protoreflect.Mess
 
 // Deprecated: Use CategoricalArrayStructFieldExpression.ProtoReflect.Descriptor instead.
 func (*CategoricalArrayStructFieldExpression) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_compute_v1_expressions_proto_rawDescGZIP(), []int{145}
+	return file_nominal_protos_compute_v1_expressions_proto_rawDescGZIP(), []int{147}
 }
 
 func (x *CategoricalArrayStructFieldExpression) GetInput() *StructExpression {
@@ -12166,7 +12306,7 @@ type CategoricalArrayTimeShiftExpression struct {
 
 func (x *CategoricalArrayTimeShiftExpression) Reset() {
 	*x = CategoricalArrayTimeShiftExpression{}
-	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[146]
+	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[148]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -12178,7 +12318,7 @@ func (x *CategoricalArrayTimeShiftExpression) String() string {
 func (*CategoricalArrayTimeShiftExpression) ProtoMessage() {}
 
 func (x *CategoricalArrayTimeShiftExpression) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[146]
+	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[148]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -12191,7 +12331,7 @@ func (x *CategoricalArrayTimeShiftExpression) ProtoReflect() protoreflect.Messag
 
 // Deprecated: Use CategoricalArrayTimeShiftExpression.ProtoReflect.Descriptor instead.
 func (*CategoricalArrayTimeShiftExpression) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_compute_v1_expressions_proto_rawDescGZIP(), []int{146}
+	return file_nominal_protos_compute_v1_expressions_proto_rawDescGZIP(), []int{148}
 }
 
 func (x *CategoricalArrayTimeShiftExpression) GetInput() *CategoricalArrayExpression {
@@ -12218,7 +12358,7 @@ type CategoricalArrayToStartOfIntervalExpression struct {
 
 func (x *CategoricalArrayToStartOfIntervalExpression) Reset() {
 	*x = CategoricalArrayToStartOfIntervalExpression{}
-	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[147]
+	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[149]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -12230,7 +12370,7 @@ func (x *CategoricalArrayToStartOfIntervalExpression) String() string {
 func (*CategoricalArrayToStartOfIntervalExpression) ProtoMessage() {}
 
 func (x *CategoricalArrayToStartOfIntervalExpression) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[147]
+	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[149]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -12243,7 +12383,7 @@ func (x *CategoricalArrayToStartOfIntervalExpression) ProtoReflect() protoreflec
 
 // Deprecated: Use CategoricalArrayToStartOfIntervalExpression.ProtoReflect.Descriptor instead.
 func (*CategoricalArrayToStartOfIntervalExpression) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_compute_v1_expressions_proto_rawDescGZIP(), []int{147}
+	return file_nominal_protos_compute_v1_expressions_proto_rawDescGZIP(), []int{149}
 }
 
 func (x *CategoricalArrayToStartOfIntervalExpression) GetInput() *CategoricalArrayExpression {
@@ -12270,7 +12410,7 @@ type CategoricalArrayTagFilterExpression struct {
 
 func (x *CategoricalArrayTagFilterExpression) Reset() {
 	*x = CategoricalArrayTagFilterExpression{}
-	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[148]
+	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[150]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -12282,7 +12422,7 @@ func (x *CategoricalArrayTagFilterExpression) String() string {
 func (*CategoricalArrayTagFilterExpression) ProtoMessage() {}
 
 func (x *CategoricalArrayTagFilterExpression) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[148]
+	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[150]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -12295,7 +12435,7 @@ func (x *CategoricalArrayTagFilterExpression) ProtoReflect() protoreflect.Messag
 
 // Deprecated: Use CategoricalArrayTagFilterExpression.ProtoReflect.Descriptor instead.
 func (*CategoricalArrayTagFilterExpression) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_compute_v1_expressions_proto_rawDescGZIP(), []int{148}
+	return file_nominal_protos_compute_v1_expressions_proto_rawDescGZIP(), []int{150}
 }
 
 func (x *CategoricalArrayTagFilterExpression) GetInput() *CategoricalArrayExpression {
@@ -12324,7 +12464,7 @@ type CategoricalArrayTagSelectionExpression struct {
 
 func (x *CategoricalArrayTagSelectionExpression) Reset() {
 	*x = CategoricalArrayTagSelectionExpression{}
-	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[149]
+	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[151]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -12336,7 +12476,7 @@ func (x *CategoricalArrayTagSelectionExpression) String() string {
 func (*CategoricalArrayTagSelectionExpression) ProtoMessage() {}
 
 func (x *CategoricalArrayTagSelectionExpression) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[149]
+	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[151]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -12349,7 +12489,7 @@ func (x *CategoricalArrayTagSelectionExpression) ProtoReflect() protoreflect.Mes
 
 // Deprecated: Use CategoricalArrayTagSelectionExpression.ProtoReflect.Descriptor instead.
 func (*CategoricalArrayTagSelectionExpression) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_compute_v1_expressions_proto_rawDescGZIP(), []int{149}
+	return file_nominal_protos_compute_v1_expressions_proto_rawDescGZIP(), []int{151}
 }
 
 func (x *CategoricalArrayTagSelectionExpression) GetInput() *CategoricalArrayExpression {
@@ -12387,7 +12527,7 @@ type StructExpression struct {
 
 func (x *StructExpression) Reset() {
 	*x = StructExpression{}
-	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[150]
+	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[152]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -12399,7 +12539,7 @@ func (x *StructExpression) String() string {
 func (*StructExpression) ProtoMessage() {}
 
 func (x *StructExpression) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[150]
+	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[152]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -12412,7 +12552,7 @@ func (x *StructExpression) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use StructExpression.ProtoReflect.Descriptor instead.
 func (*StructExpression) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_compute_v1_expressions_proto_rawDescGZIP(), []int{150}
+	return file_nominal_protos_compute_v1_expressions_proto_rawDescGZIP(), []int{152}
 }
 
 func (x *StructExpression) GetKind() isStructExpression_Kind {
@@ -12587,7 +12727,7 @@ type StructFieldExpression struct {
 
 func (x *StructFieldExpression) Reset() {
 	*x = StructFieldExpression{}
-	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[151]
+	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[153]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -12599,7 +12739,7 @@ func (x *StructFieldExpression) String() string {
 func (*StructFieldExpression) ProtoMessage() {}
 
 func (x *StructFieldExpression) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[151]
+	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[153]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -12612,7 +12752,7 @@ func (x *StructFieldExpression) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use StructFieldExpression.ProtoReflect.Descriptor instead.
 func (*StructFieldExpression) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_compute_v1_expressions_proto_rawDescGZIP(), []int{151}
+	return file_nominal_protos_compute_v1_expressions_proto_rawDescGZIP(), []int{153}
 }
 
 func (x *StructFieldExpression) GetInput() *StructExpression {
@@ -12639,7 +12779,7 @@ type StructTimeShiftExpression struct {
 
 func (x *StructTimeShiftExpression) Reset() {
 	*x = StructTimeShiftExpression{}
-	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[152]
+	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[154]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -12651,7 +12791,7 @@ func (x *StructTimeShiftExpression) String() string {
 func (*StructTimeShiftExpression) ProtoMessage() {}
 
 func (x *StructTimeShiftExpression) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[152]
+	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[154]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -12664,7 +12804,7 @@ func (x *StructTimeShiftExpression) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use StructTimeShiftExpression.ProtoReflect.Descriptor instead.
 func (*StructTimeShiftExpression) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_compute_v1_expressions_proto_rawDescGZIP(), []int{152}
+	return file_nominal_protos_compute_v1_expressions_proto_rawDescGZIP(), []int{154}
 }
 
 func (x *StructTimeShiftExpression) GetInput() *StructExpression {
@@ -12691,7 +12831,7 @@ type StructToStartOfIntervalExpression struct {
 
 func (x *StructToStartOfIntervalExpression) Reset() {
 	*x = StructToStartOfIntervalExpression{}
-	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[153]
+	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[155]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -12703,7 +12843,7 @@ func (x *StructToStartOfIntervalExpression) String() string {
 func (*StructToStartOfIntervalExpression) ProtoMessage() {}
 
 func (x *StructToStartOfIntervalExpression) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[153]
+	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[155]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -12716,7 +12856,7 @@ func (x *StructToStartOfIntervalExpression) ProtoReflect() protoreflect.Message 
 
 // Deprecated: Use StructToStartOfIntervalExpression.ProtoReflect.Descriptor instead.
 func (*StructToStartOfIntervalExpression) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_compute_v1_expressions_proto_rawDescGZIP(), []int{153}
+	return file_nominal_protos_compute_v1_expressions_proto_rawDescGZIP(), []int{155}
 }
 
 func (x *StructToStartOfIntervalExpression) GetInput() *StructExpression {
@@ -12743,7 +12883,7 @@ type StructTagFilterExpression struct {
 
 func (x *StructTagFilterExpression) Reset() {
 	*x = StructTagFilterExpression{}
-	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[154]
+	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[156]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -12755,7 +12895,7 @@ func (x *StructTagFilterExpression) String() string {
 func (*StructTagFilterExpression) ProtoMessage() {}
 
 func (x *StructTagFilterExpression) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[154]
+	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[156]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -12768,7 +12908,7 @@ func (x *StructTagFilterExpression) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use StructTagFilterExpression.ProtoReflect.Descriptor instead.
 func (*StructTagFilterExpression) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_compute_v1_expressions_proto_rawDescGZIP(), []int{154}
+	return file_nominal_protos_compute_v1_expressions_proto_rawDescGZIP(), []int{156}
 }
 
 func (x *StructTagFilterExpression) GetInput() *StructExpression {
@@ -12797,7 +12937,7 @@ type StructTagSelectionExpression struct {
 
 func (x *StructTagSelectionExpression) Reset() {
 	*x = StructTagSelectionExpression{}
-	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[155]
+	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[157]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -12809,7 +12949,7 @@ func (x *StructTagSelectionExpression) String() string {
 func (*StructTagSelectionExpression) ProtoMessage() {}
 
 func (x *StructTagSelectionExpression) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[155]
+	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[157]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -12822,7 +12962,7 @@ func (x *StructTagSelectionExpression) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use StructTagSelectionExpression.ProtoReflect.Descriptor instead.
 func (*StructTagSelectionExpression) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_compute_v1_expressions_proto_rawDescGZIP(), []int{155}
+	return file_nominal_protos_compute_v1_expressions_proto_rawDescGZIP(), []int{157}
 }
 
 func (x *StructTagSelectionExpression) GetInput() *StructExpression {
@@ -12860,7 +13000,7 @@ type LogExpression struct {
 
 func (x *LogExpression) Reset() {
 	*x = LogExpression{}
-	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[156]
+	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[158]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -12872,7 +13012,7 @@ func (x *LogExpression) String() string {
 func (*LogExpression) ProtoMessage() {}
 
 func (x *LogExpression) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[156]
+	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[158]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -12885,7 +13025,7 @@ func (x *LogExpression) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use LogExpression.ProtoReflect.Descriptor instead.
 func (*LogExpression) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_compute_v1_expressions_proto_rawDescGZIP(), []int{156}
+	return file_nominal_protos_compute_v1_expressions_proto_rawDescGZIP(), []int{158}
 }
 
 func (x *LogExpression) GetKind() isLogExpression_Kind {
@@ -13059,7 +13199,7 @@ type LogTimeShiftExpression struct {
 
 func (x *LogTimeShiftExpression) Reset() {
 	*x = LogTimeShiftExpression{}
-	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[157]
+	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[159]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -13071,7 +13211,7 @@ func (x *LogTimeShiftExpression) String() string {
 func (*LogTimeShiftExpression) ProtoMessage() {}
 
 func (x *LogTimeShiftExpression) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[157]
+	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[159]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -13084,7 +13224,7 @@ func (x *LogTimeShiftExpression) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use LogTimeShiftExpression.ProtoReflect.Descriptor instead.
 func (*LogTimeShiftExpression) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_compute_v1_expressions_proto_rawDescGZIP(), []int{157}
+	return file_nominal_protos_compute_v1_expressions_proto_rawDescGZIP(), []int{159}
 }
 
 func (x *LogTimeShiftExpression) GetInput() *LogExpression {
@@ -13111,7 +13251,7 @@ type LogToStartOfIntervalExpression struct {
 
 func (x *LogToStartOfIntervalExpression) Reset() {
 	*x = LogToStartOfIntervalExpression{}
-	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[158]
+	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[160]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -13123,7 +13263,7 @@ func (x *LogToStartOfIntervalExpression) String() string {
 func (*LogToStartOfIntervalExpression) ProtoMessage() {}
 
 func (x *LogToStartOfIntervalExpression) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[158]
+	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[160]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -13136,7 +13276,7 @@ func (x *LogToStartOfIntervalExpression) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use LogToStartOfIntervalExpression.ProtoReflect.Descriptor instead.
 func (*LogToStartOfIntervalExpression) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_compute_v1_expressions_proto_rawDescGZIP(), []int{158}
+	return file_nominal_protos_compute_v1_expressions_proto_rawDescGZIP(), []int{160}
 }
 
 func (x *LogToStartOfIntervalExpression) GetInput() *LogExpression {
@@ -13163,7 +13303,7 @@ type LogTagFilterExpression struct {
 
 func (x *LogTagFilterExpression) Reset() {
 	*x = LogTagFilterExpression{}
-	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[159]
+	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[161]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -13175,7 +13315,7 @@ func (x *LogTagFilterExpression) String() string {
 func (*LogTagFilterExpression) ProtoMessage() {}
 
 func (x *LogTagFilterExpression) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[159]
+	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[161]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -13188,7 +13328,7 @@ func (x *LogTagFilterExpression) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use LogTagFilterExpression.ProtoReflect.Descriptor instead.
 func (*LogTagFilterExpression) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_compute_v1_expressions_proto_rawDescGZIP(), []int{159}
+	return file_nominal_protos_compute_v1_expressions_proto_rawDescGZIP(), []int{161}
 }
 
 func (x *LogTagFilterExpression) GetInput() *LogExpression {
@@ -13217,7 +13357,7 @@ type LogTagSelectionExpression struct {
 
 func (x *LogTagSelectionExpression) Reset() {
 	*x = LogTagSelectionExpression{}
-	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[160]
+	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[162]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -13229,7 +13369,7 @@ func (x *LogTagSelectionExpression) String() string {
 func (*LogTagSelectionExpression) ProtoMessage() {}
 
 func (x *LogTagSelectionExpression) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[160]
+	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[162]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -13242,7 +13382,7 @@ func (x *LogTagSelectionExpression) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use LogTagSelectionExpression.ProtoReflect.Descriptor instead.
 func (*LogTagSelectionExpression) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_compute_v1_expressions_proto_rawDescGZIP(), []int{160}
+	return file_nominal_protos_compute_v1_expressions_proto_rawDescGZIP(), []int{162}
 }
 
 func (x *LogTagSelectionExpression) GetInput() *LogExpression {
@@ -13272,7 +13412,7 @@ type StructCombineExpression struct {
 
 func (x *StructCombineExpression) Reset() {
 	*x = StructCombineExpression{}
-	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[161]
+	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[163]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -13284,7 +13424,7 @@ func (x *StructCombineExpression) String() string {
 func (*StructCombineExpression) ProtoMessage() {}
 
 func (x *StructCombineExpression) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[161]
+	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[163]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -13297,7 +13437,7 @@ func (x *StructCombineExpression) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use StructCombineExpression.ProtoReflect.Descriptor instead.
 func (*StructCombineExpression) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_compute_v1_expressions_proto_rawDescGZIP(), []int{161}
+	return file_nominal_protos_compute_v1_expressions_proto_rawDescGZIP(), []int{163}
 }
 
 func (x *StructCombineExpression) GetFields() map[string]*SeriesExpression {
@@ -13324,7 +13464,7 @@ type LogConcatenateExpression struct {
 
 func (x *LogConcatenateExpression) Reset() {
 	*x = LogConcatenateExpression{}
-	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[162]
+	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[164]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -13336,7 +13476,7 @@ func (x *LogConcatenateExpression) String() string {
 func (*LogConcatenateExpression) ProtoMessage() {}
 
 func (x *LogConcatenateExpression) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[162]
+	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[164]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -13349,7 +13489,7 @@ func (x *LogConcatenateExpression) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use LogConcatenateExpression.ProtoReflect.Descriptor instead.
 func (*LogConcatenateExpression) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_compute_v1_expressions_proto_rawDescGZIP(), []int{162}
+	return file_nominal_protos_compute_v1_expressions_proto_rawDescGZIP(), []int{164}
 }
 
 func (x *LogConcatenateExpression) GetInputs() []*LogExpression {
@@ -13369,7 +13509,7 @@ type LogFilterExpression struct {
 
 func (x *LogFilterExpression) Reset() {
 	*x = LogFilterExpression{}
-	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[163]
+	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[165]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -13381,7 +13521,7 @@ func (x *LogFilterExpression) String() string {
 func (*LogFilterExpression) ProtoMessage() {}
 
 func (x *LogFilterExpression) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[163]
+	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[165]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -13394,7 +13534,7 @@ func (x *LogFilterExpression) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use LogFilterExpression.ProtoReflect.Descriptor instead.
 func (*LogFilterExpression) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_compute_v1_expressions_proto_rawDescGZIP(), []int{163}
+	return file_nominal_protos_compute_v1_expressions_proto_rawDescGZIP(), []int{165}
 }
 
 func (x *LogFilterExpression) GetInput() *LogExpression {
@@ -13444,7 +13584,7 @@ type RangeExpression struct {
 
 func (x *RangeExpression) Reset() {
 	*x = RangeExpression{}
-	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[164]
+	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[166]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -13456,7 +13596,7 @@ func (x *RangeExpression) String() string {
 func (*RangeExpression) ProtoMessage() {}
 
 func (x *RangeExpression) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[164]
+	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[166]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -13469,7 +13609,7 @@ func (x *RangeExpression) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use RangeExpression.ProtoReflect.Descriptor instead.
 func (*RangeExpression) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_compute_v1_expressions_proto_rawDescGZIP(), []int{164}
+	return file_nominal_protos_compute_v1_expressions_proto_rawDescGZIP(), []int{166}
 }
 
 func (x *RangeExpression) GetKind() isRangeExpression_Kind {
@@ -13808,7 +13948,7 @@ type LiteralRangeCollection struct {
 
 func (x *LiteralRangeCollection) Reset() {
 	*x = LiteralRangeCollection{}
-	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[165]
+	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[167]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -13820,7 +13960,7 @@ func (x *LiteralRangeCollection) String() string {
 func (*LiteralRangeCollection) ProtoMessage() {}
 
 func (x *LiteralRangeCollection) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[165]
+	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[167]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -13833,7 +13973,7 @@ func (x *LiteralRangeCollection) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use LiteralRangeCollection.ProtoReflect.Descriptor instead.
 func (*LiteralRangeCollection) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_compute_v1_expressions_proto_rawDescGZIP(), []int{165}
+	return file_nominal_protos_compute_v1_expressions_proto_rawDescGZIP(), []int{167}
 }
 
 func (x *LiteralRangeCollection) GetRanges() []*LiteralRange {
@@ -13855,7 +13995,7 @@ type LiteralRange struct {
 
 func (x *LiteralRange) Reset() {
 	*x = LiteralRange{}
-	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[166]
+	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[168]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -13867,7 +14007,7 @@ func (x *LiteralRange) String() string {
 func (*LiteralRange) ProtoMessage() {}
 
 func (x *LiteralRange) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[166]
+	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[168]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -13880,7 +14020,7 @@ func (x *LiteralRange) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use LiteralRange.ProtoReflect.Descriptor instead.
 func (*LiteralRange) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_compute_v1_expressions_proto_rawDescGZIP(), []int{166}
+	return file_nominal_protos_compute_v1_expressions_proto_rawDescGZIP(), []int{168}
 }
 
 func (x *LiteralRange) GetStart() *TimestampConstant {
@@ -13915,7 +14055,7 @@ type BooleanRangeExpression struct {
 
 func (x *BooleanRangeExpression) Reset() {
 	*x = BooleanRangeExpression{}
-	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[167]
+	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[169]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -13927,7 +14067,7 @@ func (x *BooleanRangeExpression) String() string {
 func (*BooleanRangeExpression) ProtoMessage() {}
 
 func (x *BooleanRangeExpression) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[167]
+	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[169]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -13940,7 +14080,7 @@ func (x *BooleanRangeExpression) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use BooleanRangeExpression.ProtoReflect.Descriptor instead.
 func (*BooleanRangeExpression) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_compute_v1_expressions_proto_rawDescGZIP(), []int{167}
+	return file_nominal_protos_compute_v1_expressions_proto_rawDescGZIP(), []int{169}
 }
 
 func (x *BooleanRangeExpression) GetInput() *BooleanExpression {
@@ -13973,7 +14113,7 @@ type NumericThresholdRanges struct {
 
 func (x *NumericThresholdRanges) Reset() {
 	*x = NumericThresholdRanges{}
-	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[168]
+	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[170]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -13985,7 +14125,7 @@ func (x *NumericThresholdRanges) String() string {
 func (*NumericThresholdRanges) ProtoMessage() {}
 
 func (x *NumericThresholdRanges) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[168]
+	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[170]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -13998,7 +14138,7 @@ func (x *NumericThresholdRanges) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use NumericThresholdRanges.ProtoReflect.Descriptor instead.
 func (*NumericThresholdRanges) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_compute_v1_expressions_proto_rawDescGZIP(), []int{168}
+	return file_nominal_protos_compute_v1_expressions_proto_rawDescGZIP(), []int{170}
 }
 
 func (x *NumericThresholdRanges) GetInput() *NumericExpression {
@@ -14050,7 +14190,7 @@ type NumericBoundsRanges struct {
 
 func (x *NumericBoundsRanges) Reset() {
 	*x = NumericBoundsRanges{}
-	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[169]
+	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[171]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -14062,7 +14202,7 @@ func (x *NumericBoundsRanges) String() string {
 func (*NumericBoundsRanges) ProtoMessage() {}
 
 func (x *NumericBoundsRanges) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[169]
+	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[171]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -14075,7 +14215,7 @@ func (x *NumericBoundsRanges) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use NumericBoundsRanges.ProtoReflect.Descriptor instead.
 func (*NumericBoundsRanges) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_compute_v1_expressions_proto_rawDescGZIP(), []int{169}
+	return file_nominal_protos_compute_v1_expressions_proto_rawDescGZIP(), []int{171}
 }
 
 func (x *NumericBoundsRanges) GetInput() *NumericExpression {
@@ -14127,7 +14267,7 @@ type CategoricalMembershipRanges struct {
 
 func (x *CategoricalMembershipRanges) Reset() {
 	*x = CategoricalMembershipRanges{}
-	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[170]
+	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[172]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -14139,7 +14279,7 @@ func (x *CategoricalMembershipRanges) String() string {
 func (*CategoricalMembershipRanges) ProtoMessage() {}
 
 func (x *CategoricalMembershipRanges) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[170]
+	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[172]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -14152,7 +14292,7 @@ func (x *CategoricalMembershipRanges) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CategoricalMembershipRanges.ProtoReflect.Descriptor instead.
 func (*CategoricalMembershipRanges) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_compute_v1_expressions_proto_rawDescGZIP(), []int{170}
+	return file_nominal_protos_compute_v1_expressions_proto_rawDescGZIP(), []int{172}
 }
 
 func (x *CategoricalMembershipRanges) GetInput() *CategoricalExpression {
@@ -14185,9 +14325,13 @@ func (x *CategoricalMembershipRanges) GetPersistence() *RangePersistence {
 
 // Ranges where the inputs are all equal, or not all equal, as `mode` says.
 type NumericEqualityRanges struct {
-	state  protoimpl.MessageState `protogen:"open.v1"`
-	Inputs []*NumericExpression   `protobuf:"bytes,1,rep,name=inputs,proto3" json:"inputs,omitempty"`
-	Mode   SeriesEqualityMode     `protobuf:"varint,2,opt,name=mode,proto3,enum=nominal.compute.v1.SeriesEqualityMode" json:"mode,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Set at least two. Fewer are accepted for saved expressions but require `components` for
+	// `persistence.min_duration`. With one input and non-negative tolerance, ALL_EQUAL matches
+	// wherever it has points and NOT_ALL_EQUAL never matches. With none, evaluation fails with
+	// INVALID_ARGUMENT.
+	Inputs []*NumericExpression `protobuf:"bytes,1,rep,name=inputs,proto3" json:"inputs,omitempty"`
+	Mode   SeriesEqualityMode   `protobuf:"varint,2,opt,name=mode,proto3,enum=nominal.compute.v1.SeriesEqualityMode" json:"mode,omitempty"`
 	// Values within `tolerance` of each other count as equal. Absent means exact equality.
 	Tolerance   *DoubleConstant   `protobuf:"bytes,3,opt,name=tolerance,proto3" json:"tolerance,omitempty"`
 	Persistence *RangePersistence `protobuf:"bytes,4,opt,name=persistence,proto3" json:"persistence,omitempty"`
@@ -14202,7 +14346,7 @@ type NumericEqualityRanges struct {
 
 func (x *NumericEqualityRanges) Reset() {
 	*x = NumericEqualityRanges{}
-	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[171]
+	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[173]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -14214,7 +14358,7 @@ func (x *NumericEqualityRanges) String() string {
 func (*NumericEqualityRanges) ProtoMessage() {}
 
 func (x *NumericEqualityRanges) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[171]
+	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[173]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -14227,7 +14371,7 @@ func (x *NumericEqualityRanges) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use NumericEqualityRanges.ProtoReflect.Descriptor instead.
 func (*NumericEqualityRanges) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_compute_v1_expressions_proto_rawDescGZIP(), []int{171}
+	return file_nominal_protos_compute_v1_expressions_proto_rawDescGZIP(), []int{173}
 }
 
 func (x *NumericEqualityRanges) GetInputs() []*NumericExpression {
@@ -14283,7 +14427,7 @@ type CategoricalEqualityRanges struct {
 
 func (x *CategoricalEqualityRanges) Reset() {
 	*x = CategoricalEqualityRanges{}
-	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[172]
+	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[174]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -14295,7 +14439,7 @@ func (x *CategoricalEqualityRanges) String() string {
 func (*CategoricalEqualityRanges) ProtoMessage() {}
 
 func (x *CategoricalEqualityRanges) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[172]
+	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[174]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -14308,7 +14452,7 @@ func (x *CategoricalEqualityRanges) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CategoricalEqualityRanges.ProtoReflect.Descriptor instead.
 func (*CategoricalEqualityRanges) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_compute_v1_expressions_proto_rawDescGZIP(), []int{172}
+	return file_nominal_protos_compute_v1_expressions_proto_rawDescGZIP(), []int{174}
 }
 
 func (x *CategoricalEqualityRanges) GetInputs() []*CategoricalExpression {
@@ -14351,7 +14495,7 @@ type NumericCrossoverRanges struct {
 
 func (x *NumericCrossoverRanges) Reset() {
 	*x = NumericCrossoverRanges{}
-	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[173]
+	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[175]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -14363,7 +14507,7 @@ func (x *NumericCrossoverRanges) String() string {
 func (*NumericCrossoverRanges) ProtoMessage() {}
 
 func (x *NumericCrossoverRanges) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[173]
+	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[175]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -14376,7 +14520,7 @@ func (x *NumericCrossoverRanges) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use NumericCrossoverRanges.ProtoReflect.Descriptor instead.
 func (*NumericCrossoverRanges) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_compute_v1_expressions_proto_rawDescGZIP(), []int{173}
+	return file_nominal_protos_compute_v1_expressions_proto_rawDescGZIP(), []int{175}
 }
 
 func (x *NumericCrossoverRanges) GetLeft() *NumericExpression {
@@ -14403,7 +14547,7 @@ type SeriesChangeRanges struct {
 
 func (x *SeriesChangeRanges) Reset() {
 	*x = SeriesChangeRanges{}
-	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[174]
+	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[176]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -14415,7 +14559,7 @@ func (x *SeriesChangeRanges) String() string {
 func (*SeriesChangeRanges) ProtoMessage() {}
 
 func (x *SeriesChangeRanges) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[174]
+	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[176]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -14428,7 +14572,7 @@ func (x *SeriesChangeRanges) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SeriesChangeRanges.ProtoReflect.Descriptor instead.
 func (*SeriesChangeRanges) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_compute_v1_expressions_proto_rawDescGZIP(), []int{174}
+	return file_nominal_protos_compute_v1_expressions_proto_rawDescGZIP(), []int{176}
 }
 
 func (x *SeriesChangeRanges) GetInput() *SeriesExpression {
@@ -14455,7 +14599,7 @@ type SeriesStalenessRanges struct {
 
 func (x *SeriesStalenessRanges) Reset() {
 	*x = SeriesStalenessRanges{}
-	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[175]
+	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[177]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -14467,7 +14611,7 @@ func (x *SeriesStalenessRanges) String() string {
 func (*SeriesStalenessRanges) ProtoMessage() {}
 
 func (x *SeriesStalenessRanges) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[175]
+	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[177]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -14480,7 +14624,7 @@ func (x *SeriesStalenessRanges) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SeriesStalenessRanges.ProtoReflect.Descriptor instead.
 func (*SeriesStalenessRanges) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_compute_v1_expressions_proto_rawDescGZIP(), []int{175}
+	return file_nominal_protos_compute_v1_expressions_proto_rawDescGZIP(), []int{177}
 }
 
 func (x *SeriesStalenessRanges) GetInput() *SeriesExpression {
@@ -14526,7 +14670,7 @@ type RangeDurationFilter struct {
 
 func (x *RangeDurationFilter) Reset() {
 	*x = RangeDurationFilter{}
-	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[176]
+	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[178]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -14538,7 +14682,7 @@ func (x *RangeDurationFilter) String() string {
 func (*RangeDurationFilter) ProtoMessage() {}
 
 func (x *RangeDurationFilter) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[176]
+	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[178]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -14551,7 +14695,7 @@ func (x *RangeDurationFilter) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use RangeDurationFilter.ProtoReflect.Descriptor instead.
 func (*RangeDurationFilter) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_compute_v1_expressions_proto_rawDescGZIP(), []int{176}
+	return file_nominal_protos_compute_v1_expressions_proto_rawDescGZIP(), []int{178}
 }
 
 func (x *RangeDurationFilter) GetInput() *RangeExpression {
@@ -14599,7 +14743,7 @@ type NumericStabilityRanges struct {
 
 func (x *NumericStabilityRanges) Reset() {
 	*x = NumericStabilityRanges{}
-	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[177]
+	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[179]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -14611,7 +14755,7 @@ func (x *NumericStabilityRanges) String() string {
 func (*NumericStabilityRanges) ProtoMessage() {}
 
 func (x *NumericStabilityRanges) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[177]
+	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[179]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -14624,7 +14768,7 @@ func (x *NumericStabilityRanges) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use NumericStabilityRanges.ProtoReflect.Descriptor instead.
 func (*NumericStabilityRanges) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_compute_v1_expressions_proto_rawDescGZIP(), []int{177}
+	return file_nominal_protos_compute_v1_expressions_proto_rawDescGZIP(), []int{179}
 }
 
 func (x *NumericStabilityRanges) GetInput() *NumericExpression {
@@ -14668,7 +14812,7 @@ type NumericExtremaRanges struct {
 
 func (x *NumericExtremaRanges) Reset() {
 	*x = NumericExtremaRanges{}
-	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[178]
+	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[180]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -14680,7 +14824,7 @@ func (x *NumericExtremaRanges) String() string {
 func (*NumericExtremaRanges) ProtoMessage() {}
 
 func (x *NumericExtremaRanges) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[178]
+	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[180]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -14693,7 +14837,7 @@ func (x *NumericExtremaRanges) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use NumericExtremaRanges.ProtoReflect.Descriptor instead.
 func (*NumericExtremaRanges) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_compute_v1_expressions_proto_rawDescGZIP(), []int{178}
+	return file_nominal_protos_compute_v1_expressions_proto_rawDescGZIP(), []int{180}
 }
 
 func (x *NumericExtremaRanges) GetInput() *NumericExpression {
@@ -14726,7 +14870,7 @@ type RangeExpressionCollection struct {
 
 func (x *RangeExpressionCollection) Reset() {
 	*x = RangeExpressionCollection{}
-	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[179]
+	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[181]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -14738,7 +14882,7 @@ func (x *RangeExpressionCollection) String() string {
 func (*RangeExpressionCollection) ProtoMessage() {}
 
 func (x *RangeExpressionCollection) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[179]
+	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[181]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -14751,7 +14895,7 @@ func (x *RangeExpressionCollection) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use RangeExpressionCollection.ProtoReflect.Descriptor instead.
 func (*RangeExpressionCollection) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_compute_v1_expressions_proto_rawDescGZIP(), []int{179}
+	return file_nominal_protos_compute_v1_expressions_proto_rawDescGZIP(), []int{181}
 }
 
 func (x *RangeExpressionCollection) GetInputs() []*RangeExpression {
@@ -14774,7 +14918,7 @@ type RangePaddingExpression struct {
 
 func (x *RangePaddingExpression) Reset() {
 	*x = RangePaddingExpression{}
-	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[180]
+	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[182]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -14786,7 +14930,7 @@ func (x *RangePaddingExpression) String() string {
 func (*RangePaddingExpression) ProtoMessage() {}
 
 func (x *RangePaddingExpression) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[180]
+	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[182]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -14799,7 +14943,7 @@ func (x *RangePaddingExpression) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use RangePaddingExpression.ProtoReflect.Descriptor instead.
 func (*RangePaddingExpression) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_compute_v1_expressions_proto_rawDescGZIP(), []int{180}
+	return file_nominal_protos_compute_v1_expressions_proto_rawDescGZIP(), []int{182}
 }
 
 func (x *RangePaddingExpression) GetInput() *RangeExpression {
@@ -14839,7 +14983,7 @@ type RangeStatisticsExpression struct {
 
 func (x *RangeStatisticsExpression) Reset() {
 	*x = RangeStatisticsExpression{}
-	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[181]
+	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[183]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -14851,7 +14995,7 @@ func (x *RangeStatisticsExpression) String() string {
 func (*RangeStatisticsExpression) ProtoMessage() {}
 
 func (x *RangeStatisticsExpression) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[181]
+	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[183]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -14864,7 +15008,7 @@ func (x *RangeStatisticsExpression) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use RangeStatisticsExpression.ProtoReflect.Descriptor instead.
 func (*RangeStatisticsExpression) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_compute_v1_expressions_proto_rawDescGZIP(), []int{181}
+	return file_nominal_protos_compute_v1_expressions_proto_rawDescGZIP(), []int{183}
 }
 
 func (x *RangeStatisticsExpression) GetRanges() *RangeExpression {
@@ -14932,7 +15076,7 @@ type AllStatistics struct {
 
 func (x *AllStatistics) Reset() {
 	*x = AllStatistics{}
-	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[182]
+	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[184]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -14944,7 +15088,7 @@ func (x *AllStatistics) String() string {
 func (*AllStatistics) ProtoMessage() {}
 
 func (x *AllStatistics) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[182]
+	mi := &file_nominal_protos_compute_v1_expressions_proto_msgTypes[184]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -14957,14 +15101,14 @@ func (x *AllStatistics) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use AllStatistics.ProtoReflect.Descriptor instead.
 func (*AllStatistics) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_compute_v1_expressions_proto_rawDescGZIP(), []int{182}
+	return file_nominal_protos_compute_v1_expressions_proto_rawDescGZIP(), []int{184}
 }
 
 var File_nominal_protos_compute_v1_expressions_proto protoreflect.FileDescriptor
 
 const file_nominal_protos_compute_v1_expressions_proto_rawDesc = "" +
 	"\n" +
-	"+nominal/protos/compute/v1/expressions.proto\x12\x12nominal.compute.v1\x1a\x1bbuf/validate/validate.proto\x1a6nominal/protos/compute/v1/categorical_parameters.proto\x1a&nominal/protos/compute/v1/common.proto\x1a)nominal/protos/compute/v1/constants.proto\x1a2nominal/protos/compute/v1/dataset_references.proto\x1a4nominal/protos/compute/v1/duration_expressions.proto\x1a0nominal/protos/compute/v1/event_predicates.proto\x1a.nominal/protos/compute/v1/log_predicates.proto\x1a2nominal/protos/compute/v1/numeric_parameters.proto\x1a2nominal/protos/compute/v1/numeric_reductions.proto\x1a0nominal/protos/compute/v1/range_parameters.proto\x1a2nominal/protos/compute/v1/refprop_parameters.proto\x1a3nominal/protos/compute/v1/resource_predicates.proto\x1a.nominal/protos/compute/v1/signal_filters.proto\x1a0nominal/protos/compute/v1/source_selection.proto\x1a.nominal/protos/compute/v1/tag_predicates.proto\x1a!nominal/protos/gen/v1/alias.proto\x1a$nominal/protos/modules/v1/udfs.proto\x1a(nominal/protos/types/series/series.proto\x1a$nominal/protos/types/time/time.proto\"\x8f)\n" +
+	"+nominal/protos/compute/v1/expressions.proto\x12\x12nominal.compute.v1\x1a\x1bbuf/validate/validate.proto\x1a6nominal/protos/compute/v1/categorical_parameters.proto\x1a&nominal/protos/compute/v1/common.proto\x1a)nominal/protos/compute/v1/constants.proto\x1a2nominal/protos/compute/v1/dataset_references.proto\x1a4nominal/protos/compute/v1/duration_expressions.proto\x1a0nominal/protos/compute/v1/event_predicates.proto\x1a.nominal/protos/compute/v1/log_predicates.proto\x1a2nominal/protos/compute/v1/numeric_parameters.proto\x1a2nominal/protos/compute/v1/numeric_reductions.proto\x1a0nominal/protos/compute/v1/range_parameters.proto\x1a2nominal/protos/compute/v1/refprop_parameters.proto\x1a3nominal/protos/compute/v1/resource_predicates.proto\x1a.nominal/protos/compute/v1/signal_filters.proto\x1a0nominal/protos/compute/v1/source_selection.proto\x1a.nominal/protos/compute/v1/tag_predicates.proto\x1a!nominal/protos/gen/v1/alias.proto\x1a$nominal/protos/modules/v1/udfs.proto\x1a(nominal/protos/types/series/series.proto\x1a$nominal/protos/types/time/time.proto\"\xe6)\n" +
 	"\x11NumericExpression\x12G\n" +
 	"\treference\x18\x01 \x01(\v2'.nominal.compute.v1.TimeSeriesReferenceH\x00R\treference\x12@\n" +
 	"\bconstant\x18\x02 \x01(\v2\".nominal.compute.v1.DoubleConstantH\x00R\bconstant\x12B\n" +
@@ -15035,7 +15179,8 @@ const file_nominal_protos_compute_v1_expressions_proto_rawDesc = "" +
 	"\x11resource_property\x186 \x01(\v2-.nominal.compute.v1.ResourcePropertySelectionH\x00R\x10resourceProperty\x12X\n" +
 	"\rinterval_tags\x187 \x01(\v21.nominal.compute.v1.NumericIntervalTagsExpressionH\x00R\fintervalTags\x12^\n" +
 	"\x0ftime_difference\x188 \x01(\v23.nominal.compute.v1.NumericTimeDifferenceExpressionH\x00R\x0etimeDifference\x12I\n" +
-	"\btag_pair\x18: \x01(\v2,.nominal.compute.v1.NumericTagPairExpressionH\x00R\atagPairB\r\n" +
+	"\btag_pair\x18: \x01(\v2,.nominal.compute.v1.NumericTagPairExpressionH\x00R\atagPair\x12U\n" +
+	"\fgeo_distance\x18; \x01(\v20.nominal.compute.v1.NumericGeoDistanceExpressionH\x00R\vgeoDistanceB\r\n" +
 	"\x04kind\x12\x05\xbaH\x02\b\x01\"\xb5\x06\n" +
 	"\x0eComputeContext\x12c\n" +
 	"\tvariables\x18\x01 \x03(\v21.nominal.compute.v1.ComputeContext.VariablesEntryB\x12\xbaH\x0f\x9a\x01\f\x10\xe8\a\"\ar\x05\x10\x01\x18\xe8\aR\tvariables\x12`\n" +
@@ -15093,7 +15238,7 @@ const file_nominal_protos_compute_v1_expressions_proto_rawDesc = "" +
 	"\rvariable_name\x18\x01 \x01(\tB\n" +
 	"\xbaH\ar\x05\x10\x01\x18\xe8\aH\x00R\fvariableName\x129\n" +
 	"\x05value\x18\x02 \x01(\v2!.nominal.compute.v1.VariableValueH\x00R\x05valueB\r\n" +
-	"\x04kind\x12\x05\xbaH\x02\b\x01\"\xeb\a\n" +
+	"\x04kind\x12\x05\xbaH\x02\b\x01\"\xbe\b\n" +
 	"\x11DatasetExpression\x12D\n" +
 	"\x05asset\x18\x01 \x01(\v2,.nominal.compute.v1.AssetReferenceExpressionH\x00R\x05asset\x12>\n" +
 	"\x03run\x18\x02 \x01(\v2*.nominal.compute.v1.RunReferenceExpressionH\x00R\x03run\x12T\n" +
@@ -15113,7 +15258,9 @@ const file_nominal_protos_compute_v1_expressions_proto_rawDesc = "" +
 	"\treference\x18\f \x01(\v2$.nominal.compute.v1.DatasetReferenceH\x00R\treference\x12G\n" +
 	"\n" +
 	"dimensions\x18\r \x01(\v2%.nominal.compute.v1.DatasetDimensionsH\x00R\n" +
-	"dimensionsB\r\n" +
+	"dimensions\x12Q\n" +
+	"\n" +
+	"entity_set\x18\x0e \x01(\v20.nominal.compute.v1.EntitySetReferenceExpressionH\x00R\tentitySetB\r\n" +
 	"\x04kind\x12\x05\xbaH\x02\b\x01\"`\n" +
 	"\x14DatasetConcatenation\x12H\n" +
 	"\x06inputs\x18\x01 \x03(\v2%.nominal.compute.v1.DatasetExpressionB\t\xbaH\x06\x92\x01\x03\x10\xe8\aR\x06inputs\"\xda\x01\n" +
@@ -15238,7 +15385,13 @@ const file_nominal_protos_compute_v1_expressions_proto_rawDesc = "" +
 	"\"NumericAbsoluteTimestampExpression\x12B\n" +
 	"\x05input\x18\x01 \x01(\v2$.nominal.compute.v1.SeriesExpressionB\x06\xbaH\x03\xc8\x01\x01R\x05input\x12<\n" +
 	"\x04unit\x18\x02 \x01(\x0e2\x1c.nominal.types.time.TimeUnitB\n" +
-	"\xbaH\a\x82\x01\x04\x10\x01 \x00R\x04unit\"\xb1\x01\n" +
+	"\xbaH\a\x82\x01\x04\x10\x01 \x00R\x04unit\"\xa8\x01\n" +
+	"\x1cNumericGeoDistanceExpression\x12E\n" +
+	"\x04from\x18\x01 \x01(\v2).nominal.compute.v1.GeoPositionExpressionB\x06\xbaH\x03\xc8\x01\x01R\x04from\x12A\n" +
+	"\x02to\x18\x02 \x01(\v2).nominal.compute.v1.GeoPositionExpressionB\x06\xbaH\x03\xc8\x01\x01R\x02to\"\xaf\x01\n" +
+	"\x15GeoPositionExpression\x12I\n" +
+	"\blatitude\x18\x01 \x01(\v2%.nominal.compute.v1.NumericExpressionB\x06\xbaH\x03\xc8\x01\x01R\blatitude\x12K\n" +
+	"\tlongitude\x18\x02 \x01(\v2%.nominal.compute.v1.NumericExpressionB\x06\xbaH\x03\xc8\x01\x01R\tlongitude\"\xb1\x01\n" +
 	"\x1fNumericTimeDifferenceExpression\x12B\n" +
 	"\x05input\x18\x01 \x01(\v2$.nominal.compute.v1.SeriesExpressionB\x06\xbaH\x03\xc8\x01\x01R\x05input\x12A\n" +
 	"\x04unit\x18\x02 \x01(\x0e2\x1c.nominal.types.time.TimeUnitB\n" +
@@ -15881,9 +16034,9 @@ const file_nominal_protos_compute_v1_expressions_proto_rawDesc = "" +
 	"\toperation\x18\x03 \x01(\x0e22.nominal.compute.v1.CategoricalMembershipOperationB\n" +
 	"\xbaH\a\x82\x01\x04\x10\x01 \x00R\toperation\x12F\n" +
 	"\vpersistence\x18\x04 \x01(\v2$.nominal.compute.v1.RangePersistenceR\vpersistence:\xe6\x01\xbaH\xe2\x01\x1a\xdf\x01\n" +
-	"%categorical_membership.pattern_length\x122regular expressions are limited to 1000 characters\x1a\x81\x01this.operation != 3 || !has(this.values.literal) || this.values.literal.values.all(v, !has(v.literal) || size(v.literal) <= 1000)\"\x8f\x03\n" +
-	"\x15NumericEqualityRanges\x12J\n" +
-	"\x06inputs\x18\x01 \x03(\v2%.nominal.compute.v1.NumericExpressionB\v\xbaH\b\x92\x01\x05\b\x02\x10\xe8\aR\x06inputs\x12F\n" +
+	"%categorical_membership.pattern_length\x122regular expressions are limited to 1000 characters\x1a\x81\x01this.operation != 3 || !has(this.values.literal) || this.values.literal.values.all(v, !has(v.literal) || size(v.literal) <= 1000)\"\x8d\x03\n" +
+	"\x15NumericEqualityRanges\x12H\n" +
+	"\x06inputs\x18\x01 \x03(\v2%.nominal.compute.v1.NumericExpressionB\t\xbaH\x06\x92\x01\x03\x10\xe8\aR\x06inputs\x12F\n" +
 	"\x04mode\x18\x02 \x01(\x0e2&.nominal.compute.v1.SeriesEqualityModeB\n" +
 	"\xbaH\a\x82\x01\x04\x10\x01 \x00R\x04mode\x12@\n" +
 	"\ttolerance\x18\x03 \x01(\v2\".nominal.compute.v1.DoubleConstantR\ttolerance\x12F\n" +
@@ -16061,7 +16214,7 @@ func file_nominal_protos_compute_v1_expressions_proto_rawDescGZIP() []byte {
 }
 
 var file_nominal_protos_compute_v1_expressions_proto_enumTypes = make([]protoimpl.EnumInfo, 17)
-var file_nominal_protos_compute_v1_expressions_proto_msgTypes = make([]protoimpl.MessageInfo, 192)
+var file_nominal_protos_compute_v1_expressions_proto_msgTypes = make([]protoimpl.MessageInfo, 194)
 var file_nominal_protos_compute_v1_expressions_proto_goTypes = []any{
 	(ComputeAlignmentStrategy)(0),                              // 0: nominal.compute.v1.ComputeAlignmentStrategy
 	(BuiltinCurveForm)(0),                                      // 1: nominal.compute.v1.BuiltinCurveForm
@@ -16114,791 +16267,800 @@ var file_nominal_protos_compute_v1_expressions_proto_goTypes = []any{
 	(*PolynomialCurveModel)(nil),                               // 48: nominal.compute.v1.PolynomialCurveModel
 	(*CustomCurveModel)(nil),                                   // 49: nominal.compute.v1.CustomCurveModel
 	(*NumericAbsoluteTimestampExpression)(nil),                 // 50: nominal.compute.v1.NumericAbsoluteTimestampExpression
-	(*NumericTimeDifferenceExpression)(nil),                    // 51: nominal.compute.v1.NumericTimeDifferenceExpression
-	(*NumericReduceUnderRangesExpression)(nil),                 // 52: nominal.compute.v1.NumericReduceUnderRangesExpression
-	(*NumericLogMatchesExpression)(nil),                        // 53: nominal.compute.v1.NumericLogMatchesExpression
-	(*NumericCountDuplicatesExpression)(nil),                   // 54: nominal.compute.v1.NumericCountDuplicatesExpression
-	(*NumericCategoricalMappingExpression)(nil),                // 55: nominal.compute.v1.NumericCategoricalMappingExpression
-	(*NumericStructFieldExpression)(nil),                       // 56: nominal.compute.v1.NumericStructFieldExpression
-	(*NumericRangeFilterExpression)(nil),                       // 57: nominal.compute.v1.NumericRangeFilterExpression
-	(*NumericGroupWithinRangesExpression)(nil),                 // 58: nominal.compute.v1.NumericGroupWithinRangesExpression
-	(*NumericAggregationExpression)(nil),                       // 59: nominal.compute.v1.NumericAggregationExpression
-	(*AggregationInput)(nil),                                   // 60: nominal.compute.v1.AggregationInput
-	(*TimeWindowAggregation)(nil),                              // 61: nominal.compute.v1.TimeWindowAggregation
-	(*PointWindowAggregation)(nil),                             // 62: nominal.compute.v1.PointWindowAggregation
-	(*GroupedSeriesAggregation)(nil),                           // 63: nominal.compute.v1.GroupedSeriesAggregation
-	(*AggregationGroupingKeys)(nil),                            // 64: nominal.compute.v1.AggregationGroupingKeys
-	(*CurrentGroupingKeys)(nil),                                // 65: nominal.compute.v1.CurrentGroupingKeys
-	(*AggregationTimestamp)(nil),                               // 66: nominal.compute.v1.AggregationTimestamp
-	(*CurrentTimestamps)(nil),                                  // 67: nominal.compute.v1.CurrentTimestamps
-	(*NumericRangeDurationExpression)(nil),                     // 68: nominal.compute.v1.NumericRangeDurationExpression
-	(*ScalarUdfExpression)(nil),                                // 69: nominal.compute.v1.ScalarUdfExpression
-	(*NumericArrayIndexExpression)(nil),                        // 70: nominal.compute.v1.NumericArrayIndexExpression
-	(*NumericIntervalTagsExpression)(nil),                      // 71: nominal.compute.v1.NumericIntervalTagsExpression
-	(*IntervalSourceExpression)(nil),                           // 72: nominal.compute.v1.IntervalSourceExpression
-	(*EventIntervals)(nil),                                     // 73: nominal.compute.v1.EventIntervals
-	(*RangeIntervals)(nil),                                     // 74: nominal.compute.v1.RangeIntervals
-	(*EventIntervalTag)(nil),                                   // 75: nominal.compute.v1.EventIntervalTag
-	(*RangeIntervalTag)(nil),                                   // 76: nominal.compute.v1.RangeIntervalTag
-	(*IntervalIndexTag)(nil),                                   // 77: nominal.compute.v1.IntervalIndexTag
-	(*IntervalStartTag)(nil),                                   // 78: nominal.compute.v1.IntervalStartTag
-	(*EventLevelTag)(nil),                                      // 79: nominal.compute.v1.EventLevelTag
-	(*IntervalTimeShift)(nil),                                  // 80: nominal.compute.v1.IntervalTimeShift
-	(*IntervalStartAnchor)(nil),                                // 81: nominal.compute.v1.IntervalStartAnchor
-	(*IntervalEndAnchor)(nil),                                  // 82: nominal.compute.v1.IntervalEndAnchor
-	(*EventOrdinalSelection)(nil),                              // 83: nominal.compute.v1.EventOrdinalSelection
-	(*RangeOrdinalSelection)(nil),                              // 84: nominal.compute.v1.RangeOrdinalSelection
-	(*RunAnchorExpression)(nil),                                // 85: nominal.compute.v1.RunAnchorExpression
-	(*DatasetAnchorAlignment)(nil),                             // 86: nominal.compute.v1.DatasetAnchorAlignment
-	(*CategoricalExpression)(nil),                              // 87: nominal.compute.v1.CategoricalExpression
-	(*CategoricalDuplicateTimestampAggregationExpression)(nil), // 88: nominal.compute.v1.CategoricalDuplicateTimestampAggregationExpression
-	(*CategoricalResampleExpression)(nil),                      // 89: nominal.compute.v1.CategoricalResampleExpression
-	(*CategoricalResampleV2Expression)(nil),                    // 90: nominal.compute.v1.CategoricalResampleV2Expression
-	(*CategoricalNthPointDownsampleExpression)(nil),            // 91: nominal.compute.v1.CategoricalNthPointDownsampleExpression
-	(*CategoricalTimeRangeFilterExpression)(nil),               // 92: nominal.compute.v1.CategoricalTimeRangeFilterExpression
-	(*CategoricalTimeShiftExpression)(nil),                     // 93: nominal.compute.v1.CategoricalTimeShiftExpression
-	(*CategoricalTimeShiftV2Expression)(nil),                   // 94: nominal.compute.v1.CategoricalTimeShiftV2Expression
-	(*CategoricalUnionExpression)(nil),                         // 95: nominal.compute.v1.CategoricalUnionExpression
-	(*CategoricalRangeFilterExpression)(nil),                   // 96: nominal.compute.v1.CategoricalRangeFilterExpression
-	(*CategoricalNumericMappingExpression)(nil),                // 97: nominal.compute.v1.CategoricalNumericMappingExpression
-	(*NumericCategoricalInterval)(nil),                         // 98: nominal.compute.v1.NumericCategoricalInterval
-	(*CategoricalArrayIndexExpression)(nil),                    // 99: nominal.compute.v1.CategoricalArrayIndexExpression
-	(*CategoricalStructFieldExpression)(nil),                   // 100: nominal.compute.v1.CategoricalStructFieldExpression
-	(*CategoricalEventsExpression)(nil),                        // 101: nominal.compute.v1.CategoricalEventsExpression
-	(*EventLevelValue)(nil),                                    // 102: nominal.compute.v1.EventLevelValue
-	(*CategoricalAggregationExpression)(nil),                   // 103: nominal.compute.v1.CategoricalAggregationExpression
-	(*CategoricalTagFilterExpression)(nil),                     // 104: nominal.compute.v1.CategoricalTagFilterExpression
-	(*CategoricalTagSelectionExpression)(nil),                  // 105: nominal.compute.v1.CategoricalTagSelectionExpression
-	(*CategoricalToStartOfIntervalExpression)(nil),             // 106: nominal.compute.v1.CategoricalToStartOfIntervalExpression
-	(*BooleanExpression)(nil),                                  // 107: nominal.compute.v1.BooleanExpression
-	(*NumericUnaryExpression)(nil),                             // 108: nominal.compute.v1.NumericUnaryExpression
-	(*NumericBinaryExpression)(nil),                            // 109: nominal.compute.v1.NumericBinaryExpression
-	(*NumericNaryExpression)(nil),                              // 110: nominal.compute.v1.NumericNaryExpression
-	(*NumericBitwiseExpression)(nil),                           // 111: nominal.compute.v1.NumericBitwiseExpression
-	(*NumericConditionalExpression)(nil),                       // 112: nominal.compute.v1.NumericConditionalExpression
-	(*ComparisonExpression)(nil),                               // 113: nominal.compute.v1.ComparisonExpression
-	(*LogicalExpression)(nil),                                  // 114: nominal.compute.v1.LogicalExpression
-	(*InterpolationConfiguration)(nil),                         // 115: nominal.compute.v1.InterpolationConfiguration
-	(*ForwardFillInterpolation)(nil),                           // 116: nominal.compute.v1.ForwardFillInterpolation
-	(*NumericCumulativeSumExpression)(nil),                     // 117: nominal.compute.v1.NumericCumulativeSumExpression
-	(*NumericDerivativeExpression)(nil),                        // 118: nominal.compute.v1.NumericDerivativeExpression
-	(*NumericIntegralExpression)(nil),                          // 119: nominal.compute.v1.NumericIntegralExpression
-	(*NumericTimeRangeFilterExpression)(nil),                   // 120: nominal.compute.v1.NumericTimeRangeFilterExpression
-	(*NumericTimeShiftExpression)(nil),                         // 121: nominal.compute.v1.NumericTimeShiftExpression
-	(*NumericValueDifferenceExpression)(nil),                   // 122: nominal.compute.v1.NumericValueDifferenceExpression
-	(*NumericPhaseUnwrapExpression)(nil),                       // 123: nominal.compute.v1.NumericPhaseUnwrapExpression
-	(*NumericPointLimitExpression)(nil),                        // 124: nominal.compute.v1.NumericPointLimitExpression
-	(*NumericNthPointDownsampleExpression)(nil),                // 125: nominal.compute.v1.NumericNthPointDownsampleExpression
-	(*NumericLargestTriangleThreeBucketsExpression)(nil),       // 126: nominal.compute.v1.NumericLargestTriangleThreeBucketsExpression
-	(*NumericConditionFilterExpression)(nil),                   // 127: nominal.compute.v1.NumericConditionFilterExpression
-	(*NumericThresholdFilterExpression)(nil),                   // 128: nominal.compute.v1.NumericThresholdFilterExpression
-	(*NumericApproximateFilterExpression)(nil),                 // 129: nominal.compute.v1.NumericApproximateFilterExpression
-	(*NumericSignalFilterExpression)(nil),                      // 130: nominal.compute.v1.NumericSignalFilterExpression
-	(*NumericUnitConversionExpression)(nil),                    // 131: nominal.compute.v1.NumericUnitConversionExpression
-	(*NumericUnitOverrideExpression)(nil),                      // 132: nominal.compute.v1.NumericUnitOverrideExpression
-	(*NumericZScoreExpression)(nil),                            // 133: nominal.compute.v1.NumericZScoreExpression
-	(*NumericUnionExpression)(nil),                             // 134: nominal.compute.v1.NumericUnionExpression
-	(*NumericDropNanExpression)(nil),                           // 135: nominal.compute.v1.NumericDropNanExpression
-	(*NumericTimeShiftV2Expression)(nil),                       // 136: nominal.compute.v1.NumericTimeShiftV2Expression
-	(*NumericResampleV2Expression)(nil),                        // 137: nominal.compute.v1.NumericResampleV2Expression
-	(*NumericToStartOfIntervalExpression)(nil),                 // 138: nominal.compute.v1.NumericToStartOfIntervalExpression
-	(*NumericScalarTransformExpression)(nil),                   // 139: nominal.compute.v1.NumericScalarTransformExpression
-	(*NumericArithmeticExpression)(nil),                        // 140: nominal.compute.v1.NumericArithmeticExpression
-	(*NumericFormulaFilterExpression)(nil),                     // 141: nominal.compute.v1.NumericFormulaFilterExpression
-	(*NumericLiteralBitwiseExpression)(nil),                    // 142: nominal.compute.v1.NumericLiteralBitwiseExpression
-	(*LiteralBitFunction)(nil),                                 // 143: nominal.compute.v1.LiteralBitFunction
-	(*LiteralBitwiseFunction)(nil),                             // 144: nominal.compute.v1.LiteralBitwiseFunction
-	(*LiteralShiftFunction)(nil),                               // 145: nominal.compute.v1.LiteralShiftFunction
-	(*BitTestIndex)(nil),                                       // 146: nominal.compute.v1.BitTestIndex
-	(*NumericResampleExpression)(nil),                          // 147: nominal.compute.v1.NumericResampleExpression
-	(*NumericRefpropExpression)(nil),                           // 148: nominal.compute.v1.NumericRefpropExpression
-	(*RefpropInput)(nil),                                       // 149: nominal.compute.v1.RefpropInput
-	(*NumericRollingAggregationExpression)(nil),                // 150: nominal.compute.v1.NumericRollingAggregationExpression
-	(*NumericDuplicateTimestampAggregationExpression)(nil),     // 151: nominal.compute.v1.NumericDuplicateTimestampAggregationExpression
-	(*NumericTagFilterExpression)(nil),                         // 152: nominal.compute.v1.NumericTagFilterExpression
-	(*NumericTagSelectionExpression)(nil),                      // 153: nominal.compute.v1.NumericTagSelectionExpression
-	(*NumericTagPairExpression)(nil),                           // 154: nominal.compute.v1.NumericTagPairExpression
-	(*NumericArrayExpression)(nil),                             // 155: nominal.compute.v1.NumericArrayExpression
-	(*NumericArrayStructFieldExpression)(nil),                  // 156: nominal.compute.v1.NumericArrayStructFieldExpression
-	(*NumericArrayTimeShiftExpression)(nil),                    // 157: nominal.compute.v1.NumericArrayTimeShiftExpression
-	(*NumericArrayToStartOfIntervalExpression)(nil),            // 158: nominal.compute.v1.NumericArrayToStartOfIntervalExpression
-	(*NumericArrayTagFilterExpression)(nil),                    // 159: nominal.compute.v1.NumericArrayTagFilterExpression
-	(*NumericArrayTagSelectionExpression)(nil),                 // 160: nominal.compute.v1.NumericArrayTagSelectionExpression
-	(*CategoricalArrayExpression)(nil),                         // 161: nominal.compute.v1.CategoricalArrayExpression
-	(*CategoricalArrayStructFieldExpression)(nil),              // 162: nominal.compute.v1.CategoricalArrayStructFieldExpression
-	(*CategoricalArrayTimeShiftExpression)(nil),                // 163: nominal.compute.v1.CategoricalArrayTimeShiftExpression
-	(*CategoricalArrayToStartOfIntervalExpression)(nil),        // 164: nominal.compute.v1.CategoricalArrayToStartOfIntervalExpression
-	(*CategoricalArrayTagFilterExpression)(nil),                // 165: nominal.compute.v1.CategoricalArrayTagFilterExpression
-	(*CategoricalArrayTagSelectionExpression)(nil),             // 166: nominal.compute.v1.CategoricalArrayTagSelectionExpression
-	(*StructExpression)(nil),                                   // 167: nominal.compute.v1.StructExpression
-	(*StructFieldExpression)(nil),                              // 168: nominal.compute.v1.StructFieldExpression
-	(*StructTimeShiftExpression)(nil),                          // 169: nominal.compute.v1.StructTimeShiftExpression
-	(*StructToStartOfIntervalExpression)(nil),                  // 170: nominal.compute.v1.StructToStartOfIntervalExpression
-	(*StructTagFilterExpression)(nil),                          // 171: nominal.compute.v1.StructTagFilterExpression
-	(*StructTagSelectionExpression)(nil),                       // 172: nominal.compute.v1.StructTagSelectionExpression
-	(*LogExpression)(nil),                                      // 173: nominal.compute.v1.LogExpression
-	(*LogTimeShiftExpression)(nil),                             // 174: nominal.compute.v1.LogTimeShiftExpression
-	(*LogToStartOfIntervalExpression)(nil),                     // 175: nominal.compute.v1.LogToStartOfIntervalExpression
-	(*LogTagFilterExpression)(nil),                             // 176: nominal.compute.v1.LogTagFilterExpression
-	(*LogTagSelectionExpression)(nil),                          // 177: nominal.compute.v1.LogTagSelectionExpression
-	(*StructCombineExpression)(nil),                            // 178: nominal.compute.v1.StructCombineExpression
-	(*LogConcatenateExpression)(nil),                           // 179: nominal.compute.v1.LogConcatenateExpression
-	(*LogFilterExpression)(nil),                                // 180: nominal.compute.v1.LogFilterExpression
-	(*RangeExpression)(nil),                                    // 181: nominal.compute.v1.RangeExpression
-	(*LiteralRangeCollection)(nil),                             // 182: nominal.compute.v1.LiteralRangeCollection
-	(*LiteralRange)(nil),                                       // 183: nominal.compute.v1.LiteralRange
-	(*BooleanRangeExpression)(nil),                             // 184: nominal.compute.v1.BooleanRangeExpression
-	(*NumericThresholdRanges)(nil),                             // 185: nominal.compute.v1.NumericThresholdRanges
-	(*NumericBoundsRanges)(nil),                                // 186: nominal.compute.v1.NumericBoundsRanges
-	(*CategoricalMembershipRanges)(nil),                        // 187: nominal.compute.v1.CategoricalMembershipRanges
-	(*NumericEqualityRanges)(nil),                              // 188: nominal.compute.v1.NumericEqualityRanges
-	(*CategoricalEqualityRanges)(nil),                          // 189: nominal.compute.v1.CategoricalEqualityRanges
-	(*NumericCrossoverRanges)(nil),                             // 190: nominal.compute.v1.NumericCrossoverRanges
-	(*SeriesChangeRanges)(nil),                                 // 191: nominal.compute.v1.SeriesChangeRanges
-	(*SeriesStalenessRanges)(nil),                              // 192: nominal.compute.v1.SeriesStalenessRanges
-	(*RangeDurationFilter)(nil),                                // 193: nominal.compute.v1.RangeDurationFilter
-	(*NumericStabilityRanges)(nil),                             // 194: nominal.compute.v1.NumericStabilityRanges
-	(*NumericExtremaRanges)(nil),                               // 195: nominal.compute.v1.NumericExtremaRanges
-	(*RangeExpressionCollection)(nil),                          // 196: nominal.compute.v1.RangeExpressionCollection
-	(*RangePaddingExpression)(nil),                             // 197: nominal.compute.v1.RangePaddingExpression
-	(*RangeStatisticsExpression)(nil),                          // 198: nominal.compute.v1.RangeStatisticsExpression
-	(*AllStatistics)(nil),                                      // 199: nominal.compute.v1.AllStatistics
-	nil,                                                        // 200: nominal.compute.v1.ComputeContext.VariablesEntry
-	nil,                                                        // 201: nominal.compute.v1.ComputeContext.DatasetsEntry
-	nil,                                                        // 202: nominal.compute.v1.ModuleFunctionExpression.ArgumentsEntry
-	nil,                                                        // 203: nominal.compute.v1.CustomCurveModel.VariablesEntry
-	nil,                                                        // 204: nominal.compute.v1.CustomCurveModel.ParametersEntry
-	nil,                                                        // 205: nominal.compute.v1.NumericCategoricalMappingExpression.MappingEntry
-	nil,                                                        // 206: nominal.compute.v1.NumericArithmeticExpression.InputsEntry
-	nil,                                                        // 207: nominal.compute.v1.NumericFormulaFilterExpression.InputsEntry
-	nil,                                                        // 208: nominal.compute.v1.StructCombineExpression.FieldsEntry
-	(*TimeSeriesReference)(nil),                                // 209: nominal.compute.v1.TimeSeriesReference
-	(*DoubleConstant)(nil),                                     // 210: nominal.compute.v1.DoubleConstant
-	(*ChannelSelection)(nil),                                   // 211: nominal.compute.v1.ChannelSelection
-	(*DurationConstant)(nil),                                   // 212: nominal.compute.v1.DurationConstant
-	(*StringSetLiteral)(nil),                                   // 213: nominal.compute.v1.StringSetLiteral
-	(*ComputeDuration)(nil),                                    // 214: nominal.compute.v1.ComputeDuration
-	(*ComputeTimestamp)(nil),                                   // 215: nominal.compute.v1.ComputeTimestamp
-	(*TagKeySet)(nil),                                          // 216: nominal.compute.v1.TagKeySet
-	(*StringConstant)(nil),                                     // 217: nominal.compute.v1.StringConstant
-	(*AssetReferenceExpression)(nil),                           // 218: nominal.compute.v1.AssetReferenceExpression
-	(*RunReferenceExpression)(nil),                             // 219: nominal.compute.v1.RunReferenceExpression
-	(*DataSourceReferenceExpression)(nil),                      // 220: nominal.compute.v1.DataSourceReferenceExpression
-	(*DatasetResourceSearch)(nil),                              // 221: nominal.compute.v1.DatasetResourceSearch
-	(*DatasetReference)(nil),                                   // 222: nominal.compute.v1.DatasetReference
-	(*TagPredicateExpression)(nil),                             // 223: nominal.compute.v1.TagPredicateExpression
-	(*DurationExpression)(nil),                                 // 224: nominal.compute.v1.DurationExpression
-	(*ResourceTypeReferenceExpression)(nil),                    // 225: nominal.compute.v1.ResourceTypeReferenceExpression
-	(*SeriesSampling)(nil),                                     // 226: nominal.compute.v1.SeriesSampling
-	(SeriesStorageEngine)(0),                                   // 227: nominal.compute.v1.SeriesStorageEngine
-	(*TimestampConstant)(nil),                                  // 228: nominal.compute.v1.TimestampConstant
-	(time.TimeUnit)(0),                                         // 229: nominal.types.time.TimeUnit
-	(*IntegerConstant)(nil),                                    // 230: nominal.compute.v1.IntegerConstant
-	(*NumericReduction)(nil),                                   // 231: nominal.compute.v1.NumericReduction
-	(*LogPredicate)(nil),                                       // 232: nominal.compute.v1.LogPredicate
-	(series.SeriesDataType)(0),                                 // 233: nominal.types.series.SeriesDataType
-	(*v1.UdfSource)(nil),                                       // 234: nominal.modules.v1.UdfSource
-	(*EventPredicateExpression)(nil),                           // 235: nominal.compute.v1.EventPredicateExpression
-	(*CategoricalReduction)(nil),                               // 236: nominal.compute.v1.CategoricalReduction
-	(*CategoricalResampleFill)(nil),                            // 237: nominal.compute.v1.CategoricalResampleFill
-	(CategoricalMergeOperation)(0),                             // 238: nominal.compute.v1.CategoricalMergeOperation
-	(*SignalFilterConfiguration)(nil),                          // 239: nominal.compute.v1.SignalFilterConfiguration
-	(*ScalingFactor)(nil),                                      // 240: nominal.compute.v1.ScalingFactor
-	(*ResampleFill)(nil),                                       // 241: nominal.compute.v1.ResampleFill
-	(RefpropProperty)(0),                                       // 242: nominal.compute.v1.RefpropProperty
-	(RefpropSubstance)(0),                                      // 243: nominal.compute.v1.RefpropSubstance
-	(*TagGrouping)(nil),                                        // 244: nominal.compute.v1.TagGrouping
-	(*RangePersistence)(nil),                                   // 245: nominal.compute.v1.RangePersistence
-	(NumericBoundsCondition)(0),                                // 246: nominal.compute.v1.NumericBoundsCondition
-	(*ParameterizedStringSet)(nil),                             // 247: nominal.compute.v1.ParameterizedStringSet
-	(CategoricalMembershipOperation)(0),                        // 248: nominal.compute.v1.CategoricalMembershipOperation
-	(SeriesEqualityMode)(0),                                    // 249: nominal.compute.v1.SeriesEqualityMode
-	(*DurationInput)(nil),                                      // 250: nominal.compute.v1.DurationInput
-	(UnboundedDurationComparison)(0),                           // 251: nominal.compute.v1.UnboundedDurationComparison
-	(*SpreadThreshold)(nil),                                    // 252: nominal.compute.v1.SpreadThreshold
-	(ExtremaSelection)(0),                                      // 253: nominal.compute.v1.ExtremaSelection
-	(RangePaddingSides)(0),                                     // 254: nominal.compute.v1.RangePaddingSides
+	(*NumericGeoDistanceExpression)(nil),                       // 51: nominal.compute.v1.NumericGeoDistanceExpression
+	(*GeoPositionExpression)(nil),                              // 52: nominal.compute.v1.GeoPositionExpression
+	(*NumericTimeDifferenceExpression)(nil),                    // 53: nominal.compute.v1.NumericTimeDifferenceExpression
+	(*NumericReduceUnderRangesExpression)(nil),                 // 54: nominal.compute.v1.NumericReduceUnderRangesExpression
+	(*NumericLogMatchesExpression)(nil),                        // 55: nominal.compute.v1.NumericLogMatchesExpression
+	(*NumericCountDuplicatesExpression)(nil),                   // 56: nominal.compute.v1.NumericCountDuplicatesExpression
+	(*NumericCategoricalMappingExpression)(nil),                // 57: nominal.compute.v1.NumericCategoricalMappingExpression
+	(*NumericStructFieldExpression)(nil),                       // 58: nominal.compute.v1.NumericStructFieldExpression
+	(*NumericRangeFilterExpression)(nil),                       // 59: nominal.compute.v1.NumericRangeFilterExpression
+	(*NumericGroupWithinRangesExpression)(nil),                 // 60: nominal.compute.v1.NumericGroupWithinRangesExpression
+	(*NumericAggregationExpression)(nil),                       // 61: nominal.compute.v1.NumericAggregationExpression
+	(*AggregationInput)(nil),                                   // 62: nominal.compute.v1.AggregationInput
+	(*TimeWindowAggregation)(nil),                              // 63: nominal.compute.v1.TimeWindowAggregation
+	(*PointWindowAggregation)(nil),                             // 64: nominal.compute.v1.PointWindowAggregation
+	(*GroupedSeriesAggregation)(nil),                           // 65: nominal.compute.v1.GroupedSeriesAggregation
+	(*AggregationGroupingKeys)(nil),                            // 66: nominal.compute.v1.AggregationGroupingKeys
+	(*CurrentGroupingKeys)(nil),                                // 67: nominal.compute.v1.CurrentGroupingKeys
+	(*AggregationTimestamp)(nil),                               // 68: nominal.compute.v1.AggregationTimestamp
+	(*CurrentTimestamps)(nil),                                  // 69: nominal.compute.v1.CurrentTimestamps
+	(*NumericRangeDurationExpression)(nil),                     // 70: nominal.compute.v1.NumericRangeDurationExpression
+	(*ScalarUdfExpression)(nil),                                // 71: nominal.compute.v1.ScalarUdfExpression
+	(*NumericArrayIndexExpression)(nil),                        // 72: nominal.compute.v1.NumericArrayIndexExpression
+	(*NumericIntervalTagsExpression)(nil),                      // 73: nominal.compute.v1.NumericIntervalTagsExpression
+	(*IntervalSourceExpression)(nil),                           // 74: nominal.compute.v1.IntervalSourceExpression
+	(*EventIntervals)(nil),                                     // 75: nominal.compute.v1.EventIntervals
+	(*RangeIntervals)(nil),                                     // 76: nominal.compute.v1.RangeIntervals
+	(*EventIntervalTag)(nil),                                   // 77: nominal.compute.v1.EventIntervalTag
+	(*RangeIntervalTag)(nil),                                   // 78: nominal.compute.v1.RangeIntervalTag
+	(*IntervalIndexTag)(nil),                                   // 79: nominal.compute.v1.IntervalIndexTag
+	(*IntervalStartTag)(nil),                                   // 80: nominal.compute.v1.IntervalStartTag
+	(*EventLevelTag)(nil),                                      // 81: nominal.compute.v1.EventLevelTag
+	(*IntervalTimeShift)(nil),                                  // 82: nominal.compute.v1.IntervalTimeShift
+	(*IntervalStartAnchor)(nil),                                // 83: nominal.compute.v1.IntervalStartAnchor
+	(*IntervalEndAnchor)(nil),                                  // 84: nominal.compute.v1.IntervalEndAnchor
+	(*EventOrdinalSelection)(nil),                              // 85: nominal.compute.v1.EventOrdinalSelection
+	(*RangeOrdinalSelection)(nil),                              // 86: nominal.compute.v1.RangeOrdinalSelection
+	(*RunAnchorExpression)(nil),                                // 87: nominal.compute.v1.RunAnchorExpression
+	(*DatasetAnchorAlignment)(nil),                             // 88: nominal.compute.v1.DatasetAnchorAlignment
+	(*CategoricalExpression)(nil),                              // 89: nominal.compute.v1.CategoricalExpression
+	(*CategoricalDuplicateTimestampAggregationExpression)(nil), // 90: nominal.compute.v1.CategoricalDuplicateTimestampAggregationExpression
+	(*CategoricalResampleExpression)(nil),                      // 91: nominal.compute.v1.CategoricalResampleExpression
+	(*CategoricalResampleV2Expression)(nil),                    // 92: nominal.compute.v1.CategoricalResampleV2Expression
+	(*CategoricalNthPointDownsampleExpression)(nil),            // 93: nominal.compute.v1.CategoricalNthPointDownsampleExpression
+	(*CategoricalTimeRangeFilterExpression)(nil),               // 94: nominal.compute.v1.CategoricalTimeRangeFilterExpression
+	(*CategoricalTimeShiftExpression)(nil),                     // 95: nominal.compute.v1.CategoricalTimeShiftExpression
+	(*CategoricalTimeShiftV2Expression)(nil),                   // 96: nominal.compute.v1.CategoricalTimeShiftV2Expression
+	(*CategoricalUnionExpression)(nil),                         // 97: nominal.compute.v1.CategoricalUnionExpression
+	(*CategoricalRangeFilterExpression)(nil),                   // 98: nominal.compute.v1.CategoricalRangeFilterExpression
+	(*CategoricalNumericMappingExpression)(nil),                // 99: nominal.compute.v1.CategoricalNumericMappingExpression
+	(*NumericCategoricalInterval)(nil),                         // 100: nominal.compute.v1.NumericCategoricalInterval
+	(*CategoricalArrayIndexExpression)(nil),                    // 101: nominal.compute.v1.CategoricalArrayIndexExpression
+	(*CategoricalStructFieldExpression)(nil),                   // 102: nominal.compute.v1.CategoricalStructFieldExpression
+	(*CategoricalEventsExpression)(nil),                        // 103: nominal.compute.v1.CategoricalEventsExpression
+	(*EventLevelValue)(nil),                                    // 104: nominal.compute.v1.EventLevelValue
+	(*CategoricalAggregationExpression)(nil),                   // 105: nominal.compute.v1.CategoricalAggregationExpression
+	(*CategoricalTagFilterExpression)(nil),                     // 106: nominal.compute.v1.CategoricalTagFilterExpression
+	(*CategoricalTagSelectionExpression)(nil),                  // 107: nominal.compute.v1.CategoricalTagSelectionExpression
+	(*CategoricalToStartOfIntervalExpression)(nil),             // 108: nominal.compute.v1.CategoricalToStartOfIntervalExpression
+	(*BooleanExpression)(nil),                                  // 109: nominal.compute.v1.BooleanExpression
+	(*NumericUnaryExpression)(nil),                             // 110: nominal.compute.v1.NumericUnaryExpression
+	(*NumericBinaryExpression)(nil),                            // 111: nominal.compute.v1.NumericBinaryExpression
+	(*NumericNaryExpression)(nil),                              // 112: nominal.compute.v1.NumericNaryExpression
+	(*NumericBitwiseExpression)(nil),                           // 113: nominal.compute.v1.NumericBitwiseExpression
+	(*NumericConditionalExpression)(nil),                       // 114: nominal.compute.v1.NumericConditionalExpression
+	(*ComparisonExpression)(nil),                               // 115: nominal.compute.v1.ComparisonExpression
+	(*LogicalExpression)(nil),                                  // 116: nominal.compute.v1.LogicalExpression
+	(*InterpolationConfiguration)(nil),                         // 117: nominal.compute.v1.InterpolationConfiguration
+	(*ForwardFillInterpolation)(nil),                           // 118: nominal.compute.v1.ForwardFillInterpolation
+	(*NumericCumulativeSumExpression)(nil),                     // 119: nominal.compute.v1.NumericCumulativeSumExpression
+	(*NumericDerivativeExpression)(nil),                        // 120: nominal.compute.v1.NumericDerivativeExpression
+	(*NumericIntegralExpression)(nil),                          // 121: nominal.compute.v1.NumericIntegralExpression
+	(*NumericTimeRangeFilterExpression)(nil),                   // 122: nominal.compute.v1.NumericTimeRangeFilterExpression
+	(*NumericTimeShiftExpression)(nil),                         // 123: nominal.compute.v1.NumericTimeShiftExpression
+	(*NumericValueDifferenceExpression)(nil),                   // 124: nominal.compute.v1.NumericValueDifferenceExpression
+	(*NumericPhaseUnwrapExpression)(nil),                       // 125: nominal.compute.v1.NumericPhaseUnwrapExpression
+	(*NumericPointLimitExpression)(nil),                        // 126: nominal.compute.v1.NumericPointLimitExpression
+	(*NumericNthPointDownsampleExpression)(nil),                // 127: nominal.compute.v1.NumericNthPointDownsampleExpression
+	(*NumericLargestTriangleThreeBucketsExpression)(nil),       // 128: nominal.compute.v1.NumericLargestTriangleThreeBucketsExpression
+	(*NumericConditionFilterExpression)(nil),                   // 129: nominal.compute.v1.NumericConditionFilterExpression
+	(*NumericThresholdFilterExpression)(nil),                   // 130: nominal.compute.v1.NumericThresholdFilterExpression
+	(*NumericApproximateFilterExpression)(nil),                 // 131: nominal.compute.v1.NumericApproximateFilterExpression
+	(*NumericSignalFilterExpression)(nil),                      // 132: nominal.compute.v1.NumericSignalFilterExpression
+	(*NumericUnitConversionExpression)(nil),                    // 133: nominal.compute.v1.NumericUnitConversionExpression
+	(*NumericUnitOverrideExpression)(nil),                      // 134: nominal.compute.v1.NumericUnitOverrideExpression
+	(*NumericZScoreExpression)(nil),                            // 135: nominal.compute.v1.NumericZScoreExpression
+	(*NumericUnionExpression)(nil),                             // 136: nominal.compute.v1.NumericUnionExpression
+	(*NumericDropNanExpression)(nil),                           // 137: nominal.compute.v1.NumericDropNanExpression
+	(*NumericTimeShiftV2Expression)(nil),                       // 138: nominal.compute.v1.NumericTimeShiftV2Expression
+	(*NumericResampleV2Expression)(nil),                        // 139: nominal.compute.v1.NumericResampleV2Expression
+	(*NumericToStartOfIntervalExpression)(nil),                 // 140: nominal.compute.v1.NumericToStartOfIntervalExpression
+	(*NumericScalarTransformExpression)(nil),                   // 141: nominal.compute.v1.NumericScalarTransformExpression
+	(*NumericArithmeticExpression)(nil),                        // 142: nominal.compute.v1.NumericArithmeticExpression
+	(*NumericFormulaFilterExpression)(nil),                     // 143: nominal.compute.v1.NumericFormulaFilterExpression
+	(*NumericLiteralBitwiseExpression)(nil),                    // 144: nominal.compute.v1.NumericLiteralBitwiseExpression
+	(*LiteralBitFunction)(nil),                                 // 145: nominal.compute.v1.LiteralBitFunction
+	(*LiteralBitwiseFunction)(nil),                             // 146: nominal.compute.v1.LiteralBitwiseFunction
+	(*LiteralShiftFunction)(nil),                               // 147: nominal.compute.v1.LiteralShiftFunction
+	(*BitTestIndex)(nil),                                       // 148: nominal.compute.v1.BitTestIndex
+	(*NumericResampleExpression)(nil),                          // 149: nominal.compute.v1.NumericResampleExpression
+	(*NumericRefpropExpression)(nil),                           // 150: nominal.compute.v1.NumericRefpropExpression
+	(*RefpropInput)(nil),                                       // 151: nominal.compute.v1.RefpropInput
+	(*NumericRollingAggregationExpression)(nil),                // 152: nominal.compute.v1.NumericRollingAggregationExpression
+	(*NumericDuplicateTimestampAggregationExpression)(nil),     // 153: nominal.compute.v1.NumericDuplicateTimestampAggregationExpression
+	(*NumericTagFilterExpression)(nil),                         // 154: nominal.compute.v1.NumericTagFilterExpression
+	(*NumericTagSelectionExpression)(nil),                      // 155: nominal.compute.v1.NumericTagSelectionExpression
+	(*NumericTagPairExpression)(nil),                           // 156: nominal.compute.v1.NumericTagPairExpression
+	(*NumericArrayExpression)(nil),                             // 157: nominal.compute.v1.NumericArrayExpression
+	(*NumericArrayStructFieldExpression)(nil),                  // 158: nominal.compute.v1.NumericArrayStructFieldExpression
+	(*NumericArrayTimeShiftExpression)(nil),                    // 159: nominal.compute.v1.NumericArrayTimeShiftExpression
+	(*NumericArrayToStartOfIntervalExpression)(nil),            // 160: nominal.compute.v1.NumericArrayToStartOfIntervalExpression
+	(*NumericArrayTagFilterExpression)(nil),                    // 161: nominal.compute.v1.NumericArrayTagFilterExpression
+	(*NumericArrayTagSelectionExpression)(nil),                 // 162: nominal.compute.v1.NumericArrayTagSelectionExpression
+	(*CategoricalArrayExpression)(nil),                         // 163: nominal.compute.v1.CategoricalArrayExpression
+	(*CategoricalArrayStructFieldExpression)(nil),              // 164: nominal.compute.v1.CategoricalArrayStructFieldExpression
+	(*CategoricalArrayTimeShiftExpression)(nil),                // 165: nominal.compute.v1.CategoricalArrayTimeShiftExpression
+	(*CategoricalArrayToStartOfIntervalExpression)(nil),        // 166: nominal.compute.v1.CategoricalArrayToStartOfIntervalExpression
+	(*CategoricalArrayTagFilterExpression)(nil),                // 167: nominal.compute.v1.CategoricalArrayTagFilterExpression
+	(*CategoricalArrayTagSelectionExpression)(nil),             // 168: nominal.compute.v1.CategoricalArrayTagSelectionExpression
+	(*StructExpression)(nil),                                   // 169: nominal.compute.v1.StructExpression
+	(*StructFieldExpression)(nil),                              // 170: nominal.compute.v1.StructFieldExpression
+	(*StructTimeShiftExpression)(nil),                          // 171: nominal.compute.v1.StructTimeShiftExpression
+	(*StructToStartOfIntervalExpression)(nil),                  // 172: nominal.compute.v1.StructToStartOfIntervalExpression
+	(*StructTagFilterExpression)(nil),                          // 173: nominal.compute.v1.StructTagFilterExpression
+	(*StructTagSelectionExpression)(nil),                       // 174: nominal.compute.v1.StructTagSelectionExpression
+	(*LogExpression)(nil),                                      // 175: nominal.compute.v1.LogExpression
+	(*LogTimeShiftExpression)(nil),                             // 176: nominal.compute.v1.LogTimeShiftExpression
+	(*LogToStartOfIntervalExpression)(nil),                     // 177: nominal.compute.v1.LogToStartOfIntervalExpression
+	(*LogTagFilterExpression)(nil),                             // 178: nominal.compute.v1.LogTagFilterExpression
+	(*LogTagSelectionExpression)(nil),                          // 179: nominal.compute.v1.LogTagSelectionExpression
+	(*StructCombineExpression)(nil),                            // 180: nominal.compute.v1.StructCombineExpression
+	(*LogConcatenateExpression)(nil),                           // 181: nominal.compute.v1.LogConcatenateExpression
+	(*LogFilterExpression)(nil),                                // 182: nominal.compute.v1.LogFilterExpression
+	(*RangeExpression)(nil),                                    // 183: nominal.compute.v1.RangeExpression
+	(*LiteralRangeCollection)(nil),                             // 184: nominal.compute.v1.LiteralRangeCollection
+	(*LiteralRange)(nil),                                       // 185: nominal.compute.v1.LiteralRange
+	(*BooleanRangeExpression)(nil),                             // 186: nominal.compute.v1.BooleanRangeExpression
+	(*NumericThresholdRanges)(nil),                             // 187: nominal.compute.v1.NumericThresholdRanges
+	(*NumericBoundsRanges)(nil),                                // 188: nominal.compute.v1.NumericBoundsRanges
+	(*CategoricalMembershipRanges)(nil),                        // 189: nominal.compute.v1.CategoricalMembershipRanges
+	(*NumericEqualityRanges)(nil),                              // 190: nominal.compute.v1.NumericEqualityRanges
+	(*CategoricalEqualityRanges)(nil),                          // 191: nominal.compute.v1.CategoricalEqualityRanges
+	(*NumericCrossoverRanges)(nil),                             // 192: nominal.compute.v1.NumericCrossoverRanges
+	(*SeriesChangeRanges)(nil),                                 // 193: nominal.compute.v1.SeriesChangeRanges
+	(*SeriesStalenessRanges)(nil),                              // 194: nominal.compute.v1.SeriesStalenessRanges
+	(*RangeDurationFilter)(nil),                                // 195: nominal.compute.v1.RangeDurationFilter
+	(*NumericStabilityRanges)(nil),                             // 196: nominal.compute.v1.NumericStabilityRanges
+	(*NumericExtremaRanges)(nil),                               // 197: nominal.compute.v1.NumericExtremaRanges
+	(*RangeExpressionCollection)(nil),                          // 198: nominal.compute.v1.RangeExpressionCollection
+	(*RangePaddingExpression)(nil),                             // 199: nominal.compute.v1.RangePaddingExpression
+	(*RangeStatisticsExpression)(nil),                          // 200: nominal.compute.v1.RangeStatisticsExpression
+	(*AllStatistics)(nil),                                      // 201: nominal.compute.v1.AllStatistics
+	nil,                                                        // 202: nominal.compute.v1.ComputeContext.VariablesEntry
+	nil,                                                        // 203: nominal.compute.v1.ComputeContext.DatasetsEntry
+	nil,                                                        // 204: nominal.compute.v1.ModuleFunctionExpression.ArgumentsEntry
+	nil,                                                        // 205: nominal.compute.v1.CustomCurveModel.VariablesEntry
+	nil,                                                        // 206: nominal.compute.v1.CustomCurveModel.ParametersEntry
+	nil,                                                        // 207: nominal.compute.v1.NumericCategoricalMappingExpression.MappingEntry
+	nil,                                                        // 208: nominal.compute.v1.NumericArithmeticExpression.InputsEntry
+	nil,                                                        // 209: nominal.compute.v1.NumericFormulaFilterExpression.InputsEntry
+	nil,                                                        // 210: nominal.compute.v1.StructCombineExpression.FieldsEntry
+	(*TimeSeriesReference)(nil),                                // 211: nominal.compute.v1.TimeSeriesReference
+	(*DoubleConstant)(nil),                                     // 212: nominal.compute.v1.DoubleConstant
+	(*ChannelSelection)(nil),                                   // 213: nominal.compute.v1.ChannelSelection
+	(*DurationConstant)(nil),                                   // 214: nominal.compute.v1.DurationConstant
+	(*StringSetLiteral)(nil),                                   // 215: nominal.compute.v1.StringSetLiteral
+	(*ComputeDuration)(nil),                                    // 216: nominal.compute.v1.ComputeDuration
+	(*ComputeTimestamp)(nil),                                   // 217: nominal.compute.v1.ComputeTimestamp
+	(*TagKeySet)(nil),                                          // 218: nominal.compute.v1.TagKeySet
+	(*StringConstant)(nil),                                     // 219: nominal.compute.v1.StringConstant
+	(*AssetReferenceExpression)(nil),                           // 220: nominal.compute.v1.AssetReferenceExpression
+	(*RunReferenceExpression)(nil),                             // 221: nominal.compute.v1.RunReferenceExpression
+	(*DataSourceReferenceExpression)(nil),                      // 222: nominal.compute.v1.DataSourceReferenceExpression
+	(*DatasetResourceSearch)(nil),                              // 223: nominal.compute.v1.DatasetResourceSearch
+	(*DatasetReference)(nil),                                   // 224: nominal.compute.v1.DatasetReference
+	(*EntitySetReferenceExpression)(nil),                       // 225: nominal.compute.v1.EntitySetReferenceExpression
+	(*TagPredicateExpression)(nil),                             // 226: nominal.compute.v1.TagPredicateExpression
+	(*DurationExpression)(nil),                                 // 227: nominal.compute.v1.DurationExpression
+	(*ResourceTypeReferenceExpression)(nil),                    // 228: nominal.compute.v1.ResourceTypeReferenceExpression
+	(*SeriesSampling)(nil),                                     // 229: nominal.compute.v1.SeriesSampling
+	(SeriesStorageEngine)(0),                                   // 230: nominal.compute.v1.SeriesStorageEngine
+	(*TimestampConstant)(nil),                                  // 231: nominal.compute.v1.TimestampConstant
+	(time.TimeUnit)(0),                                         // 232: nominal.types.time.TimeUnit
+	(*IntegerConstant)(nil),                                    // 233: nominal.compute.v1.IntegerConstant
+	(*NumericReduction)(nil),                                   // 234: nominal.compute.v1.NumericReduction
+	(*LogPredicate)(nil),                                       // 235: nominal.compute.v1.LogPredicate
+	(series.SeriesDataType)(0),                                 // 236: nominal.types.series.SeriesDataType
+	(*v1.UdfSource)(nil),                                       // 237: nominal.modules.v1.UdfSource
+	(*EventPredicateExpression)(nil),                           // 238: nominal.compute.v1.EventPredicateExpression
+	(*CategoricalReduction)(nil),                               // 239: nominal.compute.v1.CategoricalReduction
+	(*CategoricalResampleFill)(nil),                            // 240: nominal.compute.v1.CategoricalResampleFill
+	(CategoricalMergeOperation)(0),                             // 241: nominal.compute.v1.CategoricalMergeOperation
+	(*SignalFilterConfiguration)(nil),                          // 242: nominal.compute.v1.SignalFilterConfiguration
+	(*ScalingFactor)(nil),                                      // 243: nominal.compute.v1.ScalingFactor
+	(*ResampleFill)(nil),                                       // 244: nominal.compute.v1.ResampleFill
+	(RefpropProperty)(0),                                       // 245: nominal.compute.v1.RefpropProperty
+	(RefpropSubstance)(0),                                      // 246: nominal.compute.v1.RefpropSubstance
+	(*TagGrouping)(nil),                                        // 247: nominal.compute.v1.TagGrouping
+	(*RangePersistence)(nil),                                   // 248: nominal.compute.v1.RangePersistence
+	(NumericBoundsCondition)(0),                                // 249: nominal.compute.v1.NumericBoundsCondition
+	(*ParameterizedStringSet)(nil),                             // 250: nominal.compute.v1.ParameterizedStringSet
+	(CategoricalMembershipOperation)(0),                        // 251: nominal.compute.v1.CategoricalMembershipOperation
+	(SeriesEqualityMode)(0),                                    // 252: nominal.compute.v1.SeriesEqualityMode
+	(*DurationInput)(nil),                                      // 253: nominal.compute.v1.DurationInput
+	(UnboundedDurationComparison)(0),                           // 254: nominal.compute.v1.UnboundedDurationComparison
+	(*SpreadThreshold)(nil),                                    // 255: nominal.compute.v1.SpreadThreshold
+	(ExtremaSelection)(0),                                      // 256: nominal.compute.v1.ExtremaSelection
+	(RangePaddingSides)(0),                                     // 257: nominal.compute.v1.RangePaddingSides
 }
 var file_nominal_protos_compute_v1_expressions_proto_depIdxs = []int32{
-	209, // 0: nominal.compute.v1.NumericExpression.reference:type_name -> nominal.compute.v1.TimeSeriesReference
-	210, // 1: nominal.compute.v1.NumericExpression.constant:type_name -> nominal.compute.v1.DoubleConstant
-	108, // 2: nominal.compute.v1.NumericExpression.unary:type_name -> nominal.compute.v1.NumericUnaryExpression
-	109, // 3: nominal.compute.v1.NumericExpression.binary:type_name -> nominal.compute.v1.NumericBinaryExpression
-	110, // 4: nominal.compute.v1.NumericExpression.nary:type_name -> nominal.compute.v1.NumericNaryExpression
-	111, // 5: nominal.compute.v1.NumericExpression.bitwise:type_name -> nominal.compute.v1.NumericBitwiseExpression
-	112, // 6: nominal.compute.v1.NumericExpression.conditional:type_name -> nominal.compute.v1.NumericConditionalExpression
-	117, // 7: nominal.compute.v1.NumericExpression.cumulative_sum:type_name -> nominal.compute.v1.NumericCumulativeSumExpression
-	118, // 8: nominal.compute.v1.NumericExpression.derivative:type_name -> nominal.compute.v1.NumericDerivativeExpression
-	119, // 9: nominal.compute.v1.NumericExpression.integral:type_name -> nominal.compute.v1.NumericIntegralExpression
-	120, // 10: nominal.compute.v1.NumericExpression.time_range_filter:type_name -> nominal.compute.v1.NumericTimeRangeFilterExpression
-	121, // 11: nominal.compute.v1.NumericExpression.time_shift:type_name -> nominal.compute.v1.NumericTimeShiftExpression
-	122, // 12: nominal.compute.v1.NumericExpression.value_difference:type_name -> nominal.compute.v1.NumericValueDifferenceExpression
-	123, // 13: nominal.compute.v1.NumericExpression.phase_unwrap:type_name -> nominal.compute.v1.NumericPhaseUnwrapExpression
-	124, // 14: nominal.compute.v1.NumericExpression.point_limit:type_name -> nominal.compute.v1.NumericPointLimitExpression
-	125, // 15: nominal.compute.v1.NumericExpression.nth_point_downsample:type_name -> nominal.compute.v1.NumericNthPointDownsampleExpression
-	126, // 16: nominal.compute.v1.NumericExpression.largest_triangle_three_buckets:type_name -> nominal.compute.v1.NumericLargestTriangleThreeBucketsExpression
-	127, // 17: nominal.compute.v1.NumericExpression.condition_filter:type_name -> nominal.compute.v1.NumericConditionFilterExpression
-	128, // 18: nominal.compute.v1.NumericExpression.threshold_filter:type_name -> nominal.compute.v1.NumericThresholdFilterExpression
-	135, // 19: nominal.compute.v1.NumericExpression.drop_nan:type_name -> nominal.compute.v1.NumericDropNanExpression
-	129, // 20: nominal.compute.v1.NumericExpression.approximate_filter:type_name -> nominal.compute.v1.NumericApproximateFilterExpression
-	130, // 21: nominal.compute.v1.NumericExpression.signal_filter:type_name -> nominal.compute.v1.NumericSignalFilterExpression
-	131, // 22: nominal.compute.v1.NumericExpression.unit_conversion:type_name -> nominal.compute.v1.NumericUnitConversionExpression
-	132, // 23: nominal.compute.v1.NumericExpression.unit_override:type_name -> nominal.compute.v1.NumericUnitOverrideExpression
-	133, // 24: nominal.compute.v1.NumericExpression.z_score:type_name -> nominal.compute.v1.NumericZScoreExpression
-	134, // 25: nominal.compute.v1.NumericExpression.union:type_name -> nominal.compute.v1.NumericUnionExpression
-	136, // 26: nominal.compute.v1.NumericExpression.time_shift_v2:type_name -> nominal.compute.v1.NumericTimeShiftV2Expression
-	137, // 27: nominal.compute.v1.NumericExpression.resample_v2:type_name -> nominal.compute.v1.NumericResampleV2Expression
-	138, // 28: nominal.compute.v1.NumericExpression.to_start_of_interval:type_name -> nominal.compute.v1.NumericToStartOfIntervalExpression
-	139, // 29: nominal.compute.v1.NumericExpression.scalar_transform:type_name -> nominal.compute.v1.NumericScalarTransformExpression
-	140, // 30: nominal.compute.v1.NumericExpression.arithmetic:type_name -> nominal.compute.v1.NumericArithmeticExpression
-	141, // 31: nominal.compute.v1.NumericExpression.formula_filter:type_name -> nominal.compute.v1.NumericFormulaFilterExpression
-	142, // 32: nominal.compute.v1.NumericExpression.literal_bitwise:type_name -> nominal.compute.v1.NumericLiteralBitwiseExpression
-	147, // 33: nominal.compute.v1.NumericExpression.resample:type_name -> nominal.compute.v1.NumericResampleExpression
-	148, // 34: nominal.compute.v1.NumericExpression.refprop:type_name -> nominal.compute.v1.NumericRefpropExpression
-	150, // 35: nominal.compute.v1.NumericExpression.rolling_aggregation:type_name -> nominal.compute.v1.NumericRollingAggregationExpression
-	151, // 36: nominal.compute.v1.NumericExpression.duplicate_timestamp_aggregation:type_name -> nominal.compute.v1.NumericDuplicateTimestampAggregationExpression
-	152, // 37: nominal.compute.v1.NumericExpression.tag_filter:type_name -> nominal.compute.v1.NumericTagFilterExpression
-	153, // 38: nominal.compute.v1.NumericExpression.tag_selection:type_name -> nominal.compute.v1.NumericTagSelectionExpression
+	211, // 0: nominal.compute.v1.NumericExpression.reference:type_name -> nominal.compute.v1.TimeSeriesReference
+	212, // 1: nominal.compute.v1.NumericExpression.constant:type_name -> nominal.compute.v1.DoubleConstant
+	110, // 2: nominal.compute.v1.NumericExpression.unary:type_name -> nominal.compute.v1.NumericUnaryExpression
+	111, // 3: nominal.compute.v1.NumericExpression.binary:type_name -> nominal.compute.v1.NumericBinaryExpression
+	112, // 4: nominal.compute.v1.NumericExpression.nary:type_name -> nominal.compute.v1.NumericNaryExpression
+	113, // 5: nominal.compute.v1.NumericExpression.bitwise:type_name -> nominal.compute.v1.NumericBitwiseExpression
+	114, // 6: nominal.compute.v1.NumericExpression.conditional:type_name -> nominal.compute.v1.NumericConditionalExpression
+	119, // 7: nominal.compute.v1.NumericExpression.cumulative_sum:type_name -> nominal.compute.v1.NumericCumulativeSumExpression
+	120, // 8: nominal.compute.v1.NumericExpression.derivative:type_name -> nominal.compute.v1.NumericDerivativeExpression
+	121, // 9: nominal.compute.v1.NumericExpression.integral:type_name -> nominal.compute.v1.NumericIntegralExpression
+	122, // 10: nominal.compute.v1.NumericExpression.time_range_filter:type_name -> nominal.compute.v1.NumericTimeRangeFilterExpression
+	123, // 11: nominal.compute.v1.NumericExpression.time_shift:type_name -> nominal.compute.v1.NumericTimeShiftExpression
+	124, // 12: nominal.compute.v1.NumericExpression.value_difference:type_name -> nominal.compute.v1.NumericValueDifferenceExpression
+	125, // 13: nominal.compute.v1.NumericExpression.phase_unwrap:type_name -> nominal.compute.v1.NumericPhaseUnwrapExpression
+	126, // 14: nominal.compute.v1.NumericExpression.point_limit:type_name -> nominal.compute.v1.NumericPointLimitExpression
+	127, // 15: nominal.compute.v1.NumericExpression.nth_point_downsample:type_name -> nominal.compute.v1.NumericNthPointDownsampleExpression
+	128, // 16: nominal.compute.v1.NumericExpression.largest_triangle_three_buckets:type_name -> nominal.compute.v1.NumericLargestTriangleThreeBucketsExpression
+	129, // 17: nominal.compute.v1.NumericExpression.condition_filter:type_name -> nominal.compute.v1.NumericConditionFilterExpression
+	130, // 18: nominal.compute.v1.NumericExpression.threshold_filter:type_name -> nominal.compute.v1.NumericThresholdFilterExpression
+	137, // 19: nominal.compute.v1.NumericExpression.drop_nan:type_name -> nominal.compute.v1.NumericDropNanExpression
+	131, // 20: nominal.compute.v1.NumericExpression.approximate_filter:type_name -> nominal.compute.v1.NumericApproximateFilterExpression
+	132, // 21: nominal.compute.v1.NumericExpression.signal_filter:type_name -> nominal.compute.v1.NumericSignalFilterExpression
+	133, // 22: nominal.compute.v1.NumericExpression.unit_conversion:type_name -> nominal.compute.v1.NumericUnitConversionExpression
+	134, // 23: nominal.compute.v1.NumericExpression.unit_override:type_name -> nominal.compute.v1.NumericUnitOverrideExpression
+	135, // 24: nominal.compute.v1.NumericExpression.z_score:type_name -> nominal.compute.v1.NumericZScoreExpression
+	136, // 25: nominal.compute.v1.NumericExpression.union:type_name -> nominal.compute.v1.NumericUnionExpression
+	138, // 26: nominal.compute.v1.NumericExpression.time_shift_v2:type_name -> nominal.compute.v1.NumericTimeShiftV2Expression
+	139, // 27: nominal.compute.v1.NumericExpression.resample_v2:type_name -> nominal.compute.v1.NumericResampleV2Expression
+	140, // 28: nominal.compute.v1.NumericExpression.to_start_of_interval:type_name -> nominal.compute.v1.NumericToStartOfIntervalExpression
+	141, // 29: nominal.compute.v1.NumericExpression.scalar_transform:type_name -> nominal.compute.v1.NumericScalarTransformExpression
+	142, // 30: nominal.compute.v1.NumericExpression.arithmetic:type_name -> nominal.compute.v1.NumericArithmeticExpression
+	143, // 31: nominal.compute.v1.NumericExpression.formula_filter:type_name -> nominal.compute.v1.NumericFormulaFilterExpression
+	144, // 32: nominal.compute.v1.NumericExpression.literal_bitwise:type_name -> nominal.compute.v1.NumericLiteralBitwiseExpression
+	149, // 33: nominal.compute.v1.NumericExpression.resample:type_name -> nominal.compute.v1.NumericResampleExpression
+	150, // 34: nominal.compute.v1.NumericExpression.refprop:type_name -> nominal.compute.v1.NumericRefpropExpression
+	152, // 35: nominal.compute.v1.NumericExpression.rolling_aggregation:type_name -> nominal.compute.v1.NumericRollingAggregationExpression
+	153, // 36: nominal.compute.v1.NumericExpression.duplicate_timestamp_aggregation:type_name -> nominal.compute.v1.NumericDuplicateTimestampAggregationExpression
+	154, // 37: nominal.compute.v1.NumericExpression.tag_filter:type_name -> nominal.compute.v1.NumericTagFilterExpression
+	155, // 38: nominal.compute.v1.NumericExpression.tag_selection:type_name -> nominal.compute.v1.NumericTagSelectionExpression
 	50,  // 39: nominal.compute.v1.NumericExpression.absolute_timestamp:type_name -> nominal.compute.v1.NumericAbsoluteTimestampExpression
-	52,  // 40: nominal.compute.v1.NumericExpression.reduce_under_ranges:type_name -> nominal.compute.v1.NumericReduceUnderRangesExpression
-	211, // 41: nominal.compute.v1.NumericExpression.channel_selection:type_name -> nominal.compute.v1.ChannelSelection
-	53,  // 42: nominal.compute.v1.NumericExpression.log_matches:type_name -> nominal.compute.v1.NumericLogMatchesExpression
-	54,  // 43: nominal.compute.v1.NumericExpression.count_duplicates:type_name -> nominal.compute.v1.NumericCountDuplicatesExpression
+	54,  // 40: nominal.compute.v1.NumericExpression.reduce_under_ranges:type_name -> nominal.compute.v1.NumericReduceUnderRangesExpression
+	213, // 41: nominal.compute.v1.NumericExpression.channel_selection:type_name -> nominal.compute.v1.ChannelSelection
+	55,  // 42: nominal.compute.v1.NumericExpression.log_matches:type_name -> nominal.compute.v1.NumericLogMatchesExpression
+	56,  // 43: nominal.compute.v1.NumericExpression.count_duplicates:type_name -> nominal.compute.v1.NumericCountDuplicatesExpression
 	23,  // 44: nominal.compute.v1.NumericExpression.module_function:type_name -> nominal.compute.v1.ModuleFunctionExpression
-	55,  // 45: nominal.compute.v1.NumericExpression.categorical_mapping:type_name -> nominal.compute.v1.NumericCategoricalMappingExpression
-	56,  // 46: nominal.compute.v1.NumericExpression.struct_field:type_name -> nominal.compute.v1.NumericStructFieldExpression
-	57,  // 47: nominal.compute.v1.NumericExpression.range_filter:type_name -> nominal.compute.v1.NumericRangeFilterExpression
-	58,  // 48: nominal.compute.v1.NumericExpression.group_within_ranges:type_name -> nominal.compute.v1.NumericGroupWithinRangesExpression
-	59,  // 49: nominal.compute.v1.NumericExpression.aggregation:type_name -> nominal.compute.v1.NumericAggregationExpression
-	68,  // 50: nominal.compute.v1.NumericExpression.range_duration:type_name -> nominal.compute.v1.NumericRangeDurationExpression
-	69,  // 51: nominal.compute.v1.NumericExpression.scalar_udf:type_name -> nominal.compute.v1.ScalarUdfExpression
-	70,  // 52: nominal.compute.v1.NumericExpression.array_index:type_name -> nominal.compute.v1.NumericArrayIndexExpression
+	57,  // 45: nominal.compute.v1.NumericExpression.categorical_mapping:type_name -> nominal.compute.v1.NumericCategoricalMappingExpression
+	58,  // 46: nominal.compute.v1.NumericExpression.struct_field:type_name -> nominal.compute.v1.NumericStructFieldExpression
+	59,  // 47: nominal.compute.v1.NumericExpression.range_filter:type_name -> nominal.compute.v1.NumericRangeFilterExpression
+	60,  // 48: nominal.compute.v1.NumericExpression.group_within_ranges:type_name -> nominal.compute.v1.NumericGroupWithinRangesExpression
+	61,  // 49: nominal.compute.v1.NumericExpression.aggregation:type_name -> nominal.compute.v1.NumericAggregationExpression
+	70,  // 50: nominal.compute.v1.NumericExpression.range_duration:type_name -> nominal.compute.v1.NumericRangeDurationExpression
+	71,  // 51: nominal.compute.v1.NumericExpression.scalar_udf:type_name -> nominal.compute.v1.ScalarUdfExpression
+	72,  // 52: nominal.compute.v1.NumericExpression.array_index:type_name -> nominal.compute.v1.NumericArrayIndexExpression
 	35,  // 53: nominal.compute.v1.NumericExpression.series_selection:type_name -> nominal.compute.v1.SeriesSelection
 	36,  // 54: nominal.compute.v1.NumericExpression.resource_property:type_name -> nominal.compute.v1.ResourcePropertySelection
-	71,  // 55: nominal.compute.v1.NumericExpression.interval_tags:type_name -> nominal.compute.v1.NumericIntervalTagsExpression
-	51,  // 56: nominal.compute.v1.NumericExpression.time_difference:type_name -> nominal.compute.v1.NumericTimeDifferenceExpression
-	154, // 57: nominal.compute.v1.NumericExpression.tag_pair:type_name -> nominal.compute.v1.NumericTagPairExpression
-	200, // 58: nominal.compute.v1.ComputeContext.variables:type_name -> nominal.compute.v1.ComputeContext.VariablesEntry
-	201, // 59: nominal.compute.v1.ComputeContext.datasets:type_name -> nominal.compute.v1.ComputeContext.DatasetsEntry
-	19,  // 60: nominal.compute.v1.ComputeContext.default_fill:type_name -> nominal.compute.v1.ComputeFillStrategy
-	0,   // 61: nominal.compute.v1.ComputeContext.default_alignment:type_name -> nominal.compute.v1.ComputeAlignmentStrategy
-	212, // 62: nominal.compute.v1.ComputeFillStrategy.forward_fill:type_name -> nominal.compute.v1.DurationConstant
-	213, // 63: nominal.compute.v1.VariableValue.string_set:type_name -> nominal.compute.v1.StringSetLiteral
-	214, // 64: nominal.compute.v1.VariableValue.duration:type_name -> nominal.compute.v1.ComputeDuration
-	215, // 65: nominal.compute.v1.VariableValue.timestamp:type_name -> nominal.compute.v1.ComputeTimestamp
-	21,  // 66: nominal.compute.v1.VariableValue.expression:type_name -> nominal.compute.v1.BoundExpression
-	211, // 67: nominal.compute.v1.VariableValue.channel:type_name -> nominal.compute.v1.ChannelSelection
-	22,  // 68: nominal.compute.v1.VariableValue.series:type_name -> nominal.compute.v1.SeriesBinding
-	23,  // 69: nominal.compute.v1.VariableValue.module_function:type_name -> nominal.compute.v1.ModuleFunctionExpression
-	37,  // 70: nominal.compute.v1.BoundExpression.expression:type_name -> nominal.compute.v1.ExpressionNode
-	18,  // 71: nominal.compute.v1.BoundExpression.context:type_name -> nominal.compute.v1.ComputeContext
-	35,  // 72: nominal.compute.v1.SeriesBinding.series_selection:type_name -> nominal.compute.v1.SeriesSelection
-	216, // 73: nominal.compute.v1.SeriesBinding.grouping_keys:type_name -> nominal.compute.v1.TagKeySet
-	217, // 74: nominal.compute.v1.ModuleFunctionExpression.module:type_name -> nominal.compute.v1.StringConstant
-	217, // 75: nominal.compute.v1.ModuleFunctionExpression.function_name:type_name -> nominal.compute.v1.StringConstant
-	217, // 76: nominal.compute.v1.ModuleFunctionExpression.version:type_name -> nominal.compute.v1.StringConstant
-	202, // 77: nominal.compute.v1.ModuleFunctionExpression.arguments:type_name -> nominal.compute.v1.ModuleFunctionExpression.ArgumentsEntry
-	20,  // 78: nominal.compute.v1.FunctionArgument.value:type_name -> nominal.compute.v1.VariableValue
-	218, // 79: nominal.compute.v1.DatasetExpression.asset:type_name -> nominal.compute.v1.AssetReferenceExpression
-	219, // 80: nominal.compute.v1.DatasetExpression.run:type_name -> nominal.compute.v1.RunReferenceExpression
-	220, // 81: nominal.compute.v1.DatasetExpression.data_source:type_name -> nominal.compute.v1.DataSourceReferenceExpression
-	221, // 82: nominal.compute.v1.DatasetExpression.resource_search:type_name -> nominal.compute.v1.DatasetResourceSearch
-	26,  // 83: nominal.compute.v1.DatasetExpression.concatenate:type_name -> nominal.compute.v1.DatasetConcatenation
-	27,  // 84: nominal.compute.v1.DatasetExpression.tag:type_name -> nominal.compute.v1.DatasetTagInjection
-	28,  // 85: nominal.compute.v1.DatasetExpression.filter:type_name -> nominal.compute.v1.DatasetTagFilter
-	29,  // 86: nominal.compute.v1.DatasetExpression.time_shift:type_name -> nominal.compute.v1.DatasetTimeShift
-	86,  // 87: nominal.compute.v1.DatasetExpression.anchor_alignment:type_name -> nominal.compute.v1.DatasetAnchorAlignment
-	30,  // 88: nominal.compute.v1.DatasetExpression.add_series:type_name -> nominal.compute.v1.DatasetSeriesAddition
-	32,  // 89: nominal.compute.v1.DatasetExpression.remove_series:type_name -> nominal.compute.v1.DatasetSeriesRemoval
-	222, // 90: nominal.compute.v1.DatasetExpression.reference:type_name -> nominal.compute.v1.DatasetReference
-	33,  // 91: nominal.compute.v1.DatasetExpression.dimensions:type_name -> nominal.compute.v1.DatasetDimensions
-	25,  // 92: nominal.compute.v1.DatasetConcatenation.inputs:type_name -> nominal.compute.v1.DatasetExpression
-	25,  // 93: nominal.compute.v1.DatasetTagInjection.input:type_name -> nominal.compute.v1.DatasetExpression
-	217, // 94: nominal.compute.v1.DatasetTagInjection.key:type_name -> nominal.compute.v1.StringConstant
-	217, // 95: nominal.compute.v1.DatasetTagInjection.value:type_name -> nominal.compute.v1.StringConstant
-	25,  // 96: nominal.compute.v1.DatasetTagFilter.input:type_name -> nominal.compute.v1.DatasetExpression
-	223, // 97: nominal.compute.v1.DatasetTagFilter.predicate:type_name -> nominal.compute.v1.TagPredicateExpression
-	25,  // 98: nominal.compute.v1.DatasetTimeShift.input:type_name -> nominal.compute.v1.DatasetExpression
-	224, // 99: nominal.compute.v1.DatasetTimeShift.offset:type_name -> nominal.compute.v1.DurationExpression
-	25,  // 100: nominal.compute.v1.DatasetSeriesAddition.input:type_name -> nominal.compute.v1.DatasetExpression
-	31,  // 101: nominal.compute.v1.DatasetSeriesAddition.series:type_name -> nominal.compute.v1.NamedSeriesExpression
-	217, // 102: nominal.compute.v1.NamedSeriesExpression.name:type_name -> nominal.compute.v1.StringConstant
-	38,  // 103: nominal.compute.v1.NamedSeriesExpression.definition:type_name -> nominal.compute.v1.SeriesExpression
-	25,  // 104: nominal.compute.v1.DatasetSeriesRemoval.input:type_name -> nominal.compute.v1.DatasetExpression
-	217, // 105: nominal.compute.v1.DatasetSeriesRemoval.names:type_name -> nominal.compute.v1.StringConstant
-	25,  // 106: nominal.compute.v1.DatasetDimensions.input:type_name -> nominal.compute.v1.DatasetExpression
-	34,  // 107: nominal.compute.v1.DatasetDimensions.dimensions:type_name -> nominal.compute.v1.ResourceDimension
-	217, // 108: nominal.compute.v1.ResourceDimension.tag_key:type_name -> nominal.compute.v1.StringConstant
-	217, // 109: nominal.compute.v1.ResourceDimension.string_property:type_name -> nominal.compute.v1.StringConstant
-	225, // 110: nominal.compute.v1.ResourceDimension.identity:type_name -> nominal.compute.v1.ResourceTypeReferenceExpression
-	217, // 111: nominal.compute.v1.SeriesSelection.name:type_name -> nominal.compute.v1.StringConstant
-	25,  // 112: nominal.compute.v1.SeriesSelection.dataset:type_name -> nominal.compute.v1.DatasetExpression
-	226, // 113: nominal.compute.v1.SeriesSelection.sampling:type_name -> nominal.compute.v1.SeriesSampling
-	227, // 114: nominal.compute.v1.SeriesSelection.storage:type_name -> nominal.compute.v1.SeriesStorageEngine
-	25,  // 115: nominal.compute.v1.ResourcePropertySelection.dataset:type_name -> nominal.compute.v1.DatasetExpression
-	17,  // 116: nominal.compute.v1.ExpressionNode.numeric:type_name -> nominal.compute.v1.NumericExpression
-	87,  // 117: nominal.compute.v1.ExpressionNode.categorical:type_name -> nominal.compute.v1.CategoricalExpression
-	173, // 118: nominal.compute.v1.ExpressionNode.log:type_name -> nominal.compute.v1.LogExpression
-	181, // 119: nominal.compute.v1.ExpressionNode.ranges:type_name -> nominal.compute.v1.RangeExpression
-	39,  // 120: nominal.compute.v1.ExpressionNode.array:type_name -> nominal.compute.v1.ArrayExpression
-	167, // 121: nominal.compute.v1.ExpressionNode.structure:type_name -> nominal.compute.v1.StructExpression
-	40,  // 122: nominal.compute.v1.ExpressionNode.curve_fit:type_name -> nominal.compute.v1.CurveFitExpression
-	209, // 123: nominal.compute.v1.ExpressionNode.video:type_name -> nominal.compute.v1.TimeSeriesReference
-	209, // 124: nominal.compute.v1.ExpressionNode.reference:type_name -> nominal.compute.v1.TimeSeriesReference
-	17,  // 125: nominal.compute.v1.SeriesExpression.numeric:type_name -> nominal.compute.v1.NumericExpression
-	87,  // 126: nominal.compute.v1.SeriesExpression.categorical:type_name -> nominal.compute.v1.CategoricalExpression
-	173, // 127: nominal.compute.v1.SeriesExpression.log:type_name -> nominal.compute.v1.LogExpression
-	39,  // 128: nominal.compute.v1.SeriesExpression.array:type_name -> nominal.compute.v1.ArrayExpression
-	167, // 129: nominal.compute.v1.SeriesExpression.structure:type_name -> nominal.compute.v1.StructExpression
-	209, // 130: nominal.compute.v1.SeriesExpression.video:type_name -> nominal.compute.v1.TimeSeriesReference
-	209, // 131: nominal.compute.v1.SeriesExpression.reference:type_name -> nominal.compute.v1.TimeSeriesReference
-	155, // 132: nominal.compute.v1.ArrayExpression.numeric:type_name -> nominal.compute.v1.NumericArrayExpression
-	161, // 133: nominal.compute.v1.ArrayExpression.categorical:type_name -> nominal.compute.v1.CategoricalArrayExpression
-	42,  // 134: nominal.compute.v1.CurveFitExpression.target:type_name -> nominal.compute.v1.CurveSeriesVariable
-	41,  // 135: nominal.compute.v1.CurveFitExpression.interval:type_name -> nominal.compute.v1.CurveFitInterval
-	46,  // 136: nominal.compute.v1.CurveFitExpression.model:type_name -> nominal.compute.v1.CurveModel
-	228, // 137: nominal.compute.v1.CurveFitInterval.start:type_name -> nominal.compute.v1.TimestampConstant
-	228, // 138: nominal.compute.v1.CurveFitInterval.end:type_name -> nominal.compute.v1.TimestampConstant
-	17,  // 139: nominal.compute.v1.CurveSeriesVariable.series:type_name -> nominal.compute.v1.NumericExpression
-	43,  // 140: nominal.compute.v1.CurveSeriesVariable.bounds:type_name -> nominal.compute.v1.CurveVariableBounds
-	210, // 141: nominal.compute.v1.CurveVariableBounds.min:type_name -> nominal.compute.v1.DoubleConstant
-	210, // 142: nominal.compute.v1.CurveVariableBounds.max:type_name -> nominal.compute.v1.DoubleConstant
-	42,  // 143: nominal.compute.v1.CurveVariable.series:type_name -> nominal.compute.v1.CurveSeriesVariable
-	45,  // 144: nominal.compute.v1.CurveVariable.time:type_name -> nominal.compute.v1.CurveTimeVariable
-	229, // 145: nominal.compute.v1.CurveTimeVariable.unit:type_name -> nominal.types.time.TimeUnit
-	47,  // 146: nominal.compute.v1.CurveModel.builtin:type_name -> nominal.compute.v1.BuiltinCurveModel
-	48,  // 147: nominal.compute.v1.CurveModel.polynomial:type_name -> nominal.compute.v1.PolynomialCurveModel
-	49,  // 148: nominal.compute.v1.CurveModel.custom:type_name -> nominal.compute.v1.CustomCurveModel
-	1,   // 149: nominal.compute.v1.BuiltinCurveModel.form:type_name -> nominal.compute.v1.BuiltinCurveForm
-	44,  // 150: nominal.compute.v1.BuiltinCurveModel.independent_variable:type_name -> nominal.compute.v1.CurveVariable
-	44,  // 151: nominal.compute.v1.PolynomialCurveModel.independent_variable:type_name -> nominal.compute.v1.CurveVariable
-	230, // 152: nominal.compute.v1.PolynomialCurveModel.degree:type_name -> nominal.compute.v1.IntegerConstant
-	210, // 153: nominal.compute.v1.PolynomialCurveModel.intercept:type_name -> nominal.compute.v1.DoubleConstant
-	217, // 154: nominal.compute.v1.CustomCurveModel.formula:type_name -> nominal.compute.v1.StringConstant
-	203, // 155: nominal.compute.v1.CustomCurveModel.variables:type_name -> nominal.compute.v1.CustomCurveModel.VariablesEntry
-	204, // 156: nominal.compute.v1.CustomCurveModel.parameters:type_name -> nominal.compute.v1.CustomCurveModel.ParametersEntry
-	38,  // 157: nominal.compute.v1.NumericAbsoluteTimestampExpression.input:type_name -> nominal.compute.v1.SeriesExpression
-	229, // 158: nominal.compute.v1.NumericAbsoluteTimestampExpression.unit:type_name -> nominal.types.time.TimeUnit
-	38,  // 159: nominal.compute.v1.NumericTimeDifferenceExpression.input:type_name -> nominal.compute.v1.SeriesExpression
-	229, // 160: nominal.compute.v1.NumericTimeDifferenceExpression.unit:type_name -> nominal.types.time.TimeUnit
-	17,  // 161: nominal.compute.v1.NumericReduceUnderRangesExpression.input:type_name -> nominal.compute.v1.NumericExpression
-	181, // 162: nominal.compute.v1.NumericReduceUnderRangesExpression.ranges:type_name -> nominal.compute.v1.RangeExpression
-	231, // 163: nominal.compute.v1.NumericReduceUnderRangesExpression.reduction:type_name -> nominal.compute.v1.NumericReduction
-	173, // 164: nominal.compute.v1.NumericLogMatchesExpression.input:type_name -> nominal.compute.v1.LogExpression
-	232, // 165: nominal.compute.v1.NumericLogMatchesExpression.predicate:type_name -> nominal.compute.v1.LogPredicate
-	87,  // 166: nominal.compute.v1.NumericCountDuplicatesExpression.inputs:type_name -> nominal.compute.v1.CategoricalExpression
-	87,  // 167: nominal.compute.v1.NumericCategoricalMappingExpression.input:type_name -> nominal.compute.v1.CategoricalExpression
-	205, // 168: nominal.compute.v1.NumericCategoricalMappingExpression.mapping:type_name -> nominal.compute.v1.NumericCategoricalMappingExpression.MappingEntry
-	210, // 169: nominal.compute.v1.NumericCategoricalMappingExpression.default_value:type_name -> nominal.compute.v1.DoubleConstant
-	167, // 170: nominal.compute.v1.NumericStructFieldExpression.input:type_name -> nominal.compute.v1.StructExpression
-	217, // 171: nominal.compute.v1.NumericStructFieldExpression.path:type_name -> nominal.compute.v1.StringConstant
-	233, // 172: nominal.compute.v1.NumericStructFieldExpression.numeric_type:type_name -> nominal.types.series.SeriesDataType
-	17,  // 173: nominal.compute.v1.NumericRangeFilterExpression.input:type_name -> nominal.compute.v1.NumericExpression
-	181, // 174: nominal.compute.v1.NumericRangeFilterExpression.ranges:type_name -> nominal.compute.v1.RangeExpression
-	17,  // 175: nominal.compute.v1.NumericGroupWithinRangesExpression.input:type_name -> nominal.compute.v1.NumericExpression
-	181, // 176: nominal.compute.v1.NumericGroupWithinRangesExpression.ranges:type_name -> nominal.compute.v1.RangeExpression
-	231, // 177: nominal.compute.v1.NumericGroupWithinRangesExpression.reduction:type_name -> nominal.compute.v1.NumericReduction
-	60,  // 178: nominal.compute.v1.NumericAggregationExpression.input:type_name -> nominal.compute.v1.AggregationInput
-	231, // 179: nominal.compute.v1.NumericAggregationExpression.reduction:type_name -> nominal.compute.v1.NumericReduction
-	61,  // 180: nominal.compute.v1.AggregationInput.time_window:type_name -> nominal.compute.v1.TimeWindowAggregation
-	62,  // 181: nominal.compute.v1.AggregationInput.point_window:type_name -> nominal.compute.v1.PointWindowAggregation
-	63,  // 182: nominal.compute.v1.AggregationInput.grouping:type_name -> nominal.compute.v1.GroupedSeriesAggregation
-	38,  // 183: nominal.compute.v1.TimeWindowAggregation.input:type_name -> nominal.compute.v1.SeriesExpression
-	224, // 184: nominal.compute.v1.TimeWindowAggregation.window:type_name -> nominal.compute.v1.DurationExpression
-	38,  // 185: nominal.compute.v1.PointWindowAggregation.input:type_name -> nominal.compute.v1.SeriesExpression
-	230, // 186: nominal.compute.v1.PointWindowAggregation.points:type_name -> nominal.compute.v1.IntegerConstant
-	38,  // 187: nominal.compute.v1.GroupedSeriesAggregation.input:type_name -> nominal.compute.v1.SeriesExpression
-	64,  // 188: nominal.compute.v1.GroupedSeriesAggregation.keys:type_name -> nominal.compute.v1.AggregationGroupingKeys
-	66,  // 189: nominal.compute.v1.GroupedSeriesAggregation.timestamp:type_name -> nominal.compute.v1.AggregationTimestamp
-	65,  // 190: nominal.compute.v1.AggregationGroupingKeys.current:type_name -> nominal.compute.v1.CurrentGroupingKeys
-	216, // 191: nominal.compute.v1.AggregationGroupingKeys.subset:type_name -> nominal.compute.v1.TagKeySet
-	67,  // 192: nominal.compute.v1.AggregationTimestamp.current:type_name -> nominal.compute.v1.CurrentTimestamps
-	224, // 193: nominal.compute.v1.AggregationTimestamp.every:type_name -> nominal.compute.v1.DurationExpression
-	181, // 194: nominal.compute.v1.NumericRangeDurationExpression.input:type_name -> nominal.compute.v1.RangeExpression
-	2,   // 195: nominal.compute.v1.NumericRangeDurationExpression.unbounded:type_name -> nominal.compute.v1.UnboundedRangePolicy
-	229, // 196: nominal.compute.v1.NumericRangeDurationExpression.unit:type_name -> nominal.types.time.TimeUnit
-	38,  // 197: nominal.compute.v1.ScalarUdfExpression.inputs:type_name -> nominal.compute.v1.SeriesExpression
-	234, // 198: nominal.compute.v1.ScalarUdfExpression.source:type_name -> nominal.modules.v1.UdfSource
-	155, // 199: nominal.compute.v1.NumericArrayIndexExpression.input:type_name -> nominal.compute.v1.NumericArrayExpression
-	230, // 200: nominal.compute.v1.NumericArrayIndexExpression.index:type_name -> nominal.compute.v1.IntegerConstant
-	17,  // 201: nominal.compute.v1.NumericIntervalTagsExpression.input:type_name -> nominal.compute.v1.NumericExpression
-	72,  // 202: nominal.compute.v1.NumericIntervalTagsExpression.intervals:type_name -> nominal.compute.v1.IntervalSourceExpression
-	80,  // 203: nominal.compute.v1.NumericIntervalTagsExpression.time_shift:type_name -> nominal.compute.v1.IntervalTimeShift
-	73,  // 204: nominal.compute.v1.IntervalSourceExpression.events:type_name -> nominal.compute.v1.EventIntervals
-	74,  // 205: nominal.compute.v1.IntervalSourceExpression.ranges:type_name -> nominal.compute.v1.RangeIntervals
-	235, // 206: nominal.compute.v1.EventIntervals.query:type_name -> nominal.compute.v1.EventPredicateExpression
-	75,  // 207: nominal.compute.v1.EventIntervals.tags:type_name -> nominal.compute.v1.EventIntervalTag
-	181, // 208: nominal.compute.v1.RangeIntervals.input:type_name -> nominal.compute.v1.RangeExpression
-	76,  // 209: nominal.compute.v1.RangeIntervals.tags:type_name -> nominal.compute.v1.RangeIntervalTag
-	77,  // 210: nominal.compute.v1.EventIntervalTag.interval_index:type_name -> nominal.compute.v1.IntervalIndexTag
-	78,  // 211: nominal.compute.v1.EventIntervalTag.interval_start:type_name -> nominal.compute.v1.IntervalStartTag
-	79,  // 212: nominal.compute.v1.EventIntervalTag.event_level:type_name -> nominal.compute.v1.EventLevelTag
-	217, // 213: nominal.compute.v1.EventIntervalTag.event_property:type_name -> nominal.compute.v1.StringConstant
-	217, // 214: nominal.compute.v1.EventIntervalTag.event_label:type_name -> nominal.compute.v1.StringConstant
-	77,  // 215: nominal.compute.v1.RangeIntervalTag.interval_index:type_name -> nominal.compute.v1.IntervalIndexTag
-	78,  // 216: nominal.compute.v1.RangeIntervalTag.interval_start:type_name -> nominal.compute.v1.IntervalStartTag
-	81,  // 217: nominal.compute.v1.IntervalTimeShift.interval_start:type_name -> nominal.compute.v1.IntervalStartAnchor
-	82,  // 218: nominal.compute.v1.IntervalTimeShift.interval_end:type_name -> nominal.compute.v1.IntervalEndAnchor
-	83,  // 219: nominal.compute.v1.IntervalTimeShift.event:type_name -> nominal.compute.v1.EventOrdinalSelection
-	235, // 220: nominal.compute.v1.EventOrdinalSelection.query:type_name -> nominal.compute.v1.EventPredicateExpression
-	230, // 221: nominal.compute.v1.EventOrdinalSelection.index:type_name -> nominal.compute.v1.IntegerConstant
-	3,   // 222: nominal.compute.v1.EventOrdinalSelection.order:type_name -> nominal.compute.v1.ChronologicalOrder
-	181, // 223: nominal.compute.v1.RangeOrdinalSelection.input:type_name -> nominal.compute.v1.RangeExpression
-	230, // 224: nominal.compute.v1.RangeOrdinalSelection.index:type_name -> nominal.compute.v1.IntegerConstant
-	3,   // 225: nominal.compute.v1.RangeOrdinalSelection.order:type_name -> nominal.compute.v1.ChronologicalOrder
-	81,  // 226: nominal.compute.v1.RunAnchorExpression.interval_start:type_name -> nominal.compute.v1.IntervalStartAnchor
-	82,  // 227: nominal.compute.v1.RunAnchorExpression.interval_end:type_name -> nominal.compute.v1.IntervalEndAnchor
-	83,  // 228: nominal.compute.v1.RunAnchorExpression.event:type_name -> nominal.compute.v1.EventOrdinalSelection
-	84,  // 229: nominal.compute.v1.RunAnchorExpression.ranges:type_name -> nominal.compute.v1.RangeOrdinalSelection
-	25,  // 230: nominal.compute.v1.DatasetAnchorAlignment.input:type_name -> nominal.compute.v1.DatasetExpression
-	85,  // 231: nominal.compute.v1.DatasetAnchorAlignment.anchor:type_name -> nominal.compute.v1.RunAnchorExpression
-	209, // 232: nominal.compute.v1.CategoricalExpression.reference:type_name -> nominal.compute.v1.TimeSeriesReference
-	211, // 233: nominal.compute.v1.CategoricalExpression.channel_selection:type_name -> nominal.compute.v1.ChannelSelection
-	23,  // 234: nominal.compute.v1.CategoricalExpression.module_function:type_name -> nominal.compute.v1.ModuleFunctionExpression
-	35,  // 235: nominal.compute.v1.CategoricalExpression.series_selection:type_name -> nominal.compute.v1.SeriesSelection
-	36,  // 236: nominal.compute.v1.CategoricalExpression.resource_property:type_name -> nominal.compute.v1.ResourcePropertySelection
-	88,  // 237: nominal.compute.v1.CategoricalExpression.duplicate_timestamp_aggregation:type_name -> nominal.compute.v1.CategoricalDuplicateTimestampAggregationExpression
-	89,  // 238: nominal.compute.v1.CategoricalExpression.resample:type_name -> nominal.compute.v1.CategoricalResampleExpression
-	90,  // 239: nominal.compute.v1.CategoricalExpression.resample_v2:type_name -> nominal.compute.v1.CategoricalResampleV2Expression
-	91,  // 240: nominal.compute.v1.CategoricalExpression.nth_point_downsample:type_name -> nominal.compute.v1.CategoricalNthPointDownsampleExpression
-	92,  // 241: nominal.compute.v1.CategoricalExpression.time_range_filter:type_name -> nominal.compute.v1.CategoricalTimeRangeFilterExpression
-	93,  // 242: nominal.compute.v1.CategoricalExpression.time_shift:type_name -> nominal.compute.v1.CategoricalTimeShiftExpression
-	94,  // 243: nominal.compute.v1.CategoricalExpression.time_shift_v2:type_name -> nominal.compute.v1.CategoricalTimeShiftV2Expression
-	95,  // 244: nominal.compute.v1.CategoricalExpression.union:type_name -> nominal.compute.v1.CategoricalUnionExpression
-	96,  // 245: nominal.compute.v1.CategoricalExpression.range_filter:type_name -> nominal.compute.v1.CategoricalRangeFilterExpression
-	97,  // 246: nominal.compute.v1.CategoricalExpression.numeric_mapping:type_name -> nominal.compute.v1.CategoricalNumericMappingExpression
-	99,  // 247: nominal.compute.v1.CategoricalExpression.array_index:type_name -> nominal.compute.v1.CategoricalArrayIndexExpression
-	100, // 248: nominal.compute.v1.CategoricalExpression.struct_field:type_name -> nominal.compute.v1.CategoricalStructFieldExpression
-	101, // 249: nominal.compute.v1.CategoricalExpression.events:type_name -> nominal.compute.v1.CategoricalEventsExpression
-	103, // 250: nominal.compute.v1.CategoricalExpression.aggregation:type_name -> nominal.compute.v1.CategoricalAggregationExpression
-	104, // 251: nominal.compute.v1.CategoricalExpression.tag_filter:type_name -> nominal.compute.v1.CategoricalTagFilterExpression
-	105, // 252: nominal.compute.v1.CategoricalExpression.tag_selection:type_name -> nominal.compute.v1.CategoricalTagSelectionExpression
-	69,  // 253: nominal.compute.v1.CategoricalExpression.scalar_udf:type_name -> nominal.compute.v1.ScalarUdfExpression
-	106, // 254: nominal.compute.v1.CategoricalExpression.to_start_of_interval:type_name -> nominal.compute.v1.CategoricalToStartOfIntervalExpression
-	87,  // 255: nominal.compute.v1.CategoricalDuplicateTimestampAggregationExpression.input:type_name -> nominal.compute.v1.CategoricalExpression
-	236, // 256: nominal.compute.v1.CategoricalDuplicateTimestampAggregationExpression.reduction:type_name -> nominal.compute.v1.CategoricalReduction
-	87,  // 257: nominal.compute.v1.CategoricalResampleExpression.input:type_name -> nominal.compute.v1.CategoricalExpression
-	212, // 258: nominal.compute.v1.CategoricalResampleExpression.interval:type_name -> nominal.compute.v1.DurationConstant
-	237, // 259: nominal.compute.v1.CategoricalResampleExpression.fill:type_name -> nominal.compute.v1.CategoricalResampleFill
-	87,  // 260: nominal.compute.v1.CategoricalResampleV2Expression.input:type_name -> nominal.compute.v1.CategoricalExpression
-	224, // 261: nominal.compute.v1.CategoricalResampleV2Expression.interval:type_name -> nominal.compute.v1.DurationExpression
-	87,  // 262: nominal.compute.v1.CategoricalNthPointDownsampleExpression.input:type_name -> nominal.compute.v1.CategoricalExpression
-	230, // 263: nominal.compute.v1.CategoricalNthPointDownsampleExpression.every_nth:type_name -> nominal.compute.v1.IntegerConstant
-	87,  // 264: nominal.compute.v1.CategoricalTimeRangeFilterExpression.input:type_name -> nominal.compute.v1.CategoricalExpression
-	228, // 265: nominal.compute.v1.CategoricalTimeRangeFilterExpression.start:type_name -> nominal.compute.v1.TimestampConstant
-	228, // 266: nominal.compute.v1.CategoricalTimeRangeFilterExpression.end:type_name -> nominal.compute.v1.TimestampConstant
-	87,  // 267: nominal.compute.v1.CategoricalTimeShiftExpression.input:type_name -> nominal.compute.v1.CategoricalExpression
-	212, // 268: nominal.compute.v1.CategoricalTimeShiftExpression.duration:type_name -> nominal.compute.v1.DurationConstant
-	87,  // 269: nominal.compute.v1.CategoricalTimeShiftV2Expression.input:type_name -> nominal.compute.v1.CategoricalExpression
-	224, // 270: nominal.compute.v1.CategoricalTimeShiftV2Expression.duration:type_name -> nominal.compute.v1.DurationExpression
-	87,  // 271: nominal.compute.v1.CategoricalUnionExpression.inputs:type_name -> nominal.compute.v1.CategoricalExpression
-	238, // 272: nominal.compute.v1.CategoricalUnionExpression.operation:type_name -> nominal.compute.v1.CategoricalMergeOperation
-	87,  // 273: nominal.compute.v1.CategoricalRangeFilterExpression.input:type_name -> nominal.compute.v1.CategoricalExpression
-	181, // 274: nominal.compute.v1.CategoricalRangeFilterExpression.ranges:type_name -> nominal.compute.v1.RangeExpression
-	17,  // 275: nominal.compute.v1.CategoricalNumericMappingExpression.input:type_name -> nominal.compute.v1.NumericExpression
-	98,  // 276: nominal.compute.v1.CategoricalNumericMappingExpression.mapping:type_name -> nominal.compute.v1.NumericCategoricalInterval
-	217, // 277: nominal.compute.v1.CategoricalNumericMappingExpression.default_value:type_name -> nominal.compute.v1.StringConstant
-	210, // 278: nominal.compute.v1.NumericCategoricalInterval.start:type_name -> nominal.compute.v1.DoubleConstant
-	210, // 279: nominal.compute.v1.NumericCategoricalInterval.end:type_name -> nominal.compute.v1.DoubleConstant
-	217, // 280: nominal.compute.v1.NumericCategoricalInterval.value:type_name -> nominal.compute.v1.StringConstant
-	161, // 281: nominal.compute.v1.CategoricalArrayIndexExpression.input:type_name -> nominal.compute.v1.CategoricalArrayExpression
-	230, // 282: nominal.compute.v1.CategoricalArrayIndexExpression.index:type_name -> nominal.compute.v1.IntegerConstant
-	167, // 283: nominal.compute.v1.CategoricalStructFieldExpression.input:type_name -> nominal.compute.v1.StructExpression
-	217, // 284: nominal.compute.v1.CategoricalStructFieldExpression.path:type_name -> nominal.compute.v1.StringConstant
-	235, // 285: nominal.compute.v1.CategoricalEventsExpression.query:type_name -> nominal.compute.v1.EventPredicateExpression
-	217, // 286: nominal.compute.v1.CategoricalEventsExpression.property:type_name -> nominal.compute.v1.StringConstant
-	102, // 287: nominal.compute.v1.CategoricalEventsExpression.level:type_name -> nominal.compute.v1.EventLevelValue
-	60,  // 288: nominal.compute.v1.CategoricalAggregationExpression.input:type_name -> nominal.compute.v1.AggregationInput
-	236, // 289: nominal.compute.v1.CategoricalAggregationExpression.reduction:type_name -> nominal.compute.v1.CategoricalReduction
-	87,  // 290: nominal.compute.v1.CategoricalTagFilterExpression.input:type_name -> nominal.compute.v1.CategoricalExpression
-	223, // 291: nominal.compute.v1.CategoricalTagFilterExpression.predicate:type_name -> nominal.compute.v1.TagPredicateExpression
-	87,  // 292: nominal.compute.v1.CategoricalTagSelectionExpression.input:type_name -> nominal.compute.v1.CategoricalExpression
-	216, // 293: nominal.compute.v1.CategoricalTagSelectionExpression.keys:type_name -> nominal.compute.v1.TagKeySet
-	87,  // 294: nominal.compute.v1.CategoricalToStartOfIntervalExpression.input:type_name -> nominal.compute.v1.CategoricalExpression
-	224, // 295: nominal.compute.v1.CategoricalToStartOfIntervalExpression.interval:type_name -> nominal.compute.v1.DurationExpression
-	113, // 296: nominal.compute.v1.BooleanExpression.comparison:type_name -> nominal.compute.v1.ComparisonExpression
-	114, // 297: nominal.compute.v1.BooleanExpression.logical:type_name -> nominal.compute.v1.LogicalExpression
-	4,   // 298: nominal.compute.v1.NumericUnaryExpression.operation:type_name -> nominal.compute.v1.UnaryNumericOperation
-	17,  // 299: nominal.compute.v1.NumericUnaryExpression.input:type_name -> nominal.compute.v1.NumericExpression
-	5,   // 300: nominal.compute.v1.NumericBinaryExpression.operation:type_name -> nominal.compute.v1.BinaryNumericOperation
-	17,  // 301: nominal.compute.v1.NumericBinaryExpression.left:type_name -> nominal.compute.v1.NumericExpression
-	17,  // 302: nominal.compute.v1.NumericBinaryExpression.right:type_name -> nominal.compute.v1.NumericExpression
-	115, // 303: nominal.compute.v1.NumericBinaryExpression.interpolation:type_name -> nominal.compute.v1.InterpolationConfiguration
-	6,   // 304: nominal.compute.v1.NumericNaryExpression.operation:type_name -> nominal.compute.v1.NaryNumericOperation
-	17,  // 305: nominal.compute.v1.NumericNaryExpression.inputs:type_name -> nominal.compute.v1.NumericExpression
-	115, // 306: nominal.compute.v1.NumericNaryExpression.interpolation:type_name -> nominal.compute.v1.InterpolationConfiguration
-	7,   // 307: nominal.compute.v1.NumericBitwiseExpression.operation:type_name -> nominal.compute.v1.BitwiseOperation
-	17,  // 308: nominal.compute.v1.NumericBitwiseExpression.input:type_name -> nominal.compute.v1.NumericExpression
-	230, // 309: nominal.compute.v1.NumericBitwiseExpression.operand:type_name -> nominal.compute.v1.IntegerConstant
-	107, // 310: nominal.compute.v1.NumericConditionalExpression.condition:type_name -> nominal.compute.v1.BooleanExpression
-	17,  // 311: nominal.compute.v1.NumericConditionalExpression.true_value:type_name -> nominal.compute.v1.NumericExpression
-	17,  // 312: nominal.compute.v1.NumericConditionalExpression.false_value:type_name -> nominal.compute.v1.NumericExpression
-	8,   // 313: nominal.compute.v1.ComparisonExpression.operation:type_name -> nominal.compute.v1.ComparisonOperation
-	17,  // 314: nominal.compute.v1.ComparisonExpression.left:type_name -> nominal.compute.v1.NumericExpression
-	17,  // 315: nominal.compute.v1.ComparisonExpression.right:type_name -> nominal.compute.v1.NumericExpression
-	9,   // 316: nominal.compute.v1.LogicalExpression.operation:type_name -> nominal.compute.v1.LogicalOperation
-	107, // 317: nominal.compute.v1.LogicalExpression.left:type_name -> nominal.compute.v1.BooleanExpression
-	107, // 318: nominal.compute.v1.LogicalExpression.right:type_name -> nominal.compute.v1.BooleanExpression
-	116, // 319: nominal.compute.v1.InterpolationConfiguration.forward_fill:type_name -> nominal.compute.v1.ForwardFillInterpolation
-	212, // 320: nominal.compute.v1.ForwardFillInterpolation.max_fill_duration:type_name -> nominal.compute.v1.DurationConstant
-	17,  // 321: nominal.compute.v1.NumericCumulativeSumExpression.input:type_name -> nominal.compute.v1.NumericExpression
-	228, // 322: nominal.compute.v1.NumericCumulativeSumExpression.start:type_name -> nominal.compute.v1.TimestampConstant
-	17,  // 323: nominal.compute.v1.NumericDerivativeExpression.input:type_name -> nominal.compute.v1.NumericExpression
-	229, // 324: nominal.compute.v1.NumericDerivativeExpression.time_unit:type_name -> nominal.types.time.TimeUnit
-	10,  // 325: nominal.compute.v1.NumericDerivativeExpression.negative_value_policy:type_name -> nominal.compute.v1.NegativeValuePolicy
-	17,  // 326: nominal.compute.v1.NumericIntegralExpression.input:type_name -> nominal.compute.v1.NumericExpression
-	228, // 327: nominal.compute.v1.NumericIntegralExpression.start:type_name -> nominal.compute.v1.TimestampConstant
-	229, // 328: nominal.compute.v1.NumericIntegralExpression.time_unit:type_name -> nominal.types.time.TimeUnit
-	17,  // 329: nominal.compute.v1.NumericTimeRangeFilterExpression.input:type_name -> nominal.compute.v1.NumericExpression
-	228, // 330: nominal.compute.v1.NumericTimeRangeFilterExpression.start:type_name -> nominal.compute.v1.TimestampConstant
-	228, // 331: nominal.compute.v1.NumericTimeRangeFilterExpression.end:type_name -> nominal.compute.v1.TimestampConstant
-	17,  // 332: nominal.compute.v1.NumericTimeShiftExpression.input:type_name -> nominal.compute.v1.NumericExpression
-	212, // 333: nominal.compute.v1.NumericTimeShiftExpression.duration:type_name -> nominal.compute.v1.DurationConstant
-	17,  // 334: nominal.compute.v1.NumericValueDifferenceExpression.input:type_name -> nominal.compute.v1.NumericExpression
-	10,  // 335: nominal.compute.v1.NumericValueDifferenceExpression.negative_value_policy:type_name -> nominal.compute.v1.NegativeValuePolicy
-	17,  // 336: nominal.compute.v1.NumericPhaseUnwrapExpression.input:type_name -> nominal.compute.v1.NumericExpression
-	210, // 337: nominal.compute.v1.NumericPhaseUnwrapExpression.period:type_name -> nominal.compute.v1.DoubleConstant
-	17,  // 338: nominal.compute.v1.NumericPointLimitExpression.input:type_name -> nominal.compute.v1.NumericExpression
-	230, // 339: nominal.compute.v1.NumericPointLimitExpression.count:type_name -> nominal.compute.v1.IntegerConstant
-	11,  // 340: nominal.compute.v1.NumericPointLimitExpression.order:type_name -> nominal.compute.v1.PointLimitOrder
-	17,  // 341: nominal.compute.v1.NumericNthPointDownsampleExpression.input:type_name -> nominal.compute.v1.NumericExpression
-	230, // 342: nominal.compute.v1.NumericNthPointDownsampleExpression.n:type_name -> nominal.compute.v1.IntegerConstant
-	17,  // 343: nominal.compute.v1.NumericLargestTriangleThreeBucketsExpression.input:type_name -> nominal.compute.v1.NumericExpression
-	230, // 344: nominal.compute.v1.NumericLargestTriangleThreeBucketsExpression.max_points:type_name -> nominal.compute.v1.IntegerConstant
-	17,  // 345: nominal.compute.v1.NumericConditionFilterExpression.input:type_name -> nominal.compute.v1.NumericExpression
-	107, // 346: nominal.compute.v1.NumericConditionFilterExpression.condition:type_name -> nominal.compute.v1.BooleanExpression
-	17,  // 347: nominal.compute.v1.NumericThresholdFilterExpression.input:type_name -> nominal.compute.v1.NumericExpression
-	210, // 348: nominal.compute.v1.NumericThresholdFilterExpression.threshold:type_name -> nominal.compute.v1.DoubleConstant
-	8,   // 349: nominal.compute.v1.NumericThresholdFilterExpression.operation:type_name -> nominal.compute.v1.ComparisonOperation
-	17,  // 350: nominal.compute.v1.NumericApproximateFilterExpression.input:type_name -> nominal.compute.v1.NumericExpression
-	210, // 351: nominal.compute.v1.NumericApproximateFilterExpression.threshold:type_name -> nominal.compute.v1.DoubleConstant
-	210, // 352: nominal.compute.v1.NumericApproximateFilterExpression.tolerance:type_name -> nominal.compute.v1.DoubleConstant
-	12,  // 353: nominal.compute.v1.NumericApproximateFilterExpression.operation:type_name -> nominal.compute.v1.ApproximateComparisonOperation
-	17,  // 354: nominal.compute.v1.NumericSignalFilterExpression.input:type_name -> nominal.compute.v1.NumericExpression
-	239, // 355: nominal.compute.v1.NumericSignalFilterExpression.configuration:type_name -> nominal.compute.v1.SignalFilterConfiguration
-	230, // 356: nominal.compute.v1.NumericSignalFilterExpression.order:type_name -> nominal.compute.v1.IntegerConstant
-	210, // 357: nominal.compute.v1.NumericSignalFilterExpression.sampling_frequency:type_name -> nominal.compute.v1.DoubleConstant
-	17,  // 358: nominal.compute.v1.NumericUnitConversionExpression.input:type_name -> nominal.compute.v1.NumericExpression
-	17,  // 359: nominal.compute.v1.NumericUnitOverrideExpression.input:type_name -> nominal.compute.v1.NumericExpression
-	17,  // 360: nominal.compute.v1.NumericZScoreExpression.input:type_name -> nominal.compute.v1.NumericExpression
-	217, // 361: nominal.compute.v1.NumericZScoreExpression.group_by_tags:type_name -> nominal.compute.v1.StringConstant
-	115, // 362: nominal.compute.v1.NumericZScoreExpression.interpolation:type_name -> nominal.compute.v1.InterpolationConfiguration
-	17,  // 363: nominal.compute.v1.NumericUnionExpression.inputs:type_name -> nominal.compute.v1.NumericExpression
-	13,  // 364: nominal.compute.v1.NumericUnionExpression.duplicate_merge_operation:type_name -> nominal.compute.v1.DuplicateMergeOperation
-	17,  // 365: nominal.compute.v1.NumericDropNanExpression.input:type_name -> nominal.compute.v1.NumericExpression
-	17,  // 366: nominal.compute.v1.NumericTimeShiftV2Expression.input:type_name -> nominal.compute.v1.NumericExpression
-	224, // 367: nominal.compute.v1.NumericTimeShiftV2Expression.duration:type_name -> nominal.compute.v1.DurationExpression
-	17,  // 368: nominal.compute.v1.NumericResampleV2Expression.input:type_name -> nominal.compute.v1.NumericExpression
-	224, // 369: nominal.compute.v1.NumericResampleV2Expression.interval:type_name -> nominal.compute.v1.DurationExpression
-	17,  // 370: nominal.compute.v1.NumericToStartOfIntervalExpression.input:type_name -> nominal.compute.v1.NumericExpression
-	224, // 371: nominal.compute.v1.NumericToStartOfIntervalExpression.interval:type_name -> nominal.compute.v1.DurationExpression
-	17,  // 372: nominal.compute.v1.NumericScalarTransformExpression.input:type_name -> nominal.compute.v1.NumericExpression
-	210, // 373: nominal.compute.v1.NumericScalarTransformExpression.offset:type_name -> nominal.compute.v1.DoubleConstant
-	240, // 374: nominal.compute.v1.NumericScalarTransformExpression.scale:type_name -> nominal.compute.v1.ScalingFactor
-	206, // 375: nominal.compute.v1.NumericArithmeticExpression.inputs:type_name -> nominal.compute.v1.NumericArithmeticExpression.InputsEntry
-	115, // 376: nominal.compute.v1.NumericArithmeticExpression.interpolation:type_name -> nominal.compute.v1.InterpolationConfiguration
-	207, // 377: nominal.compute.v1.NumericFormulaFilterExpression.inputs:type_name -> nominal.compute.v1.NumericFormulaFilterExpression.InputsEntry
-	115, // 378: nominal.compute.v1.NumericFormulaFilterExpression.interpolation:type_name -> nominal.compute.v1.InterpolationConfiguration
-	17,  // 379: nominal.compute.v1.NumericLiteralBitwiseExpression.input:type_name -> nominal.compute.v1.NumericExpression
-	143, // 380: nominal.compute.v1.NumericLiteralBitwiseExpression.function:type_name -> nominal.compute.v1.LiteralBitFunction
-	144, // 381: nominal.compute.v1.LiteralBitFunction.bitwise:type_name -> nominal.compute.v1.LiteralBitwiseFunction
-	145, // 382: nominal.compute.v1.LiteralBitFunction.shift:type_name -> nominal.compute.v1.LiteralShiftFunction
-	146, // 383: nominal.compute.v1.LiteralBitFunction.bit_test:type_name -> nominal.compute.v1.BitTestIndex
-	14,  // 384: nominal.compute.v1.LiteralBitwiseFunction.operation:type_name -> nominal.compute.v1.LiteralBitwiseOperation
-	15,  // 385: nominal.compute.v1.LiteralShiftFunction.direction:type_name -> nominal.compute.v1.ShiftDirection
-	17,  // 386: nominal.compute.v1.NumericResampleExpression.input:type_name -> nominal.compute.v1.NumericExpression
-	212, // 387: nominal.compute.v1.NumericResampleExpression.interval:type_name -> nominal.compute.v1.DurationConstant
-	241, // 388: nominal.compute.v1.NumericResampleExpression.fill:type_name -> nominal.compute.v1.ResampleFill
-	149, // 389: nominal.compute.v1.NumericRefpropExpression.inputs:type_name -> nominal.compute.v1.RefpropInput
-	242, // 390: nominal.compute.v1.NumericRefpropExpression.output_property:type_name -> nominal.compute.v1.RefpropProperty
-	243, // 391: nominal.compute.v1.NumericRefpropExpression.substance:type_name -> nominal.compute.v1.RefpropSubstance
-	115, // 392: nominal.compute.v1.NumericRefpropExpression.interpolation:type_name -> nominal.compute.v1.InterpolationConfiguration
-	242, // 393: nominal.compute.v1.RefpropInput.property:type_name -> nominal.compute.v1.RefpropProperty
-	17,  // 394: nominal.compute.v1.RefpropInput.value:type_name -> nominal.compute.v1.NumericExpression
-	17,  // 395: nominal.compute.v1.NumericRollingAggregationExpression.input:type_name -> nominal.compute.v1.NumericExpression
-	212, // 396: nominal.compute.v1.NumericRollingAggregationExpression.window:type_name -> nominal.compute.v1.DurationConstant
-	231, // 397: nominal.compute.v1.NumericRollingAggregationExpression.reduction:type_name -> nominal.compute.v1.NumericReduction
-	17,  // 398: nominal.compute.v1.NumericDuplicateTimestampAggregationExpression.input:type_name -> nominal.compute.v1.NumericExpression
-	231, // 399: nominal.compute.v1.NumericDuplicateTimestampAggregationExpression.reduction:type_name -> nominal.compute.v1.NumericReduction
-	217, // 400: nominal.compute.v1.NumericDuplicateTimestampAggregationExpression.grouping_keys:type_name -> nominal.compute.v1.StringConstant
-	115, // 401: nominal.compute.v1.NumericDuplicateTimestampAggregationExpression.interpolation:type_name -> nominal.compute.v1.InterpolationConfiguration
-	17,  // 402: nominal.compute.v1.NumericTagFilterExpression.input:type_name -> nominal.compute.v1.NumericExpression
-	223, // 403: nominal.compute.v1.NumericTagFilterExpression.predicate:type_name -> nominal.compute.v1.TagPredicateExpression
-	17,  // 404: nominal.compute.v1.NumericTagSelectionExpression.input:type_name -> nominal.compute.v1.NumericExpression
-	217, // 405: nominal.compute.v1.NumericTagSelectionExpression.retained_tag_keys:type_name -> nominal.compute.v1.StringConstant
-	17,  // 406: nominal.compute.v1.NumericTagPairExpression.input:type_name -> nominal.compute.v1.NumericExpression
-	217, // 407: nominal.compute.v1.NumericTagPairExpression.pair_key:type_name -> nominal.compute.v1.StringConstant
-	16,  // 408: nominal.compute.v1.NumericTagPairExpression.output_side:type_name -> nominal.compute.v1.TagPairOutput
-	209, // 409: nominal.compute.v1.NumericArrayExpression.reference:type_name -> nominal.compute.v1.TimeSeriesReference
-	211, // 410: nominal.compute.v1.NumericArrayExpression.channel_selection:type_name -> nominal.compute.v1.ChannelSelection
-	23,  // 411: nominal.compute.v1.NumericArrayExpression.module_function:type_name -> nominal.compute.v1.ModuleFunctionExpression
-	35,  // 412: nominal.compute.v1.NumericArrayExpression.series_selection:type_name -> nominal.compute.v1.SeriesSelection
-	156, // 413: nominal.compute.v1.NumericArrayExpression.struct_field:type_name -> nominal.compute.v1.NumericArrayStructFieldExpression
-	157, // 414: nominal.compute.v1.NumericArrayExpression.time_shift:type_name -> nominal.compute.v1.NumericArrayTimeShiftExpression
-	158, // 415: nominal.compute.v1.NumericArrayExpression.to_start_of_interval:type_name -> nominal.compute.v1.NumericArrayToStartOfIntervalExpression
-	159, // 416: nominal.compute.v1.NumericArrayExpression.tag_filter:type_name -> nominal.compute.v1.NumericArrayTagFilterExpression
-	160, // 417: nominal.compute.v1.NumericArrayExpression.tag_selection:type_name -> nominal.compute.v1.NumericArrayTagSelectionExpression
-	167, // 418: nominal.compute.v1.NumericArrayStructFieldExpression.input:type_name -> nominal.compute.v1.StructExpression
-	217, // 419: nominal.compute.v1.NumericArrayStructFieldExpression.path:type_name -> nominal.compute.v1.StringConstant
-	155, // 420: nominal.compute.v1.NumericArrayTimeShiftExpression.input:type_name -> nominal.compute.v1.NumericArrayExpression
-	212, // 421: nominal.compute.v1.NumericArrayTimeShiftExpression.duration:type_name -> nominal.compute.v1.DurationConstant
-	155, // 422: nominal.compute.v1.NumericArrayToStartOfIntervalExpression.input:type_name -> nominal.compute.v1.NumericArrayExpression
-	224, // 423: nominal.compute.v1.NumericArrayToStartOfIntervalExpression.interval:type_name -> nominal.compute.v1.DurationExpression
-	155, // 424: nominal.compute.v1.NumericArrayTagFilterExpression.input:type_name -> nominal.compute.v1.NumericArrayExpression
-	223, // 425: nominal.compute.v1.NumericArrayTagFilterExpression.predicate:type_name -> nominal.compute.v1.TagPredicateExpression
-	155, // 426: nominal.compute.v1.NumericArrayTagSelectionExpression.input:type_name -> nominal.compute.v1.NumericArrayExpression
-	216, // 427: nominal.compute.v1.NumericArrayTagSelectionExpression.keys:type_name -> nominal.compute.v1.TagKeySet
-	209, // 428: nominal.compute.v1.CategoricalArrayExpression.reference:type_name -> nominal.compute.v1.TimeSeriesReference
-	211, // 429: nominal.compute.v1.CategoricalArrayExpression.channel_selection:type_name -> nominal.compute.v1.ChannelSelection
-	23,  // 430: nominal.compute.v1.CategoricalArrayExpression.module_function:type_name -> nominal.compute.v1.ModuleFunctionExpression
-	35,  // 431: nominal.compute.v1.CategoricalArrayExpression.series_selection:type_name -> nominal.compute.v1.SeriesSelection
-	162, // 432: nominal.compute.v1.CategoricalArrayExpression.struct_field:type_name -> nominal.compute.v1.CategoricalArrayStructFieldExpression
-	163, // 433: nominal.compute.v1.CategoricalArrayExpression.time_shift:type_name -> nominal.compute.v1.CategoricalArrayTimeShiftExpression
-	164, // 434: nominal.compute.v1.CategoricalArrayExpression.to_start_of_interval:type_name -> nominal.compute.v1.CategoricalArrayToStartOfIntervalExpression
-	165, // 435: nominal.compute.v1.CategoricalArrayExpression.tag_filter:type_name -> nominal.compute.v1.CategoricalArrayTagFilterExpression
-	166, // 436: nominal.compute.v1.CategoricalArrayExpression.tag_selection:type_name -> nominal.compute.v1.CategoricalArrayTagSelectionExpression
-	167, // 437: nominal.compute.v1.CategoricalArrayStructFieldExpression.input:type_name -> nominal.compute.v1.StructExpression
-	217, // 438: nominal.compute.v1.CategoricalArrayStructFieldExpression.path:type_name -> nominal.compute.v1.StringConstant
-	161, // 439: nominal.compute.v1.CategoricalArrayTimeShiftExpression.input:type_name -> nominal.compute.v1.CategoricalArrayExpression
-	212, // 440: nominal.compute.v1.CategoricalArrayTimeShiftExpression.duration:type_name -> nominal.compute.v1.DurationConstant
-	161, // 441: nominal.compute.v1.CategoricalArrayToStartOfIntervalExpression.input:type_name -> nominal.compute.v1.CategoricalArrayExpression
-	224, // 442: nominal.compute.v1.CategoricalArrayToStartOfIntervalExpression.interval:type_name -> nominal.compute.v1.DurationExpression
-	161, // 443: nominal.compute.v1.CategoricalArrayTagFilterExpression.input:type_name -> nominal.compute.v1.CategoricalArrayExpression
-	223, // 444: nominal.compute.v1.CategoricalArrayTagFilterExpression.predicate:type_name -> nominal.compute.v1.TagPredicateExpression
-	161, // 445: nominal.compute.v1.CategoricalArrayTagSelectionExpression.input:type_name -> nominal.compute.v1.CategoricalArrayExpression
-	216, // 446: nominal.compute.v1.CategoricalArrayTagSelectionExpression.keys:type_name -> nominal.compute.v1.TagKeySet
-	209, // 447: nominal.compute.v1.StructExpression.reference:type_name -> nominal.compute.v1.TimeSeriesReference
-	211, // 448: nominal.compute.v1.StructExpression.channel_selection:type_name -> nominal.compute.v1.ChannelSelection
-	23,  // 449: nominal.compute.v1.StructExpression.module_function:type_name -> nominal.compute.v1.ModuleFunctionExpression
-	35,  // 450: nominal.compute.v1.StructExpression.series_selection:type_name -> nominal.compute.v1.SeriesSelection
-	178, // 451: nominal.compute.v1.StructExpression.combine:type_name -> nominal.compute.v1.StructCombineExpression
-	168, // 452: nominal.compute.v1.StructExpression.struct_field:type_name -> nominal.compute.v1.StructFieldExpression
-	169, // 453: nominal.compute.v1.StructExpression.time_shift:type_name -> nominal.compute.v1.StructTimeShiftExpression
-	170, // 454: nominal.compute.v1.StructExpression.to_start_of_interval:type_name -> nominal.compute.v1.StructToStartOfIntervalExpression
-	171, // 455: nominal.compute.v1.StructExpression.tag_filter:type_name -> nominal.compute.v1.StructTagFilterExpression
-	172, // 456: nominal.compute.v1.StructExpression.tag_selection:type_name -> nominal.compute.v1.StructTagSelectionExpression
-	167, // 457: nominal.compute.v1.StructFieldExpression.input:type_name -> nominal.compute.v1.StructExpression
-	217, // 458: nominal.compute.v1.StructFieldExpression.path:type_name -> nominal.compute.v1.StringConstant
-	167, // 459: nominal.compute.v1.StructTimeShiftExpression.input:type_name -> nominal.compute.v1.StructExpression
-	212, // 460: nominal.compute.v1.StructTimeShiftExpression.duration:type_name -> nominal.compute.v1.DurationConstant
-	167, // 461: nominal.compute.v1.StructToStartOfIntervalExpression.input:type_name -> nominal.compute.v1.StructExpression
-	224, // 462: nominal.compute.v1.StructToStartOfIntervalExpression.interval:type_name -> nominal.compute.v1.DurationExpression
-	167, // 463: nominal.compute.v1.StructTagFilterExpression.input:type_name -> nominal.compute.v1.StructExpression
-	223, // 464: nominal.compute.v1.StructTagFilterExpression.predicate:type_name -> nominal.compute.v1.TagPredicateExpression
-	167, // 465: nominal.compute.v1.StructTagSelectionExpression.input:type_name -> nominal.compute.v1.StructExpression
-	216, // 466: nominal.compute.v1.StructTagSelectionExpression.keys:type_name -> nominal.compute.v1.TagKeySet
-	209, // 467: nominal.compute.v1.LogExpression.reference:type_name -> nominal.compute.v1.TimeSeriesReference
-	211, // 468: nominal.compute.v1.LogExpression.channel_selection:type_name -> nominal.compute.v1.ChannelSelection
-	23,  // 469: nominal.compute.v1.LogExpression.module_function:type_name -> nominal.compute.v1.ModuleFunctionExpression
-	35,  // 470: nominal.compute.v1.LogExpression.series_selection:type_name -> nominal.compute.v1.SeriesSelection
-	179, // 471: nominal.compute.v1.LogExpression.concatenate:type_name -> nominal.compute.v1.LogConcatenateExpression
-	180, // 472: nominal.compute.v1.LogExpression.filter:type_name -> nominal.compute.v1.LogFilterExpression
-	174, // 473: nominal.compute.v1.LogExpression.time_shift:type_name -> nominal.compute.v1.LogTimeShiftExpression
-	175, // 474: nominal.compute.v1.LogExpression.to_start_of_interval:type_name -> nominal.compute.v1.LogToStartOfIntervalExpression
-	176, // 475: nominal.compute.v1.LogExpression.tag_filter:type_name -> nominal.compute.v1.LogTagFilterExpression
-	177, // 476: nominal.compute.v1.LogExpression.tag_selection:type_name -> nominal.compute.v1.LogTagSelectionExpression
-	173, // 477: nominal.compute.v1.LogTimeShiftExpression.input:type_name -> nominal.compute.v1.LogExpression
-	212, // 478: nominal.compute.v1.LogTimeShiftExpression.duration:type_name -> nominal.compute.v1.DurationConstant
-	173, // 479: nominal.compute.v1.LogToStartOfIntervalExpression.input:type_name -> nominal.compute.v1.LogExpression
-	224, // 480: nominal.compute.v1.LogToStartOfIntervalExpression.interval:type_name -> nominal.compute.v1.DurationExpression
-	173, // 481: nominal.compute.v1.LogTagFilterExpression.input:type_name -> nominal.compute.v1.LogExpression
-	223, // 482: nominal.compute.v1.LogTagFilterExpression.predicate:type_name -> nominal.compute.v1.TagPredicateExpression
-	173, // 483: nominal.compute.v1.LogTagSelectionExpression.input:type_name -> nominal.compute.v1.LogExpression
-	216, // 484: nominal.compute.v1.LogTagSelectionExpression.keys:type_name -> nominal.compute.v1.TagKeySet
-	208, // 485: nominal.compute.v1.StructCombineExpression.fields:type_name -> nominal.compute.v1.StructCombineExpression.FieldsEntry
-	115, // 486: nominal.compute.v1.StructCombineExpression.interpolation:type_name -> nominal.compute.v1.InterpolationConfiguration
-	173, // 487: nominal.compute.v1.LogConcatenateExpression.inputs:type_name -> nominal.compute.v1.LogExpression
-	173, // 488: nominal.compute.v1.LogFilterExpression.input:type_name -> nominal.compute.v1.LogExpression
-	232, // 489: nominal.compute.v1.LogFilterExpression.predicate:type_name -> nominal.compute.v1.LogPredicate
-	23,  // 490: nominal.compute.v1.RangeExpression.module_function:type_name -> nominal.compute.v1.ModuleFunctionExpression
-	182, // 491: nominal.compute.v1.RangeExpression.literal:type_name -> nominal.compute.v1.LiteralRangeCollection
-	235, // 492: nominal.compute.v1.RangeExpression.events:type_name -> nominal.compute.v1.EventPredicateExpression
-	184, // 493: nominal.compute.v1.RangeExpression.boolean_condition:type_name -> nominal.compute.v1.BooleanRangeExpression
-	185, // 494: nominal.compute.v1.RangeExpression.numeric_threshold:type_name -> nominal.compute.v1.NumericThresholdRanges
-	186, // 495: nominal.compute.v1.RangeExpression.numeric_bounds:type_name -> nominal.compute.v1.NumericBoundsRanges
-	187, // 496: nominal.compute.v1.RangeExpression.categorical_membership:type_name -> nominal.compute.v1.CategoricalMembershipRanges
-	188, // 497: nominal.compute.v1.RangeExpression.numeric_equality:type_name -> nominal.compute.v1.NumericEqualityRanges
-	189, // 498: nominal.compute.v1.RangeExpression.categorical_equality:type_name -> nominal.compute.v1.CategoricalEqualityRanges
-	190, // 499: nominal.compute.v1.RangeExpression.numeric_crossover:type_name -> nominal.compute.v1.NumericCrossoverRanges
-	191, // 500: nominal.compute.v1.RangeExpression.on_change:type_name -> nominal.compute.v1.SeriesChangeRanges
-	192, // 501: nominal.compute.v1.RangeExpression.staleness:type_name -> nominal.compute.v1.SeriesStalenessRanges
-	193, // 502: nominal.compute.v1.RangeExpression.duration_filter:type_name -> nominal.compute.v1.RangeDurationFilter
-	194, // 503: nominal.compute.v1.RangeExpression.stability:type_name -> nominal.compute.v1.NumericStabilityRanges
-	195, // 504: nominal.compute.v1.RangeExpression.extrema:type_name -> nominal.compute.v1.NumericExtremaRanges
-	196, // 505: nominal.compute.v1.RangeExpression.intersection:type_name -> nominal.compute.v1.RangeExpressionCollection
-	196, // 506: nominal.compute.v1.RangeExpression.union:type_name -> nominal.compute.v1.RangeExpressionCollection
-	181, // 507: nominal.compute.v1.RangeExpression.complement:type_name -> nominal.compute.v1.RangeExpression
-	197, // 508: nominal.compute.v1.RangeExpression.padding:type_name -> nominal.compute.v1.RangePaddingExpression
-	198, // 509: nominal.compute.v1.RangeExpression.statistics:type_name -> nominal.compute.v1.RangeStatisticsExpression
-	183, // 510: nominal.compute.v1.LiteralRangeCollection.ranges:type_name -> nominal.compute.v1.LiteralRange
-	228, // 511: nominal.compute.v1.LiteralRange.start:type_name -> nominal.compute.v1.TimestampConstant
-	228, // 512: nominal.compute.v1.LiteralRange.end:type_name -> nominal.compute.v1.TimestampConstant
-	244, // 513: nominal.compute.v1.LiteralRange.grouping:type_name -> nominal.compute.v1.TagGrouping
-	107, // 514: nominal.compute.v1.BooleanRangeExpression.input:type_name -> nominal.compute.v1.BooleanExpression
-	245, // 515: nominal.compute.v1.BooleanRangeExpression.persistence:type_name -> nominal.compute.v1.RangePersistence
-	17,  // 516: nominal.compute.v1.NumericThresholdRanges.input:type_name -> nominal.compute.v1.NumericExpression
-	8,   // 517: nominal.compute.v1.NumericThresholdRanges.comparison:type_name -> nominal.compute.v1.ComparisonOperation
-	210, // 518: nominal.compute.v1.NumericThresholdRanges.threshold:type_name -> nominal.compute.v1.DoubleConstant
-	210, // 519: nominal.compute.v1.NumericThresholdRanges.tolerance:type_name -> nominal.compute.v1.DoubleConstant
-	245, // 520: nominal.compute.v1.NumericThresholdRanges.persistence:type_name -> nominal.compute.v1.RangePersistence
-	17,  // 521: nominal.compute.v1.NumericBoundsRanges.input:type_name -> nominal.compute.v1.NumericExpression
-	210, // 522: nominal.compute.v1.NumericBoundsRanges.lower:type_name -> nominal.compute.v1.DoubleConstant
-	210, // 523: nominal.compute.v1.NumericBoundsRanges.upper:type_name -> nominal.compute.v1.DoubleConstant
-	246, // 524: nominal.compute.v1.NumericBoundsRanges.condition:type_name -> nominal.compute.v1.NumericBoundsCondition
-	245, // 525: nominal.compute.v1.NumericBoundsRanges.persistence:type_name -> nominal.compute.v1.RangePersistence
-	87,  // 526: nominal.compute.v1.CategoricalMembershipRanges.input:type_name -> nominal.compute.v1.CategoricalExpression
-	247, // 527: nominal.compute.v1.CategoricalMembershipRanges.values:type_name -> nominal.compute.v1.ParameterizedStringSet
-	248, // 528: nominal.compute.v1.CategoricalMembershipRanges.operation:type_name -> nominal.compute.v1.CategoricalMembershipOperation
-	245, // 529: nominal.compute.v1.CategoricalMembershipRanges.persistence:type_name -> nominal.compute.v1.RangePersistence
-	17,  // 530: nominal.compute.v1.NumericEqualityRanges.inputs:type_name -> nominal.compute.v1.NumericExpression
-	249, // 531: nominal.compute.v1.NumericEqualityRanges.mode:type_name -> nominal.compute.v1.SeriesEqualityMode
-	210, // 532: nominal.compute.v1.NumericEqualityRanges.tolerance:type_name -> nominal.compute.v1.DoubleConstant
-	245, // 533: nominal.compute.v1.NumericEqualityRanges.persistence:type_name -> nominal.compute.v1.RangePersistence
-	115, // 534: nominal.compute.v1.NumericEqualityRanges.interpolation:type_name -> nominal.compute.v1.InterpolationConfiguration
-	87,  // 535: nominal.compute.v1.CategoricalEqualityRanges.inputs:type_name -> nominal.compute.v1.CategoricalExpression
-	249, // 536: nominal.compute.v1.CategoricalEqualityRanges.mode:type_name -> nominal.compute.v1.SeriesEqualityMode
-	245, // 537: nominal.compute.v1.CategoricalEqualityRanges.persistence:type_name -> nominal.compute.v1.RangePersistence
-	115, // 538: nominal.compute.v1.CategoricalEqualityRanges.interpolation:type_name -> nominal.compute.v1.InterpolationConfiguration
-	17,  // 539: nominal.compute.v1.NumericCrossoverRanges.left:type_name -> nominal.compute.v1.NumericExpression
-	17,  // 540: nominal.compute.v1.NumericCrossoverRanges.right:type_name -> nominal.compute.v1.NumericExpression
-	38,  // 541: nominal.compute.v1.SeriesChangeRanges.input:type_name -> nominal.compute.v1.SeriesExpression
-	38,  // 542: nominal.compute.v1.SeriesStalenessRanges.input:type_name -> nominal.compute.v1.SeriesExpression
-	250, // 543: nominal.compute.v1.SeriesStalenessRanges.threshold:type_name -> nominal.compute.v1.DurationInput
-	228, // 544: nominal.compute.v1.SeriesStalenessRanges.start:type_name -> nominal.compute.v1.TimestampConstant
-	228, // 545: nominal.compute.v1.SeriesStalenessRanges.end:type_name -> nominal.compute.v1.TimestampConstant
-	181, // 546: nominal.compute.v1.RangeDurationFilter.input:type_name -> nominal.compute.v1.RangeExpression
-	250, // 547: nominal.compute.v1.RangeDurationFilter.threshold:type_name -> nominal.compute.v1.DurationInput
-	8,   // 548: nominal.compute.v1.RangeDurationFilter.comparison:type_name -> nominal.compute.v1.ComparisonOperation
-	251, // 549: nominal.compute.v1.RangeDurationFilter.unbounded:type_name -> nominal.compute.v1.UnboundedDurationComparison
-	17,  // 550: nominal.compute.v1.NumericStabilityRanges.input:type_name -> nominal.compute.v1.NumericExpression
-	250, // 551: nominal.compute.v1.NumericStabilityRanges.window:type_name -> nominal.compute.v1.DurationInput
-	230, // 552: nominal.compute.v1.NumericStabilityRanges.min_points:type_name -> nominal.compute.v1.IntegerConstant
-	252, // 553: nominal.compute.v1.NumericStabilityRanges.threshold:type_name -> nominal.compute.v1.SpreadThreshold
-	17,  // 554: nominal.compute.v1.NumericExtremaRanges.input:type_name -> nominal.compute.v1.NumericExpression
-	253, // 555: nominal.compute.v1.NumericExtremaRanges.selection:type_name -> nominal.compute.v1.ExtremaSelection
-	210, // 556: nominal.compute.v1.NumericExtremaRanges.min_prominence:type_name -> nominal.compute.v1.DoubleConstant
-	181, // 557: nominal.compute.v1.RangeExpressionCollection.inputs:type_name -> nominal.compute.v1.RangeExpression
-	181, // 558: nominal.compute.v1.RangePaddingExpression.input:type_name -> nominal.compute.v1.RangeExpression
-	250, // 559: nominal.compute.v1.RangePaddingExpression.padding:type_name -> nominal.compute.v1.DurationInput
-	254, // 560: nominal.compute.v1.RangePaddingExpression.sides:type_name -> nominal.compute.v1.RangePaddingSides
-	181, // 561: nominal.compute.v1.RangeStatisticsExpression.ranges:type_name -> nominal.compute.v1.RangeExpression
-	17,  // 562: nominal.compute.v1.RangeStatisticsExpression.input:type_name -> nominal.compute.v1.NumericExpression
-	231, // 563: nominal.compute.v1.RangeStatisticsExpression.reduction:type_name -> nominal.compute.v1.NumericReduction
-	199, // 564: nominal.compute.v1.RangeStatisticsExpression.all:type_name -> nominal.compute.v1.AllStatistics
-	20,  // 565: nominal.compute.v1.ComputeContext.VariablesEntry.value:type_name -> nominal.compute.v1.VariableValue
-	25,  // 566: nominal.compute.v1.ComputeContext.DatasetsEntry.value:type_name -> nominal.compute.v1.DatasetExpression
-	24,  // 567: nominal.compute.v1.ModuleFunctionExpression.ArgumentsEntry.value:type_name -> nominal.compute.v1.FunctionArgument
-	44,  // 568: nominal.compute.v1.CustomCurveModel.VariablesEntry.value:type_name -> nominal.compute.v1.CurveVariable
-	210, // 569: nominal.compute.v1.CustomCurveModel.ParametersEntry.value:type_name -> nominal.compute.v1.DoubleConstant
-	210, // 570: nominal.compute.v1.NumericCategoricalMappingExpression.MappingEntry.value:type_name -> nominal.compute.v1.DoubleConstant
-	17,  // 571: nominal.compute.v1.NumericArithmeticExpression.InputsEntry.value:type_name -> nominal.compute.v1.NumericExpression
-	17,  // 572: nominal.compute.v1.NumericFormulaFilterExpression.InputsEntry.value:type_name -> nominal.compute.v1.NumericExpression
-	38,  // 573: nominal.compute.v1.StructCombineExpression.FieldsEntry.value:type_name -> nominal.compute.v1.SeriesExpression
-	574, // [574:574] is the sub-list for method output_type
-	574, // [574:574] is the sub-list for method input_type
-	574, // [574:574] is the sub-list for extension type_name
-	574, // [574:574] is the sub-list for extension extendee
-	0,   // [0:574] is the sub-list for field type_name
+	73,  // 55: nominal.compute.v1.NumericExpression.interval_tags:type_name -> nominal.compute.v1.NumericIntervalTagsExpression
+	53,  // 56: nominal.compute.v1.NumericExpression.time_difference:type_name -> nominal.compute.v1.NumericTimeDifferenceExpression
+	156, // 57: nominal.compute.v1.NumericExpression.tag_pair:type_name -> nominal.compute.v1.NumericTagPairExpression
+	51,  // 58: nominal.compute.v1.NumericExpression.geo_distance:type_name -> nominal.compute.v1.NumericGeoDistanceExpression
+	202, // 59: nominal.compute.v1.ComputeContext.variables:type_name -> nominal.compute.v1.ComputeContext.VariablesEntry
+	203, // 60: nominal.compute.v1.ComputeContext.datasets:type_name -> nominal.compute.v1.ComputeContext.DatasetsEntry
+	19,  // 61: nominal.compute.v1.ComputeContext.default_fill:type_name -> nominal.compute.v1.ComputeFillStrategy
+	0,   // 62: nominal.compute.v1.ComputeContext.default_alignment:type_name -> nominal.compute.v1.ComputeAlignmentStrategy
+	214, // 63: nominal.compute.v1.ComputeFillStrategy.forward_fill:type_name -> nominal.compute.v1.DurationConstant
+	215, // 64: nominal.compute.v1.VariableValue.string_set:type_name -> nominal.compute.v1.StringSetLiteral
+	216, // 65: nominal.compute.v1.VariableValue.duration:type_name -> nominal.compute.v1.ComputeDuration
+	217, // 66: nominal.compute.v1.VariableValue.timestamp:type_name -> nominal.compute.v1.ComputeTimestamp
+	21,  // 67: nominal.compute.v1.VariableValue.expression:type_name -> nominal.compute.v1.BoundExpression
+	213, // 68: nominal.compute.v1.VariableValue.channel:type_name -> nominal.compute.v1.ChannelSelection
+	22,  // 69: nominal.compute.v1.VariableValue.series:type_name -> nominal.compute.v1.SeriesBinding
+	23,  // 70: nominal.compute.v1.VariableValue.module_function:type_name -> nominal.compute.v1.ModuleFunctionExpression
+	37,  // 71: nominal.compute.v1.BoundExpression.expression:type_name -> nominal.compute.v1.ExpressionNode
+	18,  // 72: nominal.compute.v1.BoundExpression.context:type_name -> nominal.compute.v1.ComputeContext
+	35,  // 73: nominal.compute.v1.SeriesBinding.series_selection:type_name -> nominal.compute.v1.SeriesSelection
+	218, // 74: nominal.compute.v1.SeriesBinding.grouping_keys:type_name -> nominal.compute.v1.TagKeySet
+	219, // 75: nominal.compute.v1.ModuleFunctionExpression.module:type_name -> nominal.compute.v1.StringConstant
+	219, // 76: nominal.compute.v1.ModuleFunctionExpression.function_name:type_name -> nominal.compute.v1.StringConstant
+	219, // 77: nominal.compute.v1.ModuleFunctionExpression.version:type_name -> nominal.compute.v1.StringConstant
+	204, // 78: nominal.compute.v1.ModuleFunctionExpression.arguments:type_name -> nominal.compute.v1.ModuleFunctionExpression.ArgumentsEntry
+	20,  // 79: nominal.compute.v1.FunctionArgument.value:type_name -> nominal.compute.v1.VariableValue
+	220, // 80: nominal.compute.v1.DatasetExpression.asset:type_name -> nominal.compute.v1.AssetReferenceExpression
+	221, // 81: nominal.compute.v1.DatasetExpression.run:type_name -> nominal.compute.v1.RunReferenceExpression
+	222, // 82: nominal.compute.v1.DatasetExpression.data_source:type_name -> nominal.compute.v1.DataSourceReferenceExpression
+	223, // 83: nominal.compute.v1.DatasetExpression.resource_search:type_name -> nominal.compute.v1.DatasetResourceSearch
+	26,  // 84: nominal.compute.v1.DatasetExpression.concatenate:type_name -> nominal.compute.v1.DatasetConcatenation
+	27,  // 85: nominal.compute.v1.DatasetExpression.tag:type_name -> nominal.compute.v1.DatasetTagInjection
+	28,  // 86: nominal.compute.v1.DatasetExpression.filter:type_name -> nominal.compute.v1.DatasetTagFilter
+	29,  // 87: nominal.compute.v1.DatasetExpression.time_shift:type_name -> nominal.compute.v1.DatasetTimeShift
+	88,  // 88: nominal.compute.v1.DatasetExpression.anchor_alignment:type_name -> nominal.compute.v1.DatasetAnchorAlignment
+	30,  // 89: nominal.compute.v1.DatasetExpression.add_series:type_name -> nominal.compute.v1.DatasetSeriesAddition
+	32,  // 90: nominal.compute.v1.DatasetExpression.remove_series:type_name -> nominal.compute.v1.DatasetSeriesRemoval
+	224, // 91: nominal.compute.v1.DatasetExpression.reference:type_name -> nominal.compute.v1.DatasetReference
+	33,  // 92: nominal.compute.v1.DatasetExpression.dimensions:type_name -> nominal.compute.v1.DatasetDimensions
+	225, // 93: nominal.compute.v1.DatasetExpression.entity_set:type_name -> nominal.compute.v1.EntitySetReferenceExpression
+	25,  // 94: nominal.compute.v1.DatasetConcatenation.inputs:type_name -> nominal.compute.v1.DatasetExpression
+	25,  // 95: nominal.compute.v1.DatasetTagInjection.input:type_name -> nominal.compute.v1.DatasetExpression
+	219, // 96: nominal.compute.v1.DatasetTagInjection.key:type_name -> nominal.compute.v1.StringConstant
+	219, // 97: nominal.compute.v1.DatasetTagInjection.value:type_name -> nominal.compute.v1.StringConstant
+	25,  // 98: nominal.compute.v1.DatasetTagFilter.input:type_name -> nominal.compute.v1.DatasetExpression
+	226, // 99: nominal.compute.v1.DatasetTagFilter.predicate:type_name -> nominal.compute.v1.TagPredicateExpression
+	25,  // 100: nominal.compute.v1.DatasetTimeShift.input:type_name -> nominal.compute.v1.DatasetExpression
+	227, // 101: nominal.compute.v1.DatasetTimeShift.offset:type_name -> nominal.compute.v1.DurationExpression
+	25,  // 102: nominal.compute.v1.DatasetSeriesAddition.input:type_name -> nominal.compute.v1.DatasetExpression
+	31,  // 103: nominal.compute.v1.DatasetSeriesAddition.series:type_name -> nominal.compute.v1.NamedSeriesExpression
+	219, // 104: nominal.compute.v1.NamedSeriesExpression.name:type_name -> nominal.compute.v1.StringConstant
+	38,  // 105: nominal.compute.v1.NamedSeriesExpression.definition:type_name -> nominal.compute.v1.SeriesExpression
+	25,  // 106: nominal.compute.v1.DatasetSeriesRemoval.input:type_name -> nominal.compute.v1.DatasetExpression
+	219, // 107: nominal.compute.v1.DatasetSeriesRemoval.names:type_name -> nominal.compute.v1.StringConstant
+	25,  // 108: nominal.compute.v1.DatasetDimensions.input:type_name -> nominal.compute.v1.DatasetExpression
+	34,  // 109: nominal.compute.v1.DatasetDimensions.dimensions:type_name -> nominal.compute.v1.ResourceDimension
+	219, // 110: nominal.compute.v1.ResourceDimension.tag_key:type_name -> nominal.compute.v1.StringConstant
+	219, // 111: nominal.compute.v1.ResourceDimension.string_property:type_name -> nominal.compute.v1.StringConstant
+	228, // 112: nominal.compute.v1.ResourceDimension.identity:type_name -> nominal.compute.v1.ResourceTypeReferenceExpression
+	219, // 113: nominal.compute.v1.SeriesSelection.name:type_name -> nominal.compute.v1.StringConstant
+	25,  // 114: nominal.compute.v1.SeriesSelection.dataset:type_name -> nominal.compute.v1.DatasetExpression
+	229, // 115: nominal.compute.v1.SeriesSelection.sampling:type_name -> nominal.compute.v1.SeriesSampling
+	230, // 116: nominal.compute.v1.SeriesSelection.storage:type_name -> nominal.compute.v1.SeriesStorageEngine
+	25,  // 117: nominal.compute.v1.ResourcePropertySelection.dataset:type_name -> nominal.compute.v1.DatasetExpression
+	17,  // 118: nominal.compute.v1.ExpressionNode.numeric:type_name -> nominal.compute.v1.NumericExpression
+	89,  // 119: nominal.compute.v1.ExpressionNode.categorical:type_name -> nominal.compute.v1.CategoricalExpression
+	175, // 120: nominal.compute.v1.ExpressionNode.log:type_name -> nominal.compute.v1.LogExpression
+	183, // 121: nominal.compute.v1.ExpressionNode.ranges:type_name -> nominal.compute.v1.RangeExpression
+	39,  // 122: nominal.compute.v1.ExpressionNode.array:type_name -> nominal.compute.v1.ArrayExpression
+	169, // 123: nominal.compute.v1.ExpressionNode.structure:type_name -> nominal.compute.v1.StructExpression
+	40,  // 124: nominal.compute.v1.ExpressionNode.curve_fit:type_name -> nominal.compute.v1.CurveFitExpression
+	211, // 125: nominal.compute.v1.ExpressionNode.video:type_name -> nominal.compute.v1.TimeSeriesReference
+	211, // 126: nominal.compute.v1.ExpressionNode.reference:type_name -> nominal.compute.v1.TimeSeriesReference
+	17,  // 127: nominal.compute.v1.SeriesExpression.numeric:type_name -> nominal.compute.v1.NumericExpression
+	89,  // 128: nominal.compute.v1.SeriesExpression.categorical:type_name -> nominal.compute.v1.CategoricalExpression
+	175, // 129: nominal.compute.v1.SeriesExpression.log:type_name -> nominal.compute.v1.LogExpression
+	39,  // 130: nominal.compute.v1.SeriesExpression.array:type_name -> nominal.compute.v1.ArrayExpression
+	169, // 131: nominal.compute.v1.SeriesExpression.structure:type_name -> nominal.compute.v1.StructExpression
+	211, // 132: nominal.compute.v1.SeriesExpression.video:type_name -> nominal.compute.v1.TimeSeriesReference
+	211, // 133: nominal.compute.v1.SeriesExpression.reference:type_name -> nominal.compute.v1.TimeSeriesReference
+	157, // 134: nominal.compute.v1.ArrayExpression.numeric:type_name -> nominal.compute.v1.NumericArrayExpression
+	163, // 135: nominal.compute.v1.ArrayExpression.categorical:type_name -> nominal.compute.v1.CategoricalArrayExpression
+	42,  // 136: nominal.compute.v1.CurveFitExpression.target:type_name -> nominal.compute.v1.CurveSeriesVariable
+	41,  // 137: nominal.compute.v1.CurveFitExpression.interval:type_name -> nominal.compute.v1.CurveFitInterval
+	46,  // 138: nominal.compute.v1.CurveFitExpression.model:type_name -> nominal.compute.v1.CurveModel
+	231, // 139: nominal.compute.v1.CurveFitInterval.start:type_name -> nominal.compute.v1.TimestampConstant
+	231, // 140: nominal.compute.v1.CurveFitInterval.end:type_name -> nominal.compute.v1.TimestampConstant
+	17,  // 141: nominal.compute.v1.CurveSeriesVariable.series:type_name -> nominal.compute.v1.NumericExpression
+	43,  // 142: nominal.compute.v1.CurveSeriesVariable.bounds:type_name -> nominal.compute.v1.CurveVariableBounds
+	212, // 143: nominal.compute.v1.CurveVariableBounds.min:type_name -> nominal.compute.v1.DoubleConstant
+	212, // 144: nominal.compute.v1.CurveVariableBounds.max:type_name -> nominal.compute.v1.DoubleConstant
+	42,  // 145: nominal.compute.v1.CurveVariable.series:type_name -> nominal.compute.v1.CurveSeriesVariable
+	45,  // 146: nominal.compute.v1.CurveVariable.time:type_name -> nominal.compute.v1.CurveTimeVariable
+	232, // 147: nominal.compute.v1.CurveTimeVariable.unit:type_name -> nominal.types.time.TimeUnit
+	47,  // 148: nominal.compute.v1.CurveModel.builtin:type_name -> nominal.compute.v1.BuiltinCurveModel
+	48,  // 149: nominal.compute.v1.CurveModel.polynomial:type_name -> nominal.compute.v1.PolynomialCurveModel
+	49,  // 150: nominal.compute.v1.CurveModel.custom:type_name -> nominal.compute.v1.CustomCurveModel
+	1,   // 151: nominal.compute.v1.BuiltinCurveModel.form:type_name -> nominal.compute.v1.BuiltinCurveForm
+	44,  // 152: nominal.compute.v1.BuiltinCurveModel.independent_variable:type_name -> nominal.compute.v1.CurveVariable
+	44,  // 153: nominal.compute.v1.PolynomialCurveModel.independent_variable:type_name -> nominal.compute.v1.CurveVariable
+	233, // 154: nominal.compute.v1.PolynomialCurveModel.degree:type_name -> nominal.compute.v1.IntegerConstant
+	212, // 155: nominal.compute.v1.PolynomialCurveModel.intercept:type_name -> nominal.compute.v1.DoubleConstant
+	219, // 156: nominal.compute.v1.CustomCurveModel.formula:type_name -> nominal.compute.v1.StringConstant
+	205, // 157: nominal.compute.v1.CustomCurveModel.variables:type_name -> nominal.compute.v1.CustomCurveModel.VariablesEntry
+	206, // 158: nominal.compute.v1.CustomCurveModel.parameters:type_name -> nominal.compute.v1.CustomCurveModel.ParametersEntry
+	38,  // 159: nominal.compute.v1.NumericAbsoluteTimestampExpression.input:type_name -> nominal.compute.v1.SeriesExpression
+	232, // 160: nominal.compute.v1.NumericAbsoluteTimestampExpression.unit:type_name -> nominal.types.time.TimeUnit
+	52,  // 161: nominal.compute.v1.NumericGeoDistanceExpression.from:type_name -> nominal.compute.v1.GeoPositionExpression
+	52,  // 162: nominal.compute.v1.NumericGeoDistanceExpression.to:type_name -> nominal.compute.v1.GeoPositionExpression
+	17,  // 163: nominal.compute.v1.GeoPositionExpression.latitude:type_name -> nominal.compute.v1.NumericExpression
+	17,  // 164: nominal.compute.v1.GeoPositionExpression.longitude:type_name -> nominal.compute.v1.NumericExpression
+	38,  // 165: nominal.compute.v1.NumericTimeDifferenceExpression.input:type_name -> nominal.compute.v1.SeriesExpression
+	232, // 166: nominal.compute.v1.NumericTimeDifferenceExpression.unit:type_name -> nominal.types.time.TimeUnit
+	17,  // 167: nominal.compute.v1.NumericReduceUnderRangesExpression.input:type_name -> nominal.compute.v1.NumericExpression
+	183, // 168: nominal.compute.v1.NumericReduceUnderRangesExpression.ranges:type_name -> nominal.compute.v1.RangeExpression
+	234, // 169: nominal.compute.v1.NumericReduceUnderRangesExpression.reduction:type_name -> nominal.compute.v1.NumericReduction
+	175, // 170: nominal.compute.v1.NumericLogMatchesExpression.input:type_name -> nominal.compute.v1.LogExpression
+	235, // 171: nominal.compute.v1.NumericLogMatchesExpression.predicate:type_name -> nominal.compute.v1.LogPredicate
+	89,  // 172: nominal.compute.v1.NumericCountDuplicatesExpression.inputs:type_name -> nominal.compute.v1.CategoricalExpression
+	89,  // 173: nominal.compute.v1.NumericCategoricalMappingExpression.input:type_name -> nominal.compute.v1.CategoricalExpression
+	207, // 174: nominal.compute.v1.NumericCategoricalMappingExpression.mapping:type_name -> nominal.compute.v1.NumericCategoricalMappingExpression.MappingEntry
+	212, // 175: nominal.compute.v1.NumericCategoricalMappingExpression.default_value:type_name -> nominal.compute.v1.DoubleConstant
+	169, // 176: nominal.compute.v1.NumericStructFieldExpression.input:type_name -> nominal.compute.v1.StructExpression
+	219, // 177: nominal.compute.v1.NumericStructFieldExpression.path:type_name -> nominal.compute.v1.StringConstant
+	236, // 178: nominal.compute.v1.NumericStructFieldExpression.numeric_type:type_name -> nominal.types.series.SeriesDataType
+	17,  // 179: nominal.compute.v1.NumericRangeFilterExpression.input:type_name -> nominal.compute.v1.NumericExpression
+	183, // 180: nominal.compute.v1.NumericRangeFilterExpression.ranges:type_name -> nominal.compute.v1.RangeExpression
+	17,  // 181: nominal.compute.v1.NumericGroupWithinRangesExpression.input:type_name -> nominal.compute.v1.NumericExpression
+	183, // 182: nominal.compute.v1.NumericGroupWithinRangesExpression.ranges:type_name -> nominal.compute.v1.RangeExpression
+	234, // 183: nominal.compute.v1.NumericGroupWithinRangesExpression.reduction:type_name -> nominal.compute.v1.NumericReduction
+	62,  // 184: nominal.compute.v1.NumericAggregationExpression.input:type_name -> nominal.compute.v1.AggregationInput
+	234, // 185: nominal.compute.v1.NumericAggregationExpression.reduction:type_name -> nominal.compute.v1.NumericReduction
+	63,  // 186: nominal.compute.v1.AggregationInput.time_window:type_name -> nominal.compute.v1.TimeWindowAggregation
+	64,  // 187: nominal.compute.v1.AggregationInput.point_window:type_name -> nominal.compute.v1.PointWindowAggregation
+	65,  // 188: nominal.compute.v1.AggregationInput.grouping:type_name -> nominal.compute.v1.GroupedSeriesAggregation
+	38,  // 189: nominal.compute.v1.TimeWindowAggregation.input:type_name -> nominal.compute.v1.SeriesExpression
+	227, // 190: nominal.compute.v1.TimeWindowAggregation.window:type_name -> nominal.compute.v1.DurationExpression
+	38,  // 191: nominal.compute.v1.PointWindowAggregation.input:type_name -> nominal.compute.v1.SeriesExpression
+	233, // 192: nominal.compute.v1.PointWindowAggregation.points:type_name -> nominal.compute.v1.IntegerConstant
+	38,  // 193: nominal.compute.v1.GroupedSeriesAggregation.input:type_name -> nominal.compute.v1.SeriesExpression
+	66,  // 194: nominal.compute.v1.GroupedSeriesAggregation.keys:type_name -> nominal.compute.v1.AggregationGroupingKeys
+	68,  // 195: nominal.compute.v1.GroupedSeriesAggregation.timestamp:type_name -> nominal.compute.v1.AggregationTimestamp
+	67,  // 196: nominal.compute.v1.AggregationGroupingKeys.current:type_name -> nominal.compute.v1.CurrentGroupingKeys
+	218, // 197: nominal.compute.v1.AggregationGroupingKeys.subset:type_name -> nominal.compute.v1.TagKeySet
+	69,  // 198: nominal.compute.v1.AggregationTimestamp.current:type_name -> nominal.compute.v1.CurrentTimestamps
+	227, // 199: nominal.compute.v1.AggregationTimestamp.every:type_name -> nominal.compute.v1.DurationExpression
+	183, // 200: nominal.compute.v1.NumericRangeDurationExpression.input:type_name -> nominal.compute.v1.RangeExpression
+	2,   // 201: nominal.compute.v1.NumericRangeDurationExpression.unbounded:type_name -> nominal.compute.v1.UnboundedRangePolicy
+	232, // 202: nominal.compute.v1.NumericRangeDurationExpression.unit:type_name -> nominal.types.time.TimeUnit
+	38,  // 203: nominal.compute.v1.ScalarUdfExpression.inputs:type_name -> nominal.compute.v1.SeriesExpression
+	237, // 204: nominal.compute.v1.ScalarUdfExpression.source:type_name -> nominal.modules.v1.UdfSource
+	157, // 205: nominal.compute.v1.NumericArrayIndexExpression.input:type_name -> nominal.compute.v1.NumericArrayExpression
+	233, // 206: nominal.compute.v1.NumericArrayIndexExpression.index:type_name -> nominal.compute.v1.IntegerConstant
+	17,  // 207: nominal.compute.v1.NumericIntervalTagsExpression.input:type_name -> nominal.compute.v1.NumericExpression
+	74,  // 208: nominal.compute.v1.NumericIntervalTagsExpression.intervals:type_name -> nominal.compute.v1.IntervalSourceExpression
+	82,  // 209: nominal.compute.v1.NumericIntervalTagsExpression.time_shift:type_name -> nominal.compute.v1.IntervalTimeShift
+	75,  // 210: nominal.compute.v1.IntervalSourceExpression.events:type_name -> nominal.compute.v1.EventIntervals
+	76,  // 211: nominal.compute.v1.IntervalSourceExpression.ranges:type_name -> nominal.compute.v1.RangeIntervals
+	238, // 212: nominal.compute.v1.EventIntervals.query:type_name -> nominal.compute.v1.EventPredicateExpression
+	77,  // 213: nominal.compute.v1.EventIntervals.tags:type_name -> nominal.compute.v1.EventIntervalTag
+	183, // 214: nominal.compute.v1.RangeIntervals.input:type_name -> nominal.compute.v1.RangeExpression
+	78,  // 215: nominal.compute.v1.RangeIntervals.tags:type_name -> nominal.compute.v1.RangeIntervalTag
+	79,  // 216: nominal.compute.v1.EventIntervalTag.interval_index:type_name -> nominal.compute.v1.IntervalIndexTag
+	80,  // 217: nominal.compute.v1.EventIntervalTag.interval_start:type_name -> nominal.compute.v1.IntervalStartTag
+	81,  // 218: nominal.compute.v1.EventIntervalTag.event_level:type_name -> nominal.compute.v1.EventLevelTag
+	219, // 219: nominal.compute.v1.EventIntervalTag.event_property:type_name -> nominal.compute.v1.StringConstant
+	219, // 220: nominal.compute.v1.EventIntervalTag.event_label:type_name -> nominal.compute.v1.StringConstant
+	79,  // 221: nominal.compute.v1.RangeIntervalTag.interval_index:type_name -> nominal.compute.v1.IntervalIndexTag
+	80,  // 222: nominal.compute.v1.RangeIntervalTag.interval_start:type_name -> nominal.compute.v1.IntervalStartTag
+	83,  // 223: nominal.compute.v1.IntervalTimeShift.interval_start:type_name -> nominal.compute.v1.IntervalStartAnchor
+	84,  // 224: nominal.compute.v1.IntervalTimeShift.interval_end:type_name -> nominal.compute.v1.IntervalEndAnchor
+	85,  // 225: nominal.compute.v1.IntervalTimeShift.event:type_name -> nominal.compute.v1.EventOrdinalSelection
+	238, // 226: nominal.compute.v1.EventOrdinalSelection.query:type_name -> nominal.compute.v1.EventPredicateExpression
+	233, // 227: nominal.compute.v1.EventOrdinalSelection.index:type_name -> nominal.compute.v1.IntegerConstant
+	3,   // 228: nominal.compute.v1.EventOrdinalSelection.order:type_name -> nominal.compute.v1.ChronologicalOrder
+	183, // 229: nominal.compute.v1.RangeOrdinalSelection.input:type_name -> nominal.compute.v1.RangeExpression
+	233, // 230: nominal.compute.v1.RangeOrdinalSelection.index:type_name -> nominal.compute.v1.IntegerConstant
+	3,   // 231: nominal.compute.v1.RangeOrdinalSelection.order:type_name -> nominal.compute.v1.ChronologicalOrder
+	83,  // 232: nominal.compute.v1.RunAnchorExpression.interval_start:type_name -> nominal.compute.v1.IntervalStartAnchor
+	84,  // 233: nominal.compute.v1.RunAnchorExpression.interval_end:type_name -> nominal.compute.v1.IntervalEndAnchor
+	85,  // 234: nominal.compute.v1.RunAnchorExpression.event:type_name -> nominal.compute.v1.EventOrdinalSelection
+	86,  // 235: nominal.compute.v1.RunAnchorExpression.ranges:type_name -> nominal.compute.v1.RangeOrdinalSelection
+	25,  // 236: nominal.compute.v1.DatasetAnchorAlignment.input:type_name -> nominal.compute.v1.DatasetExpression
+	87,  // 237: nominal.compute.v1.DatasetAnchorAlignment.anchor:type_name -> nominal.compute.v1.RunAnchorExpression
+	211, // 238: nominal.compute.v1.CategoricalExpression.reference:type_name -> nominal.compute.v1.TimeSeriesReference
+	213, // 239: nominal.compute.v1.CategoricalExpression.channel_selection:type_name -> nominal.compute.v1.ChannelSelection
+	23,  // 240: nominal.compute.v1.CategoricalExpression.module_function:type_name -> nominal.compute.v1.ModuleFunctionExpression
+	35,  // 241: nominal.compute.v1.CategoricalExpression.series_selection:type_name -> nominal.compute.v1.SeriesSelection
+	36,  // 242: nominal.compute.v1.CategoricalExpression.resource_property:type_name -> nominal.compute.v1.ResourcePropertySelection
+	90,  // 243: nominal.compute.v1.CategoricalExpression.duplicate_timestamp_aggregation:type_name -> nominal.compute.v1.CategoricalDuplicateTimestampAggregationExpression
+	91,  // 244: nominal.compute.v1.CategoricalExpression.resample:type_name -> nominal.compute.v1.CategoricalResampleExpression
+	92,  // 245: nominal.compute.v1.CategoricalExpression.resample_v2:type_name -> nominal.compute.v1.CategoricalResampleV2Expression
+	93,  // 246: nominal.compute.v1.CategoricalExpression.nth_point_downsample:type_name -> nominal.compute.v1.CategoricalNthPointDownsampleExpression
+	94,  // 247: nominal.compute.v1.CategoricalExpression.time_range_filter:type_name -> nominal.compute.v1.CategoricalTimeRangeFilterExpression
+	95,  // 248: nominal.compute.v1.CategoricalExpression.time_shift:type_name -> nominal.compute.v1.CategoricalTimeShiftExpression
+	96,  // 249: nominal.compute.v1.CategoricalExpression.time_shift_v2:type_name -> nominal.compute.v1.CategoricalTimeShiftV2Expression
+	97,  // 250: nominal.compute.v1.CategoricalExpression.union:type_name -> nominal.compute.v1.CategoricalUnionExpression
+	98,  // 251: nominal.compute.v1.CategoricalExpression.range_filter:type_name -> nominal.compute.v1.CategoricalRangeFilterExpression
+	99,  // 252: nominal.compute.v1.CategoricalExpression.numeric_mapping:type_name -> nominal.compute.v1.CategoricalNumericMappingExpression
+	101, // 253: nominal.compute.v1.CategoricalExpression.array_index:type_name -> nominal.compute.v1.CategoricalArrayIndexExpression
+	102, // 254: nominal.compute.v1.CategoricalExpression.struct_field:type_name -> nominal.compute.v1.CategoricalStructFieldExpression
+	103, // 255: nominal.compute.v1.CategoricalExpression.events:type_name -> nominal.compute.v1.CategoricalEventsExpression
+	105, // 256: nominal.compute.v1.CategoricalExpression.aggregation:type_name -> nominal.compute.v1.CategoricalAggregationExpression
+	106, // 257: nominal.compute.v1.CategoricalExpression.tag_filter:type_name -> nominal.compute.v1.CategoricalTagFilterExpression
+	107, // 258: nominal.compute.v1.CategoricalExpression.tag_selection:type_name -> nominal.compute.v1.CategoricalTagSelectionExpression
+	71,  // 259: nominal.compute.v1.CategoricalExpression.scalar_udf:type_name -> nominal.compute.v1.ScalarUdfExpression
+	108, // 260: nominal.compute.v1.CategoricalExpression.to_start_of_interval:type_name -> nominal.compute.v1.CategoricalToStartOfIntervalExpression
+	89,  // 261: nominal.compute.v1.CategoricalDuplicateTimestampAggregationExpression.input:type_name -> nominal.compute.v1.CategoricalExpression
+	239, // 262: nominal.compute.v1.CategoricalDuplicateTimestampAggregationExpression.reduction:type_name -> nominal.compute.v1.CategoricalReduction
+	89,  // 263: nominal.compute.v1.CategoricalResampleExpression.input:type_name -> nominal.compute.v1.CategoricalExpression
+	214, // 264: nominal.compute.v1.CategoricalResampleExpression.interval:type_name -> nominal.compute.v1.DurationConstant
+	240, // 265: nominal.compute.v1.CategoricalResampleExpression.fill:type_name -> nominal.compute.v1.CategoricalResampleFill
+	89,  // 266: nominal.compute.v1.CategoricalResampleV2Expression.input:type_name -> nominal.compute.v1.CategoricalExpression
+	227, // 267: nominal.compute.v1.CategoricalResampleV2Expression.interval:type_name -> nominal.compute.v1.DurationExpression
+	89,  // 268: nominal.compute.v1.CategoricalNthPointDownsampleExpression.input:type_name -> nominal.compute.v1.CategoricalExpression
+	233, // 269: nominal.compute.v1.CategoricalNthPointDownsampleExpression.every_nth:type_name -> nominal.compute.v1.IntegerConstant
+	89,  // 270: nominal.compute.v1.CategoricalTimeRangeFilterExpression.input:type_name -> nominal.compute.v1.CategoricalExpression
+	231, // 271: nominal.compute.v1.CategoricalTimeRangeFilterExpression.start:type_name -> nominal.compute.v1.TimestampConstant
+	231, // 272: nominal.compute.v1.CategoricalTimeRangeFilterExpression.end:type_name -> nominal.compute.v1.TimestampConstant
+	89,  // 273: nominal.compute.v1.CategoricalTimeShiftExpression.input:type_name -> nominal.compute.v1.CategoricalExpression
+	214, // 274: nominal.compute.v1.CategoricalTimeShiftExpression.duration:type_name -> nominal.compute.v1.DurationConstant
+	89,  // 275: nominal.compute.v1.CategoricalTimeShiftV2Expression.input:type_name -> nominal.compute.v1.CategoricalExpression
+	227, // 276: nominal.compute.v1.CategoricalTimeShiftV2Expression.duration:type_name -> nominal.compute.v1.DurationExpression
+	89,  // 277: nominal.compute.v1.CategoricalUnionExpression.inputs:type_name -> nominal.compute.v1.CategoricalExpression
+	241, // 278: nominal.compute.v1.CategoricalUnionExpression.operation:type_name -> nominal.compute.v1.CategoricalMergeOperation
+	89,  // 279: nominal.compute.v1.CategoricalRangeFilterExpression.input:type_name -> nominal.compute.v1.CategoricalExpression
+	183, // 280: nominal.compute.v1.CategoricalRangeFilterExpression.ranges:type_name -> nominal.compute.v1.RangeExpression
+	17,  // 281: nominal.compute.v1.CategoricalNumericMappingExpression.input:type_name -> nominal.compute.v1.NumericExpression
+	100, // 282: nominal.compute.v1.CategoricalNumericMappingExpression.mapping:type_name -> nominal.compute.v1.NumericCategoricalInterval
+	219, // 283: nominal.compute.v1.CategoricalNumericMappingExpression.default_value:type_name -> nominal.compute.v1.StringConstant
+	212, // 284: nominal.compute.v1.NumericCategoricalInterval.start:type_name -> nominal.compute.v1.DoubleConstant
+	212, // 285: nominal.compute.v1.NumericCategoricalInterval.end:type_name -> nominal.compute.v1.DoubleConstant
+	219, // 286: nominal.compute.v1.NumericCategoricalInterval.value:type_name -> nominal.compute.v1.StringConstant
+	163, // 287: nominal.compute.v1.CategoricalArrayIndexExpression.input:type_name -> nominal.compute.v1.CategoricalArrayExpression
+	233, // 288: nominal.compute.v1.CategoricalArrayIndexExpression.index:type_name -> nominal.compute.v1.IntegerConstant
+	169, // 289: nominal.compute.v1.CategoricalStructFieldExpression.input:type_name -> nominal.compute.v1.StructExpression
+	219, // 290: nominal.compute.v1.CategoricalStructFieldExpression.path:type_name -> nominal.compute.v1.StringConstant
+	238, // 291: nominal.compute.v1.CategoricalEventsExpression.query:type_name -> nominal.compute.v1.EventPredicateExpression
+	219, // 292: nominal.compute.v1.CategoricalEventsExpression.property:type_name -> nominal.compute.v1.StringConstant
+	104, // 293: nominal.compute.v1.CategoricalEventsExpression.level:type_name -> nominal.compute.v1.EventLevelValue
+	62,  // 294: nominal.compute.v1.CategoricalAggregationExpression.input:type_name -> nominal.compute.v1.AggregationInput
+	239, // 295: nominal.compute.v1.CategoricalAggregationExpression.reduction:type_name -> nominal.compute.v1.CategoricalReduction
+	89,  // 296: nominal.compute.v1.CategoricalTagFilterExpression.input:type_name -> nominal.compute.v1.CategoricalExpression
+	226, // 297: nominal.compute.v1.CategoricalTagFilterExpression.predicate:type_name -> nominal.compute.v1.TagPredicateExpression
+	89,  // 298: nominal.compute.v1.CategoricalTagSelectionExpression.input:type_name -> nominal.compute.v1.CategoricalExpression
+	218, // 299: nominal.compute.v1.CategoricalTagSelectionExpression.keys:type_name -> nominal.compute.v1.TagKeySet
+	89,  // 300: nominal.compute.v1.CategoricalToStartOfIntervalExpression.input:type_name -> nominal.compute.v1.CategoricalExpression
+	227, // 301: nominal.compute.v1.CategoricalToStartOfIntervalExpression.interval:type_name -> nominal.compute.v1.DurationExpression
+	115, // 302: nominal.compute.v1.BooleanExpression.comparison:type_name -> nominal.compute.v1.ComparisonExpression
+	116, // 303: nominal.compute.v1.BooleanExpression.logical:type_name -> nominal.compute.v1.LogicalExpression
+	4,   // 304: nominal.compute.v1.NumericUnaryExpression.operation:type_name -> nominal.compute.v1.UnaryNumericOperation
+	17,  // 305: nominal.compute.v1.NumericUnaryExpression.input:type_name -> nominal.compute.v1.NumericExpression
+	5,   // 306: nominal.compute.v1.NumericBinaryExpression.operation:type_name -> nominal.compute.v1.BinaryNumericOperation
+	17,  // 307: nominal.compute.v1.NumericBinaryExpression.left:type_name -> nominal.compute.v1.NumericExpression
+	17,  // 308: nominal.compute.v1.NumericBinaryExpression.right:type_name -> nominal.compute.v1.NumericExpression
+	117, // 309: nominal.compute.v1.NumericBinaryExpression.interpolation:type_name -> nominal.compute.v1.InterpolationConfiguration
+	6,   // 310: nominal.compute.v1.NumericNaryExpression.operation:type_name -> nominal.compute.v1.NaryNumericOperation
+	17,  // 311: nominal.compute.v1.NumericNaryExpression.inputs:type_name -> nominal.compute.v1.NumericExpression
+	117, // 312: nominal.compute.v1.NumericNaryExpression.interpolation:type_name -> nominal.compute.v1.InterpolationConfiguration
+	7,   // 313: nominal.compute.v1.NumericBitwiseExpression.operation:type_name -> nominal.compute.v1.BitwiseOperation
+	17,  // 314: nominal.compute.v1.NumericBitwiseExpression.input:type_name -> nominal.compute.v1.NumericExpression
+	233, // 315: nominal.compute.v1.NumericBitwiseExpression.operand:type_name -> nominal.compute.v1.IntegerConstant
+	109, // 316: nominal.compute.v1.NumericConditionalExpression.condition:type_name -> nominal.compute.v1.BooleanExpression
+	17,  // 317: nominal.compute.v1.NumericConditionalExpression.true_value:type_name -> nominal.compute.v1.NumericExpression
+	17,  // 318: nominal.compute.v1.NumericConditionalExpression.false_value:type_name -> nominal.compute.v1.NumericExpression
+	8,   // 319: nominal.compute.v1.ComparisonExpression.operation:type_name -> nominal.compute.v1.ComparisonOperation
+	17,  // 320: nominal.compute.v1.ComparisonExpression.left:type_name -> nominal.compute.v1.NumericExpression
+	17,  // 321: nominal.compute.v1.ComparisonExpression.right:type_name -> nominal.compute.v1.NumericExpression
+	9,   // 322: nominal.compute.v1.LogicalExpression.operation:type_name -> nominal.compute.v1.LogicalOperation
+	109, // 323: nominal.compute.v1.LogicalExpression.left:type_name -> nominal.compute.v1.BooleanExpression
+	109, // 324: nominal.compute.v1.LogicalExpression.right:type_name -> nominal.compute.v1.BooleanExpression
+	118, // 325: nominal.compute.v1.InterpolationConfiguration.forward_fill:type_name -> nominal.compute.v1.ForwardFillInterpolation
+	214, // 326: nominal.compute.v1.ForwardFillInterpolation.max_fill_duration:type_name -> nominal.compute.v1.DurationConstant
+	17,  // 327: nominal.compute.v1.NumericCumulativeSumExpression.input:type_name -> nominal.compute.v1.NumericExpression
+	231, // 328: nominal.compute.v1.NumericCumulativeSumExpression.start:type_name -> nominal.compute.v1.TimestampConstant
+	17,  // 329: nominal.compute.v1.NumericDerivativeExpression.input:type_name -> nominal.compute.v1.NumericExpression
+	232, // 330: nominal.compute.v1.NumericDerivativeExpression.time_unit:type_name -> nominal.types.time.TimeUnit
+	10,  // 331: nominal.compute.v1.NumericDerivativeExpression.negative_value_policy:type_name -> nominal.compute.v1.NegativeValuePolicy
+	17,  // 332: nominal.compute.v1.NumericIntegralExpression.input:type_name -> nominal.compute.v1.NumericExpression
+	231, // 333: nominal.compute.v1.NumericIntegralExpression.start:type_name -> nominal.compute.v1.TimestampConstant
+	232, // 334: nominal.compute.v1.NumericIntegralExpression.time_unit:type_name -> nominal.types.time.TimeUnit
+	17,  // 335: nominal.compute.v1.NumericTimeRangeFilterExpression.input:type_name -> nominal.compute.v1.NumericExpression
+	231, // 336: nominal.compute.v1.NumericTimeRangeFilterExpression.start:type_name -> nominal.compute.v1.TimestampConstant
+	231, // 337: nominal.compute.v1.NumericTimeRangeFilterExpression.end:type_name -> nominal.compute.v1.TimestampConstant
+	17,  // 338: nominal.compute.v1.NumericTimeShiftExpression.input:type_name -> nominal.compute.v1.NumericExpression
+	214, // 339: nominal.compute.v1.NumericTimeShiftExpression.duration:type_name -> nominal.compute.v1.DurationConstant
+	17,  // 340: nominal.compute.v1.NumericValueDifferenceExpression.input:type_name -> nominal.compute.v1.NumericExpression
+	10,  // 341: nominal.compute.v1.NumericValueDifferenceExpression.negative_value_policy:type_name -> nominal.compute.v1.NegativeValuePolicy
+	17,  // 342: nominal.compute.v1.NumericPhaseUnwrapExpression.input:type_name -> nominal.compute.v1.NumericExpression
+	212, // 343: nominal.compute.v1.NumericPhaseUnwrapExpression.period:type_name -> nominal.compute.v1.DoubleConstant
+	17,  // 344: nominal.compute.v1.NumericPointLimitExpression.input:type_name -> nominal.compute.v1.NumericExpression
+	233, // 345: nominal.compute.v1.NumericPointLimitExpression.count:type_name -> nominal.compute.v1.IntegerConstant
+	11,  // 346: nominal.compute.v1.NumericPointLimitExpression.order:type_name -> nominal.compute.v1.PointLimitOrder
+	17,  // 347: nominal.compute.v1.NumericNthPointDownsampleExpression.input:type_name -> nominal.compute.v1.NumericExpression
+	233, // 348: nominal.compute.v1.NumericNthPointDownsampleExpression.n:type_name -> nominal.compute.v1.IntegerConstant
+	17,  // 349: nominal.compute.v1.NumericLargestTriangleThreeBucketsExpression.input:type_name -> nominal.compute.v1.NumericExpression
+	233, // 350: nominal.compute.v1.NumericLargestTriangleThreeBucketsExpression.max_points:type_name -> nominal.compute.v1.IntegerConstant
+	17,  // 351: nominal.compute.v1.NumericConditionFilterExpression.input:type_name -> nominal.compute.v1.NumericExpression
+	109, // 352: nominal.compute.v1.NumericConditionFilterExpression.condition:type_name -> nominal.compute.v1.BooleanExpression
+	17,  // 353: nominal.compute.v1.NumericThresholdFilterExpression.input:type_name -> nominal.compute.v1.NumericExpression
+	212, // 354: nominal.compute.v1.NumericThresholdFilterExpression.threshold:type_name -> nominal.compute.v1.DoubleConstant
+	8,   // 355: nominal.compute.v1.NumericThresholdFilterExpression.operation:type_name -> nominal.compute.v1.ComparisonOperation
+	17,  // 356: nominal.compute.v1.NumericApproximateFilterExpression.input:type_name -> nominal.compute.v1.NumericExpression
+	212, // 357: nominal.compute.v1.NumericApproximateFilterExpression.threshold:type_name -> nominal.compute.v1.DoubleConstant
+	212, // 358: nominal.compute.v1.NumericApproximateFilterExpression.tolerance:type_name -> nominal.compute.v1.DoubleConstant
+	12,  // 359: nominal.compute.v1.NumericApproximateFilterExpression.operation:type_name -> nominal.compute.v1.ApproximateComparisonOperation
+	17,  // 360: nominal.compute.v1.NumericSignalFilterExpression.input:type_name -> nominal.compute.v1.NumericExpression
+	242, // 361: nominal.compute.v1.NumericSignalFilterExpression.configuration:type_name -> nominal.compute.v1.SignalFilterConfiguration
+	233, // 362: nominal.compute.v1.NumericSignalFilterExpression.order:type_name -> nominal.compute.v1.IntegerConstant
+	212, // 363: nominal.compute.v1.NumericSignalFilterExpression.sampling_frequency:type_name -> nominal.compute.v1.DoubleConstant
+	17,  // 364: nominal.compute.v1.NumericUnitConversionExpression.input:type_name -> nominal.compute.v1.NumericExpression
+	17,  // 365: nominal.compute.v1.NumericUnitOverrideExpression.input:type_name -> nominal.compute.v1.NumericExpression
+	17,  // 366: nominal.compute.v1.NumericZScoreExpression.input:type_name -> nominal.compute.v1.NumericExpression
+	219, // 367: nominal.compute.v1.NumericZScoreExpression.group_by_tags:type_name -> nominal.compute.v1.StringConstant
+	117, // 368: nominal.compute.v1.NumericZScoreExpression.interpolation:type_name -> nominal.compute.v1.InterpolationConfiguration
+	17,  // 369: nominal.compute.v1.NumericUnionExpression.inputs:type_name -> nominal.compute.v1.NumericExpression
+	13,  // 370: nominal.compute.v1.NumericUnionExpression.duplicate_merge_operation:type_name -> nominal.compute.v1.DuplicateMergeOperation
+	17,  // 371: nominal.compute.v1.NumericDropNanExpression.input:type_name -> nominal.compute.v1.NumericExpression
+	17,  // 372: nominal.compute.v1.NumericTimeShiftV2Expression.input:type_name -> nominal.compute.v1.NumericExpression
+	227, // 373: nominal.compute.v1.NumericTimeShiftV2Expression.duration:type_name -> nominal.compute.v1.DurationExpression
+	17,  // 374: nominal.compute.v1.NumericResampleV2Expression.input:type_name -> nominal.compute.v1.NumericExpression
+	227, // 375: nominal.compute.v1.NumericResampleV2Expression.interval:type_name -> nominal.compute.v1.DurationExpression
+	17,  // 376: nominal.compute.v1.NumericToStartOfIntervalExpression.input:type_name -> nominal.compute.v1.NumericExpression
+	227, // 377: nominal.compute.v1.NumericToStartOfIntervalExpression.interval:type_name -> nominal.compute.v1.DurationExpression
+	17,  // 378: nominal.compute.v1.NumericScalarTransformExpression.input:type_name -> nominal.compute.v1.NumericExpression
+	212, // 379: nominal.compute.v1.NumericScalarTransformExpression.offset:type_name -> nominal.compute.v1.DoubleConstant
+	243, // 380: nominal.compute.v1.NumericScalarTransformExpression.scale:type_name -> nominal.compute.v1.ScalingFactor
+	208, // 381: nominal.compute.v1.NumericArithmeticExpression.inputs:type_name -> nominal.compute.v1.NumericArithmeticExpression.InputsEntry
+	117, // 382: nominal.compute.v1.NumericArithmeticExpression.interpolation:type_name -> nominal.compute.v1.InterpolationConfiguration
+	209, // 383: nominal.compute.v1.NumericFormulaFilterExpression.inputs:type_name -> nominal.compute.v1.NumericFormulaFilterExpression.InputsEntry
+	117, // 384: nominal.compute.v1.NumericFormulaFilterExpression.interpolation:type_name -> nominal.compute.v1.InterpolationConfiguration
+	17,  // 385: nominal.compute.v1.NumericLiteralBitwiseExpression.input:type_name -> nominal.compute.v1.NumericExpression
+	145, // 386: nominal.compute.v1.NumericLiteralBitwiseExpression.function:type_name -> nominal.compute.v1.LiteralBitFunction
+	146, // 387: nominal.compute.v1.LiteralBitFunction.bitwise:type_name -> nominal.compute.v1.LiteralBitwiseFunction
+	147, // 388: nominal.compute.v1.LiteralBitFunction.shift:type_name -> nominal.compute.v1.LiteralShiftFunction
+	148, // 389: nominal.compute.v1.LiteralBitFunction.bit_test:type_name -> nominal.compute.v1.BitTestIndex
+	14,  // 390: nominal.compute.v1.LiteralBitwiseFunction.operation:type_name -> nominal.compute.v1.LiteralBitwiseOperation
+	15,  // 391: nominal.compute.v1.LiteralShiftFunction.direction:type_name -> nominal.compute.v1.ShiftDirection
+	17,  // 392: nominal.compute.v1.NumericResampleExpression.input:type_name -> nominal.compute.v1.NumericExpression
+	214, // 393: nominal.compute.v1.NumericResampleExpression.interval:type_name -> nominal.compute.v1.DurationConstant
+	244, // 394: nominal.compute.v1.NumericResampleExpression.fill:type_name -> nominal.compute.v1.ResampleFill
+	151, // 395: nominal.compute.v1.NumericRefpropExpression.inputs:type_name -> nominal.compute.v1.RefpropInput
+	245, // 396: nominal.compute.v1.NumericRefpropExpression.output_property:type_name -> nominal.compute.v1.RefpropProperty
+	246, // 397: nominal.compute.v1.NumericRefpropExpression.substance:type_name -> nominal.compute.v1.RefpropSubstance
+	117, // 398: nominal.compute.v1.NumericRefpropExpression.interpolation:type_name -> nominal.compute.v1.InterpolationConfiguration
+	245, // 399: nominal.compute.v1.RefpropInput.property:type_name -> nominal.compute.v1.RefpropProperty
+	17,  // 400: nominal.compute.v1.RefpropInput.value:type_name -> nominal.compute.v1.NumericExpression
+	17,  // 401: nominal.compute.v1.NumericRollingAggregationExpression.input:type_name -> nominal.compute.v1.NumericExpression
+	214, // 402: nominal.compute.v1.NumericRollingAggregationExpression.window:type_name -> nominal.compute.v1.DurationConstant
+	234, // 403: nominal.compute.v1.NumericRollingAggregationExpression.reduction:type_name -> nominal.compute.v1.NumericReduction
+	17,  // 404: nominal.compute.v1.NumericDuplicateTimestampAggregationExpression.input:type_name -> nominal.compute.v1.NumericExpression
+	234, // 405: nominal.compute.v1.NumericDuplicateTimestampAggregationExpression.reduction:type_name -> nominal.compute.v1.NumericReduction
+	219, // 406: nominal.compute.v1.NumericDuplicateTimestampAggregationExpression.grouping_keys:type_name -> nominal.compute.v1.StringConstant
+	117, // 407: nominal.compute.v1.NumericDuplicateTimestampAggregationExpression.interpolation:type_name -> nominal.compute.v1.InterpolationConfiguration
+	17,  // 408: nominal.compute.v1.NumericTagFilterExpression.input:type_name -> nominal.compute.v1.NumericExpression
+	226, // 409: nominal.compute.v1.NumericTagFilterExpression.predicate:type_name -> nominal.compute.v1.TagPredicateExpression
+	17,  // 410: nominal.compute.v1.NumericTagSelectionExpression.input:type_name -> nominal.compute.v1.NumericExpression
+	219, // 411: nominal.compute.v1.NumericTagSelectionExpression.retained_tag_keys:type_name -> nominal.compute.v1.StringConstant
+	17,  // 412: nominal.compute.v1.NumericTagPairExpression.input:type_name -> nominal.compute.v1.NumericExpression
+	219, // 413: nominal.compute.v1.NumericTagPairExpression.pair_key:type_name -> nominal.compute.v1.StringConstant
+	16,  // 414: nominal.compute.v1.NumericTagPairExpression.output_side:type_name -> nominal.compute.v1.TagPairOutput
+	211, // 415: nominal.compute.v1.NumericArrayExpression.reference:type_name -> nominal.compute.v1.TimeSeriesReference
+	213, // 416: nominal.compute.v1.NumericArrayExpression.channel_selection:type_name -> nominal.compute.v1.ChannelSelection
+	23,  // 417: nominal.compute.v1.NumericArrayExpression.module_function:type_name -> nominal.compute.v1.ModuleFunctionExpression
+	35,  // 418: nominal.compute.v1.NumericArrayExpression.series_selection:type_name -> nominal.compute.v1.SeriesSelection
+	158, // 419: nominal.compute.v1.NumericArrayExpression.struct_field:type_name -> nominal.compute.v1.NumericArrayStructFieldExpression
+	159, // 420: nominal.compute.v1.NumericArrayExpression.time_shift:type_name -> nominal.compute.v1.NumericArrayTimeShiftExpression
+	160, // 421: nominal.compute.v1.NumericArrayExpression.to_start_of_interval:type_name -> nominal.compute.v1.NumericArrayToStartOfIntervalExpression
+	161, // 422: nominal.compute.v1.NumericArrayExpression.tag_filter:type_name -> nominal.compute.v1.NumericArrayTagFilterExpression
+	162, // 423: nominal.compute.v1.NumericArrayExpression.tag_selection:type_name -> nominal.compute.v1.NumericArrayTagSelectionExpression
+	169, // 424: nominal.compute.v1.NumericArrayStructFieldExpression.input:type_name -> nominal.compute.v1.StructExpression
+	219, // 425: nominal.compute.v1.NumericArrayStructFieldExpression.path:type_name -> nominal.compute.v1.StringConstant
+	157, // 426: nominal.compute.v1.NumericArrayTimeShiftExpression.input:type_name -> nominal.compute.v1.NumericArrayExpression
+	214, // 427: nominal.compute.v1.NumericArrayTimeShiftExpression.duration:type_name -> nominal.compute.v1.DurationConstant
+	157, // 428: nominal.compute.v1.NumericArrayToStartOfIntervalExpression.input:type_name -> nominal.compute.v1.NumericArrayExpression
+	227, // 429: nominal.compute.v1.NumericArrayToStartOfIntervalExpression.interval:type_name -> nominal.compute.v1.DurationExpression
+	157, // 430: nominal.compute.v1.NumericArrayTagFilterExpression.input:type_name -> nominal.compute.v1.NumericArrayExpression
+	226, // 431: nominal.compute.v1.NumericArrayTagFilterExpression.predicate:type_name -> nominal.compute.v1.TagPredicateExpression
+	157, // 432: nominal.compute.v1.NumericArrayTagSelectionExpression.input:type_name -> nominal.compute.v1.NumericArrayExpression
+	218, // 433: nominal.compute.v1.NumericArrayTagSelectionExpression.keys:type_name -> nominal.compute.v1.TagKeySet
+	211, // 434: nominal.compute.v1.CategoricalArrayExpression.reference:type_name -> nominal.compute.v1.TimeSeriesReference
+	213, // 435: nominal.compute.v1.CategoricalArrayExpression.channel_selection:type_name -> nominal.compute.v1.ChannelSelection
+	23,  // 436: nominal.compute.v1.CategoricalArrayExpression.module_function:type_name -> nominal.compute.v1.ModuleFunctionExpression
+	35,  // 437: nominal.compute.v1.CategoricalArrayExpression.series_selection:type_name -> nominal.compute.v1.SeriesSelection
+	164, // 438: nominal.compute.v1.CategoricalArrayExpression.struct_field:type_name -> nominal.compute.v1.CategoricalArrayStructFieldExpression
+	165, // 439: nominal.compute.v1.CategoricalArrayExpression.time_shift:type_name -> nominal.compute.v1.CategoricalArrayTimeShiftExpression
+	166, // 440: nominal.compute.v1.CategoricalArrayExpression.to_start_of_interval:type_name -> nominal.compute.v1.CategoricalArrayToStartOfIntervalExpression
+	167, // 441: nominal.compute.v1.CategoricalArrayExpression.tag_filter:type_name -> nominal.compute.v1.CategoricalArrayTagFilterExpression
+	168, // 442: nominal.compute.v1.CategoricalArrayExpression.tag_selection:type_name -> nominal.compute.v1.CategoricalArrayTagSelectionExpression
+	169, // 443: nominal.compute.v1.CategoricalArrayStructFieldExpression.input:type_name -> nominal.compute.v1.StructExpression
+	219, // 444: nominal.compute.v1.CategoricalArrayStructFieldExpression.path:type_name -> nominal.compute.v1.StringConstant
+	163, // 445: nominal.compute.v1.CategoricalArrayTimeShiftExpression.input:type_name -> nominal.compute.v1.CategoricalArrayExpression
+	214, // 446: nominal.compute.v1.CategoricalArrayTimeShiftExpression.duration:type_name -> nominal.compute.v1.DurationConstant
+	163, // 447: nominal.compute.v1.CategoricalArrayToStartOfIntervalExpression.input:type_name -> nominal.compute.v1.CategoricalArrayExpression
+	227, // 448: nominal.compute.v1.CategoricalArrayToStartOfIntervalExpression.interval:type_name -> nominal.compute.v1.DurationExpression
+	163, // 449: nominal.compute.v1.CategoricalArrayTagFilterExpression.input:type_name -> nominal.compute.v1.CategoricalArrayExpression
+	226, // 450: nominal.compute.v1.CategoricalArrayTagFilterExpression.predicate:type_name -> nominal.compute.v1.TagPredicateExpression
+	163, // 451: nominal.compute.v1.CategoricalArrayTagSelectionExpression.input:type_name -> nominal.compute.v1.CategoricalArrayExpression
+	218, // 452: nominal.compute.v1.CategoricalArrayTagSelectionExpression.keys:type_name -> nominal.compute.v1.TagKeySet
+	211, // 453: nominal.compute.v1.StructExpression.reference:type_name -> nominal.compute.v1.TimeSeriesReference
+	213, // 454: nominal.compute.v1.StructExpression.channel_selection:type_name -> nominal.compute.v1.ChannelSelection
+	23,  // 455: nominal.compute.v1.StructExpression.module_function:type_name -> nominal.compute.v1.ModuleFunctionExpression
+	35,  // 456: nominal.compute.v1.StructExpression.series_selection:type_name -> nominal.compute.v1.SeriesSelection
+	180, // 457: nominal.compute.v1.StructExpression.combine:type_name -> nominal.compute.v1.StructCombineExpression
+	170, // 458: nominal.compute.v1.StructExpression.struct_field:type_name -> nominal.compute.v1.StructFieldExpression
+	171, // 459: nominal.compute.v1.StructExpression.time_shift:type_name -> nominal.compute.v1.StructTimeShiftExpression
+	172, // 460: nominal.compute.v1.StructExpression.to_start_of_interval:type_name -> nominal.compute.v1.StructToStartOfIntervalExpression
+	173, // 461: nominal.compute.v1.StructExpression.tag_filter:type_name -> nominal.compute.v1.StructTagFilterExpression
+	174, // 462: nominal.compute.v1.StructExpression.tag_selection:type_name -> nominal.compute.v1.StructTagSelectionExpression
+	169, // 463: nominal.compute.v1.StructFieldExpression.input:type_name -> nominal.compute.v1.StructExpression
+	219, // 464: nominal.compute.v1.StructFieldExpression.path:type_name -> nominal.compute.v1.StringConstant
+	169, // 465: nominal.compute.v1.StructTimeShiftExpression.input:type_name -> nominal.compute.v1.StructExpression
+	214, // 466: nominal.compute.v1.StructTimeShiftExpression.duration:type_name -> nominal.compute.v1.DurationConstant
+	169, // 467: nominal.compute.v1.StructToStartOfIntervalExpression.input:type_name -> nominal.compute.v1.StructExpression
+	227, // 468: nominal.compute.v1.StructToStartOfIntervalExpression.interval:type_name -> nominal.compute.v1.DurationExpression
+	169, // 469: nominal.compute.v1.StructTagFilterExpression.input:type_name -> nominal.compute.v1.StructExpression
+	226, // 470: nominal.compute.v1.StructTagFilterExpression.predicate:type_name -> nominal.compute.v1.TagPredicateExpression
+	169, // 471: nominal.compute.v1.StructTagSelectionExpression.input:type_name -> nominal.compute.v1.StructExpression
+	218, // 472: nominal.compute.v1.StructTagSelectionExpression.keys:type_name -> nominal.compute.v1.TagKeySet
+	211, // 473: nominal.compute.v1.LogExpression.reference:type_name -> nominal.compute.v1.TimeSeriesReference
+	213, // 474: nominal.compute.v1.LogExpression.channel_selection:type_name -> nominal.compute.v1.ChannelSelection
+	23,  // 475: nominal.compute.v1.LogExpression.module_function:type_name -> nominal.compute.v1.ModuleFunctionExpression
+	35,  // 476: nominal.compute.v1.LogExpression.series_selection:type_name -> nominal.compute.v1.SeriesSelection
+	181, // 477: nominal.compute.v1.LogExpression.concatenate:type_name -> nominal.compute.v1.LogConcatenateExpression
+	182, // 478: nominal.compute.v1.LogExpression.filter:type_name -> nominal.compute.v1.LogFilterExpression
+	176, // 479: nominal.compute.v1.LogExpression.time_shift:type_name -> nominal.compute.v1.LogTimeShiftExpression
+	177, // 480: nominal.compute.v1.LogExpression.to_start_of_interval:type_name -> nominal.compute.v1.LogToStartOfIntervalExpression
+	178, // 481: nominal.compute.v1.LogExpression.tag_filter:type_name -> nominal.compute.v1.LogTagFilterExpression
+	179, // 482: nominal.compute.v1.LogExpression.tag_selection:type_name -> nominal.compute.v1.LogTagSelectionExpression
+	175, // 483: nominal.compute.v1.LogTimeShiftExpression.input:type_name -> nominal.compute.v1.LogExpression
+	214, // 484: nominal.compute.v1.LogTimeShiftExpression.duration:type_name -> nominal.compute.v1.DurationConstant
+	175, // 485: nominal.compute.v1.LogToStartOfIntervalExpression.input:type_name -> nominal.compute.v1.LogExpression
+	227, // 486: nominal.compute.v1.LogToStartOfIntervalExpression.interval:type_name -> nominal.compute.v1.DurationExpression
+	175, // 487: nominal.compute.v1.LogTagFilterExpression.input:type_name -> nominal.compute.v1.LogExpression
+	226, // 488: nominal.compute.v1.LogTagFilterExpression.predicate:type_name -> nominal.compute.v1.TagPredicateExpression
+	175, // 489: nominal.compute.v1.LogTagSelectionExpression.input:type_name -> nominal.compute.v1.LogExpression
+	218, // 490: nominal.compute.v1.LogTagSelectionExpression.keys:type_name -> nominal.compute.v1.TagKeySet
+	210, // 491: nominal.compute.v1.StructCombineExpression.fields:type_name -> nominal.compute.v1.StructCombineExpression.FieldsEntry
+	117, // 492: nominal.compute.v1.StructCombineExpression.interpolation:type_name -> nominal.compute.v1.InterpolationConfiguration
+	175, // 493: nominal.compute.v1.LogConcatenateExpression.inputs:type_name -> nominal.compute.v1.LogExpression
+	175, // 494: nominal.compute.v1.LogFilterExpression.input:type_name -> nominal.compute.v1.LogExpression
+	235, // 495: nominal.compute.v1.LogFilterExpression.predicate:type_name -> nominal.compute.v1.LogPredicate
+	23,  // 496: nominal.compute.v1.RangeExpression.module_function:type_name -> nominal.compute.v1.ModuleFunctionExpression
+	184, // 497: nominal.compute.v1.RangeExpression.literal:type_name -> nominal.compute.v1.LiteralRangeCollection
+	238, // 498: nominal.compute.v1.RangeExpression.events:type_name -> nominal.compute.v1.EventPredicateExpression
+	186, // 499: nominal.compute.v1.RangeExpression.boolean_condition:type_name -> nominal.compute.v1.BooleanRangeExpression
+	187, // 500: nominal.compute.v1.RangeExpression.numeric_threshold:type_name -> nominal.compute.v1.NumericThresholdRanges
+	188, // 501: nominal.compute.v1.RangeExpression.numeric_bounds:type_name -> nominal.compute.v1.NumericBoundsRanges
+	189, // 502: nominal.compute.v1.RangeExpression.categorical_membership:type_name -> nominal.compute.v1.CategoricalMembershipRanges
+	190, // 503: nominal.compute.v1.RangeExpression.numeric_equality:type_name -> nominal.compute.v1.NumericEqualityRanges
+	191, // 504: nominal.compute.v1.RangeExpression.categorical_equality:type_name -> nominal.compute.v1.CategoricalEqualityRanges
+	192, // 505: nominal.compute.v1.RangeExpression.numeric_crossover:type_name -> nominal.compute.v1.NumericCrossoverRanges
+	193, // 506: nominal.compute.v1.RangeExpression.on_change:type_name -> nominal.compute.v1.SeriesChangeRanges
+	194, // 507: nominal.compute.v1.RangeExpression.staleness:type_name -> nominal.compute.v1.SeriesStalenessRanges
+	195, // 508: nominal.compute.v1.RangeExpression.duration_filter:type_name -> nominal.compute.v1.RangeDurationFilter
+	196, // 509: nominal.compute.v1.RangeExpression.stability:type_name -> nominal.compute.v1.NumericStabilityRanges
+	197, // 510: nominal.compute.v1.RangeExpression.extrema:type_name -> nominal.compute.v1.NumericExtremaRanges
+	198, // 511: nominal.compute.v1.RangeExpression.intersection:type_name -> nominal.compute.v1.RangeExpressionCollection
+	198, // 512: nominal.compute.v1.RangeExpression.union:type_name -> nominal.compute.v1.RangeExpressionCollection
+	183, // 513: nominal.compute.v1.RangeExpression.complement:type_name -> nominal.compute.v1.RangeExpression
+	199, // 514: nominal.compute.v1.RangeExpression.padding:type_name -> nominal.compute.v1.RangePaddingExpression
+	200, // 515: nominal.compute.v1.RangeExpression.statistics:type_name -> nominal.compute.v1.RangeStatisticsExpression
+	185, // 516: nominal.compute.v1.LiteralRangeCollection.ranges:type_name -> nominal.compute.v1.LiteralRange
+	231, // 517: nominal.compute.v1.LiteralRange.start:type_name -> nominal.compute.v1.TimestampConstant
+	231, // 518: nominal.compute.v1.LiteralRange.end:type_name -> nominal.compute.v1.TimestampConstant
+	247, // 519: nominal.compute.v1.LiteralRange.grouping:type_name -> nominal.compute.v1.TagGrouping
+	109, // 520: nominal.compute.v1.BooleanRangeExpression.input:type_name -> nominal.compute.v1.BooleanExpression
+	248, // 521: nominal.compute.v1.BooleanRangeExpression.persistence:type_name -> nominal.compute.v1.RangePersistence
+	17,  // 522: nominal.compute.v1.NumericThresholdRanges.input:type_name -> nominal.compute.v1.NumericExpression
+	8,   // 523: nominal.compute.v1.NumericThresholdRanges.comparison:type_name -> nominal.compute.v1.ComparisonOperation
+	212, // 524: nominal.compute.v1.NumericThresholdRanges.threshold:type_name -> nominal.compute.v1.DoubleConstant
+	212, // 525: nominal.compute.v1.NumericThresholdRanges.tolerance:type_name -> nominal.compute.v1.DoubleConstant
+	248, // 526: nominal.compute.v1.NumericThresholdRanges.persistence:type_name -> nominal.compute.v1.RangePersistence
+	17,  // 527: nominal.compute.v1.NumericBoundsRanges.input:type_name -> nominal.compute.v1.NumericExpression
+	212, // 528: nominal.compute.v1.NumericBoundsRanges.lower:type_name -> nominal.compute.v1.DoubleConstant
+	212, // 529: nominal.compute.v1.NumericBoundsRanges.upper:type_name -> nominal.compute.v1.DoubleConstant
+	249, // 530: nominal.compute.v1.NumericBoundsRanges.condition:type_name -> nominal.compute.v1.NumericBoundsCondition
+	248, // 531: nominal.compute.v1.NumericBoundsRanges.persistence:type_name -> nominal.compute.v1.RangePersistence
+	89,  // 532: nominal.compute.v1.CategoricalMembershipRanges.input:type_name -> nominal.compute.v1.CategoricalExpression
+	250, // 533: nominal.compute.v1.CategoricalMembershipRanges.values:type_name -> nominal.compute.v1.ParameterizedStringSet
+	251, // 534: nominal.compute.v1.CategoricalMembershipRanges.operation:type_name -> nominal.compute.v1.CategoricalMembershipOperation
+	248, // 535: nominal.compute.v1.CategoricalMembershipRanges.persistence:type_name -> nominal.compute.v1.RangePersistence
+	17,  // 536: nominal.compute.v1.NumericEqualityRanges.inputs:type_name -> nominal.compute.v1.NumericExpression
+	252, // 537: nominal.compute.v1.NumericEqualityRanges.mode:type_name -> nominal.compute.v1.SeriesEqualityMode
+	212, // 538: nominal.compute.v1.NumericEqualityRanges.tolerance:type_name -> nominal.compute.v1.DoubleConstant
+	248, // 539: nominal.compute.v1.NumericEqualityRanges.persistence:type_name -> nominal.compute.v1.RangePersistence
+	117, // 540: nominal.compute.v1.NumericEqualityRanges.interpolation:type_name -> nominal.compute.v1.InterpolationConfiguration
+	89,  // 541: nominal.compute.v1.CategoricalEqualityRanges.inputs:type_name -> nominal.compute.v1.CategoricalExpression
+	252, // 542: nominal.compute.v1.CategoricalEqualityRanges.mode:type_name -> nominal.compute.v1.SeriesEqualityMode
+	248, // 543: nominal.compute.v1.CategoricalEqualityRanges.persistence:type_name -> nominal.compute.v1.RangePersistence
+	117, // 544: nominal.compute.v1.CategoricalEqualityRanges.interpolation:type_name -> nominal.compute.v1.InterpolationConfiguration
+	17,  // 545: nominal.compute.v1.NumericCrossoverRanges.left:type_name -> nominal.compute.v1.NumericExpression
+	17,  // 546: nominal.compute.v1.NumericCrossoverRanges.right:type_name -> nominal.compute.v1.NumericExpression
+	38,  // 547: nominal.compute.v1.SeriesChangeRanges.input:type_name -> nominal.compute.v1.SeriesExpression
+	38,  // 548: nominal.compute.v1.SeriesStalenessRanges.input:type_name -> nominal.compute.v1.SeriesExpression
+	253, // 549: nominal.compute.v1.SeriesStalenessRanges.threshold:type_name -> nominal.compute.v1.DurationInput
+	231, // 550: nominal.compute.v1.SeriesStalenessRanges.start:type_name -> nominal.compute.v1.TimestampConstant
+	231, // 551: nominal.compute.v1.SeriesStalenessRanges.end:type_name -> nominal.compute.v1.TimestampConstant
+	183, // 552: nominal.compute.v1.RangeDurationFilter.input:type_name -> nominal.compute.v1.RangeExpression
+	253, // 553: nominal.compute.v1.RangeDurationFilter.threshold:type_name -> nominal.compute.v1.DurationInput
+	8,   // 554: nominal.compute.v1.RangeDurationFilter.comparison:type_name -> nominal.compute.v1.ComparisonOperation
+	254, // 555: nominal.compute.v1.RangeDurationFilter.unbounded:type_name -> nominal.compute.v1.UnboundedDurationComparison
+	17,  // 556: nominal.compute.v1.NumericStabilityRanges.input:type_name -> nominal.compute.v1.NumericExpression
+	253, // 557: nominal.compute.v1.NumericStabilityRanges.window:type_name -> nominal.compute.v1.DurationInput
+	233, // 558: nominal.compute.v1.NumericStabilityRanges.min_points:type_name -> nominal.compute.v1.IntegerConstant
+	255, // 559: nominal.compute.v1.NumericStabilityRanges.threshold:type_name -> nominal.compute.v1.SpreadThreshold
+	17,  // 560: nominal.compute.v1.NumericExtremaRanges.input:type_name -> nominal.compute.v1.NumericExpression
+	256, // 561: nominal.compute.v1.NumericExtremaRanges.selection:type_name -> nominal.compute.v1.ExtremaSelection
+	212, // 562: nominal.compute.v1.NumericExtremaRanges.min_prominence:type_name -> nominal.compute.v1.DoubleConstant
+	183, // 563: nominal.compute.v1.RangeExpressionCollection.inputs:type_name -> nominal.compute.v1.RangeExpression
+	183, // 564: nominal.compute.v1.RangePaddingExpression.input:type_name -> nominal.compute.v1.RangeExpression
+	253, // 565: nominal.compute.v1.RangePaddingExpression.padding:type_name -> nominal.compute.v1.DurationInput
+	257, // 566: nominal.compute.v1.RangePaddingExpression.sides:type_name -> nominal.compute.v1.RangePaddingSides
+	183, // 567: nominal.compute.v1.RangeStatisticsExpression.ranges:type_name -> nominal.compute.v1.RangeExpression
+	17,  // 568: nominal.compute.v1.RangeStatisticsExpression.input:type_name -> nominal.compute.v1.NumericExpression
+	234, // 569: nominal.compute.v1.RangeStatisticsExpression.reduction:type_name -> nominal.compute.v1.NumericReduction
+	201, // 570: nominal.compute.v1.RangeStatisticsExpression.all:type_name -> nominal.compute.v1.AllStatistics
+	20,  // 571: nominal.compute.v1.ComputeContext.VariablesEntry.value:type_name -> nominal.compute.v1.VariableValue
+	25,  // 572: nominal.compute.v1.ComputeContext.DatasetsEntry.value:type_name -> nominal.compute.v1.DatasetExpression
+	24,  // 573: nominal.compute.v1.ModuleFunctionExpression.ArgumentsEntry.value:type_name -> nominal.compute.v1.FunctionArgument
+	44,  // 574: nominal.compute.v1.CustomCurveModel.VariablesEntry.value:type_name -> nominal.compute.v1.CurveVariable
+	212, // 575: nominal.compute.v1.CustomCurveModel.ParametersEntry.value:type_name -> nominal.compute.v1.DoubleConstant
+	212, // 576: nominal.compute.v1.NumericCategoricalMappingExpression.MappingEntry.value:type_name -> nominal.compute.v1.DoubleConstant
+	17,  // 577: nominal.compute.v1.NumericArithmeticExpression.InputsEntry.value:type_name -> nominal.compute.v1.NumericExpression
+	17,  // 578: nominal.compute.v1.NumericFormulaFilterExpression.InputsEntry.value:type_name -> nominal.compute.v1.NumericExpression
+	38,  // 579: nominal.compute.v1.StructCombineExpression.FieldsEntry.value:type_name -> nominal.compute.v1.SeriesExpression
+	580, // [580:580] is the sub-list for method output_type
+	580, // [580:580] is the sub-list for method input_type
+	580, // [580:580] is the sub-list for extension type_name
+	580, // [580:580] is the sub-list for extension extendee
+	0,   // [0:580] is the sub-list for field type_name
 }
 
 func init() { file_nominal_protos_compute_v1_expressions_proto_init() }
@@ -16980,6 +17142,7 @@ func file_nominal_protos_compute_v1_expressions_proto_init() {
 		(*NumericExpression_IntervalTags)(nil),
 		(*NumericExpression_TimeDifference)(nil),
 		(*NumericExpression_TagPair)(nil),
+		(*NumericExpression_GeoDistance)(nil),
 	}
 	file_nominal_protos_compute_v1_expressions_proto_msgTypes[1].OneofWrappers = []any{}
 	file_nominal_protos_compute_v1_expressions_proto_msgTypes[2].OneofWrappers = []any{
@@ -17015,6 +17178,7 @@ func file_nominal_protos_compute_v1_expressions_proto_init() {
 		(*DatasetExpression_RemoveSeries)(nil),
 		(*DatasetExpression_Reference)(nil),
 		(*DatasetExpression_Dimensions)(nil),
+		(*DatasetExpression_EntitySet)(nil),
 	}
 	file_nominal_protos_compute_v1_expressions_proto_msgTypes[17].OneofWrappers = []any{
 		(*ResourceDimension_StringProperty)(nil),
@@ -17055,51 +17219,51 @@ func file_nominal_protos_compute_v1_expressions_proto_init() {
 		(*CurveModel_Polynomial)(nil),
 		(*CurveModel_Custom)(nil),
 	}
-	file_nominal_protos_compute_v1_expressions_proto_msgTypes[34].OneofWrappers = []any{}
-	file_nominal_protos_compute_v1_expressions_proto_msgTypes[39].OneofWrappers = []any{}
-	file_nominal_protos_compute_v1_expressions_proto_msgTypes[43].OneofWrappers = []any{
+	file_nominal_protos_compute_v1_expressions_proto_msgTypes[36].OneofWrappers = []any{}
+	file_nominal_protos_compute_v1_expressions_proto_msgTypes[41].OneofWrappers = []any{}
+	file_nominal_protos_compute_v1_expressions_proto_msgTypes[45].OneofWrappers = []any{
 		(*AggregationInput_TimeWindow)(nil),
 		(*AggregationInput_PointWindow)(nil),
 		(*AggregationInput_Grouping)(nil),
 	}
-	file_nominal_protos_compute_v1_expressions_proto_msgTypes[47].OneofWrappers = []any{
+	file_nominal_protos_compute_v1_expressions_proto_msgTypes[49].OneofWrappers = []any{
 		(*AggregationGroupingKeys_Current)(nil),
 		(*AggregationGroupingKeys_Subset)(nil),
 	}
-	file_nominal_protos_compute_v1_expressions_proto_msgTypes[49].OneofWrappers = []any{
+	file_nominal_protos_compute_v1_expressions_proto_msgTypes[51].OneofWrappers = []any{
 		(*AggregationTimestamp_Current)(nil),
 		(*AggregationTimestamp_Every)(nil),
 	}
-	file_nominal_protos_compute_v1_expressions_proto_msgTypes[51].OneofWrappers = []any{}
-	file_nominal_protos_compute_v1_expressions_proto_msgTypes[55].OneofWrappers = []any{
+	file_nominal_protos_compute_v1_expressions_proto_msgTypes[53].OneofWrappers = []any{}
+	file_nominal_protos_compute_v1_expressions_proto_msgTypes[57].OneofWrappers = []any{
 		(*IntervalSourceExpression_Events)(nil),
 		(*IntervalSourceExpression_Ranges)(nil),
 	}
-	file_nominal_protos_compute_v1_expressions_proto_msgTypes[58].OneofWrappers = []any{
+	file_nominal_protos_compute_v1_expressions_proto_msgTypes[60].OneofWrappers = []any{
 		(*EventIntervalTag_IntervalIndex)(nil),
 		(*EventIntervalTag_IntervalStart)(nil),
 		(*EventIntervalTag_EventLevel)(nil),
 		(*EventIntervalTag_EventProperty)(nil),
 		(*EventIntervalTag_EventLabel)(nil),
 	}
-	file_nominal_protos_compute_v1_expressions_proto_msgTypes[59].OneofWrappers = []any{
+	file_nominal_protos_compute_v1_expressions_proto_msgTypes[61].OneofWrappers = []any{
 		(*RangeIntervalTag_IntervalIndex)(nil),
 		(*RangeIntervalTag_IntervalStart)(nil),
 	}
-	file_nominal_protos_compute_v1_expressions_proto_msgTypes[63].OneofWrappers = []any{
+	file_nominal_protos_compute_v1_expressions_proto_msgTypes[65].OneofWrappers = []any{
 		(*IntervalTimeShift_IntervalStart)(nil),
 		(*IntervalTimeShift_IntervalEnd)(nil),
 		(*IntervalTimeShift_Event)(nil),
 	}
-	file_nominal_protos_compute_v1_expressions_proto_msgTypes[66].OneofWrappers = []any{}
-	file_nominal_protos_compute_v1_expressions_proto_msgTypes[67].OneofWrappers = []any{}
-	file_nominal_protos_compute_v1_expressions_proto_msgTypes[68].OneofWrappers = []any{
+	file_nominal_protos_compute_v1_expressions_proto_msgTypes[68].OneofWrappers = []any{}
+	file_nominal_protos_compute_v1_expressions_proto_msgTypes[69].OneofWrappers = []any{}
+	file_nominal_protos_compute_v1_expressions_proto_msgTypes[70].OneofWrappers = []any{
 		(*RunAnchorExpression_IntervalStart)(nil),
 		(*RunAnchorExpression_IntervalEnd)(nil),
 		(*RunAnchorExpression_Event)(nil),
 		(*RunAnchorExpression_Ranges)(nil),
 	}
-	file_nominal_protos_compute_v1_expressions_proto_msgTypes[70].OneofWrappers = []any{
+	file_nominal_protos_compute_v1_expressions_proto_msgTypes[72].OneofWrappers = []any{
 		(*CategoricalExpression_Reference)(nil),
 		(*CategoricalExpression_ChannelSelection)(nil),
 		(*CategoricalExpression_ModuleFunction)(nil),
@@ -17124,33 +17288,33 @@ func file_nominal_protos_compute_v1_expressions_proto_init() {
 		(*CategoricalExpression_ScalarUdf)(nil),
 		(*CategoricalExpression_ToStartOfInterval)(nil),
 	}
-	file_nominal_protos_compute_v1_expressions_proto_msgTypes[84].OneofWrappers = []any{
+	file_nominal_protos_compute_v1_expressions_proto_msgTypes[86].OneofWrappers = []any{
 		(*CategoricalEventsExpression_Property)(nil),
 		(*CategoricalEventsExpression_Level)(nil),
 	}
-	file_nominal_protos_compute_v1_expressions_proto_msgTypes[90].OneofWrappers = []any{
+	file_nominal_protos_compute_v1_expressions_proto_msgTypes[92].OneofWrappers = []any{
 		(*BooleanExpression_Comparison)(nil),
 		(*BooleanExpression_Logical)(nil),
 	}
-	file_nominal_protos_compute_v1_expressions_proto_msgTypes[98].OneofWrappers = []any{
+	file_nominal_protos_compute_v1_expressions_proto_msgTypes[100].OneofWrappers = []any{
 		(*InterpolationConfiguration_ForwardFill)(nil),
 	}
-	file_nominal_protos_compute_v1_expressions_proto_msgTypes[101].OneofWrappers = []any{}
-	file_nominal_protos_compute_v1_expressions_proto_msgTypes[102].OneofWrappers = []any{}
-	file_nominal_protos_compute_v1_expressions_proto_msgTypes[105].OneofWrappers = []any{}
-	file_nominal_protos_compute_v1_expressions_proto_msgTypes[115].OneofWrappers = []any{}
+	file_nominal_protos_compute_v1_expressions_proto_msgTypes[103].OneofWrappers = []any{}
+	file_nominal_protos_compute_v1_expressions_proto_msgTypes[104].OneofWrappers = []any{}
+	file_nominal_protos_compute_v1_expressions_proto_msgTypes[107].OneofWrappers = []any{}
 	file_nominal_protos_compute_v1_expressions_proto_msgTypes[117].OneofWrappers = []any{}
-	file_nominal_protos_compute_v1_expressions_proto_msgTypes[122].OneofWrappers = []any{
+	file_nominal_protos_compute_v1_expressions_proto_msgTypes[119].OneofWrappers = []any{}
+	file_nominal_protos_compute_v1_expressions_proto_msgTypes[124].OneofWrappers = []any{
 		(*NumericScalarTransformExpression_Offset)(nil),
 		(*NumericScalarTransformExpression_Scale)(nil),
 	}
-	file_nominal_protos_compute_v1_expressions_proto_msgTypes[126].OneofWrappers = []any{
+	file_nominal_protos_compute_v1_expressions_proto_msgTypes[128].OneofWrappers = []any{
 		(*LiteralBitFunction_Bitwise)(nil),
 		(*LiteralBitFunction_Shift)(nil),
 		(*LiteralBitFunction_BitTest)(nil),
 	}
-	file_nominal_protos_compute_v1_expressions_proto_msgTypes[134].OneofWrappers = []any{}
-	file_nominal_protos_compute_v1_expressions_proto_msgTypes[138].OneofWrappers = []any{
+	file_nominal_protos_compute_v1_expressions_proto_msgTypes[136].OneofWrappers = []any{}
+	file_nominal_protos_compute_v1_expressions_proto_msgTypes[140].OneofWrappers = []any{
 		(*NumericArrayExpression_Reference)(nil),
 		(*NumericArrayExpression_ChannelSelection)(nil),
 		(*NumericArrayExpression_ModuleFunction)(nil),
@@ -17161,7 +17325,7 @@ func file_nominal_protos_compute_v1_expressions_proto_init() {
 		(*NumericArrayExpression_TagFilter)(nil),
 		(*NumericArrayExpression_TagSelection)(nil),
 	}
-	file_nominal_protos_compute_v1_expressions_proto_msgTypes[144].OneofWrappers = []any{
+	file_nominal_protos_compute_v1_expressions_proto_msgTypes[146].OneofWrappers = []any{
 		(*CategoricalArrayExpression_Reference)(nil),
 		(*CategoricalArrayExpression_ChannelSelection)(nil),
 		(*CategoricalArrayExpression_ModuleFunction)(nil),
@@ -17172,7 +17336,7 @@ func file_nominal_protos_compute_v1_expressions_proto_init() {
 		(*CategoricalArrayExpression_TagFilter)(nil),
 		(*CategoricalArrayExpression_TagSelection)(nil),
 	}
-	file_nominal_protos_compute_v1_expressions_proto_msgTypes[150].OneofWrappers = []any{
+	file_nominal_protos_compute_v1_expressions_proto_msgTypes[152].OneofWrappers = []any{
 		(*StructExpression_Reference)(nil),
 		(*StructExpression_ChannelSelection)(nil),
 		(*StructExpression_ModuleFunction)(nil),
@@ -17184,7 +17348,7 @@ func file_nominal_protos_compute_v1_expressions_proto_init() {
 		(*StructExpression_TagFilter)(nil),
 		(*StructExpression_TagSelection)(nil),
 	}
-	file_nominal_protos_compute_v1_expressions_proto_msgTypes[156].OneofWrappers = []any{
+	file_nominal_protos_compute_v1_expressions_proto_msgTypes[158].OneofWrappers = []any{
 		(*LogExpression_Reference)(nil),
 		(*LogExpression_ChannelSelection)(nil),
 		(*LogExpression_ModuleFunction)(nil),
@@ -17196,7 +17360,7 @@ func file_nominal_protos_compute_v1_expressions_proto_init() {
 		(*LogExpression_TagFilter)(nil),
 		(*LogExpression_TagSelection)(nil),
 	}
-	file_nominal_protos_compute_v1_expressions_proto_msgTypes[164].OneofWrappers = []any{
+	file_nominal_protos_compute_v1_expressions_proto_msgTypes[166].OneofWrappers = []any{
 		(*RangeExpression_VariableName)(nil),
 		(*RangeExpression_ModuleFunction)(nil),
 		(*RangeExpression_Literal)(nil),
@@ -17219,9 +17383,9 @@ func file_nominal_protos_compute_v1_expressions_proto_init() {
 		(*RangeExpression_Padding)(nil),
 		(*RangeExpression_Statistics)(nil),
 	}
-	file_nominal_protos_compute_v1_expressions_proto_msgTypes[176].OneofWrappers = []any{}
-	file_nominal_protos_compute_v1_expressions_proto_msgTypes[180].OneofWrappers = []any{}
-	file_nominal_protos_compute_v1_expressions_proto_msgTypes[181].OneofWrappers = []any{
+	file_nominal_protos_compute_v1_expressions_proto_msgTypes[178].OneofWrappers = []any{}
+	file_nominal_protos_compute_v1_expressions_proto_msgTypes[182].OneofWrappers = []any{}
+	file_nominal_protos_compute_v1_expressions_proto_msgTypes[183].OneofWrappers = []any{
 		(*RangeStatisticsExpression_Reduction)(nil),
 		(*RangeStatisticsExpression_All)(nil),
 	}
@@ -17231,7 +17395,7 @@ func file_nominal_protos_compute_v1_expressions_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_nominal_protos_compute_v1_expressions_proto_rawDesc), len(file_nominal_protos_compute_v1_expressions_proto_rawDesc)),
 			NumEnums:      17,
-			NumMessages:   192,
+			NumMessages:   194,
 			NumExtensions: 0,
 			NumServices:   0,
 		},
