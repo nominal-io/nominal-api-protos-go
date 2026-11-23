@@ -23,6 +23,9 @@ const (
 	TemplateService_BatchGetTemplates_FullMethodName             = "/nominal.templates.v1.TemplateService/BatchGetTemplates"
 	TemplateService_SearchTemplates_FullMethodName               = "/nominal.templates.v1.TemplateService/SearchTemplates"
 	TemplateService_GetTemplateDataSourceRefNames_FullMethodName = "/nominal.templates.v1.TemplateService/GetTemplateDataSourceRefNames"
+	TemplateService_UpdateTemplate_FullMethodName                = "/nominal.templates.v1.TemplateService/UpdateTemplate"
+	TemplateService_ArchiveTemplates_FullMethodName              = "/nominal.templates.v1.TemplateService/ArchiveTemplates"
+	TemplateService_UnarchiveTemplates_FullMethodName            = "/nominal.templates.v1.TemplateService/UnarchiveTemplates"
 )
 
 // TemplateServiceClient is the client API for TemplateService service.
@@ -48,14 +51,12 @@ type TemplateServiceClient interface {
 	GetTemplate(ctx context.Context, in *GetTemplateRequest, opts ...grpc.CallOption) (*GetTemplateResponse, error)
 	// Returns the metadata of several workbook templates in one call, without their content.
 	//
-	// Archived templates are returned. The caller needs permission to view each template's workspace, and each
-	// workspace's edition must include workbooks. The call fails as a whole rather than returning a partial result.
+	// Returns the requested templates, in no particular order. Archived templates are returned. Omits templates that
+	// do not exist or whose workspace the caller cannot view.
 	//
 	// Errors:
-	//   - NOT_FOUND (TEMPLATE_ERROR_TEMPLATES_NOT_FOUND): a template does not exist, or the caller cannot view its
-	//     workspace. The error names every such template.
-	//   - PERMISSION_DENIED (ENTITLEMENTS_ERROR_CAPABILITY_NOT_GRANTED): a template's workspace edition does not include
-	//     workbooks.
+	//   - PERMISSION_DENIED (ENTITLEMENTS_ERROR_CAPABILITY_NOT_GRANTED): a returned template's workspace edition does not
+	//     include workbooks.
 	BatchGetTemplates(ctx context.Context, in *BatchGetTemplatesRequest, opts ...grpc.CallOption) (*BatchGetTemplatesResponse, error)
 	// Searches workbook templates by query and returns a page of their metadata.
 	//
@@ -82,6 +83,44 @@ type TemplateServiceClient interface {
 	//   - FAILED_PRECONDITION (TEMPLATE_ERROR_CANNOT_READ_TEMPLATE_REF_NAMES): a channel variable predates the
 	//     ref-name-aware compute format.
 	GetTemplateDataSourceRefNames(ctx context.Context, in *GetTemplateDataSourceRefNamesRequest, opts ...grpc.CallOption) (*GetTemplateDataSourceRefNamesResponse, error)
+	// Updates a workbook template's metadata, such as its title, description, labels, properties, publish state or
+	// preview image, and returns the updated template.
+	//
+	// Only the fields named in `update_mask` change; content and layout change through commits. The caller needs
+	// permission to edit templates in the template's workspace, and the workspace's edition must include workbooks.
+	//
+	// Errors:
+	//   - INVALID_ARGUMENT (TEMPLATE_ERROR_INVALID_REQUEST): `update_mask` lists `preview_image` but `template` leaves it
+	//     unset.
+	//   - NOT_FOUND (TEMPLATE_ERROR_TEMPLATES_NOT_FOUND): the template does not exist, or the caller cannot edit templates
+	//     in its workspace.
+	//   - PERMISSION_DENIED (ENTITLEMENTS_ERROR_CAPABILITY_NOT_GRANTED): the workspace's edition does not include
+	//     workbooks.
+	UpdateTemplate(ctx context.Context, in *UpdateTemplateRequest, opts ...grpc.CallOption) (*UpdateTemplateResponse, error)
+	// Archives workbook templates. Use UnarchiveTemplates to restore them.
+	//
+	// Archived templates stay readable through GetTemplate and BatchGetTemplates, still appear in SearchTemplates
+	// unless the query filters on `is_archived`, and reject new commits. Templates that are already archived are left
+	// unchanged. The caller needs permission to edit templates in each template's workspace, and each workspace's
+	// edition must include workbooks. On any error nothing is archived.
+	//
+	// Errors:
+	//   - NOT_FOUND (TEMPLATE_ERROR_TEMPLATES_NOT_FOUND): a template does not exist, or the caller cannot edit templates
+	//     in its workspace. The error names every such template.
+	//   - PERMISSION_DENIED (ENTITLEMENTS_ERROR_CAPABILITY_NOT_GRANTED): a template's workspace edition does not include
+	//     workbooks.
+	ArchiveTemplates(ctx context.Context, in *ArchiveTemplatesRequest, opts ...grpc.CallOption) (*ArchiveTemplatesResponse, error)
+	// Unarchives workbook templates so they accept commits again.
+	//
+	// Templates that are not archived are left unchanged. The caller needs permission to edit templates in each
+	// template's workspace, and each workspace's edition must include workbooks. On any error nothing is unarchived.
+	//
+	// Errors:
+	//   - NOT_FOUND (TEMPLATE_ERROR_TEMPLATES_NOT_FOUND): a template does not exist, or the caller cannot edit templates
+	//     in its workspace. The error names every such template.
+	//   - PERMISSION_DENIED (ENTITLEMENTS_ERROR_CAPABILITY_NOT_GRANTED): a template's workspace edition does not include
+	//     workbooks.
+	UnarchiveTemplates(ctx context.Context, in *UnarchiveTemplatesRequest, opts ...grpc.CallOption) (*UnarchiveTemplatesResponse, error)
 }
 
 type templateServiceClient struct {
@@ -132,6 +171,36 @@ func (c *templateServiceClient) GetTemplateDataSourceRefNames(ctx context.Contex
 	return out, nil
 }
 
+func (c *templateServiceClient) UpdateTemplate(ctx context.Context, in *UpdateTemplateRequest, opts ...grpc.CallOption) (*UpdateTemplateResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(UpdateTemplateResponse)
+	err := c.cc.Invoke(ctx, TemplateService_UpdateTemplate_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *templateServiceClient) ArchiveTemplates(ctx context.Context, in *ArchiveTemplatesRequest, opts ...grpc.CallOption) (*ArchiveTemplatesResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(ArchiveTemplatesResponse)
+	err := c.cc.Invoke(ctx, TemplateService_ArchiveTemplates_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *templateServiceClient) UnarchiveTemplates(ctx context.Context, in *UnarchiveTemplatesRequest, opts ...grpc.CallOption) (*UnarchiveTemplatesResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(UnarchiveTemplatesResponse)
+	err := c.cc.Invoke(ctx, TemplateService_UnarchiveTemplates_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // TemplateServiceServer is the server API for TemplateService service.
 // All implementations must embed UnimplementedTemplateServiceServer
 // for forward compatibility.
@@ -155,14 +224,12 @@ type TemplateServiceServer interface {
 	GetTemplate(context.Context, *GetTemplateRequest) (*GetTemplateResponse, error)
 	// Returns the metadata of several workbook templates in one call, without their content.
 	//
-	// Archived templates are returned. The caller needs permission to view each template's workspace, and each
-	// workspace's edition must include workbooks. The call fails as a whole rather than returning a partial result.
+	// Returns the requested templates, in no particular order. Archived templates are returned. Omits templates that
+	// do not exist or whose workspace the caller cannot view.
 	//
 	// Errors:
-	//   - NOT_FOUND (TEMPLATE_ERROR_TEMPLATES_NOT_FOUND): a template does not exist, or the caller cannot view its
-	//     workspace. The error names every such template.
-	//   - PERMISSION_DENIED (ENTITLEMENTS_ERROR_CAPABILITY_NOT_GRANTED): a template's workspace edition does not include
-	//     workbooks.
+	//   - PERMISSION_DENIED (ENTITLEMENTS_ERROR_CAPABILITY_NOT_GRANTED): a returned template's workspace edition does not
+	//     include workbooks.
 	BatchGetTemplates(context.Context, *BatchGetTemplatesRequest) (*BatchGetTemplatesResponse, error)
 	// Searches workbook templates by query and returns a page of their metadata.
 	//
@@ -189,6 +256,44 @@ type TemplateServiceServer interface {
 	//   - FAILED_PRECONDITION (TEMPLATE_ERROR_CANNOT_READ_TEMPLATE_REF_NAMES): a channel variable predates the
 	//     ref-name-aware compute format.
 	GetTemplateDataSourceRefNames(context.Context, *GetTemplateDataSourceRefNamesRequest) (*GetTemplateDataSourceRefNamesResponse, error)
+	// Updates a workbook template's metadata, such as its title, description, labels, properties, publish state or
+	// preview image, and returns the updated template.
+	//
+	// Only the fields named in `update_mask` change; content and layout change through commits. The caller needs
+	// permission to edit templates in the template's workspace, and the workspace's edition must include workbooks.
+	//
+	// Errors:
+	//   - INVALID_ARGUMENT (TEMPLATE_ERROR_INVALID_REQUEST): `update_mask` lists `preview_image` but `template` leaves it
+	//     unset.
+	//   - NOT_FOUND (TEMPLATE_ERROR_TEMPLATES_NOT_FOUND): the template does not exist, or the caller cannot edit templates
+	//     in its workspace.
+	//   - PERMISSION_DENIED (ENTITLEMENTS_ERROR_CAPABILITY_NOT_GRANTED): the workspace's edition does not include
+	//     workbooks.
+	UpdateTemplate(context.Context, *UpdateTemplateRequest) (*UpdateTemplateResponse, error)
+	// Archives workbook templates. Use UnarchiveTemplates to restore them.
+	//
+	// Archived templates stay readable through GetTemplate and BatchGetTemplates, still appear in SearchTemplates
+	// unless the query filters on `is_archived`, and reject new commits. Templates that are already archived are left
+	// unchanged. The caller needs permission to edit templates in each template's workspace, and each workspace's
+	// edition must include workbooks. On any error nothing is archived.
+	//
+	// Errors:
+	//   - NOT_FOUND (TEMPLATE_ERROR_TEMPLATES_NOT_FOUND): a template does not exist, or the caller cannot edit templates
+	//     in its workspace. The error names every such template.
+	//   - PERMISSION_DENIED (ENTITLEMENTS_ERROR_CAPABILITY_NOT_GRANTED): a template's workspace edition does not include
+	//     workbooks.
+	ArchiveTemplates(context.Context, *ArchiveTemplatesRequest) (*ArchiveTemplatesResponse, error)
+	// Unarchives workbook templates so they accept commits again.
+	//
+	// Templates that are not archived are left unchanged. The caller needs permission to edit templates in each
+	// template's workspace, and each workspace's edition must include workbooks. On any error nothing is unarchived.
+	//
+	// Errors:
+	//   - NOT_FOUND (TEMPLATE_ERROR_TEMPLATES_NOT_FOUND): a template does not exist, or the caller cannot edit templates
+	//     in its workspace. The error names every such template.
+	//   - PERMISSION_DENIED (ENTITLEMENTS_ERROR_CAPABILITY_NOT_GRANTED): a template's workspace edition does not include
+	//     workbooks.
+	UnarchiveTemplates(context.Context, *UnarchiveTemplatesRequest) (*UnarchiveTemplatesResponse, error)
 	mustEmbedUnimplementedTemplateServiceServer()
 }
 
@@ -210,6 +315,15 @@ func (UnimplementedTemplateServiceServer) SearchTemplates(context.Context, *Sear
 }
 func (UnimplementedTemplateServiceServer) GetTemplateDataSourceRefNames(context.Context, *GetTemplateDataSourceRefNamesRequest) (*GetTemplateDataSourceRefNamesResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method GetTemplateDataSourceRefNames not implemented")
+}
+func (UnimplementedTemplateServiceServer) UpdateTemplate(context.Context, *UpdateTemplateRequest) (*UpdateTemplateResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method UpdateTemplate not implemented")
+}
+func (UnimplementedTemplateServiceServer) ArchiveTemplates(context.Context, *ArchiveTemplatesRequest) (*ArchiveTemplatesResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method ArchiveTemplates not implemented")
+}
+func (UnimplementedTemplateServiceServer) UnarchiveTemplates(context.Context, *UnarchiveTemplatesRequest) (*UnarchiveTemplatesResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method UnarchiveTemplates not implemented")
 }
 func (UnimplementedTemplateServiceServer) mustEmbedUnimplementedTemplateServiceServer() {}
 func (UnimplementedTemplateServiceServer) testEmbeddedByValue()                         {}
@@ -304,6 +418,60 @@ func _TemplateService_GetTemplateDataSourceRefNames_Handler(srv interface{}, ctx
 	return interceptor(ctx, in, info, handler)
 }
 
+func _TemplateService_UpdateTemplate_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UpdateTemplateRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(TemplateServiceServer).UpdateTemplate(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: TemplateService_UpdateTemplate_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(TemplateServiceServer).UpdateTemplate(ctx, req.(*UpdateTemplateRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _TemplateService_ArchiveTemplates_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ArchiveTemplatesRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(TemplateServiceServer).ArchiveTemplates(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: TemplateService_ArchiveTemplates_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(TemplateServiceServer).ArchiveTemplates(ctx, req.(*ArchiveTemplatesRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _TemplateService_UnarchiveTemplates_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UnarchiveTemplatesRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(TemplateServiceServer).UnarchiveTemplates(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: TemplateService_UnarchiveTemplates_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(TemplateServiceServer).UnarchiveTemplates(ctx, req.(*UnarchiveTemplatesRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // TemplateService_ServiceDesc is the grpc.ServiceDesc for TemplateService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -326,6 +494,18 @@ var TemplateService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetTemplateDataSourceRefNames",
 			Handler:    _TemplateService_GetTemplateDataSourceRefNames_Handler,
+		},
+		{
+			MethodName: "UpdateTemplate",
+			Handler:    _TemplateService_UpdateTemplate_Handler,
+		},
+		{
+			MethodName: "ArchiveTemplates",
+			Handler:    _TemplateService_ArchiveTemplates_Handler,
+		},
+		{
+			MethodName: "UnarchiveTemplates",
+			Handler:    _TemplateService_UnarchiveTemplates_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

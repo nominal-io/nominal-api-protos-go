@@ -8,6 +8,7 @@ package computev1
 
 import (
 	_ "buf.build/gen/go/bufbuild/protovalidate/protocolbuffers/go/buf/validate"
+	_ "github.com/nominal-io/nominal-api-protos-go/nominal/protos/gen/v1"
 	types "github.com/nominal-io/nominal-api-protos-go/nominal/protos/types"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
@@ -36,6 +37,7 @@ type ResourcePredicate struct {
 	//	*ResourcePredicate_All
 	//	*ResourcePredicate_Any
 	//	*ResourcePredicate_Negation
+	//	*ResourcePredicate_Types
 	Kind          isResourcePredicate_Kind `protobuf_oneof:"kind"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -150,6 +152,15 @@ func (x *ResourcePredicate) GetNegation() *ResourcePredicate {
 	return nil
 }
 
+func (x *ResourcePredicate) GetTypes() *ResourceTypesFilter {
+	if x != nil {
+		if x, ok := x.Kind.(*ResourcePredicate_Types); ok {
+			return x.Types
+		}
+	}
+	return nil
+}
+
 type isResourcePredicate_Kind interface {
 	isResourcePredicate_Kind()
 }
@@ -186,6 +197,11 @@ type ResourcePredicate_Negation struct {
 	Negation *ResourcePredicate `protobuf:"bytes,8,opt,name=negation,proto3,oneof"`
 }
 
+type ResourcePredicate_Types struct {
+	// Currently only supported for asset search targets.
+	Types *ResourceTypesFilter `protobuf:"bytes,9,opt,name=types,proto3,oneof"`
+}
+
 func (*ResourcePredicate_Properties) isResourcePredicate_Kind() {}
 
 func (*ResourcePredicate_NumericProperty) isResourcePredicate_Kind() {}
@@ -202,6 +218,53 @@ func (*ResourcePredicate_Any) isResourcePredicate_Kind() {}
 
 func (*ResourcePredicate_Negation) isResourcePredicate_Kind() {}
 
+func (*ResourcePredicate_Types) isResourcePredicate_Kind() {}
+
+// Matches a resource when any of its types is in types. Currently only supported for assets.
+type ResourceTypesFilter struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Types         []string               `protobuf:"bytes,1,rep,name=types,proto3" json:"types,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ResourceTypesFilter) Reset() {
+	*x = ResourceTypesFilter{}
+	mi := &file_nominal_protos_compute_v1_resource_predicates_proto_msgTypes[1]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ResourceTypesFilter) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ResourceTypesFilter) ProtoMessage() {}
+
+func (x *ResourceTypesFilter) ProtoReflect() protoreflect.Message {
+	mi := &file_nominal_protos_compute_v1_resource_predicates_proto_msgTypes[1]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ResourceTypesFilter.ProtoReflect.Descriptor instead.
+func (*ResourceTypesFilter) Descriptor() ([]byte, []int) {
+	return file_nominal_protos_compute_v1_resource_predicates_proto_rawDescGZIP(), []int{1}
+}
+
+func (x *ResourceTypesFilter) GetTypes() []string {
+	if x != nil {
+		return x.Types
+	}
+	return nil
+}
+
 type ResourcePredicateGroup struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Predicates    []*ResourcePredicate   `protobuf:"bytes,1,rep,name=predicates,proto3" json:"predicates,omitempty"`
@@ -211,7 +274,7 @@ type ResourcePredicateGroup struct {
 
 func (x *ResourcePredicateGroup) Reset() {
 	*x = ResourcePredicateGroup{}
-	mi := &file_nominal_protos_compute_v1_resource_predicates_proto_msgTypes[1]
+	mi := &file_nominal_protos_compute_v1_resource_predicates_proto_msgTypes[2]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -223,7 +286,7 @@ func (x *ResourcePredicateGroup) String() string {
 func (*ResourcePredicateGroup) ProtoMessage() {}
 
 func (x *ResourcePredicateGroup) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_compute_v1_resource_predicates_proto_msgTypes[1]
+	mi := &file_nominal_protos_compute_v1_resource_predicates_proto_msgTypes[2]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -236,7 +299,7 @@ func (x *ResourcePredicateGroup) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ResourcePredicateGroup.ProtoReflect.Descriptor instead.
 func (*ResourcePredicateGroup) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_compute_v1_resource_predicates_proto_rawDescGZIP(), []int{1}
+	return file_nominal_protos_compute_v1_resource_predicates_proto_rawDescGZIP(), []int{2}
 }
 
 func (x *ResourcePredicateGroup) GetPredicates() []*ResourcePredicate {
@@ -263,7 +326,7 @@ type DatasetResourceSearch struct {
 
 func (x *DatasetResourceSearch) Reset() {
 	*x = DatasetResourceSearch{}
-	mi := &file_nominal_protos_compute_v1_resource_predicates_proto_msgTypes[2]
+	mi := &file_nominal_protos_compute_v1_resource_predicates_proto_msgTypes[3]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -275,7 +338,7 @@ func (x *DatasetResourceSearch) String() string {
 func (*DatasetResourceSearch) ProtoMessage() {}
 
 func (x *DatasetResourceSearch) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_compute_v1_resource_predicates_proto_msgTypes[2]
+	mi := &file_nominal_protos_compute_v1_resource_predicates_proto_msgTypes[3]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -288,7 +351,7 @@ func (x *DatasetResourceSearch) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DatasetResourceSearch.ProtoReflect.Descriptor instead.
 func (*DatasetResourceSearch) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_compute_v1_resource_predicates_proto_rawDescGZIP(), []int{2}
+	return file_nominal_protos_compute_v1_resource_predicates_proto_rawDescGZIP(), []int{3}
 }
 
 func (x *DatasetResourceSearch) GetTarget() isDatasetResourceSearch_Target {
@@ -343,7 +406,7 @@ var File_nominal_protos_compute_v1_resource_predicates_proto protoreflect.FileDe
 
 const file_nominal_protos_compute_v1_resource_predicates_proto_rawDesc = "" +
 	"\n" +
-	"3nominal/protos/compute/v1/resource_predicates.proto\x12\x12nominal.compute.v1\x1a\x1bbuf/validate/validate.proto\x1a)nominal/protos/compute/v1/constants.proto\x1a!nominal/protos/types/common.proto\x1a nominal/protos/types/types.proto\"\xe1\x04\n" +
+	"3nominal/protos/compute/v1/resource_predicates.proto\x12\x12nominal.compute.v1\x1a\x1bbuf/validate/validate.proto\x1a)nominal/protos/compute/v1/constants.proto\x1a!nominal/protos/gen/v1/alias.proto\x1a!nominal/protos/types/common.proto\x1a nominal/protos/types/types.proto\"\xa2\x05\n" +
 	"\x11ResourcePredicate\x12A\n" +
 	"\n" +
 	"properties\x18\x01 \x01(\v2\x1f.nominal.types.PropertiesFilterH\x00R\n" +
@@ -354,8 +417,12 @@ const file_nominal_protos_compute_v1_resource_predicates_proto_rawDesc = "" +
 	"\tworkspace\x18\x05 \x01(\v2\".nominal.compute.v1.StringConstantH\x00R\tworkspace\x12>\n" +
 	"\x03all\x18\x06 \x01(\v2*.nominal.compute.v1.ResourcePredicateGroupH\x00R\x03all\x12>\n" +
 	"\x03any\x18\a \x01(\v2*.nominal.compute.v1.ResourcePredicateGroupH\x00R\x03any\x12C\n" +
-	"\bnegation\x18\b \x01(\v2%.nominal.compute.v1.ResourcePredicateH\x00R\bnegationB\r\n" +
-	"\x04kind\x12\x05\xbaH\x02\b\x01\"k\n" +
+	"\bnegation\x18\b \x01(\v2%.nominal.compute.v1.ResourcePredicateH\x00R\bnegation\x12?\n" +
+	"\x05types\x18\t \x01(\v2'.nominal.compute.v1.ResourceTypesFilterH\x00R\x05typesB\r\n" +
+	"\x04kind\x12\x05\xbaH\x02\b\x01\"T\n" +
+	"\x13ResourceTypesFilter\x12=\n" +
+	"\x05types\x18\x01 \x03(\tB'\x9a\xb2\x1a#\n" +
+	"!io.nominal.scout.rids.api.TypeRidR\x05types\"k\n" +
 	"\x16ResourcePredicateGroup\x12Q\n" +
 	"\n" +
 	"predicates\x18\x01 \x03(\v2%.nominal.compute.v1.ResourcePredicateB\n" +
@@ -383,34 +450,36 @@ func file_nominal_protos_compute_v1_resource_predicates_proto_rawDescGZIP() []by
 	return file_nominal_protos_compute_v1_resource_predicates_proto_rawDescData
 }
 
-var file_nominal_protos_compute_v1_resource_predicates_proto_msgTypes = make([]protoimpl.MessageInfo, 3)
+var file_nominal_protos_compute_v1_resource_predicates_proto_msgTypes = make([]protoimpl.MessageInfo, 4)
 var file_nominal_protos_compute_v1_resource_predicates_proto_goTypes = []any{
 	(*ResourcePredicate)(nil),                   // 0: nominal.compute.v1.ResourcePredicate
-	(*ResourcePredicateGroup)(nil),              // 1: nominal.compute.v1.ResourcePredicateGroup
-	(*DatasetResourceSearch)(nil),               // 2: nominal.compute.v1.DatasetResourceSearch
-	(*types.PropertiesFilter)(nil),              // 3: nominal.types.PropertiesFilter
-	(*types.NumericPropertyPredicate)(nil),      // 4: nominal.types.NumericPropertyPredicate
-	(*types.NumericPropertyRangePredicate)(nil), // 5: nominal.types.NumericPropertyRangePredicate
-	(*types.LabelsFilter)(nil),                  // 6: nominal.types.LabelsFilter
-	(*StringConstant)(nil),                      // 7: nominal.compute.v1.StringConstant
+	(*ResourceTypesFilter)(nil),                 // 1: nominal.compute.v1.ResourceTypesFilter
+	(*ResourcePredicateGroup)(nil),              // 2: nominal.compute.v1.ResourcePredicateGroup
+	(*DatasetResourceSearch)(nil),               // 3: nominal.compute.v1.DatasetResourceSearch
+	(*types.PropertiesFilter)(nil),              // 4: nominal.types.PropertiesFilter
+	(*types.NumericPropertyPredicate)(nil),      // 5: nominal.types.NumericPropertyPredicate
+	(*types.NumericPropertyRangePredicate)(nil), // 6: nominal.types.NumericPropertyRangePredicate
+	(*types.LabelsFilter)(nil),                  // 7: nominal.types.LabelsFilter
+	(*StringConstant)(nil),                      // 8: nominal.compute.v1.StringConstant
 }
 var file_nominal_protos_compute_v1_resource_predicates_proto_depIdxs = []int32{
-	3,  // 0: nominal.compute.v1.ResourcePredicate.properties:type_name -> nominal.types.PropertiesFilter
-	4,  // 1: nominal.compute.v1.ResourcePredicate.numeric_property:type_name -> nominal.types.NumericPropertyPredicate
-	5,  // 2: nominal.compute.v1.ResourcePredicate.numeric_property_range:type_name -> nominal.types.NumericPropertyRangePredicate
-	6,  // 3: nominal.compute.v1.ResourcePredicate.labels:type_name -> nominal.types.LabelsFilter
-	7,  // 4: nominal.compute.v1.ResourcePredicate.workspace:type_name -> nominal.compute.v1.StringConstant
-	1,  // 5: nominal.compute.v1.ResourcePredicate.all:type_name -> nominal.compute.v1.ResourcePredicateGroup
-	1,  // 6: nominal.compute.v1.ResourcePredicate.any:type_name -> nominal.compute.v1.ResourcePredicateGroup
+	4,  // 0: nominal.compute.v1.ResourcePredicate.properties:type_name -> nominal.types.PropertiesFilter
+	5,  // 1: nominal.compute.v1.ResourcePredicate.numeric_property:type_name -> nominal.types.NumericPropertyPredicate
+	6,  // 2: nominal.compute.v1.ResourcePredicate.numeric_property_range:type_name -> nominal.types.NumericPropertyRangePredicate
+	7,  // 3: nominal.compute.v1.ResourcePredicate.labels:type_name -> nominal.types.LabelsFilter
+	8,  // 4: nominal.compute.v1.ResourcePredicate.workspace:type_name -> nominal.compute.v1.StringConstant
+	2,  // 5: nominal.compute.v1.ResourcePredicate.all:type_name -> nominal.compute.v1.ResourcePredicateGroup
+	2,  // 6: nominal.compute.v1.ResourcePredicate.any:type_name -> nominal.compute.v1.ResourcePredicateGroup
 	0,  // 7: nominal.compute.v1.ResourcePredicate.negation:type_name -> nominal.compute.v1.ResourcePredicate
-	0,  // 8: nominal.compute.v1.ResourcePredicateGroup.predicates:type_name -> nominal.compute.v1.ResourcePredicate
-	0,  // 9: nominal.compute.v1.DatasetResourceSearch.assets:type_name -> nominal.compute.v1.ResourcePredicate
-	0,  // 10: nominal.compute.v1.DatasetResourceSearch.runs:type_name -> nominal.compute.v1.ResourcePredicate
-	11, // [11:11] is the sub-list for method output_type
-	11, // [11:11] is the sub-list for method input_type
-	11, // [11:11] is the sub-list for extension type_name
-	11, // [11:11] is the sub-list for extension extendee
-	0,  // [0:11] is the sub-list for field type_name
+	1,  // 8: nominal.compute.v1.ResourcePredicate.types:type_name -> nominal.compute.v1.ResourceTypesFilter
+	0,  // 9: nominal.compute.v1.ResourcePredicateGroup.predicates:type_name -> nominal.compute.v1.ResourcePredicate
+	0,  // 10: nominal.compute.v1.DatasetResourceSearch.assets:type_name -> nominal.compute.v1.ResourcePredicate
+	0,  // 11: nominal.compute.v1.DatasetResourceSearch.runs:type_name -> nominal.compute.v1.ResourcePredicate
+	12, // [12:12] is the sub-list for method output_type
+	12, // [12:12] is the sub-list for method input_type
+	12, // [12:12] is the sub-list for extension type_name
+	12, // [12:12] is the sub-list for extension extendee
+	0,  // [0:12] is the sub-list for field type_name
 }
 
 func init() { file_nominal_protos_compute_v1_resource_predicates_proto_init() }
@@ -428,8 +497,9 @@ func file_nominal_protos_compute_v1_resource_predicates_proto_init() {
 		(*ResourcePredicate_All)(nil),
 		(*ResourcePredicate_Any)(nil),
 		(*ResourcePredicate_Negation)(nil),
+		(*ResourcePredicate_Types)(nil),
 	}
-	file_nominal_protos_compute_v1_resource_predicates_proto_msgTypes[2].OneofWrappers = []any{
+	file_nominal_protos_compute_v1_resource_predicates_proto_msgTypes[3].OneofWrappers = []any{
 		(*DatasetResourceSearch_Assets)(nil),
 		(*DatasetResourceSearch_Runs)(nil),
 	}
@@ -439,7 +509,7 @@ func file_nominal_protos_compute_v1_resource_predicates_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_nominal_protos_compute_v1_resource_predicates_proto_rawDesc), len(file_nominal_protos_compute_v1_resource_predicates_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   3,
+			NumMessages:   4,
 			NumExtensions: 0,
 			NumServices:   0,
 		},

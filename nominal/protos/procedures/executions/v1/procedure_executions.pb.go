@@ -8012,9 +8012,9 @@ const file_nominal_protos_procedures_executions_v1_procedure_executions_proto_ra
 	"\x14procedure_executions\x18\x01 \x03(\v2<.nominal.procedures.executions.v1.ProcedureExecutionMetadataR\x13procedureExecutions\x12G\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tB\x1a\x9a\xb2\x1a\x16\n" +
 	"\x14io.nominal.api.TokenH\x00R\rnextPageToken\x88\x01\x01B\x12\n" +
-	"\x10_next_page_token\"\x96\x01\n" +
-	")BatchGetProcedureExecutionMetadataRequest\x12i\n" +
-	"\x18procedure_execution_rids\x18\x01 \x03(\tB/\x9a\xb2\x1a+\n" +
+	"\x10_next_page_token\"\x9f\x01\n" +
+	")BatchGetProcedureExecutionMetadataRequest\x12r\n" +
+	"\x18procedure_execution_rids\x18\x01 \x03(\tB8\xbaH\x06\x92\x01\x03\x10\xe8\a\x9a\xb2\x1a+\n" +
 	")io.nominal.api.rids.ProcedureExecutionRidR\x16procedureExecutionRids\"\x9d\x01\n" +
 	"*BatchGetProcedureExecutionMetadataResponse\x12o\n" +
 	"\x14procedure_executions\x18\x01 \x03(\v2<.nominal.procedures.executions.v1.ProcedureExecutionMetadataR\x13procedureExecutions\"\x93\x01\n" +

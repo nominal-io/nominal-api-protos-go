@@ -403,8 +403,9 @@ func (NumberDisplayOption) EnumDescriptor() ([]byte, []int) {
 	return file_nominal_protos_authentication_users_v1_users_proto_rawDescGZIP(), []int{6}
 }
 
-// Structural errors in a request that only the proto surface can express. Domain errors (UserNotFound,
-// NotAuthorizedAdmin, SearchUsersLimitExceeded, ...) keep their Authentication Conjure error names.
+// Errors that only the proto surface can express: structural errors in a request, and domain errors of proto-only
+// RPCs such as the terms acceptance RPCs. Domain errors shared with Conjure (UserNotFound, NotAuthorizedAdmin,
+// SearchUsersLimitExceeded, ...) keep their Authentication Conjure error names.
 type UserError int32
 
 const (
@@ -423,6 +424,8 @@ const (
 	UserError_USER_ERROR_INVALID_WORKSPACE_RID UserError = 6
 	// A `group_member` query does not hold a group RID.
 	UserError_USER_ERROR_INVALID_GROUP_RID UserError = 7
+	// The caller is not a member of their current organization, for example a guest.
+	UserError_USER_ERROR_NOT_ORGANIZATION_MEMBER UserError = 8
 )
 
 // Enum value maps for UserError.
@@ -436,16 +439,18 @@ var (
 		5: "USER_ERROR_QUERY_TOO_COMPLEX",
 		6: "USER_ERROR_INVALID_WORKSPACE_RID",
 		7: "USER_ERROR_INVALID_GROUP_RID",
+		8: "USER_ERROR_NOT_ORGANIZATION_MEMBER",
 	}
 	UserError_value = map[string]int32{
-		"USER_ERROR_UNSPECIFIED":           0,
-		"USER_ERROR_INVALID_USER_RID":      1,
-		"USER_ERROR_ONEOF_NOT_SET":         2,
-		"USER_ERROR_INVALID_ENUM_VALUE":    3,
-		"USER_ERROR_TOO_MANY_USER_RIDS":    4,
-		"USER_ERROR_QUERY_TOO_COMPLEX":     5,
-		"USER_ERROR_INVALID_WORKSPACE_RID": 6,
-		"USER_ERROR_INVALID_GROUP_RID":     7,
+		"USER_ERROR_UNSPECIFIED":             0,
+		"USER_ERROR_INVALID_USER_RID":        1,
+		"USER_ERROR_ONEOF_NOT_SET":           2,
+		"USER_ERROR_INVALID_ENUM_VALUE":      3,
+		"USER_ERROR_TOO_MANY_USER_RIDS":      4,
+		"USER_ERROR_QUERY_TOO_COMPLEX":       5,
+		"USER_ERROR_INVALID_WORKSPACE_RID":   6,
+		"USER_ERROR_INVALID_GROUP_RID":       7,
+		"USER_ERROR_NOT_ORGANIZATION_MEMBER": 8,
 	}
 )
 
@@ -488,8 +493,12 @@ type User struct {
 	// serialize this message into a log/error payload.
 	DisplayName string `protobuf:"bytes,4,opt,name=display_name,json=displayName,proto3" json:"display_name,omitempty"`
 	// The user's avatar, or a generated initials avatar when the user has none.
-	AvatarUrl     string                 `protobuf:"bytes,5,opt,name=avatar_url,json=avatarUrl,proto3" json:"avatar_url,omitempty"`
-	CreateTime    *timestamppb.Timestamp `protobuf:"bytes,6,opt,name=create_time,json=createTime,proto3" json:"create_time,omitempty"`
+	AvatarUrl  string                 `protobuf:"bytes,5,opt,name=avatar_url,json=avatarUrl,proto3" json:"avatar_url,omitempty"`
+	CreateTime *timestamppb.Timestamp `protobuf:"bytes,6,opt,name=create_time,json=createTime,proto3" json:"create_time,omitempty"`
+	// Whether the user is an active member or guest of org_rid. False for a user deactivated in the organization or
+	// no longer a member or guest of it. A session token outlives a deactivation, so services that act for a user
+	// after sign-in read this on GetCurrentUser to stop acting for a user who has since been deactivated.
+	IsActiveInOrg bool `protobuf:"varint,7,opt,name=is_active_in_org,json=isActiveInOrg,proto3" json:"is_active_in_org,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -564,6 +573,13 @@ func (x *User) GetCreateTime() *timestamppb.Timestamp {
 		return x.CreateTime
 	}
 	return nil
+}
+
+func (x *User) GetIsActiveInOrg() bool {
+	if x != nil {
+		return x.IsActiveInOrg
+	}
+	return false
 }
 
 type GetUserRequest struct {
@@ -875,7 +891,7 @@ type SearchUsersQuery_Or struct {
 type SearchUsersQuery_ExactEmail struct {
 	// SENSITIVE: customer-derived. Never log this value.
 	//
-	// Matches an email exactly, ignoring case.
+	// Matches emails containing the text, ignoring case.
 	ExactEmail string `protobuf:"bytes,3,opt,name=exact_email,json=exactEmail,proto3,oneof"`
 }
 
@@ -1748,6 +1764,223 @@ func (x *UpdateCurrentUserSettingsResponse) GetSettings() *UserSettings {
 	return nil
 }
 
+// Whether a user has accepted the click-to-accept terms shown to trial and demo organizations, recorded per
+// organization membership. Every membership starts at `accepted = false`, including memberships in customer
+// organizations. The terms version is not recorded.
+type TermsAcceptance struct {
+	state    protoimpl.MessageState `protogen:"open.v1"`
+	Accepted bool                   `protobuf:"varint,1,opt,name=accepted,proto3" json:"accepted,omitempty"`
+	// Whether the caller still needs to accept the terms: their organization is a trial or demo tenant and they haven't
+	// accepted. Guests are exempt and never receive this message.
+	Required      bool `protobuf:"varint,2,opt,name=required,proto3" json:"required,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *TermsAcceptance) Reset() {
+	*x = TermsAcceptance{}
+	mi := &file_nominal_protos_authentication_users_v1_users_proto_msgTypes[21]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *TermsAcceptance) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*TermsAcceptance) ProtoMessage() {}
+
+func (x *TermsAcceptance) ProtoReflect() protoreflect.Message {
+	mi := &file_nominal_protos_authentication_users_v1_users_proto_msgTypes[21]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use TermsAcceptance.ProtoReflect.Descriptor instead.
+func (*TermsAcceptance) Descriptor() ([]byte, []int) {
+	return file_nominal_protos_authentication_users_v1_users_proto_rawDescGZIP(), []int{21}
+}
+
+func (x *TermsAcceptance) GetAccepted() bool {
+	if x != nil {
+		return x.Accepted
+	}
+	return false
+}
+
+func (x *TermsAcceptance) GetRequired() bool {
+	if x != nil {
+		return x.Required
+	}
+	return false
+}
+
+type GetCurrentUserTermsAcceptanceRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GetCurrentUserTermsAcceptanceRequest) Reset() {
+	*x = GetCurrentUserTermsAcceptanceRequest{}
+	mi := &file_nominal_protos_authentication_users_v1_users_proto_msgTypes[22]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetCurrentUserTermsAcceptanceRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetCurrentUserTermsAcceptanceRequest) ProtoMessage() {}
+
+func (x *GetCurrentUserTermsAcceptanceRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_nominal_protos_authentication_users_v1_users_proto_msgTypes[22]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetCurrentUserTermsAcceptanceRequest.ProtoReflect.Descriptor instead.
+func (*GetCurrentUserTermsAcceptanceRequest) Descriptor() ([]byte, []int) {
+	return file_nominal_protos_authentication_users_v1_users_proto_rawDescGZIP(), []int{22}
+}
+
+type GetCurrentUserTermsAcceptanceResponse struct {
+	state           protoimpl.MessageState `protogen:"open.v1"`
+	TermsAcceptance *TermsAcceptance       `protobuf:"bytes,1,opt,name=terms_acceptance,json=termsAcceptance,proto3" json:"terms_acceptance,omitempty"`
+	unknownFields   protoimpl.UnknownFields
+	sizeCache       protoimpl.SizeCache
+}
+
+func (x *GetCurrentUserTermsAcceptanceResponse) Reset() {
+	*x = GetCurrentUserTermsAcceptanceResponse{}
+	mi := &file_nominal_protos_authentication_users_v1_users_proto_msgTypes[23]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetCurrentUserTermsAcceptanceResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetCurrentUserTermsAcceptanceResponse) ProtoMessage() {}
+
+func (x *GetCurrentUserTermsAcceptanceResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_nominal_protos_authentication_users_v1_users_proto_msgTypes[23]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetCurrentUserTermsAcceptanceResponse.ProtoReflect.Descriptor instead.
+func (*GetCurrentUserTermsAcceptanceResponse) Descriptor() ([]byte, []int) {
+	return file_nominal_protos_authentication_users_v1_users_proto_rawDescGZIP(), []int{23}
+}
+
+func (x *GetCurrentUserTermsAcceptanceResponse) GetTermsAcceptance() *TermsAcceptance {
+	if x != nil {
+		return x.TermsAcceptance
+	}
+	return nil
+}
+
+type CreateCurrentUserTermsAcceptanceRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *CreateCurrentUserTermsAcceptanceRequest) Reset() {
+	*x = CreateCurrentUserTermsAcceptanceRequest{}
+	mi := &file_nominal_protos_authentication_users_v1_users_proto_msgTypes[24]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *CreateCurrentUserTermsAcceptanceRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*CreateCurrentUserTermsAcceptanceRequest) ProtoMessage() {}
+
+func (x *CreateCurrentUserTermsAcceptanceRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_nominal_protos_authentication_users_v1_users_proto_msgTypes[24]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use CreateCurrentUserTermsAcceptanceRequest.ProtoReflect.Descriptor instead.
+func (*CreateCurrentUserTermsAcceptanceRequest) Descriptor() ([]byte, []int) {
+	return file_nominal_protos_authentication_users_v1_users_proto_rawDescGZIP(), []int{24}
+}
+
+type CreateCurrentUserTermsAcceptanceResponse struct {
+	state           protoimpl.MessageState `protogen:"open.v1"`
+	TermsAcceptance *TermsAcceptance       `protobuf:"bytes,1,opt,name=terms_acceptance,json=termsAcceptance,proto3" json:"terms_acceptance,omitempty"`
+	unknownFields   protoimpl.UnknownFields
+	sizeCache       protoimpl.SizeCache
+}
+
+func (x *CreateCurrentUserTermsAcceptanceResponse) Reset() {
+	*x = CreateCurrentUserTermsAcceptanceResponse{}
+	mi := &file_nominal_protos_authentication_users_v1_users_proto_msgTypes[25]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *CreateCurrentUserTermsAcceptanceResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*CreateCurrentUserTermsAcceptanceResponse) ProtoMessage() {}
+
+func (x *CreateCurrentUserTermsAcceptanceResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_nominal_protos_authentication_users_v1_users_proto_msgTypes[25]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use CreateCurrentUserTermsAcceptanceResponse.ProtoReflect.Descriptor instead.
+func (*CreateCurrentUserTermsAcceptanceResponse) Descriptor() ([]byte, []int) {
+	return file_nominal_protos_authentication_users_v1_users_proto_rawDescGZIP(), []int{25}
+}
+
+func (x *CreateCurrentUserTermsAcceptanceResponse) GetTermsAcceptance() *TermsAcceptance {
+	if x != nil {
+		return x.TermsAcceptance
+	}
+	return nil
+}
+
 type PreregisterUsersRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// SENSITIVE: customer-derived. Never log these values.
@@ -1760,7 +1993,7 @@ type PreregisterUsersRequest struct {
 
 func (x *PreregisterUsersRequest) Reset() {
 	*x = PreregisterUsersRequest{}
-	mi := &file_nominal_protos_authentication_users_v1_users_proto_msgTypes[21]
+	mi := &file_nominal_protos_authentication_users_v1_users_proto_msgTypes[26]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1772,7 +2005,7 @@ func (x *PreregisterUsersRequest) String() string {
 func (*PreregisterUsersRequest) ProtoMessage() {}
 
 func (x *PreregisterUsersRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_authentication_users_v1_users_proto_msgTypes[21]
+	mi := &file_nominal_protos_authentication_users_v1_users_proto_msgTypes[26]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1785,7 +2018,7 @@ func (x *PreregisterUsersRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use PreregisterUsersRequest.ProtoReflect.Descriptor instead.
 func (*PreregisterUsersRequest) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_authentication_users_v1_users_proto_rawDescGZIP(), []int{21}
+	return file_nominal_protos_authentication_users_v1_users_proto_rawDescGZIP(), []int{26}
 }
 
 func (x *PreregisterUsersRequest) GetEmails() []string {
@@ -1805,7 +2038,7 @@ type PreregisterUsersResponse struct {
 
 func (x *PreregisterUsersResponse) Reset() {
 	*x = PreregisterUsersResponse{}
-	mi := &file_nominal_protos_authentication_users_v1_users_proto_msgTypes[22]
+	mi := &file_nominal_protos_authentication_users_v1_users_proto_msgTypes[27]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1817,7 +2050,7 @@ func (x *PreregisterUsersResponse) String() string {
 func (*PreregisterUsersResponse) ProtoMessage() {}
 
 func (x *PreregisterUsersResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_authentication_users_v1_users_proto_msgTypes[22]
+	mi := &file_nominal_protos_authentication_users_v1_users_proto_msgTypes[27]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1830,7 +2063,7 @@ func (x *PreregisterUsersResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use PreregisterUsersResponse.ProtoReflect.Descriptor instead.
 func (*PreregisterUsersResponse) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_authentication_users_v1_users_proto_rawDescGZIP(), []int{22}
+	return file_nominal_protos_authentication_users_v1_users_proto_rawDescGZIP(), []int{27}
 }
 
 func (x *PreregisterUsersResponse) GetUsers() []*User {
@@ -1850,7 +2083,7 @@ type IsEmailAllowedInOrganizationRequest struct {
 
 func (x *IsEmailAllowedInOrganizationRequest) Reset() {
 	*x = IsEmailAllowedInOrganizationRequest{}
-	mi := &file_nominal_protos_authentication_users_v1_users_proto_msgTypes[23]
+	mi := &file_nominal_protos_authentication_users_v1_users_proto_msgTypes[28]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1862,7 +2095,7 @@ func (x *IsEmailAllowedInOrganizationRequest) String() string {
 func (*IsEmailAllowedInOrganizationRequest) ProtoMessage() {}
 
 func (x *IsEmailAllowedInOrganizationRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_authentication_users_v1_users_proto_msgTypes[23]
+	mi := &file_nominal_protos_authentication_users_v1_users_proto_msgTypes[28]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1875,7 +2108,7 @@ func (x *IsEmailAllowedInOrganizationRequest) ProtoReflect() protoreflect.Messag
 
 // Deprecated: Use IsEmailAllowedInOrganizationRequest.ProtoReflect.Descriptor instead.
 func (*IsEmailAllowedInOrganizationRequest) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_authentication_users_v1_users_proto_rawDescGZIP(), []int{23}
+	return file_nominal_protos_authentication_users_v1_users_proto_rawDescGZIP(), []int{28}
 }
 
 func (x *IsEmailAllowedInOrganizationRequest) GetEmail() string {
@@ -1894,7 +2127,7 @@ type IsEmailAllowedInOrganizationResponse struct {
 
 func (x *IsEmailAllowedInOrganizationResponse) Reset() {
 	*x = IsEmailAllowedInOrganizationResponse{}
-	mi := &file_nominal_protos_authentication_users_v1_users_proto_msgTypes[24]
+	mi := &file_nominal_protos_authentication_users_v1_users_proto_msgTypes[29]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1906,7 +2139,7 @@ func (x *IsEmailAllowedInOrganizationResponse) String() string {
 func (*IsEmailAllowedInOrganizationResponse) ProtoMessage() {}
 
 func (x *IsEmailAllowedInOrganizationResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_authentication_users_v1_users_proto_msgTypes[24]
+	mi := &file_nominal_protos_authentication_users_v1_users_proto_msgTypes[29]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1919,7 +2152,7 @@ func (x *IsEmailAllowedInOrganizationResponse) ProtoReflect() protoreflect.Messa
 
 // Deprecated: Use IsEmailAllowedInOrganizationResponse.ProtoReflect.Descriptor instead.
 func (*IsEmailAllowedInOrganizationResponse) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_authentication_users_v1_users_proto_rawDescGZIP(), []int{24}
+	return file_nominal_protos_authentication_users_v1_users_proto_rawDescGZIP(), []int{29}
 }
 
 func (x *IsEmailAllowedInOrganizationResponse) GetAllowed() bool {
@@ -1938,7 +2171,7 @@ type DeactivateUserRequest struct {
 
 func (x *DeactivateUserRequest) Reset() {
 	*x = DeactivateUserRequest{}
-	mi := &file_nominal_protos_authentication_users_v1_users_proto_msgTypes[25]
+	mi := &file_nominal_protos_authentication_users_v1_users_proto_msgTypes[30]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1950,7 +2183,7 @@ func (x *DeactivateUserRequest) String() string {
 func (*DeactivateUserRequest) ProtoMessage() {}
 
 func (x *DeactivateUserRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_authentication_users_v1_users_proto_msgTypes[25]
+	mi := &file_nominal_protos_authentication_users_v1_users_proto_msgTypes[30]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1963,7 +2196,7 @@ func (x *DeactivateUserRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DeactivateUserRequest.ProtoReflect.Descriptor instead.
 func (*DeactivateUserRequest) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_authentication_users_v1_users_proto_rawDescGZIP(), []int{25}
+	return file_nominal_protos_authentication_users_v1_users_proto_rawDescGZIP(), []int{30}
 }
 
 func (x *DeactivateUserRequest) GetUserRid() string {
@@ -1981,7 +2214,7 @@ type DeactivateUserResponse struct {
 
 func (x *DeactivateUserResponse) Reset() {
 	*x = DeactivateUserResponse{}
-	mi := &file_nominal_protos_authentication_users_v1_users_proto_msgTypes[26]
+	mi := &file_nominal_protos_authentication_users_v1_users_proto_msgTypes[31]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1993,7 +2226,7 @@ func (x *DeactivateUserResponse) String() string {
 func (*DeactivateUserResponse) ProtoMessage() {}
 
 func (x *DeactivateUserResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_authentication_users_v1_users_proto_msgTypes[26]
+	mi := &file_nominal_protos_authentication_users_v1_users_proto_msgTypes[31]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2006,7 +2239,7 @@ func (x *DeactivateUserResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DeactivateUserResponse.ProtoReflect.Descriptor instead.
 func (*DeactivateUserResponse) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_authentication_users_v1_users_proto_rawDescGZIP(), []int{26}
+	return file_nominal_protos_authentication_users_v1_users_proto_rawDescGZIP(), []int{31}
 }
 
 type ReactivateUserRequest struct {
@@ -2018,7 +2251,7 @@ type ReactivateUserRequest struct {
 
 func (x *ReactivateUserRequest) Reset() {
 	*x = ReactivateUserRequest{}
-	mi := &file_nominal_protos_authentication_users_v1_users_proto_msgTypes[27]
+	mi := &file_nominal_protos_authentication_users_v1_users_proto_msgTypes[32]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2030,7 +2263,7 @@ func (x *ReactivateUserRequest) String() string {
 func (*ReactivateUserRequest) ProtoMessage() {}
 
 func (x *ReactivateUserRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_authentication_users_v1_users_proto_msgTypes[27]
+	mi := &file_nominal_protos_authentication_users_v1_users_proto_msgTypes[32]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2043,7 +2276,7 @@ func (x *ReactivateUserRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ReactivateUserRequest.ProtoReflect.Descriptor instead.
 func (*ReactivateUserRequest) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_authentication_users_v1_users_proto_rawDescGZIP(), []int{27}
+	return file_nominal_protos_authentication_users_v1_users_proto_rawDescGZIP(), []int{32}
 }
 
 func (x *ReactivateUserRequest) GetUserRid() string {
@@ -2061,7 +2294,7 @@ type ReactivateUserResponse struct {
 
 func (x *ReactivateUserResponse) Reset() {
 	*x = ReactivateUserResponse{}
-	mi := &file_nominal_protos_authentication_users_v1_users_proto_msgTypes[28]
+	mi := &file_nominal_protos_authentication_users_v1_users_proto_msgTypes[33]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2073,7 +2306,7 @@ func (x *ReactivateUserResponse) String() string {
 func (*ReactivateUserResponse) ProtoMessage() {}
 
 func (x *ReactivateUserResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_authentication_users_v1_users_proto_msgTypes[28]
+	mi := &file_nominal_protos_authentication_users_v1_users_proto_msgTypes[33]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2086,14 +2319,14 @@ func (x *ReactivateUserResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ReactivateUserResponse.ProtoReflect.Descriptor instead.
 func (*ReactivateUserResponse) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_authentication_users_v1_users_proto_rawDescGZIP(), []int{28}
+	return file_nominal_protos_authentication_users_v1_users_proto_rawDescGZIP(), []int{33}
 }
 
 var File_nominal_protos_authentication_users_v1_users_proto protoreflect.FileDescriptor
 
 const file_nominal_protos_authentication_users_v1_users_proto_rawDesc = "" +
 	"\n" +
-	"2nominal/protos/authentication/users/v1/users.proto\x12\x1fnominal.authentication.users.v1\x1a\x1bbuf/validate/validate.proto\x1a\x1cgoogle/api/annotations.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a!nominal/protos/gen/v1/alias.proto\x1a!nominal/protos/gen/v1/error.proto\"\x9f\x02\n" +
+	"2nominal/protos/authentication/users/v1/users.proto\x12\x1fnominal.authentication.users.v1\x1a\x1bbuf/validate/validate.proto\x1a\x1cgoogle/api/annotations.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a!nominal/protos/gen/v1/alias.proto\x1a!nominal/protos/gen/v1/error.proto\"\xc8\x02\n" +
 	"\x04User\x12=\n" +
 	"\x03rid\x18\x01 \x01(\tB+\x9a\xb2\x1a'\n" +
 	"%io.nominal.authentication.api.UserRidR\x03rid\x12C\n" +
@@ -2104,7 +2337,8 @@ const file_nominal_protos_authentication_users_v1_users_proto_rawDesc = "" +
 	"\n" +
 	"avatar_url\x18\x05 \x01(\tR\tavatarUrl\x12;\n" +
 	"\vcreate_time\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampR\n" +
-	"createTime\"X\n" +
+	"createTime\x12'\n" +
+	"\x10is_active_in_org\x18\a \x01(\bR\risActiveInOrg\"X\n" +
 	"\x0eGetUserRequest\x12F\n" +
 	"\buser_rid\x18\x01 \x01(\tB+\x9a\xb2\x1a'\n" +
 	"%io.nominal.authentication.api.UserRidR\auserRid\"L\n" +
@@ -2186,7 +2420,16 @@ const file_nominal_protos_authentication_users_v1_users_proto_rawDesc = "" +
 	" UpdateCurrentUserSettingsRequest\x12I\n" +
 	"\bsettings\x18\x01 \x01(\v2-.nominal.authentication.users.v1.UserSettingsR\bsettings\"n\n" +
 	"!UpdateCurrentUserSettingsResponse\x12I\n" +
-	"\bsettings\x18\x01 \x01(\v2-.nominal.authentication.users.v1.UserSettingsR\bsettings\"1\n" +
+	"\bsettings\x18\x01 \x01(\v2-.nominal.authentication.users.v1.UserSettingsR\bsettings\"S\n" +
+	"\x0fTermsAcceptance\x12\x1f\n" +
+	"\baccepted\x18\x01 \x01(\bB\x03\xe0A\x03R\baccepted\x12\x1f\n" +
+	"\brequired\x18\x02 \x01(\bB\x03\xe0A\x03R\brequired\"&\n" +
+	"$GetCurrentUserTermsAcceptanceRequest\"\x84\x01\n" +
+	"%GetCurrentUserTermsAcceptanceResponse\x12[\n" +
+	"\x10terms_acceptance\x18\x01 \x01(\v20.nominal.authentication.users.v1.TermsAcceptanceR\x0ftermsAcceptance\")\n" +
+	"'CreateCurrentUserTermsAcceptanceRequest\"\x87\x01\n" +
+	"(CreateCurrentUserTermsAcceptanceResponse\x12[\n" +
+	"\x10terms_acceptance\x18\x01 \x01(\v20.nominal.authentication.users.v1.TermsAcceptanceR\x0ftermsAcceptance\"1\n" +
 	"\x17PreregisterUsersRequest\x12\x16\n" +
 	"\x06emails\x18\x01 \x03(\tR\x06emails\"W\n" +
 	"\x18PreregisterUsersResponse\x12;\n" +
@@ -2241,7 +2484,7 @@ const file_nominal_protos_authentication_users_v1_users_proto_rawDesc = "" +
 	" NUMBER_DISPLAY_OPTION_SCIENTIFIC\x10\x01\x12\"\n" +
 	"\x1eNUMBER_DISPLAY_OPTION_SUCCINCT\x10\x02\x12 \n" +
 	"\x1cNUMBER_DISPLAY_OPTION_LOCALE\x10\x03\x12\x1f\n" +
-	"\x1bNUMBER_DISPLAY_OPTION_PLAIN\x10\x04*\xff\x05\n" +
+	"\x1bNUMBER_DISPLAY_OPTION_PLAIN\x10\x04*\xfd\x06\n" +
 	"\tUserError\x12\x1a\n" +
 	"\x16USER_ERROR_UNSPECIFIED\x10\x00\x12S\n" +
 	"\x1bUSER_ERROR_INVALID_USER_RID\x10\x01\x1a2\xb2\xb2\x1a.\n" +
@@ -2257,7 +2500,9 @@ const file_nominal_protos_authentication_users_v1_users_proto_rawDesc = "" +
 	" USER_ERROR_INVALID_WORKSPACE_RID\x10\x06\x1a7\xb2\xb2\x1a3\n" +
 	"\x10INVALID_ARGUMENT\x12\x1fThe workspace RID is malformed.\x12U\n" +
 	"\x1cUSER_ERROR_INVALID_GROUP_RID\x10\a\x1a3\xb2\xb2\x1a/\n" +
-	"\x10INVALID_ARGUMENT\x12\x1bThe group RID is malformed.2\x9c\x11\n" +
+	"\x10INVALID_ARGUMENT\x12\x1bThe group RID is malformed.\x12|\n" +
+	"\"USER_ERROR_NOT_ORGANIZATION_MEMBER\x10\b\x1aT\xb2\xb2\x1aP\n" +
+	"\x13FAILED_PRECONDITION\x129The caller is not a member of their current organization.2\x90\x15\n" +
 	"\vUserService\x12\xa2\x01\n" +
 	"\aGetUser\x12/.nominal.authentication.users.v1.GetUserRequest\x1a0.nominal.authentication.users.v1.GetUserResponse\"4\x82\xd3\xe4\x93\x02+\x12)/authentication/users/v1/users/{user_rid}\x90\x02\x01\x12\xb6\x01\n" +
 	"\rBatchGetUsers\x125.nominal.authentication.users.v1.BatchGetUsersRequest\x1a6.nominal.authentication.users.v1.BatchGetUsersResponse\"6\x82\xd3\xe4\x93\x02-:\x01*\"(/authentication/users/v1/users/batch-get\x90\x02\x01\x12\xad\x01\n" +
@@ -2265,7 +2510,9 @@ const file_nominal_protos_authentication_users_v1_users_proto_rawDesc = "" +
 	"\x0eGetCurrentUser\x126.nominal.authentication.users.v1.GetCurrentUserRequest\x1a7.nominal.authentication.users.v1.GetCurrentUserResponse\"0\x82\xd3\xe4\x93\x02'\x12%/authentication/users/v1/current-user\x90\x02\x01\x12\xc2\x01\n" +
 	"\x11UpdateCurrentUser\x129.nominal.authentication.users.v1.UpdateCurrentUserRequest\x1a:.nominal.authentication.users.v1.UpdateCurrentUserResponse\"6\x82\xd3\xe4\x93\x02-:\x04user\x1a%/authentication/users/v1/current-user\x90\x02\x02\x12\xd4\x01\n" +
 	"\x16GetCurrentUserSettings\x12>.nominal.authentication.users.v1.GetCurrentUserSettingsRequest\x1a?.nominal.authentication.users.v1.GetCurrentUserSettingsResponse\"9\x82\xd3\xe4\x93\x020\x12./authentication/users/v1/current-user/settings\x90\x02\x01\x12\xe7\x01\n" +
-	"\x19UpdateCurrentUserSettings\x12A.nominal.authentication.users.v1.UpdateCurrentUserSettingsRequest\x1aB.nominal.authentication.users.v1.UpdateCurrentUserSettingsResponse\"C\x82\xd3\xe4\x93\x02::\bsettings\x1a./authentication/users/v1/current-user/settings\x90\x02\x02\x12\xbe\x01\n" +
+	"\x19UpdateCurrentUserSettings\x12A.nominal.authentication.users.v1.UpdateCurrentUserSettingsRequest\x1aB.nominal.authentication.users.v1.UpdateCurrentUserSettingsResponse\"C\x82\xd3\xe4\x93\x02::\bsettings\x1a./authentication/users/v1/current-user/settings\x90\x02\x02\x12\xf1\x01\n" +
+	"\x1dGetCurrentUserTermsAcceptance\x12E.nominal.authentication.users.v1.GetCurrentUserTermsAcceptanceRequest\x1aF.nominal.authentication.users.v1.GetCurrentUserTermsAcceptanceResponse\"A\x82\xd3\xe4\x93\x028\x126/authentication/users/v1/current-user/terms-acceptance\x90\x02\x01\x12\xfd\x01\n" +
+	" CreateCurrentUserTermsAcceptance\x12H.nominal.authentication.users.v1.CreateCurrentUserTermsAcceptanceRequest\x1aI.nominal.authentication.users.v1.CreateCurrentUserTermsAcceptanceResponse\"D\x82\xd3\xe4\x93\x02;:\x01*\"6/authentication/users/v1/current-user/terms-acceptance\x90\x02\x02\x12\xbe\x01\n" +
 	"\x10PreregisterUsers\x128.nominal.authentication.users.v1.PreregisterUsersRequest\x1a9.nominal.authentication.users.v1.PreregisterUsersResponse\"5\x82\xd3\xe4\x93\x02/:\x01*\"*/authentication/users/v1/users/preregister\x12\xf7\x01\n" +
 	"\x1cIsEmailAllowedInOrganization\x12D.nominal.authentication.users.v1.IsEmailAllowedInOrganizationRequest\x1aE.nominal.authentication.users.v1.IsEmailAllowedInOrganizationResponse\"J\x82\xd3\xe4\x93\x02A:\x01*\"</authentication/users/v1/users/email-allowed-in-organization\x90\x02\x01\x12\xc2\x01\n" +
 	"\x0eDeactivateUser\x126.nominal.authentication.users.v1.DeactivateUserRequest\x1a7.nominal.authentication.users.v1.DeactivateUserResponse\"?\x82\xd3\xe4\x93\x026\"4/authentication/users/v1/users/{user_rid}/deactivate\x90\x02\x02\x12\xc2\x01\n" +
@@ -2286,49 +2533,54 @@ func file_nominal_protos_authentication_users_v1_users_proto_rawDescGZIP() []byt
 }
 
 var file_nominal_protos_authentication_users_v1_users_proto_enumTypes = make([]protoimpl.EnumInfo, 8)
-var file_nominal_protos_authentication_users_v1_users_proto_msgTypes = make([]protoimpl.MessageInfo, 29)
+var file_nominal_protos_authentication_users_v1_users_proto_msgTypes = make([]protoimpl.MessageInfo, 34)
 var file_nominal_protos_authentication_users_v1_users_proto_goTypes = []any{
-	(UserSortField)(0),                           // 0: nominal.authentication.users.v1.UserSortField
-	(DefaultTimeRangeType)(0),                    // 1: nominal.authentication.users.v1.DefaultTimeRangeType
-	(Appearance)(0),                              // 2: nominal.authentication.users.v1.Appearance
-	(Timezone)(0),                                // 3: nominal.authentication.users.v1.Timezone
-	(ChartTooltipMode)(0),                        // 4: nominal.authentication.users.v1.ChartTooltipMode
-	(RelativeTimestampFormat)(0),                 // 5: nominal.authentication.users.v1.RelativeTimestampFormat
-	(NumberDisplayOption)(0),                     // 6: nominal.authentication.users.v1.NumberDisplayOption
-	(UserError)(0),                               // 7: nominal.authentication.users.v1.UserError
-	(*User)(nil),                                 // 8: nominal.authentication.users.v1.User
-	(*GetUserRequest)(nil),                       // 9: nominal.authentication.users.v1.GetUserRequest
-	(*GetUserResponse)(nil),                      // 10: nominal.authentication.users.v1.GetUserResponse
-	(*BatchGetUsersRequest)(nil),                 // 11: nominal.authentication.users.v1.BatchGetUsersRequest
-	(*BatchGetUsersResponse)(nil),                // 12: nominal.authentication.users.v1.BatchGetUsersResponse
-	(*SearchUsersQuery)(nil),                     // 13: nominal.authentication.users.v1.SearchUsersQuery
-	(*SearchUsersQueries)(nil),                   // 14: nominal.authentication.users.v1.SearchUsersQueries
-	(*UserSort)(nil),                             // 15: nominal.authentication.users.v1.UserSort
-	(*SearchUsersRequest)(nil),                   // 16: nominal.authentication.users.v1.SearchUsersRequest
-	(*SearchUsersResponse)(nil),                  // 17: nominal.authentication.users.v1.SearchUsersResponse
-	(*GetCurrentUserRequest)(nil),                // 18: nominal.authentication.users.v1.GetCurrentUserRequest
-	(*GetCurrentUserResponse)(nil),               // 19: nominal.authentication.users.v1.GetCurrentUserResponse
-	(*UpdateCurrentUserRequest)(nil),             // 20: nominal.authentication.users.v1.UpdateCurrentUserRequest
-	(*UpdateCurrentUserResponse)(nil),            // 21: nominal.authentication.users.v1.UpdateCurrentUserResponse
-	(*NumberFormat)(nil),                         // 22: nominal.authentication.users.v1.NumberFormat
-	(*DecimalPlaces)(nil),                        // 23: nominal.authentication.users.v1.DecimalPlaces
-	(*UserSettings)(nil),                         // 24: nominal.authentication.users.v1.UserSettings
-	(*GetCurrentUserSettingsRequest)(nil),        // 25: nominal.authentication.users.v1.GetCurrentUserSettingsRequest
-	(*GetCurrentUserSettingsResponse)(nil),       // 26: nominal.authentication.users.v1.GetCurrentUserSettingsResponse
-	(*UpdateCurrentUserSettingsRequest)(nil),     // 27: nominal.authentication.users.v1.UpdateCurrentUserSettingsRequest
-	(*UpdateCurrentUserSettingsResponse)(nil),    // 28: nominal.authentication.users.v1.UpdateCurrentUserSettingsResponse
-	(*PreregisterUsersRequest)(nil),              // 29: nominal.authentication.users.v1.PreregisterUsersRequest
-	(*PreregisterUsersResponse)(nil),             // 30: nominal.authentication.users.v1.PreregisterUsersResponse
-	(*IsEmailAllowedInOrganizationRequest)(nil),  // 31: nominal.authentication.users.v1.IsEmailAllowedInOrganizationRequest
-	(*IsEmailAllowedInOrganizationResponse)(nil), // 32: nominal.authentication.users.v1.IsEmailAllowedInOrganizationResponse
-	(*DeactivateUserRequest)(nil),                // 33: nominal.authentication.users.v1.DeactivateUserRequest
-	(*DeactivateUserResponse)(nil),               // 34: nominal.authentication.users.v1.DeactivateUserResponse
-	(*ReactivateUserRequest)(nil),                // 35: nominal.authentication.users.v1.ReactivateUserRequest
-	(*ReactivateUserResponse)(nil),               // 36: nominal.authentication.users.v1.ReactivateUserResponse
-	(*timestamppb.Timestamp)(nil),                // 37: google.protobuf.Timestamp
+	(UserSortField)(0),                               // 0: nominal.authentication.users.v1.UserSortField
+	(DefaultTimeRangeType)(0),                        // 1: nominal.authentication.users.v1.DefaultTimeRangeType
+	(Appearance)(0),                                  // 2: nominal.authentication.users.v1.Appearance
+	(Timezone)(0),                                    // 3: nominal.authentication.users.v1.Timezone
+	(ChartTooltipMode)(0),                            // 4: nominal.authentication.users.v1.ChartTooltipMode
+	(RelativeTimestampFormat)(0),                     // 5: nominal.authentication.users.v1.RelativeTimestampFormat
+	(NumberDisplayOption)(0),                         // 6: nominal.authentication.users.v1.NumberDisplayOption
+	(UserError)(0),                                   // 7: nominal.authentication.users.v1.UserError
+	(*User)(nil),                                     // 8: nominal.authentication.users.v1.User
+	(*GetUserRequest)(nil),                           // 9: nominal.authentication.users.v1.GetUserRequest
+	(*GetUserResponse)(nil),                          // 10: nominal.authentication.users.v1.GetUserResponse
+	(*BatchGetUsersRequest)(nil),                     // 11: nominal.authentication.users.v1.BatchGetUsersRequest
+	(*BatchGetUsersResponse)(nil),                    // 12: nominal.authentication.users.v1.BatchGetUsersResponse
+	(*SearchUsersQuery)(nil),                         // 13: nominal.authentication.users.v1.SearchUsersQuery
+	(*SearchUsersQueries)(nil),                       // 14: nominal.authentication.users.v1.SearchUsersQueries
+	(*UserSort)(nil),                                 // 15: nominal.authentication.users.v1.UserSort
+	(*SearchUsersRequest)(nil),                       // 16: nominal.authentication.users.v1.SearchUsersRequest
+	(*SearchUsersResponse)(nil),                      // 17: nominal.authentication.users.v1.SearchUsersResponse
+	(*GetCurrentUserRequest)(nil),                    // 18: nominal.authentication.users.v1.GetCurrentUserRequest
+	(*GetCurrentUserResponse)(nil),                   // 19: nominal.authentication.users.v1.GetCurrentUserResponse
+	(*UpdateCurrentUserRequest)(nil),                 // 20: nominal.authentication.users.v1.UpdateCurrentUserRequest
+	(*UpdateCurrentUserResponse)(nil),                // 21: nominal.authentication.users.v1.UpdateCurrentUserResponse
+	(*NumberFormat)(nil),                             // 22: nominal.authentication.users.v1.NumberFormat
+	(*DecimalPlaces)(nil),                            // 23: nominal.authentication.users.v1.DecimalPlaces
+	(*UserSettings)(nil),                             // 24: nominal.authentication.users.v1.UserSettings
+	(*GetCurrentUserSettingsRequest)(nil),            // 25: nominal.authentication.users.v1.GetCurrentUserSettingsRequest
+	(*GetCurrentUserSettingsResponse)(nil),           // 26: nominal.authentication.users.v1.GetCurrentUserSettingsResponse
+	(*UpdateCurrentUserSettingsRequest)(nil),         // 27: nominal.authentication.users.v1.UpdateCurrentUserSettingsRequest
+	(*UpdateCurrentUserSettingsResponse)(nil),        // 28: nominal.authentication.users.v1.UpdateCurrentUserSettingsResponse
+	(*TermsAcceptance)(nil),                          // 29: nominal.authentication.users.v1.TermsAcceptance
+	(*GetCurrentUserTermsAcceptanceRequest)(nil),     // 30: nominal.authentication.users.v1.GetCurrentUserTermsAcceptanceRequest
+	(*GetCurrentUserTermsAcceptanceResponse)(nil),    // 31: nominal.authentication.users.v1.GetCurrentUserTermsAcceptanceResponse
+	(*CreateCurrentUserTermsAcceptanceRequest)(nil),  // 32: nominal.authentication.users.v1.CreateCurrentUserTermsAcceptanceRequest
+	(*CreateCurrentUserTermsAcceptanceResponse)(nil), // 33: nominal.authentication.users.v1.CreateCurrentUserTermsAcceptanceResponse
+	(*PreregisterUsersRequest)(nil),                  // 34: nominal.authentication.users.v1.PreregisterUsersRequest
+	(*PreregisterUsersResponse)(nil),                 // 35: nominal.authentication.users.v1.PreregisterUsersResponse
+	(*IsEmailAllowedInOrganizationRequest)(nil),      // 36: nominal.authentication.users.v1.IsEmailAllowedInOrganizationRequest
+	(*IsEmailAllowedInOrganizationResponse)(nil),     // 37: nominal.authentication.users.v1.IsEmailAllowedInOrganizationResponse
+	(*DeactivateUserRequest)(nil),                    // 38: nominal.authentication.users.v1.DeactivateUserRequest
+	(*DeactivateUserResponse)(nil),                   // 39: nominal.authentication.users.v1.DeactivateUserResponse
+	(*ReactivateUserRequest)(nil),                    // 40: nominal.authentication.users.v1.ReactivateUserRequest
+	(*ReactivateUserResponse)(nil),                   // 41: nominal.authentication.users.v1.ReactivateUserResponse
+	(*timestamppb.Timestamp)(nil),                    // 42: google.protobuf.Timestamp
 }
 var file_nominal_protos_authentication_users_v1_users_proto_depIdxs = []int32{
-	37, // 0: nominal.authentication.users.v1.User.create_time:type_name -> google.protobuf.Timestamp
+	42, // 0: nominal.authentication.users.v1.User.create_time:type_name -> google.protobuf.Timestamp
 	8,  // 1: nominal.authentication.users.v1.GetUserResponse.user:type_name -> nominal.authentication.users.v1.User
 	8,  // 2: nominal.authentication.users.v1.BatchGetUsersResponse.users:type_name -> nominal.authentication.users.v1.User
 	14, // 3: nominal.authentication.users.v1.SearchUsersQuery.and:type_name -> nominal.authentication.users.v1.SearchUsersQueries
@@ -2352,34 +2604,40 @@ var file_nominal_protos_authentication_users_v1_users_proto_depIdxs = []int32{
 	24, // 21: nominal.authentication.users.v1.GetCurrentUserSettingsResponse.settings:type_name -> nominal.authentication.users.v1.UserSettings
 	24, // 22: nominal.authentication.users.v1.UpdateCurrentUserSettingsRequest.settings:type_name -> nominal.authentication.users.v1.UserSettings
 	24, // 23: nominal.authentication.users.v1.UpdateCurrentUserSettingsResponse.settings:type_name -> nominal.authentication.users.v1.UserSettings
-	8,  // 24: nominal.authentication.users.v1.PreregisterUsersResponse.users:type_name -> nominal.authentication.users.v1.User
-	9,  // 25: nominal.authentication.users.v1.UserService.GetUser:input_type -> nominal.authentication.users.v1.GetUserRequest
-	11, // 26: nominal.authentication.users.v1.UserService.BatchGetUsers:input_type -> nominal.authentication.users.v1.BatchGetUsersRequest
-	16, // 27: nominal.authentication.users.v1.UserService.SearchUsers:input_type -> nominal.authentication.users.v1.SearchUsersRequest
-	18, // 28: nominal.authentication.users.v1.UserService.GetCurrentUser:input_type -> nominal.authentication.users.v1.GetCurrentUserRequest
-	20, // 29: nominal.authentication.users.v1.UserService.UpdateCurrentUser:input_type -> nominal.authentication.users.v1.UpdateCurrentUserRequest
-	25, // 30: nominal.authentication.users.v1.UserService.GetCurrentUserSettings:input_type -> nominal.authentication.users.v1.GetCurrentUserSettingsRequest
-	27, // 31: nominal.authentication.users.v1.UserService.UpdateCurrentUserSettings:input_type -> nominal.authentication.users.v1.UpdateCurrentUserSettingsRequest
-	29, // 32: nominal.authentication.users.v1.UserService.PreregisterUsers:input_type -> nominal.authentication.users.v1.PreregisterUsersRequest
-	31, // 33: nominal.authentication.users.v1.UserService.IsEmailAllowedInOrganization:input_type -> nominal.authentication.users.v1.IsEmailAllowedInOrganizationRequest
-	33, // 34: nominal.authentication.users.v1.UserService.DeactivateUser:input_type -> nominal.authentication.users.v1.DeactivateUserRequest
-	35, // 35: nominal.authentication.users.v1.UserService.ReactivateUser:input_type -> nominal.authentication.users.v1.ReactivateUserRequest
-	10, // 36: nominal.authentication.users.v1.UserService.GetUser:output_type -> nominal.authentication.users.v1.GetUserResponse
-	12, // 37: nominal.authentication.users.v1.UserService.BatchGetUsers:output_type -> nominal.authentication.users.v1.BatchGetUsersResponse
-	17, // 38: nominal.authentication.users.v1.UserService.SearchUsers:output_type -> nominal.authentication.users.v1.SearchUsersResponse
-	19, // 39: nominal.authentication.users.v1.UserService.GetCurrentUser:output_type -> nominal.authentication.users.v1.GetCurrentUserResponse
-	21, // 40: nominal.authentication.users.v1.UserService.UpdateCurrentUser:output_type -> nominal.authentication.users.v1.UpdateCurrentUserResponse
-	26, // 41: nominal.authentication.users.v1.UserService.GetCurrentUserSettings:output_type -> nominal.authentication.users.v1.GetCurrentUserSettingsResponse
-	28, // 42: nominal.authentication.users.v1.UserService.UpdateCurrentUserSettings:output_type -> nominal.authentication.users.v1.UpdateCurrentUserSettingsResponse
-	30, // 43: nominal.authentication.users.v1.UserService.PreregisterUsers:output_type -> nominal.authentication.users.v1.PreregisterUsersResponse
-	32, // 44: nominal.authentication.users.v1.UserService.IsEmailAllowedInOrganization:output_type -> nominal.authentication.users.v1.IsEmailAllowedInOrganizationResponse
-	34, // 45: nominal.authentication.users.v1.UserService.DeactivateUser:output_type -> nominal.authentication.users.v1.DeactivateUserResponse
-	36, // 46: nominal.authentication.users.v1.UserService.ReactivateUser:output_type -> nominal.authentication.users.v1.ReactivateUserResponse
-	36, // [36:47] is the sub-list for method output_type
-	25, // [25:36] is the sub-list for method input_type
-	25, // [25:25] is the sub-list for extension type_name
-	25, // [25:25] is the sub-list for extension extendee
-	0,  // [0:25] is the sub-list for field type_name
+	29, // 24: nominal.authentication.users.v1.GetCurrentUserTermsAcceptanceResponse.terms_acceptance:type_name -> nominal.authentication.users.v1.TermsAcceptance
+	29, // 25: nominal.authentication.users.v1.CreateCurrentUserTermsAcceptanceResponse.terms_acceptance:type_name -> nominal.authentication.users.v1.TermsAcceptance
+	8,  // 26: nominal.authentication.users.v1.PreregisterUsersResponse.users:type_name -> nominal.authentication.users.v1.User
+	9,  // 27: nominal.authentication.users.v1.UserService.GetUser:input_type -> nominal.authentication.users.v1.GetUserRequest
+	11, // 28: nominal.authentication.users.v1.UserService.BatchGetUsers:input_type -> nominal.authentication.users.v1.BatchGetUsersRequest
+	16, // 29: nominal.authentication.users.v1.UserService.SearchUsers:input_type -> nominal.authentication.users.v1.SearchUsersRequest
+	18, // 30: nominal.authentication.users.v1.UserService.GetCurrentUser:input_type -> nominal.authentication.users.v1.GetCurrentUserRequest
+	20, // 31: nominal.authentication.users.v1.UserService.UpdateCurrentUser:input_type -> nominal.authentication.users.v1.UpdateCurrentUserRequest
+	25, // 32: nominal.authentication.users.v1.UserService.GetCurrentUserSettings:input_type -> nominal.authentication.users.v1.GetCurrentUserSettingsRequest
+	27, // 33: nominal.authentication.users.v1.UserService.UpdateCurrentUserSettings:input_type -> nominal.authentication.users.v1.UpdateCurrentUserSettingsRequest
+	30, // 34: nominal.authentication.users.v1.UserService.GetCurrentUserTermsAcceptance:input_type -> nominal.authentication.users.v1.GetCurrentUserTermsAcceptanceRequest
+	32, // 35: nominal.authentication.users.v1.UserService.CreateCurrentUserTermsAcceptance:input_type -> nominal.authentication.users.v1.CreateCurrentUserTermsAcceptanceRequest
+	34, // 36: nominal.authentication.users.v1.UserService.PreregisterUsers:input_type -> nominal.authentication.users.v1.PreregisterUsersRequest
+	36, // 37: nominal.authentication.users.v1.UserService.IsEmailAllowedInOrganization:input_type -> nominal.authentication.users.v1.IsEmailAllowedInOrganizationRequest
+	38, // 38: nominal.authentication.users.v1.UserService.DeactivateUser:input_type -> nominal.authentication.users.v1.DeactivateUserRequest
+	40, // 39: nominal.authentication.users.v1.UserService.ReactivateUser:input_type -> nominal.authentication.users.v1.ReactivateUserRequest
+	10, // 40: nominal.authentication.users.v1.UserService.GetUser:output_type -> nominal.authentication.users.v1.GetUserResponse
+	12, // 41: nominal.authentication.users.v1.UserService.BatchGetUsers:output_type -> nominal.authentication.users.v1.BatchGetUsersResponse
+	17, // 42: nominal.authentication.users.v1.UserService.SearchUsers:output_type -> nominal.authentication.users.v1.SearchUsersResponse
+	19, // 43: nominal.authentication.users.v1.UserService.GetCurrentUser:output_type -> nominal.authentication.users.v1.GetCurrentUserResponse
+	21, // 44: nominal.authentication.users.v1.UserService.UpdateCurrentUser:output_type -> nominal.authentication.users.v1.UpdateCurrentUserResponse
+	26, // 45: nominal.authentication.users.v1.UserService.GetCurrentUserSettings:output_type -> nominal.authentication.users.v1.GetCurrentUserSettingsResponse
+	28, // 46: nominal.authentication.users.v1.UserService.UpdateCurrentUserSettings:output_type -> nominal.authentication.users.v1.UpdateCurrentUserSettingsResponse
+	31, // 47: nominal.authentication.users.v1.UserService.GetCurrentUserTermsAcceptance:output_type -> nominal.authentication.users.v1.GetCurrentUserTermsAcceptanceResponse
+	33, // 48: nominal.authentication.users.v1.UserService.CreateCurrentUserTermsAcceptance:output_type -> nominal.authentication.users.v1.CreateCurrentUserTermsAcceptanceResponse
+	35, // 49: nominal.authentication.users.v1.UserService.PreregisterUsers:output_type -> nominal.authentication.users.v1.PreregisterUsersResponse
+	37, // 50: nominal.authentication.users.v1.UserService.IsEmailAllowedInOrganization:output_type -> nominal.authentication.users.v1.IsEmailAllowedInOrganizationResponse
+	39, // 51: nominal.authentication.users.v1.UserService.DeactivateUser:output_type -> nominal.authentication.users.v1.DeactivateUserResponse
+	41, // 52: nominal.authentication.users.v1.UserService.ReactivateUser:output_type -> nominal.authentication.users.v1.ReactivateUserResponse
+	40, // [40:53] is the sub-list for method output_type
+	27, // [27:40] is the sub-list for method input_type
+	27, // [27:27] is the sub-list for extension type_name
+	27, // [27:27] is the sub-list for extension extendee
+	0,  // [0:27] is the sub-list for field type_name
 }
 
 func init() { file_nominal_protos_authentication_users_v1_users_proto_init() }
@@ -2409,7 +2667,7 @@ func file_nominal_protos_authentication_users_v1_users_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_nominal_protos_authentication_users_v1_users_proto_rawDesc), len(file_nominal_protos_authentication_users_v1_users_proto_rawDesc)),
 			NumEnums:      8,
-			NumMessages:   29,
+			NumMessages:   34,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

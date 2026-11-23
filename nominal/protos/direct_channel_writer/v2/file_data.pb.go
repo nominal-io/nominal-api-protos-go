@@ -35,8 +35,8 @@ type WriteFileDataRequest struct {
 	DatasetFileId string                 `protobuf:"bytes,3,opt,name=dataset_file_id,json=datasetFileId,proto3" json:"dataset_file_id,omitempty"`
 	OrgRid        string                 `protobuf:"bytes,4,opt,name=org_rid,json=orgRid,proto3" json:"org_rid,omitempty"`
 	BatchId       int32                  `protobuf:"varint,5,opt,name=batch_id,json=batchId,proto3" json:"batch_id,omitempty"`
-	// Format of the bytes at batch_handle. Required so consumers can pick the right
-	// deserializer without inspecting the object.
+	// Deprecated: the format of the object at the deprecated batch_handle. Use
+	// staged_batch_object instead.
 	//
 	// Deprecated: Marked as deprecated in nominal/protos/direct_channel_writer/v2/file_data.proto.
 	BatchFormat v2.BatchFormat `protobuf:"varint,7,opt,name=batch_format,json=batchFormat,proto3,enum=nominal.direct_channel_writer.v2.BatchFormat" json:"batch_format,omitempty"`

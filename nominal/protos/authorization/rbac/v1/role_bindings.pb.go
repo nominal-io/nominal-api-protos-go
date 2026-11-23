@@ -742,14 +742,12 @@ const file_nominal_protos_authorization_rbac_v1_role_bindings_proto_rawDesc = ""
 	" ROLE_BINDING_ERRORS_UNAUTHORIZED\x10\x04\x1a8\xb2\xb2\x1a4\n" +
 	"\x11PERMISSION_DENIED\x12\x1fNot authorized for role binding\x12W\n" +
 	"*ROLE_BINDING_ERRORS_ROLE_BINDING_NOT_FOUND\x10\x05\x1a'\xb2\xb2\x1a#\n" +
-	"\tNOT_FOUND\x12\x16Role binding not found2\xa9\a\n" +
+	"\tNOT_FOUND\x12\x16Role binding not found2\x95\a\n" +
 	"\x12RoleBindingService\x12\xe6\x01\n" +
 	"\x11CreateRoleBinding\x127.nominal.authorization.rbac.v1.CreateRoleBindingRequest\x1a8.nominal.authorization.rbac.v1.CreateRoleBindingResponse\"^\xba\xb2\x1a\x1d\n" +
 	"\x1b\n" +
-	"\x17workspace:manage_access\"\x00\x82\xd3\xe4\x93\x024:\frole_binding\"$/authorization/rbac/v1/role-bindings\x90\x02\x02\x12\xe5\x01\n" +
-	"\x14BatchGetRoleBindings\x12:.nominal.authorization.rbac.v1.BatchGetRoleBindingsRequest\x1a;.nominal.authorization.rbac.v1.BatchGetRoleBindingsResponse\"T\xba\xb2\x1a\x14\n" +
-	"\x12\n" +
-	"\x0eworkspace:view\"\x00\x82\xd3\xe4\x93\x023:\x01*\"./authorization/rbac/v1/role-bindings/batch-get\x90\x02\x01\x12\xdc\x01\n" +
+	"\x17workspace:manage_access\"\x00\x82\xd3\xe4\x93\x024:\frole_binding\"$/authorization/rbac/v1/role-bindings\x90\x02\x02\x12\xd1\x01\n" +
+	"\x14BatchGetRoleBindings\x12:.nominal.authorization.rbac.v1.BatchGetRoleBindingsRequest\x1a;.nominal.authorization.rbac.v1.BatchGetRoleBindingsResponse\"@\xba\xb2\x1a\x00\x82\xd3\xe4\x93\x023:\x01*\"./authorization/rbac/v1/role-bindings/batch-get\x90\x02\x01\x12\xdc\x01\n" +
 	"\x12SearchRoleBindings\x128.nominal.authorization.rbac.v1.SearchRoleBindingsRequest\x1a9.nominal.authorization.rbac.v1.SearchRoleBindingsResponse\"Q\xba\xb2\x1a\x14\n" +
 	"\x12\n" +
 	"\x0eworkspace:view\"\x00\x82\xd3\xe4\x93\x020:\x01*\"+/authorization/rbac/v1/role-bindings/search\x90\x02\x01\x12\xe2\x01\n" +

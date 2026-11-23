@@ -45,6 +45,8 @@ type EntitlementsServiceClient interface {
 	// left out, not reported as an error.
 	ListEntitlements(ctx context.Context, in *ListEntitlementsRequest, opts ...grpc.CallOption) (*ListEntitlementsResponse, error)
 	// Returns the latest version of each edition.
+	//
+	// Editions are ordered by tier, lowest first.
 	ListEditions(ctx context.Context, in *ListEditionsRequest, opts ...grpc.CallOption) (*ListEditionsResponse, error)
 }
 
@@ -107,6 +109,8 @@ type EntitlementsServiceServer interface {
 	// left out, not reported as an error.
 	ListEntitlements(context.Context, *ListEntitlementsRequest) (*ListEntitlementsResponse, error)
 	// Returns the latest version of each edition.
+	//
+	// Editions are ordered by tier, lowest first.
 	ListEditions(context.Context, *ListEditionsRequest) (*ListEditionsResponse, error)
 	mustEmbedUnimplementedEntitlementsServiceServer()
 }

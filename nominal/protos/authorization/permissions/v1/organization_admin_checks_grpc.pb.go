@@ -28,7 +28,11 @@ const (
 //
 // Checks authorization preconditions rather than creating or modifying administrator grants.
 type OrganizationAdminCheckServiceClient interface {
-	// Requires the caller to be an administrator of their current organization; denial is an error.
+	// Checks that the caller is an admin of their current org. Returns an empty response when the caller is. Changes
+	// nothing.
+	//
+	// Errors:
+	// - PERMISSION_DENIED: the caller is not an admin of their current org.
 	CheckOrganizationAdmin(ctx context.Context, in *CheckOrganizationAdminRequest, opts ...grpc.CallOption) (*CheckOrganizationAdminResponse, error)
 }
 
@@ -56,7 +60,11 @@ func (c *organizationAdminCheckServiceClient) CheckOrganizationAdmin(ctx context
 //
 // Checks authorization preconditions rather than creating or modifying administrator grants.
 type OrganizationAdminCheckServiceServer interface {
-	// Requires the caller to be an administrator of their current organization; denial is an error.
+	// Checks that the caller is an admin of their current org. Returns an empty response when the caller is. Changes
+	// nothing.
+	//
+	// Errors:
+	// - PERMISSION_DENIED: the caller is not an admin of their current org.
 	CheckOrganizationAdmin(context.Context, *CheckOrganizationAdminRequest) (*CheckOrganizationAdminResponse, error)
 	mustEmbedUnimplementedOrganizationAdminCheckServiceServer()
 }

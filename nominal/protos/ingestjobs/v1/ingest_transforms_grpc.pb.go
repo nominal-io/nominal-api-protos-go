@@ -21,6 +21,7 @@ const _ = grpc.SupportPackageIsVersion9
 const (
 	IngestTransformService_ListIngestTransformSourceDownloadUrls_FullMethodName = "/nominal.ingestjobs.v1.IngestTransformService/ListIngestTransformSourceDownloadUrls"
 	IngestTransformService_GetIngestTransform_FullMethodName                    = "/nominal.ingestjobs.v1.IngestTransformService/GetIngestTransform"
+	IngestTransformService_GetIngestTransformDiskRequirement_FullMethodName     = "/nominal.ingestjobs.v1.IngestTransformService/GetIngestTransformDiskRequirement"
 	IngestTransformService_ListIngestTransforms_FullMethodName                  = "/nominal.ingestjobs.v1.IngestTransformService/ListIngestTransforms"
 )
 
@@ -53,6 +54,11 @@ type IngestTransformServiceClient interface {
 	//     metadata.
 	//   - FAILED_PRECONDITION: a stored time of the transform is outside the supported timestamp range.
 	GetIngestTransform(ctx context.Context, in *GetIngestTransformRequest, opts ...grpc.CallOption) (*GetIngestTransformResponse, error)
+	// Returns how much disk the transform's extractor needs for its inputs, read at call time, for example to
+	// retry an ingest that failed for lack of disk. Returns NOT_FOUND as GetIngestTransform does, and
+	// INGEST_TRANSFORM_ERROR_NO_DISK_REQUIREMENT unless the transform is CONTAINERIZED with a resolved
+	// containerized_extractor_rid.
+	GetIngestTransformDiskRequirement(ctx context.Context, in *GetIngestTransformDiskRequirementRequest, opts ...grpc.CallOption) (*GetIngestTransformDiskRequirementResponse, error)
 	// Lists the transforms of one ingest job (a file ingest into a dataset), optionally only those in the given statuses.
 	//
 	// Returns transforms in creation order, oldest first, then by RID. The caller needs permission to view the ingest job
@@ -89,6 +95,16 @@ func (c *ingestTransformServiceClient) GetIngestTransform(ctx context.Context, i
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(GetIngestTransformResponse)
 	err := c.cc.Invoke(ctx, IngestTransformService_GetIngestTransform_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *ingestTransformServiceClient) GetIngestTransformDiskRequirement(ctx context.Context, in *GetIngestTransformDiskRequirementRequest, opts ...grpc.CallOption) (*GetIngestTransformDiskRequirementResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(GetIngestTransformDiskRequirementResponse)
+	err := c.cc.Invoke(ctx, IngestTransformService_GetIngestTransformDiskRequirement_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -134,6 +150,11 @@ type IngestTransformServiceServer interface {
 	//     metadata.
 	//   - FAILED_PRECONDITION: a stored time of the transform is outside the supported timestamp range.
 	GetIngestTransform(context.Context, *GetIngestTransformRequest) (*GetIngestTransformResponse, error)
+	// Returns how much disk the transform's extractor needs for its inputs, read at call time, for example to
+	// retry an ingest that failed for lack of disk. Returns NOT_FOUND as GetIngestTransform does, and
+	// INGEST_TRANSFORM_ERROR_NO_DISK_REQUIREMENT unless the transform is CONTAINERIZED with a resolved
+	// containerized_extractor_rid.
+	GetIngestTransformDiskRequirement(context.Context, *GetIngestTransformDiskRequirementRequest) (*GetIngestTransformDiskRequirementResponse, error)
 	// Lists the transforms of one ingest job (a file ingest into a dataset), optionally only those in the given statuses.
 	//
 	// Returns transforms in creation order, oldest first, then by RID. The caller needs permission to view the ingest job
@@ -161,6 +182,9 @@ func (UnimplementedIngestTransformServiceServer) ListIngestTransformSourceDownlo
 }
 func (UnimplementedIngestTransformServiceServer) GetIngestTransform(context.Context, *GetIngestTransformRequest) (*GetIngestTransformResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method GetIngestTransform not implemented")
+}
+func (UnimplementedIngestTransformServiceServer) GetIngestTransformDiskRequirement(context.Context, *GetIngestTransformDiskRequirementRequest) (*GetIngestTransformDiskRequirementResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method GetIngestTransformDiskRequirement not implemented")
 }
 func (UnimplementedIngestTransformServiceServer) ListIngestTransforms(context.Context, *ListIngestTransformsRequest) (*ListIngestTransformsResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method ListIngestTransforms not implemented")
@@ -223,6 +247,24 @@ func _IngestTransformService_GetIngestTransform_Handler(srv interface{}, ctx con
 	return interceptor(ctx, in, info, handler)
 }
 
+func _IngestTransformService_GetIngestTransformDiskRequirement_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetIngestTransformDiskRequirementRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(IngestTransformServiceServer).GetIngestTransformDiskRequirement(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: IngestTransformService_GetIngestTransformDiskRequirement_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(IngestTransformServiceServer).GetIngestTransformDiskRequirement(ctx, req.(*GetIngestTransformDiskRequirementRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _IngestTransformService_ListIngestTransforms_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(ListIngestTransformsRequest)
 	if err := dec(in); err != nil {
@@ -255,6 +297,10 @@ var IngestTransformService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetIngestTransform",
 			Handler:    _IngestTransformService_GetIngestTransform_Handler,
+		},
+		{
+			MethodName: "GetIngestTransformDiskRequirement",
+			Handler:    _IngestTransformService_GetIngestTransformDiskRequirement_Handler,
 		},
 		{
 			MethodName: "ListIngestTransforms",

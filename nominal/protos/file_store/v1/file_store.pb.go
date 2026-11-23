@@ -83,6 +83,7 @@ const (
 	DriveSource_DRIVE_SOURCE_GOOGLE_DRIVE DriveSource = 3
 	DriveSource_DRIVE_SOURCE_GCS          DriveSource = 4
 	DriveSource_DRIVE_SOURCE_AZURE_BLOB   DriveSource = 5
+	DriveSource_DRIVE_SOURCE_SHAREPOINT   DriveSource = 6
 )
 
 // Enum value maps for DriveSource.
@@ -94,6 +95,7 @@ var (
 		3: "DRIVE_SOURCE_GOOGLE_DRIVE",
 		4: "DRIVE_SOURCE_GCS",
 		5: "DRIVE_SOURCE_AZURE_BLOB",
+		6: "DRIVE_SOURCE_SHAREPOINT",
 	}
 	DriveSource_value = map[string]int32{
 		"DRIVE_SOURCE_UNSPECIFIED":  0,
@@ -102,6 +104,7 @@ var (
 		"DRIVE_SOURCE_GOOGLE_DRIVE": 3,
 		"DRIVE_SOURCE_GCS":          4,
 		"DRIVE_SOURCE_AZURE_BLOB":   5,
+		"DRIVE_SOURCE_SHAREPOINT":   6,
 	}
 )
 
@@ -841,6 +844,7 @@ type VirtualDriveConnectionDetails struct {
 	//	*VirtualDriveConnectionDetails_GoogleDrive
 	//	*VirtualDriveConnectionDetails_Gcs
 	//	*VirtualDriveConnectionDetails_AzureBlob
+	//	*VirtualDriveConnectionDetails_Sharepoint
 	Details       isVirtualDriveConnectionDetails_Details `protobuf_oneof:"details"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -919,6 +923,15 @@ func (x *VirtualDriveConnectionDetails) GetAzureBlob() *AzureBlobVirtualDriveCon
 	return nil
 }
 
+func (x *VirtualDriveConnectionDetails) GetSharepoint() *SharePointVirtualDriveConnectionDetails {
+	if x != nil {
+		if x, ok := x.Details.(*VirtualDriveConnectionDetails_Sharepoint); ok {
+			return x.Sharepoint
+		}
+	}
+	return nil
+}
+
 type isVirtualDriveConnectionDetails_Details interface {
 	isVirtualDriveConnectionDetails_Details()
 }
@@ -939,6 +952,10 @@ type VirtualDriveConnectionDetails_AzureBlob struct {
 	AzureBlob *AzureBlobVirtualDriveConnectionDetails `protobuf:"bytes,4,opt,name=azure_blob,json=azureBlob,proto3,oneof"`
 }
 
+type VirtualDriveConnectionDetails_Sharepoint struct {
+	Sharepoint *SharePointVirtualDriveConnectionDetails `protobuf:"bytes,5,opt,name=sharepoint,proto3,oneof"`
+}
+
 func (*VirtualDriveConnectionDetails_S3) isVirtualDriveConnectionDetails_Details() {}
 
 func (*VirtualDriveConnectionDetails_GoogleDrive) isVirtualDriveConnectionDetails_Details() {}
@@ -946,6 +963,8 @@ func (*VirtualDriveConnectionDetails_GoogleDrive) isVirtualDriveConnectionDetail
 func (*VirtualDriveConnectionDetails_Gcs) isVirtualDriveConnectionDetails_Details() {}
 
 func (*VirtualDriveConnectionDetails_AzureBlob) isVirtualDriveConnectionDetails_Details() {}
+
+func (*VirtualDriveConnectionDetails_Sharepoint) isVirtualDriveConnectionDetails_Details() {}
 
 // Drive-relative normalized path, with no leading or trailing slash.
 type LogicalPath struct {
@@ -1237,6 +1256,7 @@ type VirtualFileIdentity struct {
 	//	*VirtualFileIdentity_GoogleDrive
 	//	*VirtualFileIdentity_Gcs
 	//	*VirtualFileIdentity_AzureBlob
+	//	*VirtualFileIdentity_Sharepoint
 	Kind          isVirtualFileIdentity_Kind `protobuf_oneof:"kind"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -1315,6 +1335,15 @@ func (x *VirtualFileIdentity) GetAzureBlob() *AzureBlobFileIdentity {
 	return nil
 }
 
+func (x *VirtualFileIdentity) GetSharepoint() *SharePointFileIdentity {
+	if x != nil {
+		if x, ok := x.Kind.(*VirtualFileIdentity_Sharepoint); ok {
+			return x.Sharepoint
+		}
+	}
+	return nil
+}
+
 type isVirtualFileIdentity_Kind interface {
 	isVirtualFileIdentity_Kind()
 }
@@ -1335,6 +1364,10 @@ type VirtualFileIdentity_AzureBlob struct {
 	AzureBlob *AzureBlobFileIdentity `protobuf:"bytes,4,opt,name=azure_blob,json=azureBlob,proto3,oneof"`
 }
 
+type VirtualFileIdentity_Sharepoint struct {
+	Sharepoint *SharePointFileIdentity `protobuf:"bytes,5,opt,name=sharepoint,proto3,oneof"`
+}
+
 func (*VirtualFileIdentity_S3) isVirtualFileIdentity_Kind() {}
 
 func (*VirtualFileIdentity_GoogleDrive) isVirtualFileIdentity_Kind() {}
@@ -1342,6 +1375,8 @@ func (*VirtualFileIdentity_GoogleDrive) isVirtualFileIdentity_Kind() {}
 func (*VirtualFileIdentity_Gcs) isVirtualFileIdentity_Kind() {}
 
 func (*VirtualFileIdentity_AzureBlob) isVirtualFileIdentity_Kind() {}
+
+func (*VirtualFileIdentity_Sharepoint) isVirtualFileIdentity_Kind() {}
 
 // The operation that produced a revision, and the revision it carried forward. Mirrors the arms of the
 // FileChange a caller submits.
@@ -1773,6 +1808,7 @@ type VirtualFileRevisionRef struct {
 	//	*VirtualFileRevisionRef_GoogleDrive
 	//	*VirtualFileRevisionRef_Gcs
 	//	*VirtualFileRevisionRef_AzureBlob
+	//	*VirtualFileRevisionRef_Sharepoint
 	Kind          isVirtualFileRevisionRef_Kind `protobuf_oneof:"kind"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -1851,6 +1887,15 @@ func (x *VirtualFileRevisionRef) GetAzureBlob() *AzureBlobFileRevisionRef {
 	return nil
 }
 
+func (x *VirtualFileRevisionRef) GetSharepoint() *SharePointFileRevisionRef {
+	if x != nil {
+		if x, ok := x.Kind.(*VirtualFileRevisionRef_Sharepoint); ok {
+			return x.Sharepoint
+		}
+	}
+	return nil
+}
+
 type isVirtualFileRevisionRef_Kind interface {
 	isVirtualFileRevisionRef_Kind()
 }
@@ -1871,6 +1916,10 @@ type VirtualFileRevisionRef_AzureBlob struct {
 	AzureBlob *AzureBlobFileRevisionRef `protobuf:"bytes,4,opt,name=azure_blob,json=azureBlob,proto3,oneof"`
 }
 
+type VirtualFileRevisionRef_Sharepoint struct {
+	Sharepoint *SharePointFileRevisionRef `protobuf:"bytes,5,opt,name=sharepoint,proto3,oneof"`
+}
+
 func (*VirtualFileRevisionRef_S3) isVirtualFileRevisionRef_Kind() {}
 
 func (*VirtualFileRevisionRef_GoogleDrive) isVirtualFileRevisionRef_Kind() {}
@@ -1878,6 +1927,8 @@ func (*VirtualFileRevisionRef_GoogleDrive) isVirtualFileRevisionRef_Kind() {}
 func (*VirtualFileRevisionRef_Gcs) isVirtualFileRevisionRef_Kind() {}
 
 func (*VirtualFileRevisionRef_AzureBlob) isVirtualFileRevisionRef_Kind() {}
+
+func (*VirtualFileRevisionRef_Sharepoint) isVirtualFileRevisionRef_Kind() {}
 
 // Linear history entry for a managed File Store file. Each entry names the operation that produced it,
 // so the timeline distinguishes content changes from non-content events such as moves and removes.
@@ -2329,7 +2380,7 @@ var File_nominal_protos_file_store_v1_file_store_proto protoreflect.FileDescript
 
 const file_nominal_protos_file_store_v1_file_store_proto_rawDesc = "" +
 	"\n" +
-	"-nominal/protos/file_store/v1/file_store.proto\x12\x15nominal.file_store.v1\x1a\x1bbuf/validate/validate.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a-nominal/protos/file_store/v1/azure_blob.proto\x1a&nominal/protos/file_store/v1/gcs.proto\x1a/nominal/protos/file_store/v1/google_drive.proto\x1a%nominal/protos/file_store/v1/s3.proto\x1a!nominal/protos/gen/v1/alias.proto\x1a!nominal/protos/gen/v1/error.proto\"\x85\x01\n" +
+	"-nominal/protos/file_store/v1/file_store.proto\x12\x15nominal.file_store.v1\x1a\x1bbuf/validate/validate.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a-nominal/protos/file_store/v1/azure_blob.proto\x1a&nominal/protos/file_store/v1/gcs.proto\x1a/nominal/protos/file_store/v1/google_drive.proto\x1a%nominal/protos/file_store/v1/s3.proto\x1a-nominal/protos/file_store/v1/sharepoint.proto\x1a!nominal/protos/gen/v1/alias.proto\x1a!nominal/protos/gen/v1/error.proto\"\x85\x01\n" +
 	"\vAttribution\x12.\n" +
 	"\x04time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampR\x04time\x12F\n" +
 	"\buser_rid\x18\x02 \x01(\tB+\x9a\xb2\x1a'\n" +
@@ -2363,13 +2414,16 @@ const file_nominal_protos_file_store_v1_file_store_proto_rawDesc = "" +
 	"\x05state\x18\x01 \x01(\x0e2(.nominal.file_store.v1.VirtualDriveStateR\x05state\x12\\\n" +
 	"\x1alast_successful_check_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampH\x00R\x17lastSuccessfulCheckTime\x88\x01\x01\x12\x18\n" +
 	"\amessage\x18\x03 \x01(\tR\amessageB\x1d\n" +
-	"\x1b_last_successful_check_time\"\x8e\x03\n" +
+	"\x1b_last_successful_check_time\"\xf0\x03\n" +
 	"\x1dVirtualDriveConnectionDetails\x12H\n" +
 	"\x02s3\x18\x01 \x01(\v26.nominal.file_store.v1.S3VirtualDriveConnectionDetailsH\x00R\x02s3\x12d\n" +
 	"\fgoogle_drive\x18\x02 \x01(\v2?.nominal.file_store.v1.GoogleDriveVirtualDriveConnectionDetailsH\x00R\vgoogleDrive\x12K\n" +
 	"\x03gcs\x18\x03 \x01(\v27.nominal.file_store.v1.GcsVirtualDriveConnectionDetailsH\x00R\x03gcs\x12^\n" +
 	"\n" +
-	"azure_blob\x18\x04 \x01(\v2=.nominal.file_store.v1.AzureBlobVirtualDriveConnectionDetailsH\x00R\tazureBlobB\x10\n" +
+	"azure_blob\x18\x04 \x01(\v2=.nominal.file_store.v1.AzureBlobVirtualDriveConnectionDetailsH\x00R\tazureBlob\x12`\n" +
+	"\n" +
+	"sharepoint\x18\x05 \x01(\v2>.nominal.file_store.v1.SharePointVirtualDriveConnectionDetailsH\x00R\n" +
+	"sharepointB\x10\n" +
 	"\adetails\x12\x05\xbaH\x02\b\x01\"!\n" +
 	"\vLogicalPath\x12\x12\n" +
 	"\x04path\x18\x01 \x01(\tR\x04path\"\x97\x04\n" +
@@ -2390,13 +2444,16 @@ const file_nominal_protos_file_store_v1_file_store_proto_rawDesc = "" +
 	"\bidentity\"X\n" +
 	"\x13ManagedFileIdentity\x12A\n" +
 	"\bfile_rid\x18\x01 \x01(\tB&\x9a\xb2\x1a\"\n" +
-	" io.nominal.api.rids.DriveFileRidR\afileRid\"\xb6\x02\n" +
+	" io.nominal.api.rids.DriveFileRidR\afileRid\"\x87\x03\n" +
 	"\x13VirtualFileIdentity\x127\n" +
 	"\x02s3\x18\x01 \x01(\v2%.nominal.file_store.v1.S3FileIdentityH\x00R\x02s3\x12S\n" +
 	"\fgoogle_drive\x18\x02 \x01(\v2..nominal.file_store.v1.GoogleDriveFileIdentityH\x00R\vgoogleDrive\x12:\n" +
 	"\x03gcs\x18\x03 \x01(\v2&.nominal.file_store.v1.GcsFileIdentityH\x00R\x03gcs\x12M\n" +
 	"\n" +
-	"azure_blob\x18\x04 \x01(\v2,.nominal.file_store.v1.AzureBlobFileIdentityH\x00R\tazureBlobB\x06\n" +
+	"azure_blob\x18\x04 \x01(\v2,.nominal.file_store.v1.AzureBlobFileIdentityH\x00R\tazureBlob\x12O\n" +
+	"\n" +
+	"sharepoint\x18\x05 \x01(\v2-.nominal.file_store.v1.SharePointFileIdentityH\x00R\n" +
+	"sharepointB\x06\n" +
 	"\x04kind\"\x8d\x02\n" +
 	"\x12FileRevisionAction\x122\n" +
 	"\x03put\x18\x01 \x01(\v2\x1e.nominal.file_store.v1.FilePutH\x00R\x03put\x128\n" +
@@ -2423,13 +2480,16 @@ const file_nominal_protos_file_store_v1_file_store_proto_rawDesc = "" +
 	"\treference\"t\n" +
 	"\x16ManagedFileRevisionRef\x12Z\n" +
 	"\x11file_revision_rid\x18\x01 \x01(\tB.\x9a\xb2\x1a*\n" +
-	"(io.nominal.api.rids.DriveFileRevisionRidR\x0ffileRevisionRid\"\xc5\x02\n" +
+	"(io.nominal.api.rids.DriveFileRevisionRidR\x0ffileRevisionRid\"\x99\x03\n" +
 	"\x16VirtualFileRevisionRef\x12:\n" +
 	"\x02s3\x18\x01 \x01(\v2(.nominal.file_store.v1.S3FileRevisionRefH\x00R\x02s3\x12V\n" +
 	"\fgoogle_drive\x18\x02 \x01(\v21.nominal.file_store.v1.GoogleDriveFileRevisionRefH\x00R\vgoogleDrive\x12=\n" +
 	"\x03gcs\x18\x03 \x01(\v2).nominal.file_store.v1.GcsFileRevisionRefH\x00R\x03gcs\x12P\n" +
 	"\n" +
-	"azure_blob\x18\x04 \x01(\v2/.nominal.file_store.v1.AzureBlobFileRevisionRefH\x00R\tazureBlobB\x06\n" +
+	"azure_blob\x18\x04 \x01(\v2/.nominal.file_store.v1.AzureBlobFileRevisionRefH\x00R\tazureBlob\x12R\n" +
+	"\n" +
+	"sharepoint\x18\x05 \x01(\v20.nominal.file_store.v1.SharePointFileRevisionRefH\x00R\n" +
+	"sharepointB\x06\n" +
 	"\x04kind\"\xac\x05\n" +
 	"\x13ManagedFileRevision\x128\n" +
 	"\x03ref\x18\t \x01(\v2&.nominal.file_store.v1.FileRevisionRefR\x03ref\x12F\n" +
@@ -2476,14 +2536,15 @@ const file_nominal_protos_file_store_v1_file_store_proto_rawDesc = "" +
 	"DriveState\x12\x1b\n" +
 	"\x17DRIVE_STATE_UNSPECIFIED\x10\x00\x12\x16\n" +
 	"\x12DRIVE_STATE_ACTIVE\x10\x01\x12\x18\n" +
-	"\x14DRIVE_STATE_ARCHIVED\x10\x02*\xac\x01\n" +
+	"\x14DRIVE_STATE_ARCHIVED\x10\x02*\xc9\x01\n" +
 	"\vDriveSource\x12\x1c\n" +
 	"\x18DRIVE_SOURCE_UNSPECIFIED\x10\x00\x12\x18\n" +
 	"\x14DRIVE_SOURCE_NOMINAL\x10\x01\x12\x13\n" +
 	"\x0fDRIVE_SOURCE_S3\x10\x02\x12\x1d\n" +
 	"\x19DRIVE_SOURCE_GOOGLE_DRIVE\x10\x03\x12\x14\n" +
 	"\x10DRIVE_SOURCE_GCS\x10\x04\x12\x1b\n" +
-	"\x17DRIVE_SOURCE_AZURE_BLOB\x10\x05*r\n" +
+	"\x17DRIVE_SOURCE_AZURE_BLOB\x10\x05\x12\x1b\n" +
+	"\x17DRIVE_SOURCE_SHAREPOINT\x10\x06*r\n" +
 	"\x0fDriveMutability\x12 \n" +
 	"\x1cDRIVE_MUTABILITY_UNSPECIFIED\x10\x00\x12\x1d\n" +
 	"\x19DRIVE_MUTABILITY_WRITABLE\x10\x01\x12\x1e\n" +
@@ -2581,14 +2642,17 @@ var file_nominal_protos_file_store_v1_file_store_proto_goTypes = []any{
 	(*GoogleDriveVirtualDriveConnectionDetails)(nil), // 34: nominal.file_store.v1.GoogleDriveVirtualDriveConnectionDetails
 	(*GcsVirtualDriveConnectionDetails)(nil),         // 35: nominal.file_store.v1.GcsVirtualDriveConnectionDetails
 	(*AzureBlobVirtualDriveConnectionDetails)(nil),   // 36: nominal.file_store.v1.AzureBlobVirtualDriveConnectionDetails
-	(*S3FileIdentity)(nil),                           // 37: nominal.file_store.v1.S3FileIdentity
-	(*GoogleDriveFileIdentity)(nil),                  // 38: nominal.file_store.v1.GoogleDriveFileIdentity
-	(*GcsFileIdentity)(nil),                          // 39: nominal.file_store.v1.GcsFileIdentity
-	(*AzureBlobFileIdentity)(nil),                    // 40: nominal.file_store.v1.AzureBlobFileIdentity
-	(*S3FileRevisionRef)(nil),                        // 41: nominal.file_store.v1.S3FileRevisionRef
-	(*GoogleDriveFileRevisionRef)(nil),               // 42: nominal.file_store.v1.GoogleDriveFileRevisionRef
-	(*GcsFileRevisionRef)(nil),                       // 43: nominal.file_store.v1.GcsFileRevisionRef
-	(*AzureBlobFileRevisionRef)(nil),                 // 44: nominal.file_store.v1.AzureBlobFileRevisionRef
+	(*SharePointVirtualDriveConnectionDetails)(nil),  // 37: nominal.file_store.v1.SharePointVirtualDriveConnectionDetails
+	(*S3FileIdentity)(nil),                           // 38: nominal.file_store.v1.S3FileIdentity
+	(*GoogleDriveFileIdentity)(nil),                  // 39: nominal.file_store.v1.GoogleDriveFileIdentity
+	(*GcsFileIdentity)(nil),                          // 40: nominal.file_store.v1.GcsFileIdentity
+	(*AzureBlobFileIdentity)(nil),                    // 41: nominal.file_store.v1.AzureBlobFileIdentity
+	(*SharePointFileIdentity)(nil),                   // 42: nominal.file_store.v1.SharePointFileIdentity
+	(*S3FileRevisionRef)(nil),                        // 43: nominal.file_store.v1.S3FileRevisionRef
+	(*GoogleDriveFileRevisionRef)(nil),               // 44: nominal.file_store.v1.GoogleDriveFileRevisionRef
+	(*GcsFileRevisionRef)(nil),                       // 45: nominal.file_store.v1.GcsFileRevisionRef
+	(*AzureBlobFileRevisionRef)(nil),                 // 46: nominal.file_store.v1.AzureBlobFileRevisionRef
+	(*SharePointFileRevisionRef)(nil),                // 47: nominal.file_store.v1.SharePointFileRevisionRef
 }
 var file_nominal_protos_file_store_v1_file_store_proto_depIdxs = []int32{
 	32, // 0: nominal.file_store.v1.Attribution.time:type_name -> google.protobuf.Timestamp
@@ -2605,55 +2669,58 @@ var file_nominal_protos_file_store_v1_file_store_proto_depIdxs = []int32{
 	34, // 11: nominal.file_store.v1.VirtualDriveConnectionDetails.google_drive:type_name -> nominal.file_store.v1.GoogleDriveVirtualDriveConnectionDetails
 	35, // 12: nominal.file_store.v1.VirtualDriveConnectionDetails.gcs:type_name -> nominal.file_store.v1.GcsVirtualDriveConnectionDetails
 	36, // 13: nominal.file_store.v1.VirtualDriveConnectionDetails.azure_blob:type_name -> nominal.file_store.v1.AzureBlobVirtualDriveConnectionDetails
-	16, // 14: nominal.file_store.v1.LogicalFile.identity:type_name -> nominal.file_store.v1.LogicalFileIdentity
-	14, // 15: nominal.file_store.v1.LogicalFile.path:type_name -> nominal.file_store.v1.LogicalPath
-	4,  // 16: nominal.file_store.v1.LogicalFile.state:type_name -> nominal.file_store.v1.FileState
-	8,  // 17: nominal.file_store.v1.LogicalFile.created:type_name -> nominal.file_store.v1.Attribution
-	8,  // 18: nominal.file_store.v1.LogicalFile.observed:type_name -> nominal.file_store.v1.Attribution
-	24, // 19: nominal.file_store.v1.LogicalFile.current_revision:type_name -> nominal.file_store.v1.FileRevisionRef
-	5,  // 20: nominal.file_store.v1.LogicalFile.download_availability:type_name -> nominal.file_store.v1.DownloadAvailability
-	17, // 21: nominal.file_store.v1.LogicalFileIdentity.managed:type_name -> nominal.file_store.v1.ManagedFileIdentity
-	18, // 22: nominal.file_store.v1.LogicalFileIdentity.virtual:type_name -> nominal.file_store.v1.VirtualFileIdentity
-	37, // 23: nominal.file_store.v1.VirtualFileIdentity.s3:type_name -> nominal.file_store.v1.S3FileIdentity
-	38, // 24: nominal.file_store.v1.VirtualFileIdentity.google_drive:type_name -> nominal.file_store.v1.GoogleDriveFileIdentity
-	39, // 25: nominal.file_store.v1.VirtualFileIdentity.gcs:type_name -> nominal.file_store.v1.GcsFileIdentity
-	40, // 26: nominal.file_store.v1.VirtualFileIdentity.azure_blob:type_name -> nominal.file_store.v1.AzureBlobFileIdentity
-	20, // 27: nominal.file_store.v1.FileRevisionAction.put:type_name -> nominal.file_store.v1.FilePut
-	21, // 28: nominal.file_store.v1.FileRevisionAction.moved:type_name -> nominal.file_store.v1.FileMoved
-	22, // 29: nominal.file_store.v1.FileRevisionAction.removed:type_name -> nominal.file_store.v1.FileRemoved
-	23, // 30: nominal.file_store.v1.FileRevisionAction.restored:type_name -> nominal.file_store.v1.FileRestored
-	25, // 31: nominal.file_store.v1.FileRevisionRef.managed:type_name -> nominal.file_store.v1.ManagedFileRevisionRef
-	26, // 32: nominal.file_store.v1.FileRevisionRef.virtual:type_name -> nominal.file_store.v1.VirtualFileRevisionRef
-	41, // 33: nominal.file_store.v1.VirtualFileRevisionRef.s3:type_name -> nominal.file_store.v1.S3FileRevisionRef
-	42, // 34: nominal.file_store.v1.VirtualFileRevisionRef.google_drive:type_name -> nominal.file_store.v1.GoogleDriveFileRevisionRef
-	43, // 35: nominal.file_store.v1.VirtualFileRevisionRef.gcs:type_name -> nominal.file_store.v1.GcsFileRevisionRef
-	44, // 36: nominal.file_store.v1.VirtualFileRevisionRef.azure_blob:type_name -> nominal.file_store.v1.AzureBlobFileRevisionRef
-	24, // 37: nominal.file_store.v1.ManagedFileRevision.ref:type_name -> nominal.file_store.v1.FileRevisionRef
-	16, // 38: nominal.file_store.v1.ManagedFileRevision.identity:type_name -> nominal.file_store.v1.LogicalFileIdentity
-	14, // 39: nominal.file_store.v1.ManagedFileRevision.path:type_name -> nominal.file_store.v1.LogicalPath
-	8,  // 40: nominal.file_store.v1.ManagedFileRevision.created:type_name -> nominal.file_store.v1.Attribution
-	4,  // 41: nominal.file_store.v1.ManagedFileRevision.state:type_name -> nominal.file_store.v1.FileState
-	5,  // 42: nominal.file_store.v1.ManagedFileRevision.download_availability:type_name -> nominal.file_store.v1.DownloadAvailability
-	19, // 43: nominal.file_store.v1.ManagedFileRevision.action:type_name -> nominal.file_store.v1.FileRevisionAction
-	18, // 44: nominal.file_store.v1.VirtualFileRevision.file_identity:type_name -> nominal.file_store.v1.VirtualFileIdentity
-	14, // 45: nominal.file_store.v1.VirtualFileRevision.path:type_name -> nominal.file_store.v1.LogicalPath
-	8,  // 46: nominal.file_store.v1.VirtualFileRevision.observed:type_name -> nominal.file_store.v1.Attribution
-	5,  // 47: nominal.file_store.v1.VirtualFileRevision.download_availability:type_name -> nominal.file_store.v1.DownloadAvailability
-	24, // 48: nominal.file_store.v1.FileRevision.ref:type_name -> nominal.file_store.v1.FileRevisionRef
-	16, // 49: nominal.file_store.v1.FileRevision.identity:type_name -> nominal.file_store.v1.LogicalFileIdentity
-	14, // 50: nominal.file_store.v1.FileRevision.path:type_name -> nominal.file_store.v1.LogicalPath
-	8,  // 51: nominal.file_store.v1.FileRevision.observed:type_name -> nominal.file_store.v1.Attribution
-	4,  // 52: nominal.file_store.v1.FileRevision.state:type_name -> nominal.file_store.v1.FileState
-	5,  // 53: nominal.file_store.v1.FileRevision.download_availability:type_name -> nominal.file_store.v1.DownloadAvailability
-	19, // 54: nominal.file_store.v1.FileRevision.action:type_name -> nominal.file_store.v1.FileRevisionAction
-	14, // 55: nominal.file_store.v1.Directory.path:type_name -> nominal.file_store.v1.LogicalPath
-	15, // 56: nominal.file_store.v1.FileEntry.file:type_name -> nominal.file_store.v1.LogicalFile
-	30, // 57: nominal.file_store.v1.FileEntry.directory:type_name -> nominal.file_store.v1.Directory
-	58, // [58:58] is the sub-list for method output_type
-	58, // [58:58] is the sub-list for method input_type
-	58, // [58:58] is the sub-list for extension type_name
-	58, // [58:58] is the sub-list for extension extendee
-	0,  // [0:58] is the sub-list for field type_name
+	37, // 14: nominal.file_store.v1.VirtualDriveConnectionDetails.sharepoint:type_name -> nominal.file_store.v1.SharePointVirtualDriveConnectionDetails
+	16, // 15: nominal.file_store.v1.LogicalFile.identity:type_name -> nominal.file_store.v1.LogicalFileIdentity
+	14, // 16: nominal.file_store.v1.LogicalFile.path:type_name -> nominal.file_store.v1.LogicalPath
+	4,  // 17: nominal.file_store.v1.LogicalFile.state:type_name -> nominal.file_store.v1.FileState
+	8,  // 18: nominal.file_store.v1.LogicalFile.created:type_name -> nominal.file_store.v1.Attribution
+	8,  // 19: nominal.file_store.v1.LogicalFile.observed:type_name -> nominal.file_store.v1.Attribution
+	24, // 20: nominal.file_store.v1.LogicalFile.current_revision:type_name -> nominal.file_store.v1.FileRevisionRef
+	5,  // 21: nominal.file_store.v1.LogicalFile.download_availability:type_name -> nominal.file_store.v1.DownloadAvailability
+	17, // 22: nominal.file_store.v1.LogicalFileIdentity.managed:type_name -> nominal.file_store.v1.ManagedFileIdentity
+	18, // 23: nominal.file_store.v1.LogicalFileIdentity.virtual:type_name -> nominal.file_store.v1.VirtualFileIdentity
+	38, // 24: nominal.file_store.v1.VirtualFileIdentity.s3:type_name -> nominal.file_store.v1.S3FileIdentity
+	39, // 25: nominal.file_store.v1.VirtualFileIdentity.google_drive:type_name -> nominal.file_store.v1.GoogleDriveFileIdentity
+	40, // 26: nominal.file_store.v1.VirtualFileIdentity.gcs:type_name -> nominal.file_store.v1.GcsFileIdentity
+	41, // 27: nominal.file_store.v1.VirtualFileIdentity.azure_blob:type_name -> nominal.file_store.v1.AzureBlobFileIdentity
+	42, // 28: nominal.file_store.v1.VirtualFileIdentity.sharepoint:type_name -> nominal.file_store.v1.SharePointFileIdentity
+	20, // 29: nominal.file_store.v1.FileRevisionAction.put:type_name -> nominal.file_store.v1.FilePut
+	21, // 30: nominal.file_store.v1.FileRevisionAction.moved:type_name -> nominal.file_store.v1.FileMoved
+	22, // 31: nominal.file_store.v1.FileRevisionAction.removed:type_name -> nominal.file_store.v1.FileRemoved
+	23, // 32: nominal.file_store.v1.FileRevisionAction.restored:type_name -> nominal.file_store.v1.FileRestored
+	25, // 33: nominal.file_store.v1.FileRevisionRef.managed:type_name -> nominal.file_store.v1.ManagedFileRevisionRef
+	26, // 34: nominal.file_store.v1.FileRevisionRef.virtual:type_name -> nominal.file_store.v1.VirtualFileRevisionRef
+	43, // 35: nominal.file_store.v1.VirtualFileRevisionRef.s3:type_name -> nominal.file_store.v1.S3FileRevisionRef
+	44, // 36: nominal.file_store.v1.VirtualFileRevisionRef.google_drive:type_name -> nominal.file_store.v1.GoogleDriveFileRevisionRef
+	45, // 37: nominal.file_store.v1.VirtualFileRevisionRef.gcs:type_name -> nominal.file_store.v1.GcsFileRevisionRef
+	46, // 38: nominal.file_store.v1.VirtualFileRevisionRef.azure_blob:type_name -> nominal.file_store.v1.AzureBlobFileRevisionRef
+	47, // 39: nominal.file_store.v1.VirtualFileRevisionRef.sharepoint:type_name -> nominal.file_store.v1.SharePointFileRevisionRef
+	24, // 40: nominal.file_store.v1.ManagedFileRevision.ref:type_name -> nominal.file_store.v1.FileRevisionRef
+	16, // 41: nominal.file_store.v1.ManagedFileRevision.identity:type_name -> nominal.file_store.v1.LogicalFileIdentity
+	14, // 42: nominal.file_store.v1.ManagedFileRevision.path:type_name -> nominal.file_store.v1.LogicalPath
+	8,  // 43: nominal.file_store.v1.ManagedFileRevision.created:type_name -> nominal.file_store.v1.Attribution
+	4,  // 44: nominal.file_store.v1.ManagedFileRevision.state:type_name -> nominal.file_store.v1.FileState
+	5,  // 45: nominal.file_store.v1.ManagedFileRevision.download_availability:type_name -> nominal.file_store.v1.DownloadAvailability
+	19, // 46: nominal.file_store.v1.ManagedFileRevision.action:type_name -> nominal.file_store.v1.FileRevisionAction
+	18, // 47: nominal.file_store.v1.VirtualFileRevision.file_identity:type_name -> nominal.file_store.v1.VirtualFileIdentity
+	14, // 48: nominal.file_store.v1.VirtualFileRevision.path:type_name -> nominal.file_store.v1.LogicalPath
+	8,  // 49: nominal.file_store.v1.VirtualFileRevision.observed:type_name -> nominal.file_store.v1.Attribution
+	5,  // 50: nominal.file_store.v1.VirtualFileRevision.download_availability:type_name -> nominal.file_store.v1.DownloadAvailability
+	24, // 51: nominal.file_store.v1.FileRevision.ref:type_name -> nominal.file_store.v1.FileRevisionRef
+	16, // 52: nominal.file_store.v1.FileRevision.identity:type_name -> nominal.file_store.v1.LogicalFileIdentity
+	14, // 53: nominal.file_store.v1.FileRevision.path:type_name -> nominal.file_store.v1.LogicalPath
+	8,  // 54: nominal.file_store.v1.FileRevision.observed:type_name -> nominal.file_store.v1.Attribution
+	4,  // 55: nominal.file_store.v1.FileRevision.state:type_name -> nominal.file_store.v1.FileState
+	5,  // 56: nominal.file_store.v1.FileRevision.download_availability:type_name -> nominal.file_store.v1.DownloadAvailability
+	19, // 57: nominal.file_store.v1.FileRevision.action:type_name -> nominal.file_store.v1.FileRevisionAction
+	14, // 58: nominal.file_store.v1.Directory.path:type_name -> nominal.file_store.v1.LogicalPath
+	15, // 59: nominal.file_store.v1.FileEntry.file:type_name -> nominal.file_store.v1.LogicalFile
+	30, // 60: nominal.file_store.v1.FileEntry.directory:type_name -> nominal.file_store.v1.Directory
+	61, // [61:61] is the sub-list for method output_type
+	61, // [61:61] is the sub-list for method input_type
+	61, // [61:61] is the sub-list for extension type_name
+	61, // [61:61] is the sub-list for extension extendee
+	0,  // [0:61] is the sub-list for field type_name
 }
 
 func init() { file_nominal_protos_file_store_v1_file_store_proto_init() }
@@ -2665,6 +2732,7 @@ func file_nominal_protos_file_store_v1_file_store_proto_init() {
 	file_nominal_protos_file_store_v1_gcs_proto_init()
 	file_nominal_protos_file_store_v1_google_drive_proto_init()
 	file_nominal_protos_file_store_v1_s3_proto_init()
+	file_nominal_protos_file_store_v1_sharepoint_proto_init()
 	file_nominal_protos_file_store_v1_file_store_proto_msgTypes[1].OneofWrappers = []any{}
 	file_nominal_protos_file_store_v1_file_store_proto_msgTypes[4].OneofWrappers = []any{}
 	file_nominal_protos_file_store_v1_file_store_proto_msgTypes[5].OneofWrappers = []any{
@@ -2672,6 +2740,7 @@ func file_nominal_protos_file_store_v1_file_store_proto_init() {
 		(*VirtualDriveConnectionDetails_GoogleDrive)(nil),
 		(*VirtualDriveConnectionDetails_Gcs)(nil),
 		(*VirtualDriveConnectionDetails_AzureBlob)(nil),
+		(*VirtualDriveConnectionDetails_Sharepoint)(nil),
 	}
 	file_nominal_protos_file_store_v1_file_store_proto_msgTypes[8].OneofWrappers = []any{
 		(*LogicalFileIdentity_Managed)(nil),
@@ -2682,6 +2751,7 @@ func file_nominal_protos_file_store_v1_file_store_proto_init() {
 		(*VirtualFileIdentity_GoogleDrive)(nil),
 		(*VirtualFileIdentity_Gcs)(nil),
 		(*VirtualFileIdentity_AzureBlob)(nil),
+		(*VirtualFileIdentity_Sharepoint)(nil),
 	}
 	file_nominal_protos_file_store_v1_file_store_proto_msgTypes[11].OneofWrappers = []any{
 		(*FileRevisionAction_Put)(nil),
@@ -2701,6 +2771,7 @@ func file_nominal_protos_file_store_v1_file_store_proto_init() {
 		(*VirtualFileRevisionRef_GoogleDrive)(nil),
 		(*VirtualFileRevisionRef_Gcs)(nil),
 		(*VirtualFileRevisionRef_AzureBlob)(nil),
+		(*VirtualFileRevisionRef_Sharepoint)(nil),
 	}
 	file_nominal_protos_file_store_v1_file_store_proto_msgTypes[23].OneofWrappers = []any{
 		(*FileEntry_File)(nil),

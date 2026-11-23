@@ -87,6 +87,7 @@ type AIAgentServiceClient interface {
 	// GetConversationMessages handles retrieving the set of conversation messages. Supports pagination
 	GetConversationMessages(ctx context.Context, in *GetConversationMessagesRequest, opts ...grpc.CallOption) (*GetConversationMessagesResponse, error)
 	// ListConversations handles getting the list of conversation ids ordered by most recently updated
+	// Omits subagent chats, and automation-created chats until their owner sends a message in one.
 	ListConversations(ctx context.Context, in *ListConversationsRequest, opts ...grpc.CallOption) (*ListConversationsResponse, error)
 	// Lists caller-owned subagent tasks in a workspace, optionally for one parent conversation.
 	ListSubagents(ctx context.Context, in *ListSubagentsRequest, opts ...grpc.CallOption) (*ListSubagentsResponse, error)
@@ -497,6 +498,7 @@ type AIAgentServiceServer interface {
 	// GetConversationMessages handles retrieving the set of conversation messages. Supports pagination
 	GetConversationMessages(context.Context, *GetConversationMessagesRequest) (*GetConversationMessagesResponse, error)
 	// ListConversations handles getting the list of conversation ids ordered by most recently updated
+	// Omits subagent chats, and automation-created chats until their owner sends a message in one.
 	ListConversations(context.Context, *ListConversationsRequest) (*ListConversationsResponse, error)
 	// Lists caller-owned subagent tasks in a workspace, optionally for one parent conversation.
 	ListSubagents(context.Context, *ListSubagentsRequest) (*ListSubagentsResponse, error)

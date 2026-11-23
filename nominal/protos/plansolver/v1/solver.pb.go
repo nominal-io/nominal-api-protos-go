@@ -137,6 +137,9 @@ const (
 	SolvePhase_SOLVE_PHASE_EXPLAINING SolvePhase = 5
 	// Running the requested counterfactual analyses.
 	SolvePhase_SOLVE_PHASE_INSIGHTS SolvePhase = 6
+	// The solve proved that no schedule satisfies the plan's constraints and is naming the ones that conflict. The job
+	// ends with an INFEASIBLE result; nothing after this phase can produce a schedule.
+	SolvePhase_SOLVE_PHASE_CONFLICTS SolvePhase = 7
 )
 
 // Enum value maps for SolvePhase.
@@ -149,6 +152,7 @@ var (
 		4: "SOLVE_PHASE_ALTERNATIVES",
 		5: "SOLVE_PHASE_EXPLAINING",
 		6: "SOLVE_PHASE_INSIGHTS",
+		7: "SOLVE_PHASE_CONFLICTS",
 	}
 	SolvePhase_value = map[string]int32{
 		"SOLVE_PHASE_UNSPECIFIED":  0,
@@ -158,6 +162,7 @@ var (
 		"SOLVE_PHASE_ALTERNATIVES": 4,
 		"SOLVE_PHASE_EXPLAINING":   5,
 		"SOLVE_PHASE_INSIGHTS":     6,
+		"SOLVE_PHASE_CONFLICTS":    7,
 	}
 )
 
@@ -7266,7 +7271,7 @@ const file_nominal_protos_plansolver_v1_solver_proto_rawDesc = "" +
 	"\x17SOLVE_JOB_STATE_RUNNING\x10\x02\x12\x1d\n" +
 	"\x19SOLVE_JOB_STATE_SUCCEEDED\x10\x03\x12\x1a\n" +
 	"\x16SOLVE_JOB_STATE_FAILED\x10\x04\x12\x1d\n" +
-	"\x19SOLVE_JOB_STATE_CANCELLED\x10\x05*\xd0\x01\n" +
+	"\x19SOLVE_JOB_STATE_CANCELLED\x10\x05*\xeb\x01\n" +
 	"\n" +
 	"SolvePhase\x12\x1b\n" +
 	"\x17SOLVE_PHASE_UNSPECIFIED\x10\x00\x12\x17\n" +
@@ -7275,7 +7280,8 @@ const file_nominal_protos_plansolver_v1_solver_proto_rawDesc = "" +
 	"\x16SOLVE_PHASE_RECOVERING\x10\x03\x12\x1c\n" +
 	"\x18SOLVE_PHASE_ALTERNATIVES\x10\x04\x12\x1a\n" +
 	"\x16SOLVE_PHASE_EXPLAINING\x10\x05\x12\x18\n" +
-	"\x14SOLVE_PHASE_INSIGHTS\x10\x06*\xc7\x01\n" +
+	"\x14SOLVE_PHASE_INSIGHTS\x10\x06\x12\x19\n" +
+	"\x15SOLVE_PHASE_CONFLICTS\x10\a*\xc7\x01\n" +
 	"\fSolveInsight\x12\x1d\n" +
 	"\x19SOLVE_INSIGHT_UNSPECIFIED\x10\x00\x12'\n" +
 	"#SOLVE_INSIGHT_PLACEMENT_FLEXIBILITY\x10\x01\x12!\n" +

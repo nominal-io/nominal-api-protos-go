@@ -526,6 +526,87 @@ func (x *DeleteSandboxResponse) GetSandbox() *Sandbox {
 	return nil
 }
 
+type DeleteThreadComputeRequest struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// The conversation whose sandboxes are deleted.
+	ParentRid     string `protobuf:"bytes,1,opt,name=parent_rid,json=parentRid,proto3" json:"parent_rid,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *DeleteThreadComputeRequest) Reset() {
+	*x = DeleteThreadComputeRequest{}
+	mi := &file_nominal_protos_internalcodesandbox_v1_internal_codesandbox_proto_msgTypes[9]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *DeleteThreadComputeRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*DeleteThreadComputeRequest) ProtoMessage() {}
+
+func (x *DeleteThreadComputeRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_nominal_protos_internalcodesandbox_v1_internal_codesandbox_proto_msgTypes[9]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use DeleteThreadComputeRequest.ProtoReflect.Descriptor instead.
+func (*DeleteThreadComputeRequest) Descriptor() ([]byte, []int) {
+	return file_nominal_protos_internalcodesandbox_v1_internal_codesandbox_proto_rawDescGZIP(), []int{9}
+}
+
+func (x *DeleteThreadComputeRequest) GetParentRid() string {
+	if x != nil {
+		return x.ParentRid
+	}
+	return ""
+}
+
+type DeleteThreadComputeResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *DeleteThreadComputeResponse) Reset() {
+	*x = DeleteThreadComputeResponse{}
+	mi := &file_nominal_protos_internalcodesandbox_v1_internal_codesandbox_proto_msgTypes[10]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *DeleteThreadComputeResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*DeleteThreadComputeResponse) ProtoMessage() {}
+
+func (x *DeleteThreadComputeResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_nominal_protos_internalcodesandbox_v1_internal_codesandbox_proto_msgTypes[10]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use DeleteThreadComputeResponse.ProtoReflect.Descriptor instead.
+func (*DeleteThreadComputeResponse) Descriptor() ([]byte, []int) {
+	return file_nominal_protos_internalcodesandbox_v1_internal_codesandbox_proto_rawDescGZIP(), []int{10}
+}
+
 type RestartInterpreterRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	SandboxRid    string                 `protobuf:"bytes,1,opt,name=sandbox_rid,json=sandboxRid,proto3" json:"sandbox_rid,omitempty"`
@@ -535,7 +616,7 @@ type RestartInterpreterRequest struct {
 
 func (x *RestartInterpreterRequest) Reset() {
 	*x = RestartInterpreterRequest{}
-	mi := &file_nominal_protos_internalcodesandbox_v1_internal_codesandbox_proto_msgTypes[9]
+	mi := &file_nominal_protos_internalcodesandbox_v1_internal_codesandbox_proto_msgTypes[11]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -547,7 +628,7 @@ func (x *RestartInterpreterRequest) String() string {
 func (*RestartInterpreterRequest) ProtoMessage() {}
 
 func (x *RestartInterpreterRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_internalcodesandbox_v1_internal_codesandbox_proto_msgTypes[9]
+	mi := &file_nominal_protos_internalcodesandbox_v1_internal_codesandbox_proto_msgTypes[11]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -560,7 +641,7 @@ func (x *RestartInterpreterRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use RestartInterpreterRequest.ProtoReflect.Descriptor instead.
 func (*RestartInterpreterRequest) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_internalcodesandbox_v1_internal_codesandbox_proto_rawDescGZIP(), []int{9}
+	return file_nominal_protos_internalcodesandbox_v1_internal_codesandbox_proto_rawDescGZIP(), []int{11}
 }
 
 func (x *RestartInterpreterRequest) GetSandboxRid() string {
@@ -578,7 +659,7 @@ type RestartInterpreterResponse struct {
 
 func (x *RestartInterpreterResponse) Reset() {
 	*x = RestartInterpreterResponse{}
-	mi := &file_nominal_protos_internalcodesandbox_v1_internal_codesandbox_proto_msgTypes[10]
+	mi := &file_nominal_protos_internalcodesandbox_v1_internal_codesandbox_proto_msgTypes[12]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -590,7 +671,7 @@ func (x *RestartInterpreterResponse) String() string {
 func (*RestartInterpreterResponse) ProtoMessage() {}
 
 func (x *RestartInterpreterResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_internalcodesandbox_v1_internal_codesandbox_proto_msgTypes[10]
+	mi := &file_nominal_protos_internalcodesandbox_v1_internal_codesandbox_proto_msgTypes[12]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -603,7 +684,7 @@ func (x *RestartInterpreterResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use RestartInterpreterResponse.ProtoReflect.Descriptor instead.
 func (*RestartInterpreterResponse) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_internalcodesandbox_v1_internal_codesandbox_proto_rawDescGZIP(), []int{10}
+	return file_nominal_protos_internalcodesandbox_v1_internal_codesandbox_proto_rawDescGZIP(), []int{12}
 }
 
 type SandboxScope struct {
@@ -619,7 +700,7 @@ type SandboxScope struct {
 
 func (x *SandboxScope) Reset() {
 	*x = SandboxScope{}
-	mi := &file_nominal_protos_internalcodesandbox_v1_internal_codesandbox_proto_msgTypes[11]
+	mi := &file_nominal_protos_internalcodesandbox_v1_internal_codesandbox_proto_msgTypes[13]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -631,7 +712,7 @@ func (x *SandboxScope) String() string {
 func (*SandboxScope) ProtoMessage() {}
 
 func (x *SandboxScope) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_internalcodesandbox_v1_internal_codesandbox_proto_msgTypes[11]
+	mi := &file_nominal_protos_internalcodesandbox_v1_internal_codesandbox_proto_msgTypes[13]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -644,7 +725,7 @@ func (x *SandboxScope) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SandboxScope.ProtoReflect.Descriptor instead.
 func (*SandboxScope) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_internalcodesandbox_v1_internal_codesandbox_proto_rawDescGZIP(), []int{11}
+	return file_nominal_protos_internalcodesandbox_v1_internal_codesandbox_proto_rawDescGZIP(), []int{13}
 }
 
 func (x *SandboxScope) GetSandboxRid() string {
@@ -692,7 +773,7 @@ type StartExecutionRequest struct {
 
 func (x *StartExecutionRequest) Reset() {
 	*x = StartExecutionRequest{}
-	mi := &file_nominal_protos_internalcodesandbox_v1_internal_codesandbox_proto_msgTypes[12]
+	mi := &file_nominal_protos_internalcodesandbox_v1_internal_codesandbox_proto_msgTypes[14]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -704,7 +785,7 @@ func (x *StartExecutionRequest) String() string {
 func (*StartExecutionRequest) ProtoMessage() {}
 
 func (x *StartExecutionRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_internalcodesandbox_v1_internal_codesandbox_proto_msgTypes[12]
+	mi := &file_nominal_protos_internalcodesandbox_v1_internal_codesandbox_proto_msgTypes[14]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -717,7 +798,7 @@ func (x *StartExecutionRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use StartExecutionRequest.ProtoReflect.Descriptor instead.
 func (*StartExecutionRequest) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_internalcodesandbox_v1_internal_codesandbox_proto_rawDescGZIP(), []int{12}
+	return file_nominal_protos_internalcodesandbox_v1_internal_codesandbox_proto_rawDescGZIP(), []int{14}
 }
 
 func (x *StartExecutionRequest) GetScope() *SandboxScope {
@@ -743,7 +824,7 @@ type StartExecutionResponse struct {
 
 func (x *StartExecutionResponse) Reset() {
 	*x = StartExecutionResponse{}
-	mi := &file_nominal_protos_internalcodesandbox_v1_internal_codesandbox_proto_msgTypes[13]
+	mi := &file_nominal_protos_internalcodesandbox_v1_internal_codesandbox_proto_msgTypes[15]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -755,7 +836,7 @@ func (x *StartExecutionResponse) String() string {
 func (*StartExecutionResponse) ProtoMessage() {}
 
 func (x *StartExecutionResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_internalcodesandbox_v1_internal_codesandbox_proto_msgTypes[13]
+	mi := &file_nominal_protos_internalcodesandbox_v1_internal_codesandbox_proto_msgTypes[15]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -768,7 +849,7 @@ func (x *StartExecutionResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use StartExecutionResponse.ProtoReflect.Descriptor instead.
 func (*StartExecutionResponse) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_internalcodesandbox_v1_internal_codesandbox_proto_rawDescGZIP(), []int{13}
+	return file_nominal_protos_internalcodesandbox_v1_internal_codesandbox_proto_rawDescGZIP(), []int{15}
 }
 
 func (x *StartExecutionResponse) GetExecution() *ExecutionSnapshot {
@@ -788,7 +869,7 @@ type ReadExecutionRequest struct {
 
 func (x *ReadExecutionRequest) Reset() {
 	*x = ReadExecutionRequest{}
-	mi := &file_nominal_protos_internalcodesandbox_v1_internal_codesandbox_proto_msgTypes[14]
+	mi := &file_nominal_protos_internalcodesandbox_v1_internal_codesandbox_proto_msgTypes[16]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -800,7 +881,7 @@ func (x *ReadExecutionRequest) String() string {
 func (*ReadExecutionRequest) ProtoMessage() {}
 
 func (x *ReadExecutionRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_internalcodesandbox_v1_internal_codesandbox_proto_msgTypes[14]
+	mi := &file_nominal_protos_internalcodesandbox_v1_internal_codesandbox_proto_msgTypes[16]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -813,7 +894,7 @@ func (x *ReadExecutionRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ReadExecutionRequest.ProtoReflect.Descriptor instead.
 func (*ReadExecutionRequest) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_internalcodesandbox_v1_internal_codesandbox_proto_rawDescGZIP(), []int{14}
+	return file_nominal_protos_internalcodesandbox_v1_internal_codesandbox_proto_rawDescGZIP(), []int{16}
 }
 
 func (x *ReadExecutionRequest) GetScope() *SandboxScope {
@@ -839,7 +920,7 @@ type ReadExecutionResponse struct {
 
 func (x *ReadExecutionResponse) Reset() {
 	*x = ReadExecutionResponse{}
-	mi := &file_nominal_protos_internalcodesandbox_v1_internal_codesandbox_proto_msgTypes[15]
+	mi := &file_nominal_protos_internalcodesandbox_v1_internal_codesandbox_proto_msgTypes[17]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -851,7 +932,7 @@ func (x *ReadExecutionResponse) String() string {
 func (*ReadExecutionResponse) ProtoMessage() {}
 
 func (x *ReadExecutionResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_internalcodesandbox_v1_internal_codesandbox_proto_msgTypes[15]
+	mi := &file_nominal_protos_internalcodesandbox_v1_internal_codesandbox_proto_msgTypes[17]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -864,7 +945,7 @@ func (x *ReadExecutionResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ReadExecutionResponse.ProtoReflect.Descriptor instead.
 func (*ReadExecutionResponse) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_internalcodesandbox_v1_internal_codesandbox_proto_rawDescGZIP(), []int{15}
+	return file_nominal_protos_internalcodesandbox_v1_internal_codesandbox_proto_rawDescGZIP(), []int{17}
 }
 
 func (x *ReadExecutionResponse) GetExecution() *ExecutionSnapshot {
@@ -884,7 +965,7 @@ type WriteStdinRequest struct {
 
 func (x *WriteStdinRequest) Reset() {
 	*x = WriteStdinRequest{}
-	mi := &file_nominal_protos_internalcodesandbox_v1_internal_codesandbox_proto_msgTypes[16]
+	mi := &file_nominal_protos_internalcodesandbox_v1_internal_codesandbox_proto_msgTypes[18]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -896,7 +977,7 @@ func (x *WriteStdinRequest) String() string {
 func (*WriteStdinRequest) ProtoMessage() {}
 
 func (x *WriteStdinRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_internalcodesandbox_v1_internal_codesandbox_proto_msgTypes[16]
+	mi := &file_nominal_protos_internalcodesandbox_v1_internal_codesandbox_proto_msgTypes[18]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -909,7 +990,7 @@ func (x *WriteStdinRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use WriteStdinRequest.ProtoReflect.Descriptor instead.
 func (*WriteStdinRequest) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_internalcodesandbox_v1_internal_codesandbox_proto_rawDescGZIP(), []int{16}
+	return file_nominal_protos_internalcodesandbox_v1_internal_codesandbox_proto_rawDescGZIP(), []int{18}
 }
 
 func (x *WriteStdinRequest) GetScope() *SandboxScope {
@@ -935,7 +1016,7 @@ type WriteStdinResponse struct {
 
 func (x *WriteStdinResponse) Reset() {
 	*x = WriteStdinResponse{}
-	mi := &file_nominal_protos_internalcodesandbox_v1_internal_codesandbox_proto_msgTypes[17]
+	mi := &file_nominal_protos_internalcodesandbox_v1_internal_codesandbox_proto_msgTypes[19]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -947,7 +1028,7 @@ func (x *WriteStdinResponse) String() string {
 func (*WriteStdinResponse) ProtoMessage() {}
 
 func (x *WriteStdinResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_internalcodesandbox_v1_internal_codesandbox_proto_msgTypes[17]
+	mi := &file_nominal_protos_internalcodesandbox_v1_internal_codesandbox_proto_msgTypes[19]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -960,7 +1041,7 @@ func (x *WriteStdinResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use WriteStdinResponse.ProtoReflect.Descriptor instead.
 func (*WriteStdinResponse) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_internalcodesandbox_v1_internal_codesandbox_proto_rawDescGZIP(), []int{17}
+	return file_nominal_protos_internalcodesandbox_v1_internal_codesandbox_proto_rawDescGZIP(), []int{19}
 }
 
 func (x *WriteStdinResponse) GetExecution() *ExecutionStatus {
@@ -980,7 +1061,7 @@ type KillExecutionRequest struct {
 
 func (x *KillExecutionRequest) Reset() {
 	*x = KillExecutionRequest{}
-	mi := &file_nominal_protos_internalcodesandbox_v1_internal_codesandbox_proto_msgTypes[18]
+	mi := &file_nominal_protos_internalcodesandbox_v1_internal_codesandbox_proto_msgTypes[20]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -992,7 +1073,7 @@ func (x *KillExecutionRequest) String() string {
 func (*KillExecutionRequest) ProtoMessage() {}
 
 func (x *KillExecutionRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_internalcodesandbox_v1_internal_codesandbox_proto_msgTypes[18]
+	mi := &file_nominal_protos_internalcodesandbox_v1_internal_codesandbox_proto_msgTypes[20]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1005,7 +1086,7 @@ func (x *KillExecutionRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use KillExecutionRequest.ProtoReflect.Descriptor instead.
 func (*KillExecutionRequest) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_internalcodesandbox_v1_internal_codesandbox_proto_rawDescGZIP(), []int{18}
+	return file_nominal_protos_internalcodesandbox_v1_internal_codesandbox_proto_rawDescGZIP(), []int{20}
 }
 
 func (x *KillExecutionRequest) GetScope() *SandboxScope {
@@ -1031,7 +1112,7 @@ type KillExecutionResponse struct {
 
 func (x *KillExecutionResponse) Reset() {
 	*x = KillExecutionResponse{}
-	mi := &file_nominal_protos_internalcodesandbox_v1_internal_codesandbox_proto_msgTypes[19]
+	mi := &file_nominal_protos_internalcodesandbox_v1_internal_codesandbox_proto_msgTypes[21]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1043,7 +1124,7 @@ func (x *KillExecutionResponse) String() string {
 func (*KillExecutionResponse) ProtoMessage() {}
 
 func (x *KillExecutionResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_internalcodesandbox_v1_internal_codesandbox_proto_msgTypes[19]
+	mi := &file_nominal_protos_internalcodesandbox_v1_internal_codesandbox_proto_msgTypes[21]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1056,7 +1137,7 @@ func (x *KillExecutionResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use KillExecutionResponse.ProtoReflect.Descriptor instead.
 func (*KillExecutionResponse) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_internalcodesandbox_v1_internal_codesandbox_proto_rawDescGZIP(), []int{19}
+	return file_nominal_protos_internalcodesandbox_v1_internal_codesandbox_proto_rawDescGZIP(), []int{21}
 }
 
 func (x *KillExecutionResponse) GetExecution() *ExecutionStatus {
@@ -1075,7 +1156,7 @@ type GetExecutionStatusesRequest struct {
 
 func (x *GetExecutionStatusesRequest) Reset() {
 	*x = GetExecutionStatusesRequest{}
-	mi := &file_nominal_protos_internalcodesandbox_v1_internal_codesandbox_proto_msgTypes[20]
+	mi := &file_nominal_protos_internalcodesandbox_v1_internal_codesandbox_proto_msgTypes[22]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1087,7 +1168,7 @@ func (x *GetExecutionStatusesRequest) String() string {
 func (*GetExecutionStatusesRequest) ProtoMessage() {}
 
 func (x *GetExecutionStatusesRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_internalcodesandbox_v1_internal_codesandbox_proto_msgTypes[20]
+	mi := &file_nominal_protos_internalcodesandbox_v1_internal_codesandbox_proto_msgTypes[22]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1100,7 +1181,7 @@ func (x *GetExecutionStatusesRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetExecutionStatusesRequest.ProtoReflect.Descriptor instead.
 func (*GetExecutionStatusesRequest) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_internalcodesandbox_v1_internal_codesandbox_proto_rawDescGZIP(), []int{20}
+	return file_nominal_protos_internalcodesandbox_v1_internal_codesandbox_proto_rawDescGZIP(), []int{22}
 }
 
 func (x *GetExecutionStatusesRequest) GetScope() *SandboxScope {
@@ -1119,7 +1200,7 @@ type GetExecutionStatusesResponse struct {
 
 func (x *GetExecutionStatusesResponse) Reset() {
 	*x = GetExecutionStatusesResponse{}
-	mi := &file_nominal_protos_internalcodesandbox_v1_internal_codesandbox_proto_msgTypes[21]
+	mi := &file_nominal_protos_internalcodesandbox_v1_internal_codesandbox_proto_msgTypes[23]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1131,7 +1212,7 @@ func (x *GetExecutionStatusesResponse) String() string {
 func (*GetExecutionStatusesResponse) ProtoMessage() {}
 
 func (x *GetExecutionStatusesResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_internalcodesandbox_v1_internal_codesandbox_proto_msgTypes[21]
+	mi := &file_nominal_protos_internalcodesandbox_v1_internal_codesandbox_proto_msgTypes[23]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1144,7 +1225,7 @@ func (x *GetExecutionStatusesResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetExecutionStatusesResponse.ProtoReflect.Descriptor instead.
 func (*GetExecutionStatusesResponse) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_internalcodesandbox_v1_internal_codesandbox_proto_rawDescGZIP(), []int{21}
+	return file_nominal_protos_internalcodesandbox_v1_internal_codesandbox_proto_rawDescGZIP(), []int{23}
 }
 
 func (x *GetExecutionStatusesResponse) GetSessions() []*ExecutionSession {
@@ -1164,7 +1245,7 @@ type WorkspaceFileOperationRequest struct {
 
 func (x *WorkspaceFileOperationRequest) Reset() {
 	*x = WorkspaceFileOperationRequest{}
-	mi := &file_nominal_protos_internalcodesandbox_v1_internal_codesandbox_proto_msgTypes[22]
+	mi := &file_nominal_protos_internalcodesandbox_v1_internal_codesandbox_proto_msgTypes[24]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1176,7 +1257,7 @@ func (x *WorkspaceFileOperationRequest) String() string {
 func (*WorkspaceFileOperationRequest) ProtoMessage() {}
 
 func (x *WorkspaceFileOperationRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_internalcodesandbox_v1_internal_codesandbox_proto_msgTypes[22]
+	mi := &file_nominal_protos_internalcodesandbox_v1_internal_codesandbox_proto_msgTypes[24]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1189,7 +1270,7 @@ func (x *WorkspaceFileOperationRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use WorkspaceFileOperationRequest.ProtoReflect.Descriptor instead.
 func (*WorkspaceFileOperationRequest) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_internalcodesandbox_v1_internal_codesandbox_proto_rawDescGZIP(), []int{22}
+	return file_nominal_protos_internalcodesandbox_v1_internal_codesandbox_proto_rawDescGZIP(), []int{24}
 }
 
 func (x *WorkspaceFileOperationRequest) GetScope() *SandboxScope {
@@ -1215,7 +1296,7 @@ type WorkspaceFileOperationResponse struct {
 
 func (x *WorkspaceFileOperationResponse) Reset() {
 	*x = WorkspaceFileOperationResponse{}
-	mi := &file_nominal_protos_internalcodesandbox_v1_internal_codesandbox_proto_msgTypes[23]
+	mi := &file_nominal_protos_internalcodesandbox_v1_internal_codesandbox_proto_msgTypes[25]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1227,7 +1308,7 @@ func (x *WorkspaceFileOperationResponse) String() string {
 func (*WorkspaceFileOperationResponse) ProtoMessage() {}
 
 func (x *WorkspaceFileOperationResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_internalcodesandbox_v1_internal_codesandbox_proto_msgTypes[23]
+	mi := &file_nominal_protos_internalcodesandbox_v1_internal_codesandbox_proto_msgTypes[25]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1240,7 +1321,7 @@ func (x *WorkspaceFileOperationResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use WorkspaceFileOperationResponse.ProtoReflect.Descriptor instead.
 func (*WorkspaceFileOperationResponse) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_internalcodesandbox_v1_internal_codesandbox_proto_rawDescGZIP(), []int{23}
+	return file_nominal_protos_internalcodesandbox_v1_internal_codesandbox_proto_rawDescGZIP(), []int{25}
 }
 
 func (x *WorkspaceFileOperationResponse) GetResult() *WorkspaceFileResult {
@@ -1260,7 +1341,7 @@ type ReadFileRequest struct {
 
 func (x *ReadFileRequest) Reset() {
 	*x = ReadFileRequest{}
-	mi := &file_nominal_protos_internalcodesandbox_v1_internal_codesandbox_proto_msgTypes[24]
+	mi := &file_nominal_protos_internalcodesandbox_v1_internal_codesandbox_proto_msgTypes[26]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1272,7 +1353,7 @@ func (x *ReadFileRequest) String() string {
 func (*ReadFileRequest) ProtoMessage() {}
 
 func (x *ReadFileRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_internalcodesandbox_v1_internal_codesandbox_proto_msgTypes[24]
+	mi := &file_nominal_protos_internalcodesandbox_v1_internal_codesandbox_proto_msgTypes[26]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1285,7 +1366,7 @@ func (x *ReadFileRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ReadFileRequest.ProtoReflect.Descriptor instead.
 func (*ReadFileRequest) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_internalcodesandbox_v1_internal_codesandbox_proto_rawDescGZIP(), []int{24}
+	return file_nominal_protos_internalcodesandbox_v1_internal_codesandbox_proto_rawDescGZIP(), []int{26}
 }
 
 func (x *ReadFileRequest) GetScope() *SandboxScope {
@@ -1311,7 +1392,7 @@ type ReadFileResponse struct {
 
 func (x *ReadFileResponse) Reset() {
 	*x = ReadFileResponse{}
-	mi := &file_nominal_protos_internalcodesandbox_v1_internal_codesandbox_proto_msgTypes[25]
+	mi := &file_nominal_protos_internalcodesandbox_v1_internal_codesandbox_proto_msgTypes[27]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1323,7 +1404,7 @@ func (x *ReadFileResponse) String() string {
 func (*ReadFileResponse) ProtoMessage() {}
 
 func (x *ReadFileResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_internalcodesandbox_v1_internal_codesandbox_proto_msgTypes[25]
+	mi := &file_nominal_protos_internalcodesandbox_v1_internal_codesandbox_proto_msgTypes[27]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1336,7 +1417,7 @@ func (x *ReadFileResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ReadFileResponse.ProtoReflect.Descriptor instead.
 func (*ReadFileResponse) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_internalcodesandbox_v1_internal_codesandbox_proto_rawDescGZIP(), []int{25}
+	return file_nominal_protos_internalcodesandbox_v1_internal_codesandbox_proto_rawDescGZIP(), []int{27}
 }
 
 func (x *ReadFileResponse) GetChunk() *FileChunk {
@@ -1356,7 +1437,7 @@ type WriteFileRequest struct {
 
 func (x *WriteFileRequest) Reset() {
 	*x = WriteFileRequest{}
-	mi := &file_nominal_protos_internalcodesandbox_v1_internal_codesandbox_proto_msgTypes[26]
+	mi := &file_nominal_protos_internalcodesandbox_v1_internal_codesandbox_proto_msgTypes[28]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1368,7 +1449,7 @@ func (x *WriteFileRequest) String() string {
 func (*WriteFileRequest) ProtoMessage() {}
 
 func (x *WriteFileRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_internalcodesandbox_v1_internal_codesandbox_proto_msgTypes[26]
+	mi := &file_nominal_protos_internalcodesandbox_v1_internal_codesandbox_proto_msgTypes[28]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1381,7 +1462,7 @@ func (x *WriteFileRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use WriteFileRequest.ProtoReflect.Descriptor instead.
 func (*WriteFileRequest) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_internalcodesandbox_v1_internal_codesandbox_proto_rawDescGZIP(), []int{26}
+	return file_nominal_protos_internalcodesandbox_v1_internal_codesandbox_proto_rawDescGZIP(), []int{28}
 }
 
 func (x *WriteFileRequest) GetScope() *SandboxScope {
@@ -1407,7 +1488,7 @@ type WriteFileResponse struct {
 
 func (x *WriteFileResponse) Reset() {
 	*x = WriteFileResponse{}
-	mi := &file_nominal_protos_internalcodesandbox_v1_internal_codesandbox_proto_msgTypes[27]
+	mi := &file_nominal_protos_internalcodesandbox_v1_internal_codesandbox_proto_msgTypes[29]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1419,7 +1500,7 @@ func (x *WriteFileResponse) String() string {
 func (*WriteFileResponse) ProtoMessage() {}
 
 func (x *WriteFileResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_internalcodesandbox_v1_internal_codesandbox_proto_msgTypes[27]
+	mi := &file_nominal_protos_internalcodesandbox_v1_internal_codesandbox_proto_msgTypes[29]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1432,7 +1513,7 @@ func (x *WriteFileResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use WriteFileResponse.ProtoReflect.Descriptor instead.
 func (*WriteFileResponse) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_internalcodesandbox_v1_internal_codesandbox_proto_rawDescGZIP(), []int{27}
+	return file_nominal_protos_internalcodesandbox_v1_internal_codesandbox_proto_rawDescGZIP(), []int{29}
 }
 
 func (x *WriteFileResponse) GetResult() *WriteFileResult {
@@ -1453,7 +1534,7 @@ type ExecutionSession struct {
 
 func (x *ExecutionSession) Reset() {
 	*x = ExecutionSession{}
-	mi := &file_nominal_protos_internalcodesandbox_v1_internal_codesandbox_proto_msgTypes[28]
+	mi := &file_nominal_protos_internalcodesandbox_v1_internal_codesandbox_proto_msgTypes[30]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1465,7 +1546,7 @@ func (x *ExecutionSession) String() string {
 func (*ExecutionSession) ProtoMessage() {}
 
 func (x *ExecutionSession) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_internalcodesandbox_v1_internal_codesandbox_proto_msgTypes[28]
+	mi := &file_nominal_protos_internalcodesandbox_v1_internal_codesandbox_proto_msgTypes[30]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1478,7 +1559,7 @@ func (x *ExecutionSession) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ExecutionSession.ProtoReflect.Descriptor instead.
 func (*ExecutionSession) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_internalcodesandbox_v1_internal_codesandbox_proto_rawDescGZIP(), []int{28}
+	return file_nominal_protos_internalcodesandbox_v1_internal_codesandbox_proto_rawDescGZIP(), []int{30}
 }
 
 func (x *ExecutionSession) GetStatus() *ExecutionStatus {
@@ -1540,7 +1621,12 @@ const file_nominal_protos_internalcodesandbox_v1_internal_codesandbox_proto_rawD
 	"\x1eio.nominal.api.rids.SandboxRidR\n" +
 	"sandboxRid\"b\n" +
 	"\x15DeleteSandboxResponse\x12I\n" +
-	"\asandbox\x18\x01 \x01(\v2'.nominal.internalcodesandbox.v1.SandboxB\x06\xbaH\x03\xc8\x01\x01R\asandbox\"l\n" +
+	"\asandbox\x18\x01 \x01(\v2'.nominal.internalcodesandbox.v1.SandboxB\x06\xbaH\x03\xc8\x01\x01R\asandbox\"o\n" +
+	"\x1aDeleteThreadComputeRequest\x12Q\n" +
+	"\n" +
+	"parent_rid\x18\x01 \x01(\tB2\xbaH\ar\x05\x10\x01\x18\x80\x01\x9a\xb2\x1a$\n" +
+	"\"com.palantir.ri.ResourceIdentifierR\tparentRid\"\x1d\n" +
+	"\x1bDeleteThreadComputeResponse\"l\n" +
 	"\x19RestartInterpreterRequest\x12O\n" +
 	"\vsandbox_rid\x18\x01 \x01(\tB.\xbaH\ar\x05\x10\x01\x18\x80\x01\x9a\xb2\x1a \n" +
 	"\x1eio.nominal.api.rids.SandboxRidR\n" +
@@ -1610,13 +1696,14 @@ const file_nominal_protos_internalcodesandbox_v1_internal_codesandbox_proto_rawD
 	"\x14SANDBOX_STATUS_READY\x10\x02\x12\x1e\n" +
 	"\x1aSANDBOX_STATUS_TERMINATING\x10\x03\x12\x1d\n" +
 	"\x19SANDBOX_STATUS_TERMINATED\x10\x04\x12\x19\n" +
-	"\x15SANDBOX_STATUS_FAILED\x10\x052\xa1\r\n" +
+	"\x15SANDBOX_STATUS_FAILED\x10\x052\xb2\x0e\n" +
 	"\x1aInternalCodeSandboxService\x12|\n" +
 	"\rCreateSandbox\x124.nominal.internalcodesandbox.v1.CreateSandboxRequest\x1a5.nominal.internalcodesandbox.v1.CreateSandboxResponse\x12s\n" +
 	"\n" +
 	"GetSandbox\x121.nominal.internalcodesandbox.v1.GetSandboxRequest\x1a2.nominal.internalcodesandbox.v1.GetSandboxResponse\x12\x7f\n" +
 	"\x0eGetLiveSandbox\x125.nominal.internalcodesandbox.v1.GetLiveSandboxRequest\x1a6.nominal.internalcodesandbox.v1.GetLiveSandboxResponse\x12|\n" +
-	"\rDeleteSandbox\x124.nominal.internalcodesandbox.v1.DeleteSandboxRequest\x1a5.nominal.internalcodesandbox.v1.DeleteSandboxResponse\x12\x8b\x01\n" +
+	"\rDeleteSandbox\x124.nominal.internalcodesandbox.v1.DeleteSandboxRequest\x1a5.nominal.internalcodesandbox.v1.DeleteSandboxResponse\x12\x8e\x01\n" +
+	"\x13DeleteThreadCompute\x12:.nominal.internalcodesandbox.v1.DeleteThreadComputeRequest\x1a;.nominal.internalcodesandbox.v1.DeleteThreadComputeResponse\x12\x8b\x01\n" +
 	"\x12RestartInterpreter\x129.nominal.internalcodesandbox.v1.RestartInterpreterRequest\x1a:.nominal.internalcodesandbox.v1.RestartInterpreterResponse\x12\x7f\n" +
 	"\x0eStartExecution\x125.nominal.internalcodesandbox.v1.StartExecutionRequest\x1a6.nominal.internalcodesandbox.v1.StartExecutionResponse\x12|\n" +
 	"\rReadExecution\x124.nominal.internalcodesandbox.v1.ReadExecutionRequest\x1a5.nominal.internalcodesandbox.v1.ReadExecutionResponse\x12s\n" +
@@ -1642,7 +1729,7 @@ func file_nominal_protos_internalcodesandbox_v1_internal_codesandbox_proto_rawDe
 }
 
 var file_nominal_protos_internalcodesandbox_v1_internal_codesandbox_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
-var file_nominal_protos_internalcodesandbox_v1_internal_codesandbox_proto_msgTypes = make([]protoimpl.MessageInfo, 29)
+var file_nominal_protos_internalcodesandbox_v1_internal_codesandbox_proto_msgTypes = make([]protoimpl.MessageInfo, 31)
 var file_nominal_protos_internalcodesandbox_v1_internal_codesandbox_proto_goTypes = []any{
 	(SandboxStatus)(0),                     // 0: nominal.internalcodesandbox.v1.SandboxStatus
 	(*Sandbox)(nil),                        // 1: nominal.internalcodesandbox.v1.Sandbox
@@ -1654,100 +1741,104 @@ var file_nominal_protos_internalcodesandbox_v1_internal_codesandbox_proto_goType
 	(*GetLiveSandboxResponse)(nil),         // 7: nominal.internalcodesandbox.v1.GetLiveSandboxResponse
 	(*DeleteSandboxRequest)(nil),           // 8: nominal.internalcodesandbox.v1.DeleteSandboxRequest
 	(*DeleteSandboxResponse)(nil),          // 9: nominal.internalcodesandbox.v1.DeleteSandboxResponse
-	(*RestartInterpreterRequest)(nil),      // 10: nominal.internalcodesandbox.v1.RestartInterpreterRequest
-	(*RestartInterpreterResponse)(nil),     // 11: nominal.internalcodesandbox.v1.RestartInterpreterResponse
-	(*SandboxScope)(nil),                   // 12: nominal.internalcodesandbox.v1.SandboxScope
-	(*StartExecutionRequest)(nil),          // 13: nominal.internalcodesandbox.v1.StartExecutionRequest
-	(*StartExecutionResponse)(nil),         // 14: nominal.internalcodesandbox.v1.StartExecutionResponse
-	(*ReadExecutionRequest)(nil),           // 15: nominal.internalcodesandbox.v1.ReadExecutionRequest
-	(*ReadExecutionResponse)(nil),          // 16: nominal.internalcodesandbox.v1.ReadExecutionResponse
-	(*WriteStdinRequest)(nil),              // 17: nominal.internalcodesandbox.v1.WriteStdinRequest
-	(*WriteStdinResponse)(nil),             // 18: nominal.internalcodesandbox.v1.WriteStdinResponse
-	(*KillExecutionRequest)(nil),           // 19: nominal.internalcodesandbox.v1.KillExecutionRequest
-	(*KillExecutionResponse)(nil),          // 20: nominal.internalcodesandbox.v1.KillExecutionResponse
-	(*GetExecutionStatusesRequest)(nil),    // 21: nominal.internalcodesandbox.v1.GetExecutionStatusesRequest
-	(*GetExecutionStatusesResponse)(nil),   // 22: nominal.internalcodesandbox.v1.GetExecutionStatusesResponse
-	(*WorkspaceFileOperationRequest)(nil),  // 23: nominal.internalcodesandbox.v1.WorkspaceFileOperationRequest
-	(*WorkspaceFileOperationResponse)(nil), // 24: nominal.internalcodesandbox.v1.WorkspaceFileOperationResponse
-	(*ReadFileRequest)(nil),                // 25: nominal.internalcodesandbox.v1.ReadFileRequest
-	(*ReadFileResponse)(nil),               // 26: nominal.internalcodesandbox.v1.ReadFileResponse
-	(*WriteFileRequest)(nil),               // 27: nominal.internalcodesandbox.v1.WriteFileRequest
-	(*WriteFileResponse)(nil),              // 28: nominal.internalcodesandbox.v1.WriteFileResponse
-	(*ExecutionSession)(nil),               // 29: nominal.internalcodesandbox.v1.ExecutionSession
-	(*timestamppb.Timestamp)(nil),          // 30: google.protobuf.Timestamp
-	(*StartExecutionOperation)(nil),        // 31: nominal.internalcodesandbox.v1.StartExecutionOperation
-	(*ExecutionSnapshot)(nil),              // 32: nominal.internalcodesandbox.v1.ExecutionSnapshot
-	(*ReadExecutionOperation)(nil),         // 33: nominal.internalcodesandbox.v1.ReadExecutionOperation
-	(*WriteStdinOperation)(nil),            // 34: nominal.internalcodesandbox.v1.WriteStdinOperation
-	(*ExecutionStatus)(nil),                // 35: nominal.internalcodesandbox.v1.ExecutionStatus
-	(*KillExecutionOperation)(nil),         // 36: nominal.internalcodesandbox.v1.KillExecutionOperation
-	(*WorkspaceFileOperation)(nil),         // 37: nominal.internalcodesandbox.v1.WorkspaceFileOperation
-	(*WorkspaceFileResult)(nil),            // 38: nominal.internalcodesandbox.v1.WorkspaceFileResult
-	(*ReadFileOperation)(nil),              // 39: nominal.internalcodesandbox.v1.ReadFileOperation
-	(*FileChunk)(nil),                      // 40: nominal.internalcodesandbox.v1.FileChunk
-	(*WriteFileOperation)(nil),             // 41: nominal.internalcodesandbox.v1.WriteFileOperation
-	(*WriteFileResult)(nil),                // 42: nominal.internalcodesandbox.v1.WriteFileResult
+	(*DeleteThreadComputeRequest)(nil),     // 10: nominal.internalcodesandbox.v1.DeleteThreadComputeRequest
+	(*DeleteThreadComputeResponse)(nil),    // 11: nominal.internalcodesandbox.v1.DeleteThreadComputeResponse
+	(*RestartInterpreterRequest)(nil),      // 12: nominal.internalcodesandbox.v1.RestartInterpreterRequest
+	(*RestartInterpreterResponse)(nil),     // 13: nominal.internalcodesandbox.v1.RestartInterpreterResponse
+	(*SandboxScope)(nil),                   // 14: nominal.internalcodesandbox.v1.SandboxScope
+	(*StartExecutionRequest)(nil),          // 15: nominal.internalcodesandbox.v1.StartExecutionRequest
+	(*StartExecutionResponse)(nil),         // 16: nominal.internalcodesandbox.v1.StartExecutionResponse
+	(*ReadExecutionRequest)(nil),           // 17: nominal.internalcodesandbox.v1.ReadExecutionRequest
+	(*ReadExecutionResponse)(nil),          // 18: nominal.internalcodesandbox.v1.ReadExecutionResponse
+	(*WriteStdinRequest)(nil),              // 19: nominal.internalcodesandbox.v1.WriteStdinRequest
+	(*WriteStdinResponse)(nil),             // 20: nominal.internalcodesandbox.v1.WriteStdinResponse
+	(*KillExecutionRequest)(nil),           // 21: nominal.internalcodesandbox.v1.KillExecutionRequest
+	(*KillExecutionResponse)(nil),          // 22: nominal.internalcodesandbox.v1.KillExecutionResponse
+	(*GetExecutionStatusesRequest)(nil),    // 23: nominal.internalcodesandbox.v1.GetExecutionStatusesRequest
+	(*GetExecutionStatusesResponse)(nil),   // 24: nominal.internalcodesandbox.v1.GetExecutionStatusesResponse
+	(*WorkspaceFileOperationRequest)(nil),  // 25: nominal.internalcodesandbox.v1.WorkspaceFileOperationRequest
+	(*WorkspaceFileOperationResponse)(nil), // 26: nominal.internalcodesandbox.v1.WorkspaceFileOperationResponse
+	(*ReadFileRequest)(nil),                // 27: nominal.internalcodesandbox.v1.ReadFileRequest
+	(*ReadFileResponse)(nil),               // 28: nominal.internalcodesandbox.v1.ReadFileResponse
+	(*WriteFileRequest)(nil),               // 29: nominal.internalcodesandbox.v1.WriteFileRequest
+	(*WriteFileResponse)(nil),              // 30: nominal.internalcodesandbox.v1.WriteFileResponse
+	(*ExecutionSession)(nil),               // 31: nominal.internalcodesandbox.v1.ExecutionSession
+	(*timestamppb.Timestamp)(nil),          // 32: google.protobuf.Timestamp
+	(*StartExecutionOperation)(nil),        // 33: nominal.internalcodesandbox.v1.StartExecutionOperation
+	(*ExecutionSnapshot)(nil),              // 34: nominal.internalcodesandbox.v1.ExecutionSnapshot
+	(*ReadExecutionOperation)(nil),         // 35: nominal.internalcodesandbox.v1.ReadExecutionOperation
+	(*WriteStdinOperation)(nil),            // 36: nominal.internalcodesandbox.v1.WriteStdinOperation
+	(*ExecutionStatus)(nil),                // 37: nominal.internalcodesandbox.v1.ExecutionStatus
+	(*KillExecutionOperation)(nil),         // 38: nominal.internalcodesandbox.v1.KillExecutionOperation
+	(*WorkspaceFileOperation)(nil),         // 39: nominal.internalcodesandbox.v1.WorkspaceFileOperation
+	(*WorkspaceFileResult)(nil),            // 40: nominal.internalcodesandbox.v1.WorkspaceFileResult
+	(*ReadFileOperation)(nil),              // 41: nominal.internalcodesandbox.v1.ReadFileOperation
+	(*FileChunk)(nil),                      // 42: nominal.internalcodesandbox.v1.FileChunk
+	(*WriteFileOperation)(nil),             // 43: nominal.internalcodesandbox.v1.WriteFileOperation
+	(*WriteFileResult)(nil),                // 44: nominal.internalcodesandbox.v1.WriteFileResult
 }
 var file_nominal_protos_internalcodesandbox_v1_internal_codesandbox_proto_depIdxs = []int32{
 	0,  // 0: nominal.internalcodesandbox.v1.Sandbox.status:type_name -> nominal.internalcodesandbox.v1.SandboxStatus
-	30, // 1: nominal.internalcodesandbox.v1.Sandbox.created_at:type_name -> google.protobuf.Timestamp
-	30, // 2: nominal.internalcodesandbox.v1.Sandbox.last_activity_at:type_name -> google.protobuf.Timestamp
+	32, // 1: nominal.internalcodesandbox.v1.Sandbox.created_at:type_name -> google.protobuf.Timestamp
+	32, // 2: nominal.internalcodesandbox.v1.Sandbox.last_activity_at:type_name -> google.protobuf.Timestamp
 	1,  // 3: nominal.internalcodesandbox.v1.CreateSandboxResponse.sandbox:type_name -> nominal.internalcodesandbox.v1.Sandbox
 	1,  // 4: nominal.internalcodesandbox.v1.GetSandboxResponse.sandbox:type_name -> nominal.internalcodesandbox.v1.Sandbox
 	1,  // 5: nominal.internalcodesandbox.v1.GetLiveSandboxResponse.sandbox:type_name -> nominal.internalcodesandbox.v1.Sandbox
 	1,  // 6: nominal.internalcodesandbox.v1.DeleteSandboxResponse.sandbox:type_name -> nominal.internalcodesandbox.v1.Sandbox
-	12, // 7: nominal.internalcodesandbox.v1.StartExecutionRequest.scope:type_name -> nominal.internalcodesandbox.v1.SandboxScope
-	31, // 8: nominal.internalcodesandbox.v1.StartExecutionRequest.operation:type_name -> nominal.internalcodesandbox.v1.StartExecutionOperation
-	32, // 9: nominal.internalcodesandbox.v1.StartExecutionResponse.execution:type_name -> nominal.internalcodesandbox.v1.ExecutionSnapshot
-	12, // 10: nominal.internalcodesandbox.v1.ReadExecutionRequest.scope:type_name -> nominal.internalcodesandbox.v1.SandboxScope
-	33, // 11: nominal.internalcodesandbox.v1.ReadExecutionRequest.operation:type_name -> nominal.internalcodesandbox.v1.ReadExecutionOperation
-	32, // 12: nominal.internalcodesandbox.v1.ReadExecutionResponse.execution:type_name -> nominal.internalcodesandbox.v1.ExecutionSnapshot
-	12, // 13: nominal.internalcodesandbox.v1.WriteStdinRequest.scope:type_name -> nominal.internalcodesandbox.v1.SandboxScope
-	34, // 14: nominal.internalcodesandbox.v1.WriteStdinRequest.operation:type_name -> nominal.internalcodesandbox.v1.WriteStdinOperation
-	35, // 15: nominal.internalcodesandbox.v1.WriteStdinResponse.execution:type_name -> nominal.internalcodesandbox.v1.ExecutionStatus
-	12, // 16: nominal.internalcodesandbox.v1.KillExecutionRequest.scope:type_name -> nominal.internalcodesandbox.v1.SandboxScope
-	36, // 17: nominal.internalcodesandbox.v1.KillExecutionRequest.operation:type_name -> nominal.internalcodesandbox.v1.KillExecutionOperation
-	35, // 18: nominal.internalcodesandbox.v1.KillExecutionResponse.execution:type_name -> nominal.internalcodesandbox.v1.ExecutionStatus
-	12, // 19: nominal.internalcodesandbox.v1.GetExecutionStatusesRequest.scope:type_name -> nominal.internalcodesandbox.v1.SandboxScope
-	29, // 20: nominal.internalcodesandbox.v1.GetExecutionStatusesResponse.sessions:type_name -> nominal.internalcodesandbox.v1.ExecutionSession
-	12, // 21: nominal.internalcodesandbox.v1.WorkspaceFileOperationRequest.scope:type_name -> nominal.internalcodesandbox.v1.SandboxScope
-	37, // 22: nominal.internalcodesandbox.v1.WorkspaceFileOperationRequest.operation:type_name -> nominal.internalcodesandbox.v1.WorkspaceFileOperation
-	38, // 23: nominal.internalcodesandbox.v1.WorkspaceFileOperationResponse.result:type_name -> nominal.internalcodesandbox.v1.WorkspaceFileResult
-	12, // 24: nominal.internalcodesandbox.v1.ReadFileRequest.scope:type_name -> nominal.internalcodesandbox.v1.SandboxScope
-	39, // 25: nominal.internalcodesandbox.v1.ReadFileRequest.operation:type_name -> nominal.internalcodesandbox.v1.ReadFileOperation
-	40, // 26: nominal.internalcodesandbox.v1.ReadFileResponse.chunk:type_name -> nominal.internalcodesandbox.v1.FileChunk
-	12, // 27: nominal.internalcodesandbox.v1.WriteFileRequest.scope:type_name -> nominal.internalcodesandbox.v1.SandboxScope
-	41, // 28: nominal.internalcodesandbox.v1.WriteFileRequest.operation:type_name -> nominal.internalcodesandbox.v1.WriteFileOperation
-	42, // 29: nominal.internalcodesandbox.v1.WriteFileResponse.result:type_name -> nominal.internalcodesandbox.v1.WriteFileResult
-	35, // 30: nominal.internalcodesandbox.v1.ExecutionSession.status:type_name -> nominal.internalcodesandbox.v1.ExecutionStatus
+	14, // 7: nominal.internalcodesandbox.v1.StartExecutionRequest.scope:type_name -> nominal.internalcodesandbox.v1.SandboxScope
+	33, // 8: nominal.internalcodesandbox.v1.StartExecutionRequest.operation:type_name -> nominal.internalcodesandbox.v1.StartExecutionOperation
+	34, // 9: nominal.internalcodesandbox.v1.StartExecutionResponse.execution:type_name -> nominal.internalcodesandbox.v1.ExecutionSnapshot
+	14, // 10: nominal.internalcodesandbox.v1.ReadExecutionRequest.scope:type_name -> nominal.internalcodesandbox.v1.SandboxScope
+	35, // 11: nominal.internalcodesandbox.v1.ReadExecutionRequest.operation:type_name -> nominal.internalcodesandbox.v1.ReadExecutionOperation
+	34, // 12: nominal.internalcodesandbox.v1.ReadExecutionResponse.execution:type_name -> nominal.internalcodesandbox.v1.ExecutionSnapshot
+	14, // 13: nominal.internalcodesandbox.v1.WriteStdinRequest.scope:type_name -> nominal.internalcodesandbox.v1.SandboxScope
+	36, // 14: nominal.internalcodesandbox.v1.WriteStdinRequest.operation:type_name -> nominal.internalcodesandbox.v1.WriteStdinOperation
+	37, // 15: nominal.internalcodesandbox.v1.WriteStdinResponse.execution:type_name -> nominal.internalcodesandbox.v1.ExecutionStatus
+	14, // 16: nominal.internalcodesandbox.v1.KillExecutionRequest.scope:type_name -> nominal.internalcodesandbox.v1.SandboxScope
+	38, // 17: nominal.internalcodesandbox.v1.KillExecutionRequest.operation:type_name -> nominal.internalcodesandbox.v1.KillExecutionOperation
+	37, // 18: nominal.internalcodesandbox.v1.KillExecutionResponse.execution:type_name -> nominal.internalcodesandbox.v1.ExecutionStatus
+	14, // 19: nominal.internalcodesandbox.v1.GetExecutionStatusesRequest.scope:type_name -> nominal.internalcodesandbox.v1.SandboxScope
+	31, // 20: nominal.internalcodesandbox.v1.GetExecutionStatusesResponse.sessions:type_name -> nominal.internalcodesandbox.v1.ExecutionSession
+	14, // 21: nominal.internalcodesandbox.v1.WorkspaceFileOperationRequest.scope:type_name -> nominal.internalcodesandbox.v1.SandboxScope
+	39, // 22: nominal.internalcodesandbox.v1.WorkspaceFileOperationRequest.operation:type_name -> nominal.internalcodesandbox.v1.WorkspaceFileOperation
+	40, // 23: nominal.internalcodesandbox.v1.WorkspaceFileOperationResponse.result:type_name -> nominal.internalcodesandbox.v1.WorkspaceFileResult
+	14, // 24: nominal.internalcodesandbox.v1.ReadFileRequest.scope:type_name -> nominal.internalcodesandbox.v1.SandboxScope
+	41, // 25: nominal.internalcodesandbox.v1.ReadFileRequest.operation:type_name -> nominal.internalcodesandbox.v1.ReadFileOperation
+	42, // 26: nominal.internalcodesandbox.v1.ReadFileResponse.chunk:type_name -> nominal.internalcodesandbox.v1.FileChunk
+	14, // 27: nominal.internalcodesandbox.v1.WriteFileRequest.scope:type_name -> nominal.internalcodesandbox.v1.SandboxScope
+	43, // 28: nominal.internalcodesandbox.v1.WriteFileRequest.operation:type_name -> nominal.internalcodesandbox.v1.WriteFileOperation
+	44, // 29: nominal.internalcodesandbox.v1.WriteFileResponse.result:type_name -> nominal.internalcodesandbox.v1.WriteFileResult
+	37, // 30: nominal.internalcodesandbox.v1.ExecutionSession.status:type_name -> nominal.internalcodesandbox.v1.ExecutionStatus
 	2,  // 31: nominal.internalcodesandbox.v1.InternalCodeSandboxService.CreateSandbox:input_type -> nominal.internalcodesandbox.v1.CreateSandboxRequest
 	4,  // 32: nominal.internalcodesandbox.v1.InternalCodeSandboxService.GetSandbox:input_type -> nominal.internalcodesandbox.v1.GetSandboxRequest
 	6,  // 33: nominal.internalcodesandbox.v1.InternalCodeSandboxService.GetLiveSandbox:input_type -> nominal.internalcodesandbox.v1.GetLiveSandboxRequest
 	8,  // 34: nominal.internalcodesandbox.v1.InternalCodeSandboxService.DeleteSandbox:input_type -> nominal.internalcodesandbox.v1.DeleteSandboxRequest
-	10, // 35: nominal.internalcodesandbox.v1.InternalCodeSandboxService.RestartInterpreter:input_type -> nominal.internalcodesandbox.v1.RestartInterpreterRequest
-	13, // 36: nominal.internalcodesandbox.v1.InternalCodeSandboxService.StartExecution:input_type -> nominal.internalcodesandbox.v1.StartExecutionRequest
-	15, // 37: nominal.internalcodesandbox.v1.InternalCodeSandboxService.ReadExecution:input_type -> nominal.internalcodesandbox.v1.ReadExecutionRequest
-	17, // 38: nominal.internalcodesandbox.v1.InternalCodeSandboxService.WriteStdin:input_type -> nominal.internalcodesandbox.v1.WriteStdinRequest
-	19, // 39: nominal.internalcodesandbox.v1.InternalCodeSandboxService.KillExecution:input_type -> nominal.internalcodesandbox.v1.KillExecutionRequest
-	21, // 40: nominal.internalcodesandbox.v1.InternalCodeSandboxService.GetExecutionStatuses:input_type -> nominal.internalcodesandbox.v1.GetExecutionStatusesRequest
-	23, // 41: nominal.internalcodesandbox.v1.InternalCodeSandboxService.WorkspaceFileOperation:input_type -> nominal.internalcodesandbox.v1.WorkspaceFileOperationRequest
-	25, // 42: nominal.internalcodesandbox.v1.InternalCodeSandboxService.ReadFile:input_type -> nominal.internalcodesandbox.v1.ReadFileRequest
-	27, // 43: nominal.internalcodesandbox.v1.InternalCodeSandboxService.WriteFile:input_type -> nominal.internalcodesandbox.v1.WriteFileRequest
-	3,  // 44: nominal.internalcodesandbox.v1.InternalCodeSandboxService.CreateSandbox:output_type -> nominal.internalcodesandbox.v1.CreateSandboxResponse
-	5,  // 45: nominal.internalcodesandbox.v1.InternalCodeSandboxService.GetSandbox:output_type -> nominal.internalcodesandbox.v1.GetSandboxResponse
-	7,  // 46: nominal.internalcodesandbox.v1.InternalCodeSandboxService.GetLiveSandbox:output_type -> nominal.internalcodesandbox.v1.GetLiveSandboxResponse
-	9,  // 47: nominal.internalcodesandbox.v1.InternalCodeSandboxService.DeleteSandbox:output_type -> nominal.internalcodesandbox.v1.DeleteSandboxResponse
-	11, // 48: nominal.internalcodesandbox.v1.InternalCodeSandboxService.RestartInterpreter:output_type -> nominal.internalcodesandbox.v1.RestartInterpreterResponse
-	14, // 49: nominal.internalcodesandbox.v1.InternalCodeSandboxService.StartExecution:output_type -> nominal.internalcodesandbox.v1.StartExecutionResponse
-	16, // 50: nominal.internalcodesandbox.v1.InternalCodeSandboxService.ReadExecution:output_type -> nominal.internalcodesandbox.v1.ReadExecutionResponse
-	18, // 51: nominal.internalcodesandbox.v1.InternalCodeSandboxService.WriteStdin:output_type -> nominal.internalcodesandbox.v1.WriteStdinResponse
-	20, // 52: nominal.internalcodesandbox.v1.InternalCodeSandboxService.KillExecution:output_type -> nominal.internalcodesandbox.v1.KillExecutionResponse
-	22, // 53: nominal.internalcodesandbox.v1.InternalCodeSandboxService.GetExecutionStatuses:output_type -> nominal.internalcodesandbox.v1.GetExecutionStatusesResponse
-	24, // 54: nominal.internalcodesandbox.v1.InternalCodeSandboxService.WorkspaceFileOperation:output_type -> nominal.internalcodesandbox.v1.WorkspaceFileOperationResponse
-	26, // 55: nominal.internalcodesandbox.v1.InternalCodeSandboxService.ReadFile:output_type -> nominal.internalcodesandbox.v1.ReadFileResponse
-	28, // 56: nominal.internalcodesandbox.v1.InternalCodeSandboxService.WriteFile:output_type -> nominal.internalcodesandbox.v1.WriteFileResponse
-	44, // [44:57] is the sub-list for method output_type
-	31, // [31:44] is the sub-list for method input_type
+	10, // 35: nominal.internalcodesandbox.v1.InternalCodeSandboxService.DeleteThreadCompute:input_type -> nominal.internalcodesandbox.v1.DeleteThreadComputeRequest
+	12, // 36: nominal.internalcodesandbox.v1.InternalCodeSandboxService.RestartInterpreter:input_type -> nominal.internalcodesandbox.v1.RestartInterpreterRequest
+	15, // 37: nominal.internalcodesandbox.v1.InternalCodeSandboxService.StartExecution:input_type -> nominal.internalcodesandbox.v1.StartExecutionRequest
+	17, // 38: nominal.internalcodesandbox.v1.InternalCodeSandboxService.ReadExecution:input_type -> nominal.internalcodesandbox.v1.ReadExecutionRequest
+	19, // 39: nominal.internalcodesandbox.v1.InternalCodeSandboxService.WriteStdin:input_type -> nominal.internalcodesandbox.v1.WriteStdinRequest
+	21, // 40: nominal.internalcodesandbox.v1.InternalCodeSandboxService.KillExecution:input_type -> nominal.internalcodesandbox.v1.KillExecutionRequest
+	23, // 41: nominal.internalcodesandbox.v1.InternalCodeSandboxService.GetExecutionStatuses:input_type -> nominal.internalcodesandbox.v1.GetExecutionStatusesRequest
+	25, // 42: nominal.internalcodesandbox.v1.InternalCodeSandboxService.WorkspaceFileOperation:input_type -> nominal.internalcodesandbox.v1.WorkspaceFileOperationRequest
+	27, // 43: nominal.internalcodesandbox.v1.InternalCodeSandboxService.ReadFile:input_type -> nominal.internalcodesandbox.v1.ReadFileRequest
+	29, // 44: nominal.internalcodesandbox.v1.InternalCodeSandboxService.WriteFile:input_type -> nominal.internalcodesandbox.v1.WriteFileRequest
+	3,  // 45: nominal.internalcodesandbox.v1.InternalCodeSandboxService.CreateSandbox:output_type -> nominal.internalcodesandbox.v1.CreateSandboxResponse
+	5,  // 46: nominal.internalcodesandbox.v1.InternalCodeSandboxService.GetSandbox:output_type -> nominal.internalcodesandbox.v1.GetSandboxResponse
+	7,  // 47: nominal.internalcodesandbox.v1.InternalCodeSandboxService.GetLiveSandbox:output_type -> nominal.internalcodesandbox.v1.GetLiveSandboxResponse
+	9,  // 48: nominal.internalcodesandbox.v1.InternalCodeSandboxService.DeleteSandbox:output_type -> nominal.internalcodesandbox.v1.DeleteSandboxResponse
+	11, // 49: nominal.internalcodesandbox.v1.InternalCodeSandboxService.DeleteThreadCompute:output_type -> nominal.internalcodesandbox.v1.DeleteThreadComputeResponse
+	13, // 50: nominal.internalcodesandbox.v1.InternalCodeSandboxService.RestartInterpreter:output_type -> nominal.internalcodesandbox.v1.RestartInterpreterResponse
+	16, // 51: nominal.internalcodesandbox.v1.InternalCodeSandboxService.StartExecution:output_type -> nominal.internalcodesandbox.v1.StartExecutionResponse
+	18, // 52: nominal.internalcodesandbox.v1.InternalCodeSandboxService.ReadExecution:output_type -> nominal.internalcodesandbox.v1.ReadExecutionResponse
+	20, // 53: nominal.internalcodesandbox.v1.InternalCodeSandboxService.WriteStdin:output_type -> nominal.internalcodesandbox.v1.WriteStdinResponse
+	22, // 54: nominal.internalcodesandbox.v1.InternalCodeSandboxService.KillExecution:output_type -> nominal.internalcodesandbox.v1.KillExecutionResponse
+	24, // 55: nominal.internalcodesandbox.v1.InternalCodeSandboxService.GetExecutionStatuses:output_type -> nominal.internalcodesandbox.v1.GetExecutionStatusesResponse
+	26, // 56: nominal.internalcodesandbox.v1.InternalCodeSandboxService.WorkspaceFileOperation:output_type -> nominal.internalcodesandbox.v1.WorkspaceFileOperationResponse
+	28, // 57: nominal.internalcodesandbox.v1.InternalCodeSandboxService.ReadFile:output_type -> nominal.internalcodesandbox.v1.ReadFileResponse
+	30, // 58: nominal.internalcodesandbox.v1.InternalCodeSandboxService.WriteFile:output_type -> nominal.internalcodesandbox.v1.WriteFileResponse
+	45, // [45:59] is the sub-list for method output_type
+	31, // [31:45] is the sub-list for method input_type
 	31, // [31:31] is the sub-list for extension type_name
 	31, // [31:31] is the sub-list for extension extendee
 	0,  // [0:31] is the sub-list for field type_name
@@ -1766,7 +1857,7 @@ func file_nominal_protos_internalcodesandbox_v1_internal_codesandbox_proto_init(
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_nominal_protos_internalcodesandbox_v1_internal_codesandbox_proto_rawDesc), len(file_nominal_protos_internalcodesandbox_v1_internal_codesandbox_proto_rawDesc)),
 			NumEnums:      1,
-			NumMessages:   29,
+			NumMessages:   31,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

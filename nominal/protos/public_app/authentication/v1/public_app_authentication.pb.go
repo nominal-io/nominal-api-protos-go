@@ -207,7 +207,7 @@ func (*GetOidcInitRequest) Descriptor() ([]byte, []int) {
 
 type GetOidcInitResponse struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
-	// The `client_id` field as described in RFC 8252: https://datatracker.ietf.org/doc/html/rfc7636.
+	// The `client_id` field as described in RFC 6749: https://datatracker.ietf.org/doc/html/rfc6749#section-2.2.
 	// Note that this is already included in the `loginUrl` field of this response.
 	ClientId string `protobuf:"bytes,1,opt,name=client_id,json=clientId,proto3" json:"client_id,omitempty"`
 	// A URL that public clients may use to prompt the user to authenticate in their browser, using the flow
@@ -215,7 +215,7 @@ type GetOidcInitResponse struct {
 	//
 	// This URL must be extended with the following query parameters:
 	//   - `redirect_uri`: one of the URLs included in the `redirectUris` field of this response.
-	//   - `code_challenge` and `code_challenge_method`: described in RFC 8252
+	//   - `code_challenge` and `code_challenge_method`: described in RFC 7636
 	//     https://datatracker.ietf.org/doc/html/rfc7636.
 	LoginUrl string `protobuf:"bytes,2,opt,name=login_url,json=loginUrl,proto3" json:"login_url,omitempty"`
 	// List of absolute URLs (usually on the localhost) that public applications may use to perform an OIDC

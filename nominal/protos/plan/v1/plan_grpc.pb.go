@@ -39,13 +39,14 @@ const (
 // PlanService manages plans, which are collections of objectives and activities for future execution.
 type PlanServiceClient interface {
 	// Creates a plan, which holds objectives, activities, segments, and asset groups for future execution, in a
-	// workspace with its first commit. Returns the plan and any WARNING findings on its content.
+	// workspace with its first commit. Returns the plan and any MAJOR or WARNING findings on its content.
 	//
 	// The server assigns the RID. plan.metadata.workspace_rid and plan.content are required, and the workspace cannot
 	// change later. The published flag defaults to true and the status to open when unset. The caller needs permission
 	// to edit plans in the workspace. Content with an ERROR finding is rejected, and the error names each finding;
-	// WARNING findings are returned and do not block the create. Set import_asset_limits to copy the scheduling limits
-	// of the assets the plan uses into the plan's constraints. To change content later, use CreatePlanCommit.
+	// MAJOR and WARNING findings are returned and do not block the create. Set import_asset_limits to copy the
+	// scheduling limits of the assets the plan uses into the plan's constraints. To change content later, use
+	// CreatePlanCommit.
 	//
 	// Errors:
 	//   - INVALID_ARGUMENT: plan, plan.metadata, plan.content, or plan.metadata.workspace_rid is missing or malformed,
@@ -82,8 +83,8 @@ type PlanServiceClient interface {
 	// Errors:
 	// - INVALID_ARGUMENT: a plan RID is malformed or is not a plan RID.
 	BatchGetPlanSummaries(ctx context.Context, in *BatchGetPlanSummariesRequest, opts ...grpc.CallOption) (*BatchGetPlanSummariesResponse, error)
-	// Writes a plan's content by creating a commit on one of its branches. Returns the plan and any WARNING findings
-	// on the content.
+	// Writes a plan's content by creating a commit on one of its branches. Returns the plan and any MAJOR or WARNING
+	// findings on the content.
 	//
 	// The branch defaults to "main". The caller needs permission to edit plans in the plan's workspace. Content with
 	// an ERROR finding is rejected, and the error names each finding. A working-state commit ignores the message and
@@ -127,12 +128,12 @@ type PlanServiceClient interface {
 	//     date_range_overlaps window has no bound or a start after its end, or the page token is invalid.
 	SearchPlans(ctx context.Context, in *SearchPlansRequest, opts ...grpc.CallOption) (*SearchPlansResponse, error)
 	// Checks a plan's content for rule violations without writing. Reads a stored plan revision or inline content,
-	// and returns findings with ERROR or WARNING severity.
+	// and returns its findings.
 	//
-	// The call succeeds on invalid content: an ERROR finding is one CreatePlanCommit would reject, a WARNING one it
-	// would accept. An assigned asset is checked against the pool of each resource it names, or every pool of its
-	// activity's objectives when it names none, and only when that pool lists its assets explicitly; so is the base
-	// asset pool. Asset capacity and turnaround come from a constraint on the asset,
+	// The call succeeds on invalid content: an ERROR finding is one CreatePlanCommit would reject, any other
+	// severity one it would accept. An assigned asset is checked against the pool of each resource it names, or every
+	// pool of its activity's objectives when it names none, and only when that pool lists its assets explicitly; so is
+	// the base asset pool. Asset capacity and turnaround come from a constraint on the asset,
 	// then its properties (read only while inherit_asset_limits is unset or true), then the defaults. A capacity on a
 	// group, a resource, or the plan is pooled across its assets. A stored plan, or content sent with workspace_rid,
 	// has its scheduled assets read in that workspace, and a searching pool only as far as it holds them; when that
@@ -268,13 +269,14 @@ func (c *planServiceClient) ListPlanAssetGroupSummaries(ctx context.Context, in 
 // PlanService manages plans, which are collections of objectives and activities for future execution.
 type PlanServiceServer interface {
 	// Creates a plan, which holds objectives, activities, segments, and asset groups for future execution, in a
-	// workspace with its first commit. Returns the plan and any WARNING findings on its content.
+	// workspace with its first commit. Returns the plan and any MAJOR or WARNING findings on its content.
 	//
 	// The server assigns the RID. plan.metadata.workspace_rid and plan.content are required, and the workspace cannot
 	// change later. The published flag defaults to true and the status to open when unset. The caller needs permission
 	// to edit plans in the workspace. Content with an ERROR finding is rejected, and the error names each finding;
-	// WARNING findings are returned and do not block the create. Set import_asset_limits to copy the scheduling limits
-	// of the assets the plan uses into the plan's constraints. To change content later, use CreatePlanCommit.
+	// MAJOR and WARNING findings are returned and do not block the create. Set import_asset_limits to copy the
+	// scheduling limits of the assets the plan uses into the plan's constraints. To change content later, use
+	// CreatePlanCommit.
 	//
 	// Errors:
 	//   - INVALID_ARGUMENT: plan, plan.metadata, plan.content, or plan.metadata.workspace_rid is missing or malformed,
@@ -311,8 +313,8 @@ type PlanServiceServer interface {
 	// Errors:
 	// - INVALID_ARGUMENT: a plan RID is malformed or is not a plan RID.
 	BatchGetPlanSummaries(context.Context, *BatchGetPlanSummariesRequest) (*BatchGetPlanSummariesResponse, error)
-	// Writes a plan's content by creating a commit on one of its branches. Returns the plan and any WARNING findings
-	// on the content.
+	// Writes a plan's content by creating a commit on one of its branches. Returns the plan and any MAJOR or WARNING
+	// findings on the content.
 	//
 	// The branch defaults to "main". The caller needs permission to edit plans in the plan's workspace. Content with
 	// an ERROR finding is rejected, and the error names each finding. A working-state commit ignores the message and
@@ -356,12 +358,12 @@ type PlanServiceServer interface {
 	//     date_range_overlaps window has no bound or a start after its end, or the page token is invalid.
 	SearchPlans(context.Context, *SearchPlansRequest) (*SearchPlansResponse, error)
 	// Checks a plan's content for rule violations without writing. Reads a stored plan revision or inline content,
-	// and returns findings with ERROR or WARNING severity.
+	// and returns its findings.
 	//
-	// The call succeeds on invalid content: an ERROR finding is one CreatePlanCommit would reject, a WARNING one it
-	// would accept. An assigned asset is checked against the pool of each resource it names, or every pool of its
-	// activity's objectives when it names none, and only when that pool lists its assets explicitly; so is the base
-	// asset pool. Asset capacity and turnaround come from a constraint on the asset,
+	// The call succeeds on invalid content: an ERROR finding is one CreatePlanCommit would reject, any other
+	// severity one it would accept. An assigned asset is checked against the pool of each resource it names, or every
+	// pool of its activity's objectives when it names none, and only when that pool lists its assets explicitly; so is
+	// the base asset pool. Asset capacity and turnaround come from a constraint on the asset,
 	// then its properties (read only while inherit_asset_limits is unset or true), then the defaults. A capacity on a
 	// group, a resource, or the plan is pooled across its assets. A stored plan, or content sent with workspace_rid,
 	// has its scheduled assets read in that workspace, and a searching pool only as far as it holds them; when that

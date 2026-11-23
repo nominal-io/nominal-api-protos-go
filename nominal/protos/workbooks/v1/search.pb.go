@@ -85,7 +85,8 @@ const (
 	WorkbookType_WORKBOOK_TYPE_STANDARD   WorkbookType = 1
 	WorkbookType_WORKBOOK_TYPE_COMPARISON WorkbookType = 2
 	// The backing workbook of an Analyst conversation, which lives only as long as the
-	// conversation needs it. Workbook search omits these unless the query filters on this type.
+	// conversation needs it. Workbook search omits these unless the query filters on this type. It stays a draft and
+	// cannot be published. Its author has edit access to it while they can view it.
 	WorkbookType_WORKBOOK_TYPE_ANALYST_EPHEMERAL WorkbookType = 3
 	WorkbookType_WORKBOOK_TYPE_REPORT            WorkbookType = 4
 )

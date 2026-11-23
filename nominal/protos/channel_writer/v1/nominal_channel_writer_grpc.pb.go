@@ -44,7 +44,20 @@ type NominalChannelWriterServiceClient interface {
 	// Writes column-oriented batches: each batch carries one channel's timestamps and values as parallel
 	// columns.
 	WriteColumnBatches(ctx context.Context, in *WriteColumnBatchesRequest, opts ...grpc.CallOption) (*WriteColumnBatchesResponse, error)
-	// Writes log points to a single log channel.
+	// Writes log points, each a timestamp with a text message and optional key/value arguments, to one
+	// log channel of a dataset or data source.
+	//
+	// The channel is WriteLogsRequest.channel, or "logs" when it is not set. The RPC returns once the
+	// points are accepted into the write queue. A request with no log points is accepted and writes
+	// nothing. The caller needs permission to write data to the dataset or data source. Use
+	// WriteBatches or WriteColumnBatches for numeric, string, and other non-log values.
+	//
+	// Errors:
+	//   - INVALID_ARGUMENT: data_source_rid is not a dataset or data source RID, a log point has no
+	//     timestamp or no value, or the channel name is empty, longer than 512 characters, or contains
+	//     a null character.
+	//   - PERMISSION_DENIED: the caller cannot write data to the dataset or data source.
+	//   - RESOURCE_EXHAUSTED: the organization is writing too many new channel names in a short period.
 	WriteLogs(ctx context.Context, in *WriteLogsRequest, opts ...grpc.CallOption) (*WriteLogsResponse, error)
 }
 
@@ -106,7 +119,20 @@ type NominalChannelWriterServiceServer interface {
 	// Writes column-oriented batches: each batch carries one channel's timestamps and values as parallel
 	// columns.
 	WriteColumnBatches(context.Context, *WriteColumnBatchesRequest) (*WriteColumnBatchesResponse, error)
-	// Writes log points to a single log channel.
+	// Writes log points, each a timestamp with a text message and optional key/value arguments, to one
+	// log channel of a dataset or data source.
+	//
+	// The channel is WriteLogsRequest.channel, or "logs" when it is not set. The RPC returns once the
+	// points are accepted into the write queue. A request with no log points is accepted and writes
+	// nothing. The caller needs permission to write data to the dataset or data source. Use
+	// WriteBatches or WriteColumnBatches for numeric, string, and other non-log values.
+	//
+	// Errors:
+	//   - INVALID_ARGUMENT: data_source_rid is not a dataset or data source RID, a log point has no
+	//     timestamp or no value, or the channel name is empty, longer than 512 characters, or contains
+	//     a null character.
+	//   - PERMISSION_DENIED: the caller cannot write data to the dataset or data source.
+	//   - RESOURCE_EXHAUSTED: the organization is writing too many new channel names in a short period.
 	WriteLogs(context.Context, *WriteLogsRequest) (*WriteLogsResponse, error)
 	mustEmbedUnimplementedNominalChannelWriterServiceServer()
 }

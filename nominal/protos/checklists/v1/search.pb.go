@@ -101,6 +101,7 @@ type ChecklistSearchQuery struct {
 	//	*ChecklistSearchQuery_AuthoredByCaller
 	//	*ChecklistSearchQuery_Authors
 	//	*ChecklistSearchQuery_IsArchived
+	//	*ChecklistSearchQuery_AssetTypes
 	Query         isChecklistSearchQuery_Query `protobuf_oneof:"query"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -281,6 +282,15 @@ func (x *ChecklistSearchQuery) GetIsArchived() bool {
 	return false
 }
 
+func (x *ChecklistSearchQuery) GetAssetTypes() *AssetTypesFilter {
+	if x != nil {
+		if x, ok := x.Query.(*ChecklistSearchQuery_AssetTypes); ok {
+			return x.AssetTypes
+		}
+	}
+	return nil
+}
+
 type isChecklistSearchQuery_Query interface {
 	isChecklistSearchQuery_Query()
 }
@@ -360,6 +370,10 @@ type ChecklistSearchQuery_IsArchived struct {
 	IsArchived bool `protobuf:"varint,15,opt,name=is_archived,json=isArchived,proto3,oneof"`
 }
 
+type ChecklistSearchQuery_AssetTypes struct {
+	AssetTypes *AssetTypesFilter `protobuf:"bytes,16,opt,name=asset_types,json=assetTypes,proto3,oneof"`
+}
+
 func (*ChecklistSearchQuery_And) isChecklistSearchQuery_Query() {}
 
 func (*ChecklistSearchQuery_Or) isChecklistSearchQuery_Query() {}
@@ -390,6 +404,52 @@ func (*ChecklistSearchQuery_Authors) isChecklistSearchQuery_Query() {}
 
 func (*ChecklistSearchQuery_IsArchived) isChecklistSearchQuery_Query() {}
 
+func (*ChecklistSearchQuery_AssetTypes) isChecklistSearchQuery_Query() {}
+
+type AssetTypesFilter struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	TypeRids      []string               `protobuf:"bytes,1,rep,name=type_rids,json=typeRids,proto3" json:"type_rids,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *AssetTypesFilter) Reset() {
+	*x = AssetTypesFilter{}
+	mi := &file_nominal_protos_checklists_v1_search_proto_msgTypes[1]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *AssetTypesFilter) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*AssetTypesFilter) ProtoMessage() {}
+
+func (x *AssetTypesFilter) ProtoReflect() protoreflect.Message {
+	mi := &file_nominal_protos_checklists_v1_search_proto_msgTypes[1]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use AssetTypesFilter.ProtoReflect.Descriptor instead.
+func (*AssetTypesFilter) Descriptor() ([]byte, []int) {
+	return file_nominal_protos_checklists_v1_search_proto_rawDescGZIP(), []int{1}
+}
+
+func (x *AssetTypesFilter) GetTypeRids() []string {
+	if x != nil {
+		return x.TypeRids
+	}
+	return nil
+}
+
 type ChecklistSortOptions struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	IsDescending  bool                   `protobuf:"varint,1,opt,name=is_descending,json=isDescending,proto3" json:"is_descending,omitempty"`
@@ -400,7 +460,7 @@ type ChecklistSortOptions struct {
 
 func (x *ChecklistSortOptions) Reset() {
 	*x = ChecklistSortOptions{}
-	mi := &file_nominal_protos_checklists_v1_search_proto_msgTypes[1]
+	mi := &file_nominal_protos_checklists_v1_search_proto_msgTypes[2]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -412,7 +472,7 @@ func (x *ChecklistSortOptions) String() string {
 func (*ChecklistSortOptions) ProtoMessage() {}
 
 func (x *ChecklistSortOptions) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_checklists_v1_search_proto_msgTypes[1]
+	mi := &file_nominal_protos_checklists_v1_search_proto_msgTypes[2]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -425,7 +485,7 @@ func (x *ChecklistSortOptions) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ChecklistSortOptions.ProtoReflect.Descriptor instead.
 func (*ChecklistSortOptions) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_checklists_v1_search_proto_rawDescGZIP(), []int{1}
+	return file_nominal_protos_checklists_v1_search_proto_rawDescGZIP(), []int{2}
 }
 
 func (x *ChecklistSortOptions) GetIsDescending() bool {
@@ -451,7 +511,7 @@ type ChecklistSearchQuery_QueryList struct {
 
 func (x *ChecklistSearchQuery_QueryList) Reset() {
 	*x = ChecklistSearchQuery_QueryList{}
-	mi := &file_nominal_protos_checklists_v1_search_proto_msgTypes[2]
+	mi := &file_nominal_protos_checklists_v1_search_proto_msgTypes[3]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -463,7 +523,7 @@ func (x *ChecklistSearchQuery_QueryList) String() string {
 func (*ChecklistSearchQuery_QueryList) ProtoMessage() {}
 
 func (x *ChecklistSearchQuery_QueryList) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_checklists_v1_search_proto_msgTypes[2]
+	mi := &file_nominal_protos_checklists_v1_search_proto_msgTypes[3]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -490,7 +550,7 @@ var File_nominal_protos_checklists_v1_search_proto protoreflect.FileDescriptor
 
 const file_nominal_protos_checklists_v1_search_proto_rawDesc = "" +
 	"\n" +
-	")nominal/protos/checklists/v1/search.proto\x12\x15nominal.checklists.v1\x1a\x1bbuf/validate/validate.proto\x1a!nominal/protos/gen/v1/alias.proto\x1a!nominal/protos/types/common.proto\x1a)nominal/protos/types/search_filters.proto\x1a nominal/protos/types/types.proto\"\x94\f\n" +
+	")nominal/protos/checklists/v1/search.proto\x12\x15nominal.checklists.v1\x1a\x1bbuf/validate/validate.proto\x1a!nominal/protos/gen/v1/alias.proto\x1a!nominal/protos/types/common.proto\x1a)nominal/protos/types/search_filters.proto\x1a nominal/protos/types/types.proto\"\xe0\f\n" +
 	"\x14ChecklistSearchQuery\x12I\n" +
 	"\x03and\x18\x01 \x01(\v25.nominal.checklists.v1.ChecklistSearchQuery.QueryListH\x00R\x03and\x12G\n" +
 	"\x02or\x18\x02 \x01(\v25.nominal.checklists.v1.ChecklistSearchQuery.QueryListH\x00R\x02or\x12?\n" +
@@ -519,10 +579,15 @@ const file_nominal_protos_checklists_v1_search_proto_rawDesc = "" +
 	"\x12authored_by_caller\x18\r \x01(\bH\x00R\x10authoredByCaller\x129\n" +
 	"\aauthors\x18\x0e \x01(\v2\x1d.nominal.types.UserRidsFilterH\x00R\aauthors\x12!\n" +
 	"\vis_archived\x18\x0f \x01(\bH\x00R\n" +
-	"isArchived\x1a\\\n" +
+	"isArchived\x12J\n" +
+	"\vasset_types\x18\x10 \x01(\v2'.nominal.checklists.v1.AssetTypesFilterH\x00R\n" +
+	"assetTypes\x1a\\\n" +
 	"\tQueryList\x12O\n" +
 	"\aqueries\x18\x01 \x03(\v2+.nominal.checklists.v1.ChecklistSearchQueryB\b\xbaH\x05\x92\x01\x02\x10dR\aqueriesB\x0e\n" +
-	"\x05query\x12\x05\xbaH\x02\b\x01\"\x88\x01\n" +
+	"\x05query\x12\x05\xbaH\x02\b\x01\"j\n" +
+	"\x10AssetTypesFilter\x12V\n" +
+	"\ttype_rids\x18\x01 \x03(\tB9\xbaH\x0f\x92\x01\f\x10\xe8\a\"\ar\x05\x10\x01\x18\x80\x02\x9a\xb2\x1a#\n" +
+	"!io.nominal.scout.rids.api.TypeRidR\btypeRids\"\x88\x01\n" +
 	"\x14ChecklistSortOptions\x12#\n" +
 	"\ris_descending\x18\x01 \x01(\bR\fisDescending\x12K\n" +
 	"\x05field\x18\x02 \x01(\x0e2).nominal.checklists.v1.ChecklistSortFieldB\n" +
@@ -547,32 +612,34 @@ func file_nominal_protos_checklists_v1_search_proto_rawDescGZIP() []byte {
 }
 
 var file_nominal_protos_checklists_v1_search_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
-var file_nominal_protos_checklists_v1_search_proto_msgTypes = make([]protoimpl.MessageInfo, 3)
+var file_nominal_protos_checklists_v1_search_proto_msgTypes = make([]protoimpl.MessageInfo, 4)
 var file_nominal_protos_checklists_v1_search_proto_goTypes = []any{
 	(ChecklistSortField)(0),                // 0: nominal.checklists.v1.ChecklistSortField
 	(*ChecklistSearchQuery)(nil),           // 1: nominal.checklists.v1.ChecklistSearchQuery
-	(*ChecklistSortOptions)(nil),           // 2: nominal.checklists.v1.ChecklistSortOptions
-	(*ChecklistSearchQuery_QueryList)(nil), // 3: nominal.checklists.v1.ChecklistSearchQuery.QueryList
-	(*types.LabelsFilter)(nil),             // 4: nominal.types.LabelsFilter
-	(*types.Property)(nil),                 // 5: nominal.types.Property
-	(*types.PropertiesFilter)(nil),         // 6: nominal.types.PropertiesFilter
-	(*types.UserRidsFilter)(nil),           // 7: nominal.types.UserRidsFilter
+	(*AssetTypesFilter)(nil),               // 2: nominal.checklists.v1.AssetTypesFilter
+	(*ChecklistSortOptions)(nil),           // 3: nominal.checklists.v1.ChecklistSortOptions
+	(*ChecklistSearchQuery_QueryList)(nil), // 4: nominal.checklists.v1.ChecklistSearchQuery.QueryList
+	(*types.LabelsFilter)(nil),             // 5: nominal.types.LabelsFilter
+	(*types.Property)(nil),                 // 6: nominal.types.Property
+	(*types.PropertiesFilter)(nil),         // 7: nominal.types.PropertiesFilter
+	(*types.UserRidsFilter)(nil),           // 8: nominal.types.UserRidsFilter
 }
 var file_nominal_protos_checklists_v1_search_proto_depIdxs = []int32{
-	3, // 0: nominal.checklists.v1.ChecklistSearchQuery.and:type_name -> nominal.checklists.v1.ChecklistSearchQuery.QueryList
-	3, // 1: nominal.checklists.v1.ChecklistSearchQuery.or:type_name -> nominal.checklists.v1.ChecklistSearchQuery.QueryList
-	1, // 2: nominal.checklists.v1.ChecklistSearchQuery.not:type_name -> nominal.checklists.v1.ChecklistSearchQuery
-	4, // 3: nominal.checklists.v1.ChecklistSearchQuery.labels:type_name -> nominal.types.LabelsFilter
-	5, // 4: nominal.checklists.v1.ChecklistSearchQuery.property:type_name -> nominal.types.Property
-	6, // 5: nominal.checklists.v1.ChecklistSearchQuery.properties:type_name -> nominal.types.PropertiesFilter
-	7, // 6: nominal.checklists.v1.ChecklistSearchQuery.authors:type_name -> nominal.types.UserRidsFilter
-	0, // 7: nominal.checklists.v1.ChecklistSortOptions.field:type_name -> nominal.checklists.v1.ChecklistSortField
-	1, // 8: nominal.checklists.v1.ChecklistSearchQuery.QueryList.queries:type_name -> nominal.checklists.v1.ChecklistSearchQuery
-	9, // [9:9] is the sub-list for method output_type
-	9, // [9:9] is the sub-list for method input_type
-	9, // [9:9] is the sub-list for extension type_name
-	9, // [9:9] is the sub-list for extension extendee
-	0, // [0:9] is the sub-list for field type_name
+	4,  // 0: nominal.checklists.v1.ChecklistSearchQuery.and:type_name -> nominal.checklists.v1.ChecklistSearchQuery.QueryList
+	4,  // 1: nominal.checklists.v1.ChecklistSearchQuery.or:type_name -> nominal.checklists.v1.ChecklistSearchQuery.QueryList
+	1,  // 2: nominal.checklists.v1.ChecklistSearchQuery.not:type_name -> nominal.checklists.v1.ChecklistSearchQuery
+	5,  // 3: nominal.checklists.v1.ChecklistSearchQuery.labels:type_name -> nominal.types.LabelsFilter
+	6,  // 4: nominal.checklists.v1.ChecklistSearchQuery.property:type_name -> nominal.types.Property
+	7,  // 5: nominal.checklists.v1.ChecklistSearchQuery.properties:type_name -> nominal.types.PropertiesFilter
+	8,  // 6: nominal.checklists.v1.ChecklistSearchQuery.authors:type_name -> nominal.types.UserRidsFilter
+	2,  // 7: nominal.checklists.v1.ChecklistSearchQuery.asset_types:type_name -> nominal.checklists.v1.AssetTypesFilter
+	0,  // 8: nominal.checklists.v1.ChecklistSortOptions.field:type_name -> nominal.checklists.v1.ChecklistSortField
+	1,  // 9: nominal.checklists.v1.ChecklistSearchQuery.QueryList.queries:type_name -> nominal.checklists.v1.ChecklistSearchQuery
+	10, // [10:10] is the sub-list for method output_type
+	10, // [10:10] is the sub-list for method input_type
+	10, // [10:10] is the sub-list for extension type_name
+	10, // [10:10] is the sub-list for extension extendee
+	0,  // [0:10] is the sub-list for field type_name
 }
 
 func init() { file_nominal_protos_checklists_v1_search_proto_init() }
@@ -596,6 +663,7 @@ func file_nominal_protos_checklists_v1_search_proto_init() {
 		(*ChecklistSearchQuery_AuthoredByCaller)(nil),
 		(*ChecklistSearchQuery_Authors)(nil),
 		(*ChecklistSearchQuery_IsArchived)(nil),
+		(*ChecklistSearchQuery_AssetTypes)(nil),
 	}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
@@ -603,7 +671,7 @@ func file_nominal_protos_checklists_v1_search_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_nominal_protos_checklists_v1_search_proto_rawDesc), len(file_nominal_protos_checklists_v1_search_proto_rawDesc)),
 			NumEnums:      1,
-			NumMessages:   3,
+			NumMessages:   4,
 			NumExtensions: 0,
 			NumServices:   0,
 		},

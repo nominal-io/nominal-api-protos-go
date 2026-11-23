@@ -33,8 +33,15 @@ const (
 type ResourceShareServiceClient interface {
 	// Creates a resource share, or fully replaces the mutable fields when its key already exists.
 	CreateResourceShare(ctx context.Context, in *CreateResourceShareRequest, opts ...grpc.CallOption) (*CreateResourceShareResponse, error)
-	// Gets resource shares by their client-known keys.
-	// Returns NOT_FOUND without a partial response when any requested share is missing or inaccessible.
+	// Gets workbook shares (workbooks shared with users) by workbook RID and role. Returns each share with its
+	// users, ordered by user RID, and the runs, assets, and data sources that receive grants inferred from it.
+	//
+	// Shares are returned in no particular order; match them to the request by key. Omits shares that do not
+	// exist and shares on workbooks the caller cannot share.
+	//
+	// Errors:
+	//   - INVALID_ARGUMENT: keys is empty or has more than 1000 entries, a key's role is unset, or a key's
+	//     resource_rid is not a workbook RID.
 	BatchGetResourceShares(ctx context.Context, in *BatchGetResourceSharesRequest, opts ...grpc.CallOption) (*BatchGetResourceSharesResponse, error)
 	// Lists the single share, if present, for each supported role on a resource.
 	ListResourceShares(ctx context.Context, in *ListResourceSharesRequest, opts ...grpc.CallOption) (*ListResourceSharesResponse, error)
@@ -98,8 +105,15 @@ func (c *resourceShareServiceClient) DeleteResourceShare(ctx context.Context, in
 type ResourceShareServiceServer interface {
 	// Creates a resource share, or fully replaces the mutable fields when its key already exists.
 	CreateResourceShare(context.Context, *CreateResourceShareRequest) (*CreateResourceShareResponse, error)
-	// Gets resource shares by their client-known keys.
-	// Returns NOT_FOUND without a partial response when any requested share is missing or inaccessible.
+	// Gets workbook shares (workbooks shared with users) by workbook RID and role. Returns each share with its
+	// users, ordered by user RID, and the runs, assets, and data sources that receive grants inferred from it.
+	//
+	// Shares are returned in no particular order; match them to the request by key. Omits shares that do not
+	// exist and shares on workbooks the caller cannot share.
+	//
+	// Errors:
+	//   - INVALID_ARGUMENT: keys is empty or has more than 1000 entries, a key's role is unset, or a key's
+	//     resource_rid is not a workbook RID.
 	BatchGetResourceShares(context.Context, *BatchGetResourceSharesRequest) (*BatchGetResourceSharesResponse, error)
 	// Lists the single share, if present, for each supported role on a resource.
 	ListResourceShares(context.Context, *ListResourceSharesRequest) (*ListResourceSharesResponse, error)

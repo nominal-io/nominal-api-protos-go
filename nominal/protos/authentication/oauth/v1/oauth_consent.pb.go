@@ -348,8 +348,11 @@ type GetConsentTransactionResponse struct {
 	Variant ConsentVariant `protobuf:"varint,7,opt,name=variant,proto3,enum=nominal.authentication.oauth.v1.ConsentVariant" json:"variant,omitempty"`
 	// Why suggested_organization_rid was chosen.
 	SuggestionReason SuggestionReason `protobuf:"varint,8,opt,name=suggestion_reason,json=suggestionReason,proto3,enum=nominal.authentication.oauth.v1.SuggestionReason" json:"suggestion_reason,omitempty"`
-	unknownFields    protoimpl.UnknownFields
-	sizeCache        protoimpl.SizeCache
+	// The email of the signed-in user who will decide, so the page can show which account is connecting. Unset when
+	// Gatekeeper holds none. Render as text.
+	UserEmail     *string `protobuf:"bytes,9,opt,name=user_email,json=userEmail,proto3,oneof" json:"user_email,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
 }
 
 func (x *GetConsentTransactionResponse) Reset() {
@@ -436,6 +439,13 @@ func (x *GetConsentTransactionResponse) GetSuggestionReason() SuggestionReason {
 		return x.SuggestionReason
 	}
 	return SuggestionReason_SUGGESTION_REASON_UNSPECIFIED
+}
+
+func (x *GetConsentTransactionResponse) GetUserEmail() string {
+	if x != nil && x.UserEmail != nil {
+		return *x.UserEmail
+	}
+	return ""
 }
 
 // The OAuth client asking for access.
@@ -687,7 +697,7 @@ const file_nominal_protos_authentication_oauth_v1_oauth_consent_proto_rawDesc = 
 	"\n" +
 	":nominal/protos/authentication/oauth/v1/oauth_consent.proto\x12\x1fnominal.authentication.oauth.v1\x1a\x1bbuf/validate/validate.proto\x1a\x1cgoogle/api/annotations.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a!nominal/protos/gen/v1/alias.proto\x1a!nominal/protos/gen/v1/error.proto\"a\n" +
 	"\x1cGetConsentTransactionRequest\x12A\n" +
-	"\x0etransaction_id\x18\x01 \x01(\tB\x1a\xbaH\x17r\x152\x13^[A-Za-z0-9_-]{43}$R\rtransactionId\"\xe1\x05\n" +
+	"\x0etransaction_id\x18\x01 \x01(\tB\x1a\xbaH\x17r\x152\x13^[A-Za-z0-9_-]{43}$R\rtransactionId\"\x94\x06\n" +
 	"\x1dGetConsentTransactionResponse\x12F\n" +
 	"\x06client\x18\x01 \x01(\v2..nominal.authentication.oauth.v1.ConsentClientR\x06client\x12K\n" +
 	"\bredirect\x18\x02 \x01(\v2/.nominal.authentication.oauth.v1.RedirectTargetR\bredirect\x12[\n" +
@@ -698,8 +708,11 @@ const file_nominal_protos_authentication_oauth_v1_oauth_consent_proto_rawDesc = 
 	"\n" +
 	"expires_at\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampR\texpiresAt\x12I\n" +
 	"\avariant\x18\a \x01(\x0e2/.nominal.authentication.oauth.v1.ConsentVariantR\avariant\x12^\n" +
-	"\x11suggestion_reason\x18\b \x01(\x0e21.nominal.authentication.oauth.v1.SuggestionReasonR\x10suggestionReasonB\x1d\n" +
-	"\x1b_suggested_organization_rid\"\xbf\x02\n" +
+	"\x11suggestion_reason\x18\b \x01(\x0e21.nominal.authentication.oauth.v1.SuggestionReasonR\x10suggestionReason\x12\"\n" +
+	"\n" +
+	"user_email\x18\t \x01(\tH\x01R\tuserEmail\x88\x01\x01B\x1d\n" +
+	"\x1b_suggested_organization_ridB\r\n" +
+	"\v_user_email\"\xbf\x02\n" +
 	"\rConsentClient\x12\x1b\n" +
 	"\tclient_id\x18\x01 \x01(\tR\bclientId\x12!\n" +
 	"\fdisplay_name\x18\x02 \x01(\tR\vdisplayName\x12W\n" +

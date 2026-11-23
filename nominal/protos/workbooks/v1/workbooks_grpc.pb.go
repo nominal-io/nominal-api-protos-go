@@ -19,9 +19,16 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	WorkbookService_BatchGetWorkbooks_FullMethodName     = "/nominal.workbooks.v1.WorkbookService/BatchGetWorkbooks"
-	WorkbookService_SearchWorkbooks_FullMethodName       = "/nominal.workbooks.v1.WorkbookService/SearchWorkbooks"
-	WorkbookService_ListWorkbookSnapshots_FullMethodName = "/nominal.workbooks.v1.WorkbookService/ListWorkbookSnapshots"
+	WorkbookService_BatchGetWorkbooks_FullMethodName                = "/nominal.workbooks.v1.WorkbookService/BatchGetWorkbooks"
+	WorkbookService_SearchWorkbooks_FullMethodName                  = "/nominal.workbooks.v1.WorkbookService/SearchWorkbooks"
+	WorkbookService_ListWorkbookSnapshots_FullMethodName            = "/nominal.workbooks.v1.WorkbookService/ListWorkbookSnapshots"
+	WorkbookService_GetWorkbookDataSourceRefNames_FullMethodName    = "/nominal.workbooks.v1.WorkbookService/GetWorkbookDataSourceRefNames"
+	WorkbookService_ListWorkbookPropertiesAndLabels_FullMethodName  = "/nominal.workbooks.v1.WorkbookService/ListWorkbookPropertiesAndLabels"
+	WorkbookService_UpdateWorkbook_FullMethodName                   = "/nominal.workbooks.v1.WorkbookService/UpdateWorkbook"
+	WorkbookService_RenameWorkbookDataSourceRefNames_FullMethodName = "/nominal.workbooks.v1.WorkbookService/RenameWorkbookDataSourceRefNames"
+	WorkbookService_BatchArchiveWorkbooks_FullMethodName            = "/nominal.workbooks.v1.WorkbookService/BatchArchiveWorkbooks"
+	WorkbookService_BatchUnarchiveWorkbooks_FullMethodName          = "/nominal.workbooks.v1.WorkbookService/BatchUnarchiveWorkbooks"
+	WorkbookService_DeleteWorkbook_FullMethodName                   = "/nominal.workbooks.v1.WorkbookService/DeleteWorkbook"
 )
 
 // WorkbookServiceClient is the client API for WorkbookService service.
@@ -31,8 +38,8 @@ const (
 // Workbooks: saved, shareable analyses over the data of a set of runs or assets. A workbook's
 // metadata lives on the workbook; its content lives in the snapshots each save records.
 type WorkbookServiceClient interface {
-	// Returns the requested workbooks, in no particular order. Fails with WORKBOOK_ERROR_WORKBOOKS_NOT_FOUND,
-	// naming the missing RIDs, when any workbook does not exist or the caller cannot view it.
+	// Returns the requested workbooks, in no particular order. Omits workbooks that do not exist or that the
+	// caller cannot view.
 	BatchGetWorkbooks(ctx context.Context, in *BatchGetWorkbooksRequest, opts ...grpc.CallOption) (*BatchGetWorkbooksResponse, error)
 	// Returns the workbooks matching a query, across the workspaces the caller can fully view. Draft, archived
 	// and Analyst conversation workbooks are excluded by default; see SearchWorkbooksRequest.query.
@@ -40,6 +47,83 @@ type WorkbookServiceClient interface {
 	// Lists a workbook's snapshots, newest first. Fails with WORKBOOK_ERROR_WORKBOOK_NOT_FOUND when the
 	// workbook does not exist or the caller cannot view it.
 	ListWorkbookSnapshots(ctx context.Context, in *ListWorkbookSnapshotsRequest, opts ...grpc.CallOption) (*ListWorkbookSnapshotsResponse, error)
+	// Returns the data source ref names that the channel variables in the workbook's latest snapshot read from, so a
+	// caller can remap them before opening the workbook against different data.
+	//
+	// Errors:
+	//   - PERMISSION_DENIED: the workbook's workspace is on an edition without workbooks.
+	//   - NOT_FOUND (WORKBOOK_ERROR_WORKBOOK_NOT_FOUND): the workbook does not exist or the caller cannot view it.
+	//   - INVALID_ARGUMENT (WORKBOOK_ERROR_INVALID_REQUEST): the workbook is a comparison workbook, which has no channel
+	//     variables.
+	//   - FAILED_PRECONDITION (WORKBOOK_ERROR_CANNOT_READ_REF_NAMES): a channel variable predates the ref-name-aware
+	//     compute format.
+	GetWorkbookDataSourceRefNames(ctx context.Context, in *GetWorkbookDataSourceRefNamesRequest, opts ...grpc.CallOption) (*GetWorkbookDataSourceRefNamesResponse, error)
+	// Lists the properties and labels used by workbooks in the given workspaces, or in every workspace the caller can
+	// fully view when none are given.
+	//
+	// Workspaces the caller cannot view, or whose edition does not include workbooks, are skipped. The result is a
+	// summary, not a page: it keeps parity with the frozen Conjure getAllLabelsAndProperties, so each list is capped
+	// at 1000 entries and `is_truncated` reports a cut.
+	ListWorkbookPropertiesAndLabels(ctx context.Context, in *ListWorkbookPropertiesAndLabelsRequest, opts ...grpc.CallOption) (*ListWorkbookPropertiesAndLabelsResponse, error)
+	// Updates the workbook fields named in `update_mask`, such as its title, labels, data scope, draft state, archive
+	// state or lock, and returns the updated workbook.
+	//
+	// Setting `lock` locks or unlocks the workbook and sets `lock.updated_by_rid` and `lock.update_time` to the caller
+	// and the current time. Setting `is_archived` archives or unarchives it. The caller needs edit access to the
+	// workbook.
+	//
+	// Errors:
+	//   - INVALID_ARGUMENT: `update_mask` is empty or names an unsupported field, or it lists `data_scope` without runs
+	//     or assets.
+	//   - PERMISSION_DENIED: the workbook's workspace is on an edition without workbooks.
+	//   - NOT_FOUND (WORKBOOK_ERROR_WORKBOOK_NOT_FOUND): the workbook does not exist or the caller cannot edit it.
+	//   - INVALID_ARGUMENT (WORKBOOK_ERROR_INVALID_REQUEST): the update sets `is_draft` to false on an Analyst workbook.
+	//   - FAILED_PRECONDITION (WORKBOOK_ERROR_DEMO_WORKBOOK_CANNOT_BE_UNLOCKED): the update sets `lock.is_locked` to
+	//     false on a sandbox demo workbook.
+	//   - FAILED_PRECONDITION (WORKBOOK_ERROR_DEMO_WORKBOOK_CANNOT_BE_UNPUBLISHED): the update sets `is_draft` to true on
+	//     a sandbox demo workbook.
+	UpdateWorkbook(ctx context.Context, in *UpdateWorkbookRequest, opts ...grpc.CallOption) (*UpdateWorkbookResponse, error)
+	// Renames data source ref names in every channel variable of the workbook's latest snapshot and saves the result
+	// as a new snapshot authored by the caller.
+	//
+	// Only classic and report workbooks are supported. The caller needs edit access to the workbook.
+	//
+	// Errors:
+	//   - NOT_FOUND (WORKBOOK_ERROR_WORKBOOK_NOT_FOUND): the workbook does not exist or the caller cannot edit it.
+	//   - PERMISSION_DENIED: the workbook's workspace is on an edition without workbooks.
+	//   - FAILED_PRECONDITION (WORKBOOK_ERROR_WORKBOOK_LOCKED): the workbook is locked.
+	//   - INVALID_ARGUMENT (WORKBOOK_ERROR_INVALID_REQUEST): the workbook is a comparison workbook.
+	//   - FAILED_PRECONDITION (WORKBOOK_ERROR_CANNOT_READ_REF_NAMES): a channel variable predates the ref-name-aware
+	//     compute format.
+	//   - ABORTED (WORKBOOK_ERROR_SAVE_CONFLICT): another save landed first.
+	RenameWorkbookDataSourceRefNames(ctx context.Context, in *RenameWorkbookDataSourceRefNamesRequest, opts ...grpc.CallOption) (*RenameWorkbookDataSourceRefNamesResponse, error)
+	// Archives every listed workbook, or none, recording the caller as the archiver. Archive or unarchive one
+	// workbook with UpdateWorkbook and `is_archived`.
+	//
+	// Workbooks already archived are left as they are. The caller needs edit access to every listed workbook.
+	//
+	// Errors:
+	//   - INVALID_ARGUMENT: the request lists more than 1000 workbooks.
+	//   - PERMISSION_DENIED: a workbook's workspace is on an edition without workbooks.
+	//   - NOT_FOUND (WORKBOOK_ERROR_WORKBOOKS_NOT_FOUND): a workbook does not exist or the caller cannot edit it; the
+	//     error names those workbooks.
+	BatchArchiveWorkbooks(ctx context.Context, in *BatchArchiveWorkbooksRequest, opts ...grpc.CallOption) (*BatchArchiveWorkbooksResponse, error)
+	// Unarchives every listed workbook, or none, returning them to search results.
+	//
+	// Workbooks that are not archived are left as they are. The caller needs edit access to every listed workbook.
+	//
+	// Errors:
+	//   - INVALID_ARGUMENT: the request lists more than 1000 workbooks.
+	//   - PERMISSION_DENIED: a workbook's workspace is on an edition without workbooks.
+	//   - NOT_FOUND (WORKBOOK_ERROR_WORKBOOKS_NOT_FOUND): a workbook does not exist or the caller cannot edit it; the
+	//     error names those workbooks.
+	BatchUnarchiveWorkbooks(ctx context.Context, in *BatchUnarchiveWorkbooksRequest, opts ...grpc.CallOption) (*BatchUnarchiveWorkbooksResponse, error)
+	// Permanently deletes a workbook and its snapshots. This cannot be undone.
+	//
+	// Errors:
+	// - PERMISSION_DENIED: the workbook's workspace is on an edition without workbooks.
+	// - NOT_FOUND (WORKBOOK_ERROR_WORKBOOK_NOT_FOUND): the workbook does not exist or the caller cannot edit it.
+	DeleteWorkbook(ctx context.Context, in *DeleteWorkbookRequest, opts ...grpc.CallOption) (*DeleteWorkbookResponse, error)
 }
 
 type workbookServiceClient struct {
@@ -80,6 +164,76 @@ func (c *workbookServiceClient) ListWorkbookSnapshots(ctx context.Context, in *L
 	return out, nil
 }
 
+func (c *workbookServiceClient) GetWorkbookDataSourceRefNames(ctx context.Context, in *GetWorkbookDataSourceRefNamesRequest, opts ...grpc.CallOption) (*GetWorkbookDataSourceRefNamesResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(GetWorkbookDataSourceRefNamesResponse)
+	err := c.cc.Invoke(ctx, WorkbookService_GetWorkbookDataSourceRefNames_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *workbookServiceClient) ListWorkbookPropertiesAndLabels(ctx context.Context, in *ListWorkbookPropertiesAndLabelsRequest, opts ...grpc.CallOption) (*ListWorkbookPropertiesAndLabelsResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(ListWorkbookPropertiesAndLabelsResponse)
+	err := c.cc.Invoke(ctx, WorkbookService_ListWorkbookPropertiesAndLabels_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *workbookServiceClient) UpdateWorkbook(ctx context.Context, in *UpdateWorkbookRequest, opts ...grpc.CallOption) (*UpdateWorkbookResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(UpdateWorkbookResponse)
+	err := c.cc.Invoke(ctx, WorkbookService_UpdateWorkbook_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *workbookServiceClient) RenameWorkbookDataSourceRefNames(ctx context.Context, in *RenameWorkbookDataSourceRefNamesRequest, opts ...grpc.CallOption) (*RenameWorkbookDataSourceRefNamesResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(RenameWorkbookDataSourceRefNamesResponse)
+	err := c.cc.Invoke(ctx, WorkbookService_RenameWorkbookDataSourceRefNames_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *workbookServiceClient) BatchArchiveWorkbooks(ctx context.Context, in *BatchArchiveWorkbooksRequest, opts ...grpc.CallOption) (*BatchArchiveWorkbooksResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(BatchArchiveWorkbooksResponse)
+	err := c.cc.Invoke(ctx, WorkbookService_BatchArchiveWorkbooks_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *workbookServiceClient) BatchUnarchiveWorkbooks(ctx context.Context, in *BatchUnarchiveWorkbooksRequest, opts ...grpc.CallOption) (*BatchUnarchiveWorkbooksResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(BatchUnarchiveWorkbooksResponse)
+	err := c.cc.Invoke(ctx, WorkbookService_BatchUnarchiveWorkbooks_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *workbookServiceClient) DeleteWorkbook(ctx context.Context, in *DeleteWorkbookRequest, opts ...grpc.CallOption) (*DeleteWorkbookResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(DeleteWorkbookResponse)
+	err := c.cc.Invoke(ctx, WorkbookService_DeleteWorkbook_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // WorkbookServiceServer is the server API for WorkbookService service.
 // All implementations must embed UnimplementedWorkbookServiceServer
 // for forward compatibility.
@@ -87,8 +241,8 @@ func (c *workbookServiceClient) ListWorkbookSnapshots(ctx context.Context, in *L
 // Workbooks: saved, shareable analyses over the data of a set of runs or assets. A workbook's
 // metadata lives on the workbook; its content lives in the snapshots each save records.
 type WorkbookServiceServer interface {
-	// Returns the requested workbooks, in no particular order. Fails with WORKBOOK_ERROR_WORKBOOKS_NOT_FOUND,
-	// naming the missing RIDs, when any workbook does not exist or the caller cannot view it.
+	// Returns the requested workbooks, in no particular order. Omits workbooks that do not exist or that the
+	// caller cannot view.
 	BatchGetWorkbooks(context.Context, *BatchGetWorkbooksRequest) (*BatchGetWorkbooksResponse, error)
 	// Returns the workbooks matching a query, across the workspaces the caller can fully view. Draft, archived
 	// and Analyst conversation workbooks are excluded by default; see SearchWorkbooksRequest.query.
@@ -96,6 +250,83 @@ type WorkbookServiceServer interface {
 	// Lists a workbook's snapshots, newest first. Fails with WORKBOOK_ERROR_WORKBOOK_NOT_FOUND when the
 	// workbook does not exist or the caller cannot view it.
 	ListWorkbookSnapshots(context.Context, *ListWorkbookSnapshotsRequest) (*ListWorkbookSnapshotsResponse, error)
+	// Returns the data source ref names that the channel variables in the workbook's latest snapshot read from, so a
+	// caller can remap them before opening the workbook against different data.
+	//
+	// Errors:
+	//   - PERMISSION_DENIED: the workbook's workspace is on an edition without workbooks.
+	//   - NOT_FOUND (WORKBOOK_ERROR_WORKBOOK_NOT_FOUND): the workbook does not exist or the caller cannot view it.
+	//   - INVALID_ARGUMENT (WORKBOOK_ERROR_INVALID_REQUEST): the workbook is a comparison workbook, which has no channel
+	//     variables.
+	//   - FAILED_PRECONDITION (WORKBOOK_ERROR_CANNOT_READ_REF_NAMES): a channel variable predates the ref-name-aware
+	//     compute format.
+	GetWorkbookDataSourceRefNames(context.Context, *GetWorkbookDataSourceRefNamesRequest) (*GetWorkbookDataSourceRefNamesResponse, error)
+	// Lists the properties and labels used by workbooks in the given workspaces, or in every workspace the caller can
+	// fully view when none are given.
+	//
+	// Workspaces the caller cannot view, or whose edition does not include workbooks, are skipped. The result is a
+	// summary, not a page: it keeps parity with the frozen Conjure getAllLabelsAndProperties, so each list is capped
+	// at 1000 entries and `is_truncated` reports a cut.
+	ListWorkbookPropertiesAndLabels(context.Context, *ListWorkbookPropertiesAndLabelsRequest) (*ListWorkbookPropertiesAndLabelsResponse, error)
+	// Updates the workbook fields named in `update_mask`, such as its title, labels, data scope, draft state, archive
+	// state or lock, and returns the updated workbook.
+	//
+	// Setting `lock` locks or unlocks the workbook and sets `lock.updated_by_rid` and `lock.update_time` to the caller
+	// and the current time. Setting `is_archived` archives or unarchives it. The caller needs edit access to the
+	// workbook.
+	//
+	// Errors:
+	//   - INVALID_ARGUMENT: `update_mask` is empty or names an unsupported field, or it lists `data_scope` without runs
+	//     or assets.
+	//   - PERMISSION_DENIED: the workbook's workspace is on an edition without workbooks.
+	//   - NOT_FOUND (WORKBOOK_ERROR_WORKBOOK_NOT_FOUND): the workbook does not exist or the caller cannot edit it.
+	//   - INVALID_ARGUMENT (WORKBOOK_ERROR_INVALID_REQUEST): the update sets `is_draft` to false on an Analyst workbook.
+	//   - FAILED_PRECONDITION (WORKBOOK_ERROR_DEMO_WORKBOOK_CANNOT_BE_UNLOCKED): the update sets `lock.is_locked` to
+	//     false on a sandbox demo workbook.
+	//   - FAILED_PRECONDITION (WORKBOOK_ERROR_DEMO_WORKBOOK_CANNOT_BE_UNPUBLISHED): the update sets `is_draft` to true on
+	//     a sandbox demo workbook.
+	UpdateWorkbook(context.Context, *UpdateWorkbookRequest) (*UpdateWorkbookResponse, error)
+	// Renames data source ref names in every channel variable of the workbook's latest snapshot and saves the result
+	// as a new snapshot authored by the caller.
+	//
+	// Only classic and report workbooks are supported. The caller needs edit access to the workbook.
+	//
+	// Errors:
+	//   - NOT_FOUND (WORKBOOK_ERROR_WORKBOOK_NOT_FOUND): the workbook does not exist or the caller cannot edit it.
+	//   - PERMISSION_DENIED: the workbook's workspace is on an edition without workbooks.
+	//   - FAILED_PRECONDITION (WORKBOOK_ERROR_WORKBOOK_LOCKED): the workbook is locked.
+	//   - INVALID_ARGUMENT (WORKBOOK_ERROR_INVALID_REQUEST): the workbook is a comparison workbook.
+	//   - FAILED_PRECONDITION (WORKBOOK_ERROR_CANNOT_READ_REF_NAMES): a channel variable predates the ref-name-aware
+	//     compute format.
+	//   - ABORTED (WORKBOOK_ERROR_SAVE_CONFLICT): another save landed first.
+	RenameWorkbookDataSourceRefNames(context.Context, *RenameWorkbookDataSourceRefNamesRequest) (*RenameWorkbookDataSourceRefNamesResponse, error)
+	// Archives every listed workbook, or none, recording the caller as the archiver. Archive or unarchive one
+	// workbook with UpdateWorkbook and `is_archived`.
+	//
+	// Workbooks already archived are left as they are. The caller needs edit access to every listed workbook.
+	//
+	// Errors:
+	//   - INVALID_ARGUMENT: the request lists more than 1000 workbooks.
+	//   - PERMISSION_DENIED: a workbook's workspace is on an edition without workbooks.
+	//   - NOT_FOUND (WORKBOOK_ERROR_WORKBOOKS_NOT_FOUND): a workbook does not exist or the caller cannot edit it; the
+	//     error names those workbooks.
+	BatchArchiveWorkbooks(context.Context, *BatchArchiveWorkbooksRequest) (*BatchArchiveWorkbooksResponse, error)
+	// Unarchives every listed workbook, or none, returning them to search results.
+	//
+	// Workbooks that are not archived are left as they are. The caller needs edit access to every listed workbook.
+	//
+	// Errors:
+	//   - INVALID_ARGUMENT: the request lists more than 1000 workbooks.
+	//   - PERMISSION_DENIED: a workbook's workspace is on an edition without workbooks.
+	//   - NOT_FOUND (WORKBOOK_ERROR_WORKBOOKS_NOT_FOUND): a workbook does not exist or the caller cannot edit it; the
+	//     error names those workbooks.
+	BatchUnarchiveWorkbooks(context.Context, *BatchUnarchiveWorkbooksRequest) (*BatchUnarchiveWorkbooksResponse, error)
+	// Permanently deletes a workbook and its snapshots. This cannot be undone.
+	//
+	// Errors:
+	// - PERMISSION_DENIED: the workbook's workspace is on an edition without workbooks.
+	// - NOT_FOUND (WORKBOOK_ERROR_WORKBOOK_NOT_FOUND): the workbook does not exist or the caller cannot edit it.
+	DeleteWorkbook(context.Context, *DeleteWorkbookRequest) (*DeleteWorkbookResponse, error)
 	mustEmbedUnimplementedWorkbookServiceServer()
 }
 
@@ -114,6 +345,27 @@ func (UnimplementedWorkbookServiceServer) SearchWorkbooks(context.Context, *Sear
 }
 func (UnimplementedWorkbookServiceServer) ListWorkbookSnapshots(context.Context, *ListWorkbookSnapshotsRequest) (*ListWorkbookSnapshotsResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method ListWorkbookSnapshots not implemented")
+}
+func (UnimplementedWorkbookServiceServer) GetWorkbookDataSourceRefNames(context.Context, *GetWorkbookDataSourceRefNamesRequest) (*GetWorkbookDataSourceRefNamesResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method GetWorkbookDataSourceRefNames not implemented")
+}
+func (UnimplementedWorkbookServiceServer) ListWorkbookPropertiesAndLabels(context.Context, *ListWorkbookPropertiesAndLabelsRequest) (*ListWorkbookPropertiesAndLabelsResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method ListWorkbookPropertiesAndLabels not implemented")
+}
+func (UnimplementedWorkbookServiceServer) UpdateWorkbook(context.Context, *UpdateWorkbookRequest) (*UpdateWorkbookResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method UpdateWorkbook not implemented")
+}
+func (UnimplementedWorkbookServiceServer) RenameWorkbookDataSourceRefNames(context.Context, *RenameWorkbookDataSourceRefNamesRequest) (*RenameWorkbookDataSourceRefNamesResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method RenameWorkbookDataSourceRefNames not implemented")
+}
+func (UnimplementedWorkbookServiceServer) BatchArchiveWorkbooks(context.Context, *BatchArchiveWorkbooksRequest) (*BatchArchiveWorkbooksResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method BatchArchiveWorkbooks not implemented")
+}
+func (UnimplementedWorkbookServiceServer) BatchUnarchiveWorkbooks(context.Context, *BatchUnarchiveWorkbooksRequest) (*BatchUnarchiveWorkbooksResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method BatchUnarchiveWorkbooks not implemented")
+}
+func (UnimplementedWorkbookServiceServer) DeleteWorkbook(context.Context, *DeleteWorkbookRequest) (*DeleteWorkbookResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method DeleteWorkbook not implemented")
 }
 func (UnimplementedWorkbookServiceServer) mustEmbedUnimplementedWorkbookServiceServer() {}
 func (UnimplementedWorkbookServiceServer) testEmbeddedByValue()                         {}
@@ -190,6 +442,132 @@ func _WorkbookService_ListWorkbookSnapshots_Handler(srv interface{}, ctx context
 	return interceptor(ctx, in, info, handler)
 }
 
+func _WorkbookService_GetWorkbookDataSourceRefNames_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetWorkbookDataSourceRefNamesRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(WorkbookServiceServer).GetWorkbookDataSourceRefNames(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: WorkbookService_GetWorkbookDataSourceRefNames_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(WorkbookServiceServer).GetWorkbookDataSourceRefNames(ctx, req.(*GetWorkbookDataSourceRefNamesRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _WorkbookService_ListWorkbookPropertiesAndLabels_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ListWorkbookPropertiesAndLabelsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(WorkbookServiceServer).ListWorkbookPropertiesAndLabels(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: WorkbookService_ListWorkbookPropertiesAndLabels_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(WorkbookServiceServer).ListWorkbookPropertiesAndLabels(ctx, req.(*ListWorkbookPropertiesAndLabelsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _WorkbookService_UpdateWorkbook_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UpdateWorkbookRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(WorkbookServiceServer).UpdateWorkbook(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: WorkbookService_UpdateWorkbook_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(WorkbookServiceServer).UpdateWorkbook(ctx, req.(*UpdateWorkbookRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _WorkbookService_RenameWorkbookDataSourceRefNames_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(RenameWorkbookDataSourceRefNamesRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(WorkbookServiceServer).RenameWorkbookDataSourceRefNames(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: WorkbookService_RenameWorkbookDataSourceRefNames_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(WorkbookServiceServer).RenameWorkbookDataSourceRefNames(ctx, req.(*RenameWorkbookDataSourceRefNamesRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _WorkbookService_BatchArchiveWorkbooks_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(BatchArchiveWorkbooksRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(WorkbookServiceServer).BatchArchiveWorkbooks(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: WorkbookService_BatchArchiveWorkbooks_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(WorkbookServiceServer).BatchArchiveWorkbooks(ctx, req.(*BatchArchiveWorkbooksRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _WorkbookService_BatchUnarchiveWorkbooks_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(BatchUnarchiveWorkbooksRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(WorkbookServiceServer).BatchUnarchiveWorkbooks(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: WorkbookService_BatchUnarchiveWorkbooks_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(WorkbookServiceServer).BatchUnarchiveWorkbooks(ctx, req.(*BatchUnarchiveWorkbooksRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _WorkbookService_DeleteWorkbook_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DeleteWorkbookRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(WorkbookServiceServer).DeleteWorkbook(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: WorkbookService_DeleteWorkbook_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(WorkbookServiceServer).DeleteWorkbook(ctx, req.(*DeleteWorkbookRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // WorkbookService_ServiceDesc is the grpc.ServiceDesc for WorkbookService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -208,6 +586,34 @@ var WorkbookService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "ListWorkbookSnapshots",
 			Handler:    _WorkbookService_ListWorkbookSnapshots_Handler,
+		},
+		{
+			MethodName: "GetWorkbookDataSourceRefNames",
+			Handler:    _WorkbookService_GetWorkbookDataSourceRefNames_Handler,
+		},
+		{
+			MethodName: "ListWorkbookPropertiesAndLabels",
+			Handler:    _WorkbookService_ListWorkbookPropertiesAndLabels_Handler,
+		},
+		{
+			MethodName: "UpdateWorkbook",
+			Handler:    _WorkbookService_UpdateWorkbook_Handler,
+		},
+		{
+			MethodName: "RenameWorkbookDataSourceRefNames",
+			Handler:    _WorkbookService_RenameWorkbookDataSourceRefNames_Handler,
+		},
+		{
+			MethodName: "BatchArchiveWorkbooks",
+			Handler:    _WorkbookService_BatchArchiveWorkbooks_Handler,
+		},
+		{
+			MethodName: "BatchUnarchiveWorkbooks",
+			Handler:    _WorkbookService_BatchUnarchiveWorkbooks_Handler,
+		},
+		{
+			MethodName: "DeleteWorkbook",
+			Handler:    _WorkbookService_DeleteWorkbook_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

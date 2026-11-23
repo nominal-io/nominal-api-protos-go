@@ -98,7 +98,8 @@ func (GroupErrors) EnumDescriptor() ([]byte, []int) {
 // A group represents a collection of users within an organization
 type Group struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
-	Rid   string                 `protobuf:"bytes,1,opt,name=rid,proto3" json:"rid,omitempty"`
+	// Empty on create, when the server assigns it. Set it on CreateOrUpdateGroup to update that group.
+	Rid string `protobuf:"bytes,1,opt,name=rid,proto3" json:"rid,omitempty"`
 	// Required on create requests; immutable on updates.
 	OrgRid string `protobuf:"bytes,2,opt,name=org_rid,json=orgRid,proto3" json:"org_rid,omitempty"`
 	// Group ID, unique per org. If sourced from the customer's IdP, will match IdP group name.
@@ -110,9 +111,9 @@ type Group struct {
 	UserRids  []string               `protobuf:"bytes,6,rep,name=user_rids,json=userRids,proto3" json:"user_rids,omitempty"`
 	CreatedAt *timestamppb.Timestamp `protobuf:"bytes,7,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
 	UpdatedAt *timestamppb.Timestamp `protobuf:"bytes,8,opt,name=updated_at,json=updatedAt,proto3" json:"updated_at,omitempty"`
-	// Symbol to identify groups
+	// Icon, emoji, or image that identifies the group.
 	Symbol *v1.Symbol `protobuf:"bytes,9,opt,name=symbol,proto3,oneof" json:"symbol,omitempty"`
-	// Whether group membership is managed manually in Nominal. Defaults to false.
+	// When false, CreateGroupMembership and DeleteGroupMembership fail for this group. Defaults to false.
 	MembershipManagedManually bool `protobuf:"varint,10,opt,name=membership_managed_manually,json=membershipManagedManually,proto3" json:"membership_managed_manually,omitempty"`
 	unknownFields             protoimpl.UnknownFields
 	sizeCache                 protoimpl.SizeCache
@@ -409,6 +410,8 @@ type isSearchGroupsQuery_Query interface {
 }
 
 type SearchGroupsQuery_ExactSubstringText struct {
+	// Matches groups whose group_id or display_name contains these characters in order, ignoring case. The
+	// characters need not be adjacent.
 	ExactSubstringText string `protobuf:"bytes,1,opt,name=exact_substring_text,json=exactSubstringText,proto3,oneof"`
 }
 
@@ -769,8 +772,9 @@ func (x *GetGroupResponse) GetGroup() *Group {
 }
 
 type GetGroupByIdRequest struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	GroupId       string                 `protobuf:"bytes,1,opt,name=group_id,json=groupId,proto3" json:"group_id,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// The group_id, which is unique within the caller's organization, not the group RID.
+	GroupId       string `protobuf:"bytes,1,opt,name=group_id,json=groupId,proto3" json:"group_id,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -857,8 +861,9 @@ func (x *GetGroupByIdResponse) GetGroup() *Group {
 }
 
 type GetGroupsRequest struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	GroupRids     []string               `protobuf:"bytes,1,rep,name=group_rids,json=groupRids,proto3" json:"group_rids,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// RIDs that match no group, or a group the caller cannot read, are omitted from the response.
+	GroupRids     []string `protobuf:"bytes,1,rep,name=group_rids,json=groupRids,proto3" json:"group_rids,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -945,9 +950,11 @@ func (x *GetGroupsResponse) GetGroups() map[string]*Group {
 }
 
 type UpdateGroupMetadataRequest struct {
-	state         protoimpl.MessageState                               `protogen:"open.v1"`
-	DisplayName   *string                                              `protobuf:"bytes,1,opt,name=display_name,json=displayName,proto3,oneof" json:"display_name,omitempty"`
-	Description   *string                                              `protobuf:"bytes,2,opt,name=description,proto3,oneof" json:"description,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Fields that are not set keep their current value.
+	DisplayName *string `protobuf:"bytes,1,opt,name=display_name,json=displayName,proto3,oneof" json:"display_name,omitempty"`
+	Description *string `protobuf:"bytes,2,opt,name=description,proto3,oneof" json:"description,omitempty"`
+	// Set the wrapper to change the symbol. A wrapper without a value clears the symbol.
 	Symbol        *UpdateGroupMetadataRequest_UpdateGroupSymbolWrapper `protobuf:"bytes,3,opt,name=symbol,proto3,oneof" json:"symbol,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache

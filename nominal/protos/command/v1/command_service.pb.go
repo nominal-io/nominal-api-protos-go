@@ -89,8 +89,9 @@ type SendCommandsRequest struct {
 	DatasetRid string                 `protobuf:"bytes,1,opt,name=dataset_rid,json=datasetRid,proto3" json:"dataset_rid,omitempty"`
 	Tags       map[string]string      `protobuf:"bytes,2,rep,name=tags,proto3" json:"tags,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
 	// Channels must be unique within a request. Every channel must exist on the
-	// dataset, be commandable, and accept its command value's type; otherwise the
-	// whole request is rejected and nothing is delivered.
+	// dataset, be commandable, and accept its command value (see
+	// ChannelCommand.value); otherwise the whole request is rejected and nothing
+	// is delivered.
 	Commands      []*ChannelCommand `protobuf:"bytes,3,rep,name=commands,proto3" json:"commands,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache

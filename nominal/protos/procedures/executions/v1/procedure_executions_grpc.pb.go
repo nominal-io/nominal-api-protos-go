@@ -199,12 +199,12 @@ type ProcedureExecutionsServiceClient interface {
 	RepeatStep(ctx context.Context, in *RepeatStepRequest, opts ...grpc.CallOption) (*RepeatStepResponse, error)
 	// Gets metadata, without step state, for several procedure executions by RID.
 	//
-	// Use GetProcedureExecution for the step state of one execution. The caller needs view permission in the
-	// workspace of every execution.
+	// Use GetProcedureExecution for the step state of one execution. Returns the requested executions, in no
+	// particular order. Omits executions that do not exist or whose workspace the caller cannot view.
 	//
 	// Errors:
-	//   - NOT_FOUND: any execution does not exist, the caller cannot view it, or the edition of its workspace
-	//     does not include procedures. The whole batch fails.
+	// - INVALID_ARGUMENT: more than 1000 RIDs are requested.
+	// - PERMISSION_DENIED: a returned execution's workspace edition does not include procedures.
 	BatchGetProcedureExecutionMetadata(ctx context.Context, in *BatchGetProcedureExecutionMetadataRequest, opts ...grpc.CallOption) (*BatchGetProcedureExecutionMetadataResponse, error)
 }
 
@@ -511,12 +511,12 @@ type ProcedureExecutionsServiceServer interface {
 	RepeatStep(context.Context, *RepeatStepRequest) (*RepeatStepResponse, error)
 	// Gets metadata, without step state, for several procedure executions by RID.
 	//
-	// Use GetProcedureExecution for the step state of one execution. The caller needs view permission in the
-	// workspace of every execution.
+	// Use GetProcedureExecution for the step state of one execution. Returns the requested executions, in no
+	// particular order. Omits executions that do not exist or whose workspace the caller cannot view.
 	//
 	// Errors:
-	//   - NOT_FOUND: any execution does not exist, the caller cannot view it, or the edition of its workspace
-	//     does not include procedures. The whole batch fails.
+	// - INVALID_ARGUMENT: more than 1000 RIDs are requested.
+	// - PERMISSION_DENIED: a returned execution's workspace edition does not include procedures.
 	BatchGetProcedureExecutionMetadata(context.Context, *BatchGetProcedureExecutionMetadataRequest) (*BatchGetProcedureExecutionMetadataResponse, error)
 	mustEmbedUnimplementedProcedureExecutionsServiceServer()
 }

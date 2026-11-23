@@ -31,15 +31,19 @@ const (
 //
 // Cluster-internal dispatch; stream processing requires a service token, other operations use a valid session.
 type InternalVideoSegmenterServiceClient interface {
-	// Starts the workflow that splits a video file into segments and records their metadata.
-	// Returns once the workflow is accepted. A retry for the same key (`ingest_job_rid` for a
-	// video file, `dataset_file_id` for a dataset file) attaches to the running workflow, and
-	// after it has finished returns the same `job_rid` without segmenting again.
+	// Starts the workflow that splits a video file into segments and records their metadata. Returns
+	// once the workflow is accepted.
+	//
+	// A retry for the same key (`ingest_job_rid` for a video file, `dataset_file_id` for a dataset
+	// file) attaches to the running workflow, and after it has finished returns the same `job_rid`
+	// without segmenting again.
 	CreateFileSegmentation(ctx context.Context, in *CreateFileSegmentationRequest, opts ...grpc.CallOption) (*CreateFileSegmentationResponse, error)
-	// Starts the workflow that segments the files, in order, as one continuous recording on
-	// `series`. Returns once the workflow is accepted. A file that cannot be staged blocks
-	// placement of the files after it. A retry for the same first file attaches to the running
-	// workflow, and after it has finished returns the same `job_rid` without segmenting again.
+	// Starts the workflow that segments the files, in order, as one continuous recording on `series`.
+	// Returns once the workflow is accepted. A file that cannot be staged blocks placement of the
+	// files after it.
+	//
+	// A retry for the same first file attaches to the running workflow, and after it has finished
+	// returns the same `job_rid` without segmenting again.
 	CreateConcatenatedFileSegmentation(ctx context.Context, in *CreateConcatenatedFileSegmentationRequest, opts ...grpc.CallOption) (*CreateConcatenatedFileSegmentationResponse, error)
 	// Starts the workflow that extracts one stream segment's frame metadata and records it at
 	// the destination. Returns once the workflow is accepted.
@@ -105,15 +109,19 @@ func (c *internalVideoSegmenterServiceClient) CreateExport(ctx context.Context, 
 //
 // Cluster-internal dispatch; stream processing requires a service token, other operations use a valid session.
 type InternalVideoSegmenterServiceServer interface {
-	// Starts the workflow that splits a video file into segments and records their metadata.
-	// Returns once the workflow is accepted. A retry for the same key (`ingest_job_rid` for a
-	// video file, `dataset_file_id` for a dataset file) attaches to the running workflow, and
-	// after it has finished returns the same `job_rid` without segmenting again.
+	// Starts the workflow that splits a video file into segments and records their metadata. Returns
+	// once the workflow is accepted.
+	//
+	// A retry for the same key (`ingest_job_rid` for a video file, `dataset_file_id` for a dataset
+	// file) attaches to the running workflow, and after it has finished returns the same `job_rid`
+	// without segmenting again.
 	CreateFileSegmentation(context.Context, *CreateFileSegmentationRequest) (*CreateFileSegmentationResponse, error)
-	// Starts the workflow that segments the files, in order, as one continuous recording on
-	// `series`. Returns once the workflow is accepted. A file that cannot be staged blocks
-	// placement of the files after it. A retry for the same first file attaches to the running
-	// workflow, and after it has finished returns the same `job_rid` without segmenting again.
+	// Starts the workflow that segments the files, in order, as one continuous recording on `series`.
+	// Returns once the workflow is accepted. A file that cannot be staged blocks placement of the
+	// files after it.
+	//
+	// A retry for the same first file attaches to the running workflow, and after it has finished
+	// returns the same `job_rid` without segmenting again.
 	CreateConcatenatedFileSegmentation(context.Context, *CreateConcatenatedFileSegmentationRequest) (*CreateConcatenatedFileSegmentationResponse, error)
 	// Starts the workflow that extracts one stream segment's frame metadata and records it at
 	// the destination. Returns once the workflow is accepted.

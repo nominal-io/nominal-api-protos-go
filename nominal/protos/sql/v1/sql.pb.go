@@ -290,6 +290,8 @@ const (
 	SqlCatalogScalarType_SQL_CATALOG_SCALAR_TYPE_DOUBLE      SqlCatalogScalarType = 5
 	SqlCatalogScalarType_SQL_CATALOG_SCALAR_TYPE_TIMESTAMP   SqlCatalogScalarType = 6
 	SqlCatalogScalarType_SQL_CATALOG_SCALAR_TYPE_ANY         SqlCatalogScalarType = 7
+	// Semi-structured value such as a struct. Query results carry it as JSON text.
+	SqlCatalogScalarType_SQL_CATALOG_SCALAR_TYPE_VARIANT SqlCatalogScalarType = 8
 )
 
 // Enum value maps for SqlCatalogScalarType.
@@ -303,6 +305,7 @@ var (
 		5: "SQL_CATALOG_SCALAR_TYPE_DOUBLE",
 		6: "SQL_CATALOG_SCALAR_TYPE_TIMESTAMP",
 		7: "SQL_CATALOG_SCALAR_TYPE_ANY",
+		8: "SQL_CATALOG_SCALAR_TYPE_VARIANT",
 	}
 	SqlCatalogScalarType_value = map[string]int32{
 		"SQL_CATALOG_SCALAR_TYPE_UNSPECIFIED": 0,
@@ -313,6 +316,7 @@ var (
 		"SQL_CATALOG_SCALAR_TYPE_DOUBLE":      5,
 		"SQL_CATALOG_SCALAR_TYPE_TIMESTAMP":   6,
 		"SQL_CATALOG_SCALAR_TYPE_ANY":         7,
+		"SQL_CATALOG_SCALAR_TYPE_VARIANT":     8,
 	}
 )
 
@@ -1280,7 +1284,7 @@ const file_nominal_protos_sql_v1_sql_proto_rawDesc = "" +
 	"\tfunctions\x18\x02 \x03(\v2\".nominal.sql.v1.SqlCatalogFunctionR\tfunctions\"T\n" +
 	"\x15GetSqlCatalogResponse\x12;\n" +
 	"\vsql_catalog\x18\x01 \x01(\v2\x1a.nominal.sql.v1.SqlCatalogR\n" +
-	"sqlCatalog*\xb1\r\n" +
+	"sqlCatalog*\xb9\r\n" +
 	"\bSqlError\x12\x19\n" +
 	"\x15SQL_ERROR_UNSPECIFIED\x10\x00\x12I\n" +
 	"\x17SQL_ERROR_INVALID_QUERY\x10\x01\x1a,\xb2\xb2\x1a(\n" +
@@ -1303,9 +1307,9 @@ const file_nominal_protos_sql_v1_sql_proto_rawDesc = "" +
 	"\tNOT_FOUND\x12NNo data of the requested type exists for one or more of the requested datasets\x12m\n" +
 	"\x1eSQL_ERROR_RESULT_SIZE_EXCEEDED\x10\n" +
 	"\x1aI\xb2\xb2\x1aE\n" +
-	"\x10INVALID_ARGUMENT\x121The query result exceeded the maximum result size\x12n\n" +
-	"\x1fSQL_ERROR_QUERY_SCOPE_TOO_LARGE\x10\v\x1aI\xb2\xb2\x1aE\n" +
-	"\bINTERNAL\x129The query spans more datasets than can be planned at once\x12G\n" +
+	"\x10INVALID_ARGUMENT\x121The query result exceeded the maximum result size\x12v\n" +
+	"\x1fSQL_ERROR_QUERY_SCOPE_TOO_LARGE\x10\v\x1aQ\xb2\xb2\x1aM\n" +
+	"\x10INVALID_ARGUMENT\x129The query spans more datasets than can be planned at once\x12G\n" +
 	"\x19SQL_ERROR_QUERY_CANCELLED\x10\f\x1a(\xb2\xb2\x1a$\n" +
 	"\tCANCELLED\x12\x17The query was cancelled\x12\\\n" +
 	"\x19SQL_ERROR_UNAUTHENTICATED\x10\x0e\x1a=\xb2\xb2\x1a9\n" +
@@ -1328,7 +1332,7 @@ const file_nominal_protos_sql_v1_sql_proto_rawDesc = "" +
 	"$SQL_SERVICE_PARQUET_COMPRESSION_ZSTD\x10\x01\x12'\n" +
 	"#SQL_SERVICE_PARQUET_COMPRESSION_LZ4\x10\x02\x12*\n" +
 	"&SQL_SERVICE_PARQUET_COMPRESSION_SNAPPY\x10\x03\x12(\n" +
-	"$SQL_SERVICE_PARQUET_COMPRESSION_NONE\x10\x04*\xbe\x02\n" +
+	"$SQL_SERVICE_PARQUET_COMPRESSION_NONE\x10\x04*\xe3\x02\n" +
 	"\x14SqlCatalogScalarType\x12'\n" +
 	"#SQL_CATALOG_SCALAR_TYPE_UNSPECIFIED\x10\x00\x12#\n" +
 	"\x1fSQL_CATALOG_SCALAR_TYPE_VARCHAR\x10\x01\x12#\n" +
@@ -1337,7 +1341,8 @@ const file_nominal_protos_sql_v1_sql_proto_rawDesc = "" +
 	"\x1eSQL_CATALOG_SCALAR_TYPE_BIGINT\x10\x04\x12\"\n" +
 	"\x1eSQL_CATALOG_SCALAR_TYPE_DOUBLE\x10\x05\x12%\n" +
 	"!SQL_CATALOG_SCALAR_TYPE_TIMESTAMP\x10\x06\x12\x1f\n" +
-	"\x1bSQL_CATALOG_SCALAR_TYPE_ANY\x10\a*\xdd\x01\n" +
+	"\x1bSQL_CATALOG_SCALAR_TYPE_ANY\x10\a\x12#\n" +
+	"\x1fSQL_CATALOG_SCALAR_TYPE_VARIANT\x10\b*\xdd\x01\n" +
 	"\x16SqlCatalogFunctionKind\x12)\n" +
 	"%SQL_CATALOG_FUNCTION_KIND_UNSPECIFIED\x10\x00\x12$\n" +
 	" SQL_CATALOG_FUNCTION_KIND_SCALAR\x10\x01\x12'\n" +

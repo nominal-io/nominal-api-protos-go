@@ -392,13 +392,9 @@ func (*Destination_FileRevisionRid) isDestination_Target() {}
 
 // Multiple puts of the same object to the same destination reconcile. Each succeeds and returns the same file.
 type PutFile struct {
-	state  protoimpl.MessageState `protogen:"open.v1"`
-	Object *UploadedObjectRef     `protobuf:"bytes,1,opt,name=object,proto3" json:"object,omitempty"`
-	// Ignored. The server reads the size from object storage.
-	//
-	// Deprecated: Marked as deprecated in nominal/protos/file_store/v1/files.proto.
-	SizeBytes     uint64       `protobuf:"varint,2,opt,name=size_bytes,json=sizeBytes,proto3" json:"size_bytes,omitempty"`
-	Destination   *Destination `protobuf:"bytes,3,opt,name=destination,proto3" json:"destination,omitempty"`
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Object        *UploadedObjectRef     `protobuf:"bytes,1,opt,name=object,proto3" json:"object,omitempty"`
+	Destination   *Destination           `protobuf:"bytes,3,opt,name=destination,proto3" json:"destination,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -438,14 +434,6 @@ func (x *PutFile) GetObject() *UploadedObjectRef {
 		return x.Object
 	}
 	return nil
-}
-
-// Deprecated: Marked as deprecated in nominal/protos/file_store/v1/files.proto.
-func (x *PutFile) GetSizeBytes() uint64 {
-	if x != nil {
-		return x.SizeBytes
-	}
-	return 0
 }
 
 func (x *PutFile) GetDestination() *Destination {
@@ -1990,12 +1978,11 @@ const file_nominal_protos_file_store_v1_files_proto_rawDesc = "" +
 	"\x04path\x18\x01 \x01(\v2!.nominal.file_store.v1.PathTargetH\x00R\x04path\x12\\\n" +
 	"\x11file_revision_rid\x18\x02 \x01(\tB.\x9a\xb2\x1a*\n" +
 	"(io.nominal.api.rids.DriveFileRevisionRidH\x00R\x0ffileRevisionRidB\b\n" +
-	"\x06target\"\xb4\x01\n" +
+	"\x06target\"\xa3\x01\n" +
 	"\aPutFile\x12@\n" +
-	"\x06object\x18\x01 \x01(\v2(.nominal.file_store.v1.UploadedObjectRefR\x06object\x12!\n" +
-	"\n" +
-	"size_bytes\x18\x02 \x01(\x04B\x02\x18\x01R\tsizeBytes\x12D\n" +
-	"\vdestination\x18\x03 \x01(\v2\".nominal.file_store.v1.DestinationR\vdestination\"\xb0\x01\n" +
+	"\x06object\x18\x01 \x01(\v2(.nominal.file_store.v1.UploadedObjectRefR\x06object\x12D\n" +
+	"\vdestination\x18\x03 \x01(\v2\".nominal.file_store.v1.DestinationR\vdestinationJ\x04\b\x02\x10\x03R\n" +
+	"size_bytes\"\xb0\x01\n" +
 	"\bMoveFile\x12^\n" +
 	"\x13source_revision_rid\x18\x01 \x01(\tB.\x9a\xb2\x1a*\n" +
 	"(io.nominal.api.rids.DriveFileRevisionRidR\x11sourceRevisionRid\x12D\n" +

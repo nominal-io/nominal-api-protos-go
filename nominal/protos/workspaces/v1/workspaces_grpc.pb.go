@@ -42,20 +42,47 @@ const (
 // This service provides information about workspaces. Workspaces provide access control boundaries. All resources in
 // Nominal live within a workspace.
 type WorkspaceServiceClient interface {
-	// Gets all workspaces that the requesting user belongs to.
+	// Lists the workspaces the caller belongs to, in the caller's current org unless filter_by_session_org is false.
+	// Returns all of them at once, in no defined order.
+	//
+	// Options add the workspaces where the caller is a guest and the workspaces in the org where a role binding gives
+	// the caller view access. Role-bound workspaces are always limited to the caller's current org.
 	GetWorkspaces(ctx context.Context, in *GetWorkspacesRequest, opts ...grpc.CallOption) (*GetWorkspacesResponse, error)
-	// Gets the workspace with the specified WorkspaceRid.
+	// Gets one workspace: its id, display name, symbol, org, and settings.
+	//
+	// The caller must belong to the workspace or have view permission on it through a role binding.
+	//
+	// Errors:
+	// - NOT_FOUND (Security:WorkspaceNotFound): the workspace does not exist or the caller has no access to it.
 	GetWorkspace(ctx context.Context, in *GetWorkspaceRequest, opts ...grpc.CallOption) (*GetWorkspaceResponse, error)
 	// buf:lint:ignore RPC_REQUEST_STANDARD_NAME
-	// Updates the settings of the workspace with the specified WorkspaceRid.
+	// Updates the display name, symbol, or settings of one workspace. Returns the updated workspace.
+	//
+	// Omitted fields stay unchanged, and remove_type clears a display name or symbol. Within settings, ref_names and
+	// procedures are each replaced as a whole when set and kept when omitted. Changing or clearing the display name
+	// needs an org admin. The caller must belong to the workspace or have permission to edit its configuration.
+	//
+	// Errors:
+	//   - PERMISSION_DENIED (Authorization:NotAuthorizedAdmin): the request sets or clears the display name and the
+	//     caller is not an org admin.
+	//   - NOT_FOUND (Security:WorkspaceNotFound): the workspace does not exist or the caller has no access to edit it.
+	//   - INVALID_ARGUMENT: a preferred reference name in settings has no data source type, or a display name change,
+	//     symbol, or procedures setting has none of its options set.
 	UpdateWorkspace(ctx context.Context, in *UpdateWorkspaceRequestWrapper, opts ...grpc.CallOption) (*UpdateWorkspaceResponse, error)
-	// Gets the default workspace for the requesting user in their current organization. Candidates are
-	// the workspaces the user is a member of, plus workspaces where the user or one of their groups has a
-	// role binding that grants workspace:view. If there is exactly one candidate, it is returned.
-	// Otherwise, the organization's default workspace is returned if it is a candidate.
-	// The result is a lookup, not an authorization: check the action before acting in the workspace.
+	// Gets the caller's default workspace in their current org, or none. It is a lookup, not an authorization: check
+	// the action before acting in the workspace.
+	//
+	// Candidates are the workspaces the caller belongs to, plus those where the caller or one of their groups has a
+	// role binding granting workspace:view. Returns the only candidate, else the org's default workspace if it is a
+	// candidate.
 	GetDefaultWorkspace(ctx context.Context, in *GetDefaultWorkspaceRequest, opts ...grpc.CallOption) (*GetDefaultWorkspaceResponse, error)
-	// Gets the classification banner (e.g. CUI, ITAR) configured for a workspace.
+	// Gets the classification banner (CUI, no ITAR, or SECRET) configured for one workspace. Returns no banner if none
+	// is configured.
+	//
+	// The caller must belong to the workspace or have view permission on it.
+	//
+	// Errors:
+	// - NOT_FOUND (Security:WorkspaceNotFound): the caller has no access to the workspace.
 	GetWorkspaceBanner(ctx context.Context, in *GetWorkspaceBannerRequest, opts ...grpc.CallOption) (*GetWorkspaceBannerResponse, error)
 }
 
@@ -124,20 +151,47 @@ func (c *workspaceServiceClient) GetWorkspaceBanner(ctx context.Context, in *Get
 // This service provides information about workspaces. Workspaces provide access control boundaries. All resources in
 // Nominal live within a workspace.
 type WorkspaceServiceServer interface {
-	// Gets all workspaces that the requesting user belongs to.
+	// Lists the workspaces the caller belongs to, in the caller's current org unless filter_by_session_org is false.
+	// Returns all of them at once, in no defined order.
+	//
+	// Options add the workspaces where the caller is a guest and the workspaces in the org where a role binding gives
+	// the caller view access. Role-bound workspaces are always limited to the caller's current org.
 	GetWorkspaces(context.Context, *GetWorkspacesRequest) (*GetWorkspacesResponse, error)
-	// Gets the workspace with the specified WorkspaceRid.
+	// Gets one workspace: its id, display name, symbol, org, and settings.
+	//
+	// The caller must belong to the workspace or have view permission on it through a role binding.
+	//
+	// Errors:
+	// - NOT_FOUND (Security:WorkspaceNotFound): the workspace does not exist or the caller has no access to it.
 	GetWorkspace(context.Context, *GetWorkspaceRequest) (*GetWorkspaceResponse, error)
 	// buf:lint:ignore RPC_REQUEST_STANDARD_NAME
-	// Updates the settings of the workspace with the specified WorkspaceRid.
+	// Updates the display name, symbol, or settings of one workspace. Returns the updated workspace.
+	//
+	// Omitted fields stay unchanged, and remove_type clears a display name or symbol. Within settings, ref_names and
+	// procedures are each replaced as a whole when set and kept when omitted. Changing or clearing the display name
+	// needs an org admin. The caller must belong to the workspace or have permission to edit its configuration.
+	//
+	// Errors:
+	//   - PERMISSION_DENIED (Authorization:NotAuthorizedAdmin): the request sets or clears the display name and the
+	//     caller is not an org admin.
+	//   - NOT_FOUND (Security:WorkspaceNotFound): the workspace does not exist or the caller has no access to edit it.
+	//   - INVALID_ARGUMENT: a preferred reference name in settings has no data source type, or a display name change,
+	//     symbol, or procedures setting has none of its options set.
 	UpdateWorkspace(context.Context, *UpdateWorkspaceRequestWrapper) (*UpdateWorkspaceResponse, error)
-	// Gets the default workspace for the requesting user in their current organization. Candidates are
-	// the workspaces the user is a member of, plus workspaces where the user or one of their groups has a
-	// role binding that grants workspace:view. If there is exactly one candidate, it is returned.
-	// Otherwise, the organization's default workspace is returned if it is a candidate.
-	// The result is a lookup, not an authorization: check the action before acting in the workspace.
+	// Gets the caller's default workspace in their current org, or none. It is a lookup, not an authorization: check
+	// the action before acting in the workspace.
+	//
+	// Candidates are the workspaces the caller belongs to, plus those where the caller or one of their groups has a
+	// role binding granting workspace:view. Returns the only candidate, else the org's default workspace if it is a
+	// candidate.
 	GetDefaultWorkspace(context.Context, *GetDefaultWorkspaceRequest) (*GetDefaultWorkspaceResponse, error)
-	// Gets the classification banner (e.g. CUI, ITAR) configured for a workspace.
+	// Gets the classification banner (CUI, no ITAR, or SECRET) configured for one workspace. Returns no banner if none
+	// is configured.
+	//
+	// The caller must belong to the workspace or have view permission on it.
+	//
+	// Errors:
+	// - NOT_FOUND (Security:WorkspaceNotFound): the caller has no access to the workspace.
 	GetWorkspaceBanner(context.Context, *GetWorkspaceBannerRequest) (*GetWorkspaceBannerResponse, error)
 	mustEmbedUnimplementedWorkspaceServiceServer()
 }

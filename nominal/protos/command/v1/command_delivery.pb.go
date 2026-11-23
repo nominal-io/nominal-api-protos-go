@@ -149,10 +149,13 @@ func (x *CommandDeliveryEnvelope) GetIssuedByEmail() string {
 type ChannelCommand struct {
 	state   protoimpl.MessageState `protogen:"open.v1"`
 	Channel string                 `protobuf:"bytes,1,opt,name=channel,proto3" json:"channel,omitempty"`
-	// The value arm must match the target channel's data type: float_value for
-	// DOUBLE channels, int_value for INT channels, and enum_value for STRING
-	// channels. enum_value must be non-empty and at most 255 characters.
-	// bool_value is rejected until a channel data type maps to it.
+	// DOUBLE and INT channels take either numeric arm, and Core delivers the
+	// value in the channel's arm: float_value for DOUBLE, int_value for INT. A
+	// numeric value is converted only when the conversion is exact: a float_value
+	// for an INT channel must be a whole number within int64, and an int_value for
+	// a DOUBLE channel must be within +/-2^53. STRING channels take only
+	// enum_value, which must be non-empty and at most 255 characters. bool_value
+	// is rejected until a channel data type maps to it.
 	Value         *CommandValue `protobuf:"bytes,2,opt,name=value,proto3" json:"value,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache

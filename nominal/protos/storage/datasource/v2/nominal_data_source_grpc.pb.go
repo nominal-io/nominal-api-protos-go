@@ -45,13 +45,11 @@ type NominalDataSourceServiceClient interface {
 	CreateNominalDataSource(ctx context.Context, in *CreateNominalDataSourceRequest, opts ...grpc.CallOption) (*CreateNominalDataSourceResponse, error)
 	// Gets Nominal data sources (the series stores behind datasets) by RID.
 	//
-	// The caller needs permission to read the data of every data source. Duplicate RIDs are collapsed, and the order of
-	// the returned data sources is not defined. The call does not skip data sources: it returns no data sources if any
-	// fails.
+	// Returns the requested data sources, in no particular order; duplicate RIDs are collapsed. Omits data sources that
+	// do not exist or whose data the caller cannot read.
 	//
 	// Errors:
 	// - INVALID_ARGUMENT: an RID is malformed.
-	// - NOT_FOUND: any data source is missing or the caller cannot read its data (DataSourcesNotFound).
 	BatchGetNominalDataSources(ctx context.Context, in *BatchGetNominalDataSourcesRequest, opts ...grpc.CallOption) (*BatchGetNominalDataSourcesResponse, error)
 	// Updates a Nominal data source (the series store behind a dataset) and returns it. Only the fields named in the
 	// update mask change.
@@ -125,13 +123,11 @@ type NominalDataSourceServiceServer interface {
 	CreateNominalDataSource(context.Context, *CreateNominalDataSourceRequest) (*CreateNominalDataSourceResponse, error)
 	// Gets Nominal data sources (the series stores behind datasets) by RID.
 	//
-	// The caller needs permission to read the data of every data source. Duplicate RIDs are collapsed, and the order of
-	// the returned data sources is not defined. The call does not skip data sources: it returns no data sources if any
-	// fails.
+	// Returns the requested data sources, in no particular order; duplicate RIDs are collapsed. Omits data sources that
+	// do not exist or whose data the caller cannot read.
 	//
 	// Errors:
 	// - INVALID_ARGUMENT: an RID is malformed.
-	// - NOT_FOUND: any data source is missing or the caller cannot read its data (DataSourcesNotFound).
 	BatchGetNominalDataSources(context.Context, *BatchGetNominalDataSourcesRequest) (*BatchGetNominalDataSourcesResponse, error)
 	// Updates a Nominal data source (the series store behind a dataset) and returns it. Only the fields named in the
 	// update mask change.

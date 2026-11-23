@@ -26,6 +26,7 @@ const (
 	InternalCodeSandboxService_GetSandbox_FullMethodName             = "/nominal.internalcodesandbox.v1.InternalCodeSandboxService/GetSandbox"
 	InternalCodeSandboxService_GetLiveSandbox_FullMethodName         = "/nominal.internalcodesandbox.v1.InternalCodeSandboxService/GetLiveSandbox"
 	InternalCodeSandboxService_DeleteSandbox_FullMethodName          = "/nominal.internalcodesandbox.v1.InternalCodeSandboxService/DeleteSandbox"
+	InternalCodeSandboxService_DeleteThreadCompute_FullMethodName    = "/nominal.internalcodesandbox.v1.InternalCodeSandboxService/DeleteThreadCompute"
 	InternalCodeSandboxService_RestartInterpreter_FullMethodName     = "/nominal.internalcodesandbox.v1.InternalCodeSandboxService/RestartInterpreter"
 	InternalCodeSandboxService_StartExecution_FullMethodName         = "/nominal.internalcodesandbox.v1.InternalCodeSandboxService/StartExecution"
 	InternalCodeSandboxService_ReadExecution_FullMethodName          = "/nominal.internalcodesandbox.v1.InternalCodeSandboxService/ReadExecution"
@@ -54,6 +55,9 @@ type InternalCodeSandboxServiceClient interface {
 	GetLiveSandbox(ctx context.Context, in *GetLiveSandboxRequest, opts ...grpc.CallOption) (*GetLiveSandboxResponse, error)
 	// Terminates the sandbox's compute. The sandbox stays readable by GetSandbox afterwards.
 	DeleteSandbox(ctx context.Context, in *DeleteSandboxRequest, opts ...grpc.CallOption) (*DeleteSandboxResponse, error)
+	// Deletes all of the caller's compute for parent_rid, in any state, and its workspace volumes. The sandbox
+	// records stay readable by GetSandbox. Succeeds when the caller has no sandbox for parent_rid.
+	DeleteThreadCompute(ctx context.Context, in *DeleteThreadComputeRequest, opts ...grpc.CallOption) (*DeleteThreadComputeResponse, error)
 	// Resets the persistent interpreter. Does not delete the sandbox or its workspace.
 	RestartInterpreter(ctx context.Context, in *RestartInterpreterRequest, opts ...grpc.CallOption) (*RestartInterpreterResponse, error)
 	// Admits a shell or Python execution under a stable operation ID.
@@ -116,6 +120,16 @@ func (c *internalCodeSandboxServiceClient) DeleteSandbox(ctx context.Context, in
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(DeleteSandboxResponse)
 	err := c.cc.Invoke(ctx, InternalCodeSandboxService_DeleteSandbox_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *internalCodeSandboxServiceClient) DeleteThreadCompute(ctx context.Context, in *DeleteThreadComputeRequest, opts ...grpc.CallOption) (*DeleteThreadComputeResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(DeleteThreadComputeResponse)
+	err := c.cc.Invoke(ctx, InternalCodeSandboxService_DeleteThreadCompute_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -241,6 +255,9 @@ type InternalCodeSandboxServiceServer interface {
 	GetLiveSandbox(context.Context, *GetLiveSandboxRequest) (*GetLiveSandboxResponse, error)
 	// Terminates the sandbox's compute. The sandbox stays readable by GetSandbox afterwards.
 	DeleteSandbox(context.Context, *DeleteSandboxRequest) (*DeleteSandboxResponse, error)
+	// Deletes all of the caller's compute for parent_rid, in any state, and its workspace volumes. The sandbox
+	// records stay readable by GetSandbox. Succeeds when the caller has no sandbox for parent_rid.
+	DeleteThreadCompute(context.Context, *DeleteThreadComputeRequest) (*DeleteThreadComputeResponse, error)
 	// Resets the persistent interpreter. Does not delete the sandbox or its workspace.
 	RestartInterpreter(context.Context, *RestartInterpreterRequest) (*RestartInterpreterResponse, error)
 	// Admits a shell or Python execution under a stable operation ID.
@@ -280,6 +297,9 @@ func (UnimplementedInternalCodeSandboxServiceServer) GetLiveSandbox(context.Cont
 }
 func (UnimplementedInternalCodeSandboxServiceServer) DeleteSandbox(context.Context, *DeleteSandboxRequest) (*DeleteSandboxResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method DeleteSandbox not implemented")
+}
+func (UnimplementedInternalCodeSandboxServiceServer) DeleteThreadCompute(context.Context, *DeleteThreadComputeRequest) (*DeleteThreadComputeResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method DeleteThreadCompute not implemented")
 }
 func (UnimplementedInternalCodeSandboxServiceServer) RestartInterpreter(context.Context, *RestartInterpreterRequest) (*RestartInterpreterResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method RestartInterpreter not implemented")
@@ -398,6 +418,24 @@ func _InternalCodeSandboxService_DeleteSandbox_Handler(srv interface{}, ctx cont
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(InternalCodeSandboxServiceServer).DeleteSandbox(ctx, req.(*DeleteSandboxRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _InternalCodeSandboxService_DeleteThreadCompute_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DeleteThreadComputeRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(InternalCodeSandboxServiceServer).DeleteThreadCompute(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: InternalCodeSandboxService_DeleteThreadCompute_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(InternalCodeSandboxServiceServer).DeleteThreadCompute(ctx, req.(*DeleteThreadComputeRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -568,6 +606,10 @@ var InternalCodeSandboxService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "DeleteSandbox",
 			Handler:    _InternalCodeSandboxService_DeleteSandbox_Handler,
+		},
+		{
+			MethodName: "DeleteThreadCompute",
+			Handler:    _InternalCodeSandboxService_DeleteThreadCompute_Handler,
 		},
 		{
 			MethodName: "RestartInterpreter",

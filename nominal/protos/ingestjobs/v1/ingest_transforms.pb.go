@@ -36,6 +36,7 @@ const (
 	IngestTransformError_INGEST_TRANSFORM_ERROR_INVALID_PAGE_TOKEN               IngestTransformError = 2
 	IngestTransformError_INGEST_TRANSFORM_ERROR_INVALID_STATUS                   IngestTransformError = 3
 	IngestTransformError_INGEST_TRANSFORM_ERROR_UNREPRESENTABLE_STORED_TIMESTAMP IngestTransformError = 4
+	IngestTransformError_INGEST_TRANSFORM_ERROR_NO_DISK_REQUIREMENT              IngestTransformError = 5
 )
 
 // Enum value maps for IngestTransformError.
@@ -46,6 +47,7 @@ var (
 		2: "INGEST_TRANSFORM_ERROR_INVALID_PAGE_TOKEN",
 		3: "INGEST_TRANSFORM_ERROR_INVALID_STATUS",
 		4: "INGEST_TRANSFORM_ERROR_UNREPRESENTABLE_STORED_TIMESTAMP",
+		5: "INGEST_TRANSFORM_ERROR_NO_DISK_REQUIREMENT",
 	}
 	IngestTransformError_value = map[string]int32{
 		"INGEST_TRANSFORM_ERROR_UNSPECIFIED":                      0,
@@ -53,6 +55,7 @@ var (
 		"INGEST_TRANSFORM_ERROR_INVALID_PAGE_TOKEN":               2,
 		"INGEST_TRANSFORM_ERROR_INVALID_STATUS":                   3,
 		"INGEST_TRANSFORM_ERROR_UNREPRESENTABLE_STORED_TIMESTAMP": 4,
+		"INGEST_TRANSFORM_ERROR_NO_DISK_REQUIREMENT":              5,
 	}
 )
 
@@ -415,6 +418,117 @@ func (x *GetIngestTransformResponse) GetIngestTransform() *IngestTransform {
 	return nil
 }
 
+type GetIngestTransformDiskRequirementRequest struct {
+	state              protoimpl.MessageState `protogen:"open.v1"`
+	IngestTransformRid string                 `protobuf:"bytes,1,opt,name=ingest_transform_rid,json=ingestTransformRid,proto3" json:"ingest_transform_rid,omitempty"`
+	unknownFields      protoimpl.UnknownFields
+	sizeCache          protoimpl.SizeCache
+}
+
+func (x *GetIngestTransformDiskRequirementRequest) Reset() {
+	*x = GetIngestTransformDiskRequirementRequest{}
+	mi := &file_nominal_protos_ingestjobs_v1_ingest_transforms_proto_msgTypes[3]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetIngestTransformDiskRequirementRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetIngestTransformDiskRequirementRequest) ProtoMessage() {}
+
+func (x *GetIngestTransformDiskRequirementRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_nominal_protos_ingestjobs_v1_ingest_transforms_proto_msgTypes[3]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetIngestTransformDiskRequirementRequest.ProtoReflect.Descriptor instead.
+func (*GetIngestTransformDiskRequirementRequest) Descriptor() ([]byte, []int) {
+	return file_nominal_protos_ingestjobs_v1_ingest_transforms_proto_rawDescGZIP(), []int{3}
+}
+
+func (x *GetIngestTransformDiskRequirementRequest) GetIngestTransformRid() string {
+	if x != nil {
+		return x.IngestTransformRid
+	}
+	return ""
+}
+
+type GetIngestTransformDiskRequirementResponse struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Total size of the transform's inputs: objects in Nominal's object storage that the transform's workspace
+	// may read, and File Store revisions. The call fails with NO_DISK_REQUIREMENT if any input cannot be sized
+	// this way (for example GCS objects, presigned URLs, or an S3 path the workspace may not read), because the
+	// extractor's disk check sizes those only after copying them.
+	InputBytes int64 `protobuf:"varint,1,opt,name=input_bytes,json=inputBytes,proto3" json:"input_bytes,omitempty"`
+	// Disk, in GiB, that the extractor's current image runs with, including the server default when the
+	// image sets none.
+	DiskGib int32 `protobuf:"varint,2,opt,name=disk_gib,json=diskGib,proto3" json:"disk_gib,omitempty"`
+	// Smallest disk, in GiB, on which input_bytes passes the extractor's disk check.
+	RequiredDiskGib int32 `protobuf:"varint,3,opt,name=required_disk_gib,json=requiredDiskGib,proto3" json:"required_disk_gib,omitempty"`
+	unknownFields   protoimpl.UnknownFields
+	sizeCache       protoimpl.SizeCache
+}
+
+func (x *GetIngestTransformDiskRequirementResponse) Reset() {
+	*x = GetIngestTransformDiskRequirementResponse{}
+	mi := &file_nominal_protos_ingestjobs_v1_ingest_transforms_proto_msgTypes[4]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetIngestTransformDiskRequirementResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetIngestTransformDiskRequirementResponse) ProtoMessage() {}
+
+func (x *GetIngestTransformDiskRequirementResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_nominal_protos_ingestjobs_v1_ingest_transforms_proto_msgTypes[4]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetIngestTransformDiskRequirementResponse.ProtoReflect.Descriptor instead.
+func (*GetIngestTransformDiskRequirementResponse) Descriptor() ([]byte, []int) {
+	return file_nominal_protos_ingestjobs_v1_ingest_transforms_proto_rawDescGZIP(), []int{4}
+}
+
+func (x *GetIngestTransformDiskRequirementResponse) GetInputBytes() int64 {
+	if x != nil {
+		return x.InputBytes
+	}
+	return 0
+}
+
+func (x *GetIngestTransformDiskRequirementResponse) GetDiskGib() int32 {
+	if x != nil {
+		return x.DiskGib
+	}
+	return 0
+}
+
+func (x *GetIngestTransformDiskRequirementResponse) GetRequiredDiskGib() int32 {
+	if x != nil {
+		return x.RequiredDiskGib
+	}
+	return 0
+}
+
 type ListIngestTransformsRequest struct {
 	state        protoimpl.MessageState `protogen:"open.v1"`
 	IngestJobRid string                 `protobuf:"bytes,1,opt,name=ingest_job_rid,json=ingestJobRid,proto3" json:"ingest_job_rid,omitempty"`
@@ -433,7 +547,7 @@ type ListIngestTransformsRequest struct {
 
 func (x *ListIngestTransformsRequest) Reset() {
 	*x = ListIngestTransformsRequest{}
-	mi := &file_nominal_protos_ingestjobs_v1_ingest_transforms_proto_msgTypes[3]
+	mi := &file_nominal_protos_ingestjobs_v1_ingest_transforms_proto_msgTypes[5]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -445,7 +559,7 @@ func (x *ListIngestTransformsRequest) String() string {
 func (*ListIngestTransformsRequest) ProtoMessage() {}
 
 func (x *ListIngestTransformsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_ingestjobs_v1_ingest_transforms_proto_msgTypes[3]
+	mi := &file_nominal_protos_ingestjobs_v1_ingest_transforms_proto_msgTypes[5]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -458,7 +572,7 @@ func (x *ListIngestTransformsRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListIngestTransformsRequest.ProtoReflect.Descriptor instead.
 func (*ListIngestTransformsRequest) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_ingestjobs_v1_ingest_transforms_proto_rawDescGZIP(), []int{3}
+	return file_nominal_protos_ingestjobs_v1_ingest_transforms_proto_rawDescGZIP(), []int{5}
 }
 
 func (x *ListIngestTransformsRequest) GetIngestJobRid() string {
@@ -499,7 +613,7 @@ type ListIngestTransformsResponse struct {
 
 func (x *ListIngestTransformsResponse) Reset() {
 	*x = ListIngestTransformsResponse{}
-	mi := &file_nominal_protos_ingestjobs_v1_ingest_transforms_proto_msgTypes[4]
+	mi := &file_nominal_protos_ingestjobs_v1_ingest_transforms_proto_msgTypes[6]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -511,7 +625,7 @@ func (x *ListIngestTransformsResponse) String() string {
 func (*ListIngestTransformsResponse) ProtoMessage() {}
 
 func (x *ListIngestTransformsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_ingestjobs_v1_ingest_transforms_proto_msgTypes[4]
+	mi := &file_nominal_protos_ingestjobs_v1_ingest_transforms_proto_msgTypes[6]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -524,7 +638,7 @@ func (x *ListIngestTransformsResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListIngestTransformsResponse.ProtoReflect.Descriptor instead.
 func (*ListIngestTransformsResponse) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_ingestjobs_v1_ingest_transforms_proto_rawDescGZIP(), []int{4}
+	return file_nominal_protos_ingestjobs_v1_ingest_transforms_proto_rawDescGZIP(), []int{6}
 }
 
 func (x *ListIngestTransformsResponse) GetIngestTransforms() []*IngestTransform {
@@ -557,7 +671,7 @@ type ListIngestTransformSourceDownloadUrlsRequest struct {
 
 func (x *ListIngestTransformSourceDownloadUrlsRequest) Reset() {
 	*x = ListIngestTransformSourceDownloadUrlsRequest{}
-	mi := &file_nominal_protos_ingestjobs_v1_ingest_transforms_proto_msgTypes[5]
+	mi := &file_nominal_protos_ingestjobs_v1_ingest_transforms_proto_msgTypes[7]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -569,7 +683,7 @@ func (x *ListIngestTransformSourceDownloadUrlsRequest) String() string {
 func (*ListIngestTransformSourceDownloadUrlsRequest) ProtoMessage() {}
 
 func (x *ListIngestTransformSourceDownloadUrlsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_ingestjobs_v1_ingest_transforms_proto_msgTypes[5]
+	mi := &file_nominal_protos_ingestjobs_v1_ingest_transforms_proto_msgTypes[7]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -582,7 +696,7 @@ func (x *ListIngestTransformSourceDownloadUrlsRequest) ProtoReflect() protorefle
 
 // Deprecated: Use ListIngestTransformSourceDownloadUrlsRequest.ProtoReflect.Descriptor instead.
 func (*ListIngestTransformSourceDownloadUrlsRequest) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_ingestjobs_v1_ingest_transforms_proto_rawDescGZIP(), []int{5}
+	return file_nominal_protos_ingestjobs_v1_ingest_transforms_proto_rawDescGZIP(), []int{7}
 }
 
 func (x *ListIngestTransformSourceDownloadUrlsRequest) GetIngestTransformRid() string {
@@ -619,7 +733,7 @@ type ListIngestTransformSourceDownloadUrlsResponse struct {
 
 func (x *ListIngestTransformSourceDownloadUrlsResponse) Reset() {
 	*x = ListIngestTransformSourceDownloadUrlsResponse{}
-	mi := &file_nominal_protos_ingestjobs_v1_ingest_transforms_proto_msgTypes[6]
+	mi := &file_nominal_protos_ingestjobs_v1_ingest_transforms_proto_msgTypes[8]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -631,7 +745,7 @@ func (x *ListIngestTransformSourceDownloadUrlsResponse) String() string {
 func (*ListIngestTransformSourceDownloadUrlsResponse) ProtoMessage() {}
 
 func (x *ListIngestTransformSourceDownloadUrlsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_nominal_protos_ingestjobs_v1_ingest_transforms_proto_msgTypes[6]
+	mi := &file_nominal_protos_ingestjobs_v1_ingest_transforms_proto_msgTypes[8]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -644,7 +758,7 @@ func (x *ListIngestTransformSourceDownloadUrlsResponse) ProtoReflect() protorefl
 
 // Deprecated: Use ListIngestTransformSourceDownloadUrlsResponse.ProtoReflect.Descriptor instead.
 func (*ListIngestTransformSourceDownloadUrlsResponse) Descriptor() ([]byte, []int) {
-	return file_nominal_protos_ingestjobs_v1_ingest_transforms_proto_rawDescGZIP(), []int{6}
+	return file_nominal_protos_ingestjobs_v1_ingest_transforms_proto_rawDescGZIP(), []int{8}
 }
 
 func (x *ListIngestTransformSourceDownloadUrlsResponse) GetDownloadUrls() []*v1.DownloadUrl {
@@ -690,7 +804,15 @@ const file_nominal_protos_ingestjobs_v1_ingest_transforms_proto_rawDesc = "" +
 	"\x14ingest_transform_rid\x18\x01 \x01(\tB8\xbaH\ar\x05\x10\x01\x18\x80\x04\x9a\xb2\x1a*\n" +
 	"(io.nominal.ingest.api.IngestTransformRidR\x12ingestTransformRid\"w\n" +
 	"\x1aGetIngestTransformResponse\x12Y\n" +
-	"\x10ingest_transform\x18\x01 \x01(\v2&.nominal.ingestjobs.v1.IngestTransformB\x06\xbaH\x03\xc8\x01\x01R\x0fingestTransform\"\xb9\x02\n" +
+	"\x10ingest_transform\x18\x01 \x01(\v2&.nominal.ingestjobs.v1.IngestTransformB\x06\xbaH\x03\xc8\x01\x01R\x0fingestTransform\"\x96\x01\n" +
+	"(GetIngestTransformDiskRequirementRequest\x12j\n" +
+	"\x14ingest_transform_rid\x18\x01 \x01(\tB8\xbaH\ar\x05\x10\x01\x18\x80\x04\x9a\xb2\x1a*\n" +
+	"(io.nominal.ingest.api.IngestTransformRidR\x12ingestTransformRid\"\x93\x01\n" +
+	")GetIngestTransformDiskRequirementResponse\x12\x1f\n" +
+	"\vinput_bytes\x18\x01 \x01(\x03R\n" +
+	"inputBytes\x12\x19\n" +
+	"\bdisk_gib\x18\x02 \x01(\x05R\adiskGib\x12*\n" +
+	"\x11required_disk_gib\x18\x03 \x01(\x05R\x0frequiredDiskGib\"\xb9\x02\n" +
 	"\x1bListIngestTransformsRequest\x12X\n" +
 	"\x0eingest_job_rid\x18\x01 \x01(\tB2\xbaH\ar\x05\x10\x01\x18\x80\x04\x9a\xb2\x1a$\n" +
 	"\"io.nominal.ingest.api.IngestJobRidR\fingestJobRid\x12,\n" +
@@ -715,7 +837,7 @@ const file_nominal_protos_ingestjobs_v1_ingest_transforms_proto_rawDesc = "" +
 	"_page_size\"\x9d\x01\n" +
 	"-ListIngestTransformSourceDownloadUrlsResponse\x12D\n" +
 	"\rdownload_urls\x18\x01 \x03(\v2\x1f.nominal.uploads.v1.DownloadUrlR\fdownloadUrls\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken*\xce\x04\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken*\xef\x05\n" +
 	"\x14IngestTransformError\x12&\n" +
 	"\"INGEST_TRANSFORM_ERROR_UNSPECIFIED\x10\x00\x12}\n" +
 	"\"INGEST_TRANSFORM_ERROR_INVALID_RID\x10\x01\x1aU\xb2\xb2\x1aQ\n" +
@@ -725,7 +847,9 @@ const file_nominal_protos_ingestjobs_v1_ingest_transforms_proto_rawDesc = "" +
 	"%INGEST_TRANSFORM_ERROR_INVALID_STATUS\x10\x03\x1aM\xb2\xb2\x1aI\n" +
 	"\x10INVALID_ARGUMENT\x125Transform status filter must contain defined statuses\x12\x9b\x01\n" +
 	"7INGEST_TRANSFORM_ERROR_UNREPRESENTABLE_STORED_TIMESTAMP\x10\x04\x1a^\xb2\xb2\x1aZ\n" +
-	"\x13FAILED_PRECONDITION\x12CStored transform timestamp is outside the supported timestamp range*\xd8\x01\n" +
+	"\x13FAILED_PRECONDITION\x12CStored transform timestamp is outside the supported timestamp range\x12\x9e\x01\n" +
+	"*INGEST_TRANSFORM_ERROR_NO_DISK_REQUIREMENT\x10\x05\x1an\xb2\xb2\x1aj\n" +
+	"\x13FAILED_PRECONDITION\x12SDisk requirements exist only for containerized transforms with a resolved extractor*\xd8\x01\n" +
 	"\x15IngestTransformStatus\x12'\n" +
 	"#INGEST_TRANSFORM_STATUS_UNSPECIFIED\x10\x00\x12\"\n" +
 	"\x1eINGEST_TRANSFORM_STATUS_QUEUED\x10\x01\x12'\n" +
@@ -738,10 +862,11 @@ const file_nominal_protos_ingestjobs_v1_ingest_transforms_proto_rawDesc = "" +
 	"\x1aINGEST_TRANSFORM_TYPE_MCAP\x10\x02\x12#\n" +
 	"\x1fINGEST_TRANSFORM_TYPE_DATAFLASH\x10\x03\x12)\n" +
 	"%INGEST_TRANSFORM_TYPE_PARQUET_ARCHIVE\x10\x04\x12#\n" +
-	"\x1fINGEST_TRANSFORM_TYPE_FILE_COPY\x10\x052\xac\x05\n" +
+	"\x1fINGEST_TRANSFORM_TYPE_FILE_COPY\x10\x052\xa8\a\n" +
 	"\x16IngestTransformService\x12\x89\x02\n" +
 	"%ListIngestTransformSourceDownloadUrls\x12C.nominal.ingestjobs.v1.ListIngestTransformSourceDownloadUrlsRequest\x1aD.nominal.ingestjobs.v1.ListIngestTransformSourceDownloadUrlsResponse\"U\x82\xd3\xe4\x93\x02O\x12M/ingest-jobs/v1/ingest-transforms/{ingest_transform_rid}/source-download-urls\x12\xbb\x01\n" +
-	"\x12GetIngestTransform\x120.nominal.ingestjobs.v1.GetIngestTransformRequest\x1a1.nominal.ingestjobs.v1.GetIngestTransformResponse\"@\x82\xd3\xe4\x93\x02:\x128/ingest-jobs/v1/ingest-transforms/{ingest_transform_rid}\x12\xc7\x01\n" +
+	"\x12GetIngestTransform\x120.nominal.ingestjobs.v1.GetIngestTransformRequest\x1a1.nominal.ingestjobs.v1.GetIngestTransformResponse\"@\x82\xd3\xe4\x93\x02:\x128/ingest-jobs/v1/ingest-transforms/{ingest_transform_rid}\x12\xf9\x01\n" +
+	"!GetIngestTransformDiskRequirement\x12?.nominal.ingestjobs.v1.GetIngestTransformDiskRequirementRequest\x1a@.nominal.ingestjobs.v1.GetIngestTransformDiskRequirementResponse\"Q\x82\xd3\xe4\x93\x02K\x12I/ingest-jobs/v1/ingest-transforms/{ingest_transform_rid}/disk-requirement\x12\xc7\x01\n" +
 	"\x14ListIngestTransforms\x122.nominal.ingestjobs.v1.ListIngestTransformsRequest\x1a3.nominal.ingestjobs.v1.ListIngestTransformsResponse\"F\x82\xd3\xe4\x93\x02@\x12>/ingest-jobs/v1/ingest-jobs/{ingest_job_rid}/ingest-transformsB\xff\x01\n" +
 	"\x19com.nominal.ingestjobs.v1B\x15IngestTransformsProtoP\x01ZUgithub.com/nominal-io/nominal-api-protos-go/nominal/protos/ingestjobs/v1;ingestjobsv1\xa2\x02\x03NIX\xaa\x02\x15Nominal.Ingestjobs.V1\xca\x02\x15Nominal\\Ingestjobs\\V1\xe2\x02!Nominal\\Ingestjobs\\V1\\GPBMetadata\xea\x02\x17Nominal::Ingestjobs::V1b\x06proto3"
 
@@ -758,7 +883,7 @@ func file_nominal_protos_ingestjobs_v1_ingest_transforms_proto_rawDescGZIP() []b
 }
 
 var file_nominal_protos_ingestjobs_v1_ingest_transforms_proto_enumTypes = make([]protoimpl.EnumInfo, 3)
-var file_nominal_protos_ingestjobs_v1_ingest_transforms_proto_msgTypes = make([]protoimpl.MessageInfo, 7)
+var file_nominal_protos_ingestjobs_v1_ingest_transforms_proto_msgTypes = make([]protoimpl.MessageInfo, 9)
 var file_nominal_protos_ingestjobs_v1_ingest_transforms_proto_goTypes = []any{
 	(IngestTransformError)(0),                             // 0: nominal.ingestjobs.v1.IngestTransformError
 	(IngestTransformStatus)(0),                            // 1: nominal.ingestjobs.v1.IngestTransformStatus
@@ -766,33 +891,37 @@ var file_nominal_protos_ingestjobs_v1_ingest_transforms_proto_goTypes = []any{
 	(*IngestTransform)(nil),                               // 3: nominal.ingestjobs.v1.IngestTransform
 	(*GetIngestTransformRequest)(nil),                     // 4: nominal.ingestjobs.v1.GetIngestTransformRequest
 	(*GetIngestTransformResponse)(nil),                    // 5: nominal.ingestjobs.v1.GetIngestTransformResponse
-	(*ListIngestTransformsRequest)(nil),                   // 6: nominal.ingestjobs.v1.ListIngestTransformsRequest
-	(*ListIngestTransformsResponse)(nil),                  // 7: nominal.ingestjobs.v1.ListIngestTransformsResponse
-	(*ListIngestTransformSourceDownloadUrlsRequest)(nil),  // 8: nominal.ingestjobs.v1.ListIngestTransformSourceDownloadUrlsRequest
-	(*ListIngestTransformSourceDownloadUrlsResponse)(nil), // 9: nominal.ingestjobs.v1.ListIngestTransformSourceDownloadUrlsResponse
-	(*timestamppb.Timestamp)(nil),                         // 10: google.protobuf.Timestamp
-	(*v2.IngestSource)(nil),                               // 11: nominal.ingest.v2.IngestSource
-	(*v1.DownloadUrl)(nil),                                // 12: nominal.uploads.v1.DownloadUrl
+	(*GetIngestTransformDiskRequirementRequest)(nil),      // 6: nominal.ingestjobs.v1.GetIngestTransformDiskRequirementRequest
+	(*GetIngestTransformDiskRequirementResponse)(nil),     // 7: nominal.ingestjobs.v1.GetIngestTransformDiskRequirementResponse
+	(*ListIngestTransformsRequest)(nil),                   // 8: nominal.ingestjobs.v1.ListIngestTransformsRequest
+	(*ListIngestTransformsResponse)(nil),                  // 9: nominal.ingestjobs.v1.ListIngestTransformsResponse
+	(*ListIngestTransformSourceDownloadUrlsRequest)(nil),  // 10: nominal.ingestjobs.v1.ListIngestTransformSourceDownloadUrlsRequest
+	(*ListIngestTransformSourceDownloadUrlsResponse)(nil), // 11: nominal.ingestjobs.v1.ListIngestTransformSourceDownloadUrlsResponse
+	(*timestamppb.Timestamp)(nil),                         // 12: google.protobuf.Timestamp
+	(*v2.IngestSource)(nil),                               // 13: nominal.ingest.v2.IngestSource
+	(*v1.DownloadUrl)(nil),                                // 14: nominal.uploads.v1.DownloadUrl
 }
 var file_nominal_protos_ingestjobs_v1_ingest_transforms_proto_depIdxs = []int32{
 	2,  // 0: nominal.ingestjobs.v1.IngestTransform.type:type_name -> nominal.ingestjobs.v1.IngestTransformType
 	1,  // 1: nominal.ingestjobs.v1.IngestTransform.status:type_name -> nominal.ingestjobs.v1.IngestTransformStatus
-	10, // 2: nominal.ingestjobs.v1.IngestTransform.create_time:type_name -> google.protobuf.Timestamp
-	10, // 3: nominal.ingestjobs.v1.IngestTransform.update_time:type_name -> google.protobuf.Timestamp
-	10, // 4: nominal.ingestjobs.v1.IngestTransform.finish_time:type_name -> google.protobuf.Timestamp
-	11, // 5: nominal.ingestjobs.v1.IngestTransform.sources:type_name -> nominal.ingest.v2.IngestSource
+	12, // 2: nominal.ingestjobs.v1.IngestTransform.create_time:type_name -> google.protobuf.Timestamp
+	12, // 3: nominal.ingestjobs.v1.IngestTransform.update_time:type_name -> google.protobuf.Timestamp
+	12, // 4: nominal.ingestjobs.v1.IngestTransform.finish_time:type_name -> google.protobuf.Timestamp
+	13, // 5: nominal.ingestjobs.v1.IngestTransform.sources:type_name -> nominal.ingest.v2.IngestSource
 	3,  // 6: nominal.ingestjobs.v1.GetIngestTransformResponse.ingest_transform:type_name -> nominal.ingestjobs.v1.IngestTransform
 	1,  // 7: nominal.ingestjobs.v1.ListIngestTransformsRequest.statuses:type_name -> nominal.ingestjobs.v1.IngestTransformStatus
 	3,  // 8: nominal.ingestjobs.v1.ListIngestTransformsResponse.ingest_transforms:type_name -> nominal.ingestjobs.v1.IngestTransform
-	12, // 9: nominal.ingestjobs.v1.ListIngestTransformSourceDownloadUrlsResponse.download_urls:type_name -> nominal.uploads.v1.DownloadUrl
-	8,  // 10: nominal.ingestjobs.v1.IngestTransformService.ListIngestTransformSourceDownloadUrls:input_type -> nominal.ingestjobs.v1.ListIngestTransformSourceDownloadUrlsRequest
+	14, // 9: nominal.ingestjobs.v1.ListIngestTransformSourceDownloadUrlsResponse.download_urls:type_name -> nominal.uploads.v1.DownloadUrl
+	10, // 10: nominal.ingestjobs.v1.IngestTransformService.ListIngestTransformSourceDownloadUrls:input_type -> nominal.ingestjobs.v1.ListIngestTransformSourceDownloadUrlsRequest
 	4,  // 11: nominal.ingestjobs.v1.IngestTransformService.GetIngestTransform:input_type -> nominal.ingestjobs.v1.GetIngestTransformRequest
-	6,  // 12: nominal.ingestjobs.v1.IngestTransformService.ListIngestTransforms:input_type -> nominal.ingestjobs.v1.ListIngestTransformsRequest
-	9,  // 13: nominal.ingestjobs.v1.IngestTransformService.ListIngestTransformSourceDownloadUrls:output_type -> nominal.ingestjobs.v1.ListIngestTransformSourceDownloadUrlsResponse
-	5,  // 14: nominal.ingestjobs.v1.IngestTransformService.GetIngestTransform:output_type -> nominal.ingestjobs.v1.GetIngestTransformResponse
-	7,  // 15: nominal.ingestjobs.v1.IngestTransformService.ListIngestTransforms:output_type -> nominal.ingestjobs.v1.ListIngestTransformsResponse
-	13, // [13:16] is the sub-list for method output_type
-	10, // [10:13] is the sub-list for method input_type
+	6,  // 12: nominal.ingestjobs.v1.IngestTransformService.GetIngestTransformDiskRequirement:input_type -> nominal.ingestjobs.v1.GetIngestTransformDiskRequirementRequest
+	8,  // 13: nominal.ingestjobs.v1.IngestTransformService.ListIngestTransforms:input_type -> nominal.ingestjobs.v1.ListIngestTransformsRequest
+	11, // 14: nominal.ingestjobs.v1.IngestTransformService.ListIngestTransformSourceDownloadUrls:output_type -> nominal.ingestjobs.v1.ListIngestTransformSourceDownloadUrlsResponse
+	5,  // 15: nominal.ingestjobs.v1.IngestTransformService.GetIngestTransform:output_type -> nominal.ingestjobs.v1.GetIngestTransformResponse
+	7,  // 16: nominal.ingestjobs.v1.IngestTransformService.GetIngestTransformDiskRequirement:output_type -> nominal.ingestjobs.v1.GetIngestTransformDiskRequirementResponse
+	9,  // 17: nominal.ingestjobs.v1.IngestTransformService.ListIngestTransforms:output_type -> nominal.ingestjobs.v1.ListIngestTransformsResponse
+	14, // [14:18] is the sub-list for method output_type
+	10, // [10:14] is the sub-list for method input_type
 	10, // [10:10] is the sub-list for extension type_name
 	10, // [10:10] is the sub-list for extension extendee
 	0,  // [0:10] is the sub-list for field type_name
@@ -804,15 +933,15 @@ func file_nominal_protos_ingestjobs_v1_ingest_transforms_proto_init() {
 		return
 	}
 	file_nominal_protos_ingestjobs_v1_ingest_transforms_proto_msgTypes[0].OneofWrappers = []any{}
-	file_nominal_protos_ingestjobs_v1_ingest_transforms_proto_msgTypes[3].OneofWrappers = []any{}
 	file_nominal_protos_ingestjobs_v1_ingest_transforms_proto_msgTypes[5].OneofWrappers = []any{}
+	file_nominal_protos_ingestjobs_v1_ingest_transforms_proto_msgTypes[7].OneofWrappers = []any{}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_nominal_protos_ingestjobs_v1_ingest_transforms_proto_rawDesc), len(file_nominal_protos_ingestjobs_v1_ingest_transforms_proto_rawDesc)),
 			NumEnums:      3,
-			NumMessages:   7,
+			NumMessages:   9,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

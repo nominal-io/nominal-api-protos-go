@@ -30,12 +30,34 @@ const (
 //
 // RoleService provides methods for managing roles within Nominal.
 type RoleServiceClient interface {
-	// Atomically adds and removes role assignments for a resource.
-	// Throws if the same role assignment is both added and removed in the same request.
+	// Adds and removes user role assignments on a data source (such as a dataset) in one atomic change.
+	//
+	// Adding an assignment the user already has, or removing one the user does not have, changes nothing.
+	// The caller needs permission to update roles on the data source. When the request names any user,
+	// the caller also needs permission to read users in the caller's organization, and every named user
+	// must belong to that organization.
+	//
+	// Errors:
+	//   - INVALID_ARGUMENT: the same assignment is both added and removed, or an assignment names no user.
+	//   - PERMISSION_DENIED: the caller cannot update roles on the data source, the request names users and
+	//     the caller cannot read users in the organization, or a named user is not in the caller's
+	//     organization.
 	UpdateResourceRoles(ctx context.Context, in *UpdateResourceRolesRequest, opts ...grpc.CallOption) (*UpdateResourceRolesResponse, error)
-	// Gets the role assignments for a resource.
+	// Returns the user role assignments on one data source (such as a dataset).
+	//
+	// Only users in the caller's organization are listed; the list is empty if the caller cannot read the
+	// organization's users. A data source with no assignments returns an empty list.
+	//
+	// Errors:
+	// - PERMISSION_DENIED: the caller cannot read the data source's metadata.
 	GetResourceRoles(ctx context.Context, in *GetResourceRolesRequest, opts ...grpc.CallOption) (*GetResourceRolesResponse, error)
-	// Gets the role assignments for multiple resources.
+	// Returns the user role assignments on several data sources (such as datasets), as a map keyed by RID.
+	//
+	// Data sources that do not exist or whose metadata the caller cannot read are omitted. As for
+	// GetResourceRoles, only users in the caller's organization are listed, and the lists are empty if the
+	// caller cannot read the organization's users.
+	//
+	// Returns INVALID_ARGUMENT if resources has more than 1000 entries.
 	BatchGetResourceRoles(ctx context.Context, in *BatchGetResourceRolesRequest, opts ...grpc.CallOption) (*BatchGetResourceRolesResponse, error)
 }
 
@@ -83,12 +105,34 @@ func (c *roleServiceClient) BatchGetResourceRoles(ctx context.Context, in *Batch
 //
 // RoleService provides methods for managing roles within Nominal.
 type RoleServiceServer interface {
-	// Atomically adds and removes role assignments for a resource.
-	// Throws if the same role assignment is both added and removed in the same request.
+	// Adds and removes user role assignments on a data source (such as a dataset) in one atomic change.
+	//
+	// Adding an assignment the user already has, or removing one the user does not have, changes nothing.
+	// The caller needs permission to update roles on the data source. When the request names any user,
+	// the caller also needs permission to read users in the caller's organization, and every named user
+	// must belong to that organization.
+	//
+	// Errors:
+	//   - INVALID_ARGUMENT: the same assignment is both added and removed, or an assignment names no user.
+	//   - PERMISSION_DENIED: the caller cannot update roles on the data source, the request names users and
+	//     the caller cannot read users in the organization, or a named user is not in the caller's
+	//     organization.
 	UpdateResourceRoles(context.Context, *UpdateResourceRolesRequest) (*UpdateResourceRolesResponse, error)
-	// Gets the role assignments for a resource.
+	// Returns the user role assignments on one data source (such as a dataset).
+	//
+	// Only users in the caller's organization are listed; the list is empty if the caller cannot read the
+	// organization's users. A data source with no assignments returns an empty list.
+	//
+	// Errors:
+	// - PERMISSION_DENIED: the caller cannot read the data source's metadata.
 	GetResourceRoles(context.Context, *GetResourceRolesRequest) (*GetResourceRolesResponse, error)
-	// Gets the role assignments for multiple resources.
+	// Returns the user role assignments on several data sources (such as datasets), as a map keyed by RID.
+	//
+	// Data sources that do not exist or whose metadata the caller cannot read are omitted. As for
+	// GetResourceRoles, only users in the caller's organization are listed, and the lists are empty if the
+	// caller cannot read the organization's users.
+	//
+	// Returns INVALID_ARGUMENT if resources has more than 1000 entries.
 	BatchGetResourceRoles(context.Context, *BatchGetResourceRolesRequest) (*BatchGetResourceRolesResponse, error)
 	mustEmbedUnimplementedRoleServiceServer()
 }
